@@ -15,10 +15,11 @@ public class InteractionPickUp : MonoBehaviour {
 
 
     //adding this in to make it so that I can only instantiate the card if it's colliding with the card deck
-    public void OnCollisionEnter(Collider other)
+    public void OnCollisionEnter(Collision other)
     {
         if (other.gameObject.tag == "CardDeck")
         {
+            Debug.Log("isTouchingDeck = " + isTouchingDeck);
             isTouchingDeck = true;
         }
     }
