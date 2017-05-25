@@ -13,14 +13,40 @@ public class InteractionPickUp : MonoBehaviour {
     public bool isHoldingCard;
     public bool isTouchingDeck = false;
 
+    private Hand deckHand;
+    private Hand throwingHand;
+
 
     //adding this in to make it so that I can only instantiate the card if it's colliding with the card deck
-    public void OnCollisionEnter(Collision other)
+    public void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "CardDeck")
+        Debug.Log(other.gameObject.name + " is touching the cardDeck");
+        if(this.gameObject.name == "CardDeck")
         {
-            Debug.Log("isTouchingDeck = " + isTouchingDeck);
-            isTouchingDeck = true;
+            if(other.gameObject.tag == "Hand")
+            {
+                if(other.gameObject.GetComponent<Hand>() == throwingHand)
+                {
+                    Debug.Log("isTouchingDeck = " + isTouchingDeck);
+                    isTouchingDeck = true;
+                }
+            }
+        }
+    }
+
+    public void OnTriggerExit(Collider other)
+    {
+        Debug.Log(other.gameObject.name + " is touching the cardDeck");
+        if (this.gameObject.name == "CardDeck")
+        {
+            if (other.gameObject.tag == "Hand")
+            {
+                if (other.gameObject.GetComponent<Hand>() == throwingHand)
+                {
+                    Debug.Log("isTouchingDeck = " + isTouchingDeck);
+                    isTouchingDeck = false;
+                }
+            }
         }
     }
 
@@ -47,23 +73,28 @@ public class InteractionPickUp : MonoBehaviour {
     }
 
     //this happens whenever an object is attached to this hand, for whatever reason
-    void OnAttachedToHand(Hand hand)
+    void OnAttachedToHand(Hand attachedHand)
     {
+        if(attachedHand.currentAttachedObject.tag == "CardDeck")
+        {
+            Debug.Log("attachedHand = " + attachedHand.name + " and attached to it is " + attachedHand.currentAttachedObject.name);
+            deckHand = attachedHand;
+            throwingHand = attachedHand.otherHand;
+        }
         GetComponent<Rigidbody>().isKinematic = true; //turn off the physics, we we can hold it
     }
 
     //this is like update, as long as we're holding something
-    void HandAttachedUpdate(Hand hand)
+    void HandAttachedUpdate(Hand attachedHand)
     {
-        if (hand.GetStandardInteractionButton() == false)
+        if (attachedHand.GetStandardInteractionButton() == false)
         {
-            hand.DetachObject(gameObject);
-            hand.HoverUnlock(cardDeck);
+            attachedHand.DetachObject(gameObject);
+            attachedHand.HoverUnlock(cardDeck);
         }
-        if (hand.otherHand.GetStandardInteractionButton() == false)
+        if (attachedHand.otherHand.GetStandardInteractionButton() == false)
         {
             isHoldingCard = false;
-            isTouchingDeck = false;
         }
     }
 
