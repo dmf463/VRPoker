@@ -25,7 +25,7 @@ public class InteractionSuperClass : MonoBehaviour {
         Debug.Log(this.name + " is touching " + other.name);
     }
 
-    public void OnTriggerExity(Collider other)
+    public void OnTriggerExit(Collider other)
     {
         OnTriggerExitX(other);
     }

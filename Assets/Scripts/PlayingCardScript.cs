@@ -6,7 +6,7 @@ public class PlayingCardScript : MonoBehaviour {
 
     Vector3 myRotation;
     Rigidbody rb;
-    private float torque = 1;
+    private float torque = 10;
     public float duration;
     bool startLerping;
     float elapsedTime;
@@ -25,8 +25,7 @@ public class PlayingCardScript : MonoBehaviour {
         Debug.Log("torque is " + torque);
         myRotation = transform.eulerAngles;
         transform.rotation = Quaternion.Euler(0, myRotation.y, myRotation.z);
-        //float turn = Input.GetAxis("Vertical");
-        //rb.AddTorque(transform.up * torque);
+
         if(rb.isKinematic == false)
         {
             transform.Rotate(Vector3.up * torque);
