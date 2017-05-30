@@ -10,7 +10,7 @@ public class InteractionSuperClass : MonoBehaviour {
     public GameObject cardPrefab; //insert playingCard prefab in inspector
     protected bool isHoldingCard;
     protected bool isTouchingDeck = false;
-
+    const float FORCE_MULTIPLIER = 1.20f;
     protected Hand deckHand;
     protected Hand throwingHand;
 
@@ -68,7 +68,7 @@ public class InteractionSuperClass : MonoBehaviour {
         GetComponent<Rigidbody>().isKinematic = false; //turns on physics
 
         //apply forces to it, as if we're throwing it
-        GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);
+        GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity() * FORCE_MULTIPLIER, ForceMode.Impulse);
         GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);
     }
 
