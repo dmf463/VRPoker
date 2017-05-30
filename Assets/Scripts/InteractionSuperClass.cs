@@ -1,0 +1,75 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Valve.VR; //we need this for SteamVR
+using Valve.VR.InteractionSystem;
+
+public class InteractionSuperClass : MonoBehaviour {
+
+    public Interactable interactableObject; //insert cardDeck, or other interactable that you need hoverlocked in inspector
+    public GameObject cardPrefab; //insert playingCard prefab in inspector
+    protected bool isHoldingCard;
+    protected bool isTouchingDeck = false;
+
+    protected Hand deckHand;
+    protected Hand throwingHand;
+
+    //in the trigger enters and exits, I want to make sure that I'm colliding with the right thing, and also making it so that I can only instantiate a cards if I'm touching the deck of cards.
+    public void OnTriggerEnter(Collider other)
+    {
+        OnTriggerEnterX(other);
+    }
+
+    public virtual void OnTriggerEnterX(Collider other)
+    {
+        Debug.Log(this.name + " is touching " + other.name);
+    }
+
+    public void OnTriggerExity(Collider other)
+    {
+        OnTriggerExitX(other);
+    }
+
+    public virtual void OnTriggerExitX(Collider other)
+    {
+        Debug.Log(this.name + " is touching " + other.name);
+    }
+
+    //this happens whenever a hand is near this object
+    public virtual void HandHoverUpdate(Hand hand) //this applies to either controller
+    {
+        //Debug.Log("Hand is holding " + hand.AttachedObjects.Count + " objects.");
+        if (hand.GetStandardInteractionButtonDown() == true) //on Vive controller, this is the trigger
+        {
+            hand.AttachObject(gameObject);
+            hand.HoverLock(interactableObject);
+        }
+    }
+
+    //this happens whenever an object is attached to this hand, for whatever reason
+    public virtual void OnAttachedToHand(Hand attachedHand)
+    {
+        GetComponent<Rigidbody>().isKinematic = true; //turn off the physics, we we can hold it
+    }
+
+    //this is like update, as long as we're holding something
+    public virtual void HandAttachedUpdate(Hand attachedHand)
+    {
+        if (attachedHand.GetStandardInteractionButton() == false)
+        {
+            attachedHand.DetachObject(gameObject);
+            attachedHand.HoverUnlock(interactableObject);
+        }
+    }
+
+    //this happens whent he object is detached from the hand for whatever reason
+    public virtual void OnDetachFromHand(Hand hand)
+    {
+        GetComponent<Rigidbody>().isKinematic = false; //turns on physics
+
+        //apply forces to it, as if we're throwing it
+        GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);
+        GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);
+    }
+
+}

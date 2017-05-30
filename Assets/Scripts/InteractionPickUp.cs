@@ -8,13 +8,13 @@ using Valve.VR.InteractionSystem;
 public class InteractionPickUp : MonoBehaviour {
 
 
-    public Interactable cardDeck; //insert cardDeck in inspector
+    public Interactable interactableObject; //insert cardDeck, or other interactable that you need hoverlocked in inspector
     public GameObject cardPrefab; //insert playingCard prefab in inspector
-    public bool isHoldingCard;
-    public bool isTouchingDeck = false;
+    protected bool isHoldingCard;
+    protected bool isTouchingDeck = false;
 
-    private Hand deckHand;
-    private Hand throwingHand;
+    protected Hand deckHand;
+    protected Hand throwingHand;
 
 
     //adding this in to make it so that I can only instantiate the card if it's colliding with the card deck
@@ -58,16 +58,15 @@ public class InteractionPickUp : MonoBehaviour {
         if (hand.GetStandardInteractionButtonDown() == true) //on Vive controller, this is the trigger
         {
             hand.AttachObject(gameObject);
-            hand.HoverLock(cardDeck);
+            hand.HoverLock(interactableObject);
         }
 
         if (hand.otherHand.GetStandardInteractionButtonDown() == true && isHoldingCard == false && isTouchingDeck == true)
         {
             isHoldingCard = true;
             Debug.Log("Pulling a Card");
-            GameObject playingCard = Instantiate(cardPrefab, cardDeck.transform.position, Quaternion.identity);
+            GameObject playingCard = Instantiate(cardPrefab, interactableObject.transform.position, Quaternion.identity);
             hand.otherHand.AttachObject(playingCard);
-
         }
 
     }
@@ -90,7 +89,7 @@ public class InteractionPickUp : MonoBehaviour {
         if (attachedHand.GetStandardInteractionButton() == false)
         {
             attachedHand.DetachObject(gameObject);
-            attachedHand.HoverUnlock(cardDeck);
+            attachedHand.HoverUnlock(interactableObject);
         }
         if (attachedHand.otherHand.GetStandardInteractionButton() == false)
         {
@@ -106,7 +105,6 @@ public class InteractionPickUp : MonoBehaviour {
         //apply forces to it, as if we're throwing it
         GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);
         GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);
-
     }
 
 }
