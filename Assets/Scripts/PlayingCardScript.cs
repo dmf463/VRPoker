@@ -6,13 +6,18 @@ using Valve.VR.InteractionSystem;
 
 public class PlayingCardScript : InteractionSuperClass {
 
+    const float MAGNITUDE_THRESHOLD = 2.5f;
     Vector3 throwingRotation;
+    float throwingVelocity;
     Quaternion myRotation;
     Rigidbody rb;
-    public float torque;
+    bool startingTorque;
+    public float fastTorque;
+    public float slowTorque;
     public float duration;
     bool startLerping;
     float elapsedTime;
+
 
 
     // Use this for initialization
@@ -25,20 +30,32 @@ public class PlayingCardScript : InteractionSuperClass {
 	// Update is called once per frame
 	void Update () {
         myRotation = transform.rotation;
+        //Debug.Log("rb.velocity.magnitude = " + rb.velocity.magnitude);
         //Debug.Log("torque is " + torque);
         //throwingRotation = transform.eulerAngles;
         //transform.rotation = Quaternion.Euler(0, throwingRotation.y, throwingRotation.z);
-        if(rb.isKinematic == false)
+        //if(checkingVelocity == true)
+        //{
+        //    StartCoroutine(CheckVelocity(.025f));
+        //}
+        if(rb.isKinematic == false && startingTorque == true)
         {
             throwingRotation = transform.eulerAngles;
             transform.rotation = Quaternion.Euler(0, throwingRotation.y, 0);
-            transform.Rotate(Vector3.up * (torque * rb.velocity.magnitude));
+            transform.Rotate(Vector3.up * (fastTorque * throwingVelocity));
+        }
+        else if (rb.isKinematic == false && startingTorque == false)
+        {
+            throwingRotation = transform.eulerAngles;
+            transform.rotation = Quaternion.Euler(0, throwingRotation.y, 0);
+            transform.Rotate(Vector3.up * (slowTorque * throwingVelocity));
         }
 
         if(startLerping == true)
         {
             elapsedTime += Time.deltaTime;
-            torque = Mathf.Lerp(torque, 0, elapsedTime / duration);
+            fastTorque = Mathf.Lerp(fastTorque, 0, elapsedTime / duration);
+            slowTorque = Mathf.Lerp(slowTorque, 0, elapsedTime / duration);
             if (elapsedTime >= duration) startLerping = false;
         }
     }
@@ -77,6 +94,19 @@ public class PlayingCardScript : InteractionSuperClass {
 
     public override void OnDetachedFromHand(Hand hand)
     {
+        StartCoroutine(CheckVelocity(.025f));
         base.OnDetachedFromHand(hand);
+    }
+
+    IEnumerator CheckVelocity(float time)
+    {
+        yield return new WaitForSeconds(time);
+        Debug.Log("rb.velocity.magnitude = " + rb.velocity.magnitude);
+        throwingVelocity = rb.velocity.magnitude;
+        if (rb.velocity.magnitude > MAGNITUDE_THRESHOLD)
+        {
+            startingTorque = true;
+        }
+        //checkingVelocity = false;
     }
 }
