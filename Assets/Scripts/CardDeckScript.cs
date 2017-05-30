@@ -70,6 +70,12 @@ public class CardDeckScript : InteractionSuperClass {
         {
             isHoldingCard = false;
         }
+        Vector2 touch = throwingHand.controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
+        //if (touch.y > 0)
+        //{
+        //    Debug.Log("touching the trackpad up");
+        //    throwingHand.currentAttachedObject.transform.rotation = Quaternion.Euler(0, 90, 0); 
+        //}
     }
 
     public override void OnDetachedFromHand(Hand hand)

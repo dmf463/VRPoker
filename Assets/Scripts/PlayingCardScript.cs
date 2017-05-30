@@ -9,7 +9,6 @@ public class PlayingCardScript : InteractionSuperClass {
     const float MAGNITUDE_THRESHOLD = 2.5f;
     Vector3 throwingRotation;
     float throwingVelocity;
-    Quaternion myRotation;
     Rigidbody rb;
     bool startingTorque;
     public float fastTorque;
@@ -29,15 +28,6 @@ public class PlayingCardScript : InteractionSuperClass {
 	
 	// Update is called once per frame
 	void Update () {
-        myRotation = transform.rotation;
-        //Debug.Log("rb.velocity.magnitude = " + rb.velocity.magnitude);
-        //Debug.Log("torque is " + torque);
-        //throwingRotation = transform.eulerAngles;
-        //transform.rotation = Quaternion.Euler(0, throwingRotation.y, throwingRotation.z);
-        //if(checkingVelocity == true)
-        //{
-        //    StartCoroutine(CheckVelocity(.025f));
-        //}
         if(rb.isKinematic == false && startingTorque == true)
         {
             throwingRotation = transform.eulerAngles;
@@ -107,6 +97,5 @@ public class PlayingCardScript : InteractionSuperClass {
         {
             startingTorque = true;
         }
-        //checkingVelocity = false;
     }
 }
