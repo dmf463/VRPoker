@@ -6,6 +6,15 @@ using Valve.VR.InteractionSystem;
 
 public class CardDeckScript : InteractionSuperClass {
 
+    GameObject cardDeck;
+    Quaternion cardDeckPos;
+
+    void Update()
+    {
+        cardDeck = this.gameObject;
+        cardDeckPos = cardDeck.transform.rotation;
+    }
+
     public override void OnTriggerEnterX(Collider other)
     {
         if(other.gameObject.tag == "Hand")
@@ -44,6 +53,7 @@ public class CardDeckScript : InteractionSuperClass {
 
     public override void OnAttachedToHand(Hand attachedHand)
     {
+        cardDeck.transform.rotation = Quaternion.Euler(0, 90, 0);
         if(attachedHand.currentAttachedObject.tag == "CardDeck")
         {
             Debug.Log("attachedHand = " + attachedHand.name + " and attached to it is " + attachedHand.currentAttachedObject.name);
