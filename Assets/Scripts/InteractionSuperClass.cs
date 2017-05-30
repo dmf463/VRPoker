@@ -63,7 +63,7 @@ public class InteractionSuperClass : MonoBehaviour {
     }
 
     //this happens whent he object is detached from the hand for whatever reason
-    public virtual void OnDetachFromHand(Hand hand)
+    public virtual void OnDetachedFromHand(Hand hand)
     {
         GetComponent<Rigidbody>().isKinematic = false; //turns on physics
 

@@ -6,7 +6,7 @@ public class PlayingCardScript : MonoBehaviour {
 
     Vector3 myRotation;
     Rigidbody rb;
-    public float torque;
+    private float torque = 1;
     public float duration;
     bool startLerping;
     float elapsedTime;

@@ -62,9 +62,9 @@ public class CardDeckScript : InteractionSuperClass {
         }
     }
 
-    public override void OnDetachFromHand(Hand hand)
+    public override void OnDetachedFromHand(Hand hand)
     {
-        base.OnDetachFromHand(hand);
+        base.OnDetachedFromHand(hand);
     }
 
 }
