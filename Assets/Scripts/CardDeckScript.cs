@@ -75,8 +75,6 @@ public class CardDeckScript : InteractionSuperClass {
         {
             isHoldingCard = false;
         }
-        //Vector2 touch = throwingHand.controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
-        //throwingHand.currentAttachedObject.transform.Rotate();
     }
 
     public override void OnDetachedFromHand(Hand hand)
