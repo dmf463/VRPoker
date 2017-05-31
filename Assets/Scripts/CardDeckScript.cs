@@ -13,6 +13,7 @@ public class CardDeckScript : InteractionSuperClass {
     {
         cardDeck = this.gameObject;
         cardDeckPos = cardDeck.transform.rotation;
+        //Debug.Log("isTouchingDeck = " + isTouchingDeck);
     }
 
     public override void OnTriggerEnterX(Collider other)
@@ -22,7 +23,7 @@ public class CardDeckScript : InteractionSuperClass {
             if(other.gameObject.GetComponent<Hand>() == throwingHand)
             {
                 isTouchingDeck = true;
-                Debug.Log("isTouchingDeck = " + isTouchingDeck);
+                //Debug.Log("isTouchingDeck = " + isTouchingDeck);
             }
         }
     }
@@ -34,7 +35,7 @@ public class CardDeckScript : InteractionSuperClass {
             if(other.GetComponent<Hand>() == throwingHand)
             {
                 isTouchingDeck = false;
-                Debug.Log("isTouchingDeck = " + isTouchingDeck);
+                //Debug.Log("isTouchingDeck = " + isTouchingDeck);
             }
         }
     }
@@ -45,7 +46,8 @@ public class CardDeckScript : InteractionSuperClass {
         if(hand.otherHand.GetStandardInteractionButtonDown() == true && isHoldingCard == false && isTouchingDeck == true)
         {
             isHoldingCard = true;
-            Debug.Log("Pulling a Card");
+            isTouchingDeck = false;
+            //Debug.Log("Pulling a Card");
             GameObject playingCard = Instantiate(cardPrefab, interactableObject.transform.position, Quaternion.identity);
             hand.otherHand.AttachObject(playingCard);
         }
@@ -53,12 +55,14 @@ public class CardDeckScript : InteractionSuperClass {
 
     public override void OnAttachedToHand(Hand attachedHand)
     {
+        isTouchingDeck = false;
         cardDeck.transform.rotation = Quaternion.Euler(0, 90, 0);
         if(attachedHand.currentAttachedObject.tag == "CardDeck")
         {
-            Debug.Log("attachedHand = " + attachedHand.name + " and attached to it is " + attachedHand.currentAttachedObject.name);
+            //Debug.Log("attachedHand = " + attachedHand.name + " and attached to it is " + attachedHand.currentAttachedObject.name);
             deckHand = attachedHand;
             throwingHand = attachedHand.otherHand;
+            Debug.Log("deckHand = " + attachedHand.name + " and throwingHand = " + attachedHand.otherHand.name);
         }
         base.OnAttachedToHand(attachedHand);
     }
@@ -71,6 +75,7 @@ public class CardDeckScript : InteractionSuperClass {
             isHoldingCard = false;
         }
         Vector2 touch = throwingHand.controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
+        //throwingHand.currentAttachedObject.transform.rotation = touch.y;
         //if (touch.y > 0)
         //{
         //    Debug.Log("touching the trackpad up");

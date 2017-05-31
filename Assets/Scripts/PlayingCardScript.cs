@@ -91,7 +91,7 @@ public class PlayingCardScript : InteractionSuperClass {
     IEnumerator CheckVelocity(float time)
     {
         yield return new WaitForSeconds(time);
-        Debug.Log("rb.velocity.magnitude = " + rb.velocity.magnitude);
+        //Debug.Log("rb.velocity.magnitude = " + rb.velocity.magnitude);
         throwingVelocity = rb.velocity.magnitude;
         if (rb.velocity.magnitude > MAGNITUDE_THRESHOLD)
         {

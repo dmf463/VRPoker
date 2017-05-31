@@ -22,7 +22,7 @@ public class InteractionSuperClass : MonoBehaviour {
 
     public virtual void OnTriggerEnterX(Collider other)
     {
-        Debug.Log(this.name + " is touching " + other.name);
+        //Debug.Log(this.name + " is touching " + other.name);
     }
 
     public void OnTriggerExit(Collider other)
@@ -32,7 +32,7 @@ public class InteractionSuperClass : MonoBehaviour {
 
     public virtual void OnTriggerExitX(Collider other)
     {
-        Debug.Log(this.name + " is touching " + other.name);
+        //Debug.Log(this.name + " is touching " + other.name);
     }
 
     //this happens whenever a hand is near this object
@@ -65,6 +65,7 @@ public class InteractionSuperClass : MonoBehaviour {
     //this happens whent he object is detached from the hand for whatever reason
     public virtual void OnDetachedFromHand(Hand hand)
     {
+        isTouchingDeck = false;
         GetComponent<Rigidbody>().isKinematic = false; //turns on physics
 
         //apply forces to it, as if we're throwing it
