@@ -53,7 +53,7 @@ public class PlayingCardScript : InteractionSuperClass {
         if(rb.isKinematic == true)
         {
             Vector2 touch = transform.parent.gameObject.GetComponent<Hand>().controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
-            transform.Rotate(Vector3.forward * touch.y * flipSpeed * Time.deltaTime);
+            transform.Rotate(Vector3.forward * Mathf.Clamp01(touch.y) * flipSpeed * Time.deltaTime);
         }
 
     }
