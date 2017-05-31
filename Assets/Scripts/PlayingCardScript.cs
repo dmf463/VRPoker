@@ -18,6 +18,24 @@ public class PlayingCardScript : InteractionSuperClass {
     float elapsedTime;
     public float flipSpeed;
 
+    //VARIABLE FOR CHECKING SWIPE
+    private int messageIndex = 0;
+    private bool trackingSwipe;
+    private bool checkSwipe;
+    private Vector2 startPosition;
+    private Vector2 endPosition;
+    private float swipeStartTime;
+    // To recognize as swipe user should at lease swipe for this many pixels
+    private const float MIN_SWIPE_DIST = .2f;
+    // To recognize as a swipe the velocity of the swipe
+    // should be at least mMinVelocity
+    // Reduce or increase to control the swipe speed
+    private const float MIN_VELOCITY = 3f;
+    private readonly Vector2 xAxis = new Vector2(1, 0);
+    private readonly Vector2 yAxis = new Vector2(0, 1);
+    // The angle range for detecting swipe
+    private const float angleRange = 30;
+
 
 
     // Use this for initialization
@@ -50,10 +68,72 @@ public class PlayingCardScript : InteractionSuperClass {
             if (elapsedTime >= duration) startLerping = false;
         }
 
+        //we want to be able to flip the card if we're holding in it our hands. the only time the card is in our hands is if it's kinematic.
         if(rb.isKinematic == true)
         {
             Vector2 touch = transform.parent.gameObject.GetComponent<Hand>().controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
-            transform.Rotate(Vector3.forward * Mathf.Clamp01(touch.y) * flipSpeed * Time.deltaTime);
+            var device = transform.parent.gameObject.GetComponent<Hand>().controller;
+            if (device.GetTouchDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
+            {
+                //Debug.Log("touching Trackpad");
+                trackingSwipe = true;
+                startPosition = new Vector2(touch.x, touch.y);
+                swipeStartTime = Time.time;
+            }
+            else if (device.GetTouchUp(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
+            {
+                //Debug.Log("not touching trackpad");
+                trackingSwipe = false;
+                trackingSwipe = true;
+                checkSwipe = true;
+                //Debug.Log("Tracking Finish");
+            }
+            else if (trackingSwipe)
+            {
+                endPosition = new Vector2(touch.x, touch.y);
+            }
+            if (checkSwipe)
+            {
+                checkSwipe = false;
+                float deltaTime = Time.time - swipeStartTime;
+                Vector2 swipeVector = endPosition - startPosition;
+                float velocity = swipeVector.magnitude / deltaTime;
+                //Debug.Log("velocity is " + velocity);
+                if(velocity > MIN_VELOCITY && swipeVector.magnitude > MIN_SWIPE_DIST)
+                {
+                    // if the swipe has enough velocity and enough distance
+                    swipeVector.Normalize();
+                    float angleOfSwipe = Vector2.Dot(swipeVector, xAxis);
+                    angleOfSwipe = Mathf.Acos(angleOfSwipe) * Mathf.Rad2Deg;
+                    // Detect left and right swipe
+                    if(angleOfSwipe < angleRange)
+                    {
+                        OnSwipeRight();
+                    }
+                    else if ((180f - angleOfSwipe) < angleRange)
+                    {
+                        OnSwipeLeft();
+                    }
+                    else
+                    {
+                        // Detect top and bottom swipe
+                        angleOfSwipe = Vector2.Dot(swipeVector, yAxis);
+                        angleOfSwipe = Mathf.Acos(angleOfSwipe) * Mathf.Rad2Deg;
+                        if(angleOfSwipe < angleRange)
+                        {
+                            OnSwipeTop();
+                        }
+                        else if((180f - angleOfSwipe) < angleRange)
+                        {
+                            OnSwipeBottom();
+                        }
+                        else
+                        {
+                            messageIndex = 0;
+                        }
+                    }
+                }
+            }
         }
 
     }
@@ -105,5 +185,36 @@ public class PlayingCardScript : InteractionSuperClass {
         {
             startingTorque = true;
         }
+    }
+
+    public void RotateCard()
+    {
+        Vector2 touch = transform.parent.gameObject.GetComponent<Hand>().controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
+        transform.Rotate(Vector3.forward * Mathf.Clamp01(touch.y) * flipSpeed * Time.deltaTime);
+        //Debug.Log("touch.y = " + touch.y);
+    }
+
+    private void OnSwipeLeft()
+    {
+        Debug.Log("Swipe Left");
+        messageIndex = 1;
+    }
+
+    private void OnSwipeRight()
+    {
+        Debug.Log("Swipe right");
+        messageIndex = 2;
+    }
+
+    private void OnSwipeTop()
+    {
+        Debug.Log("Swipe Top");
+        messageIndex = 3;
+    }
+
+    private void OnSwipeBottom()
+    {
+        Debug.Log("Swipe Bottom");
+        messageIndex = 4;
     }
 }
