@@ -16,6 +16,7 @@ public class PlayingCardScript : InteractionSuperClass {
     public float duration;
     bool startLerping;
     float elapsedTime;
+    public float flipSpeed;
 
 
 
@@ -48,6 +49,8 @@ public class PlayingCardScript : InteractionSuperClass {
             slowTorque = Mathf.Lerp(slowTorque, 0, elapsedTime / duration);
             if (elapsedTime >= duration) startLerping = false;
         }
+        Vector3 touch = transform.parent.gameObject.GetComponent<Hand>().controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
+        transform.Rotate(Vector3.Dot(Vector3.up, touch) * flipSpeed * Time.deltaTime);
     }
 
     void OnCollisionEnter(Collision other)

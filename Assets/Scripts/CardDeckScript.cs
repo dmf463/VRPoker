@@ -9,6 +9,7 @@ public class CardDeckScript : InteractionSuperClass {
     GameObject cardDeck;
     Quaternion cardDeckPos;
 
+
     void Update()
     {
         cardDeck = this.gameObject;
@@ -74,13 +75,8 @@ public class CardDeckScript : InteractionSuperClass {
         {
             isHoldingCard = false;
         }
-        Vector2 touch = throwingHand.controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
-        //throwingHand.currentAttachedObject.transform.rotation = touch.y;
-        //if (touch.y > 0)
-        //{
-        //    Debug.Log("touching the trackpad up");
-        //    throwingHand.currentAttachedObject.transform.rotation = Quaternion.Euler(0, 90, 0); 
-        //}
+        //Vector2 touch = throwingHand.controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
+        //throwingHand.currentAttachedObject.transform.Rotate();
     }
 
     public override void OnDetachedFromHand(Hand hand)
