@@ -10,7 +10,8 @@ public class PlayingCardScript : InteractionSuperClass {
     Vector3 throwingRotation;
     float throwingVelocity;
     Rigidbody rb;
-    bool startingTorque;
+    bool startingFastTorque;
+    bool startingSlowTorque;
     public float fastTorque;
     public float slowTorque;
     public float torqueDuration;
@@ -51,7 +52,7 @@ public class PlayingCardScript : InteractionSuperClass {
 	// Update is called once per frame
 	void Update () {
 
-        if(flippingCard == true)
+        if (flippingCard == true)
         {
             Debug.Log("flippingCard!");
             elapsedTimeForCardFlip += Time.deltaTime;
@@ -59,23 +60,23 @@ public class PlayingCardScript : InteractionSuperClass {
             //Quaternion endRotation = startRotation + Quaternion.Euler
             Quaternion myRotation = transform.rotation;
             transform.rotation = Quaternion.Euler(myRotation.eulerAngles.x, myRotation.eulerAngles.y, Mathf.Lerp(myRotation.eulerAngles.z, myRotation.eulerAngles.z + 180, Time.deltaTime * flipSpeed));
-            if(elapsedTimeForCardFlip >= flipDuration) flippingCard = false;
+            if (elapsedTimeForCardFlip >= flipDuration) flippingCard = false;
         }
 
-        if(rb.isKinematic == false && startingTorque == true)
+        if (rb.isKinematic == false && startingFastTorque == true)
         {
             throwingRotation = transform.eulerAngles;
             transform.rotation = Quaternion.Euler(0, throwingRotation.y, 0);
             transform.Rotate(Vector3.up * (fastTorque * throwingVelocity));
         }
-        else if (rb.isKinematic == false && startingTorque == false)
+        else if (rb.isKinematic == false && startingSlowTorque == true)
         {
             throwingRotation = transform.eulerAngles;
             transform.rotation = Quaternion.Euler(0, throwingRotation.y, 0);
             transform.Rotate(Vector3.up * (slowTorque * throwingVelocity));
         }
 
-        if(startLerping == true)
+        if (startLerping == true)
         {
             elapsedTimeForThrowTorque += Time.deltaTime;
             fastTorque = Mathf.Lerp(fastTorque, 0, elapsedTimeForThrowTorque / torqueDuration);
@@ -84,7 +85,7 @@ public class PlayingCardScript : InteractionSuperClass {
         }
 
         //we want to be able to flip the card if we're holding in it our hands. the only time the card is in our hands is if it's kinematic.
-        if(rb.isKinematic == true)
+        if (rb.isKinematic == true)
         {
             Vector2 touch = transform.parent.gameObject.GetComponent<Hand>().controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
             var device = transform.parent.gameObject.GetComponent<Hand>().controller;
@@ -198,7 +199,11 @@ public class PlayingCardScript : InteractionSuperClass {
         throwingVelocity = rb.velocity.magnitude;
         if (rb.velocity.magnitude > MAGNITUDE_THRESHOLD)
         {
-            startingTorque = true;
+            startingFastTorque = true;
+        }
+        else
+        {
+            startingSlowTorque = true;
         }
     }
 
