@@ -13,10 +13,13 @@ public class PlayingCardScript : InteractionSuperClass {
     bool startingTorque;
     public float fastTorque;
     public float slowTorque;
-    public float duration;
+    public float torqueDuration;
     bool startLerping;
-    float elapsedTime;
+    float elapsedTimeForThrowTorque;
+    float elapsedTimeForCardFlip;
     public float flipSpeed;
+    public float flipDuration;
+    bool flippingCard = false;
 
     //VARIABLE FOR CHECKING SWIPE
     private int messageIndex = 0;
@@ -47,6 +50,18 @@ public class PlayingCardScript : InteractionSuperClass {
 	
 	// Update is called once per frame
 	void Update () {
+
+        if(flippingCard == true)
+        {
+            Debug.Log("flippingCard!");
+            elapsedTimeForCardFlip += Time.deltaTime;
+            //Quaternion startRotation = transform.rotation;
+            //Quaternion endRotation = startRotation + Quaternion.Euler
+            Quaternion myRotation = transform.rotation;
+            transform.rotation = Quaternion.Euler(myRotation.eulerAngles.x, myRotation.eulerAngles.y, Mathf.Lerp(myRotation.eulerAngles.z, myRotation.eulerAngles.z + 180, Time.deltaTime * flipSpeed));
+            if(elapsedTimeForCardFlip >= flipDuration) flippingCard = false;
+        }
+
         if(rb.isKinematic == false && startingTorque == true)
         {
             throwingRotation = transform.eulerAngles;
@@ -62,10 +77,10 @@ public class PlayingCardScript : InteractionSuperClass {
 
         if(startLerping == true)
         {
-            elapsedTime += Time.deltaTime;
-            fastTorque = Mathf.Lerp(fastTorque, 0, elapsedTime / duration);
-            slowTorque = Mathf.Lerp(slowTorque, 0, elapsedTime / duration);
-            if (elapsedTime >= duration) startLerping = false;
+            elapsedTimeForThrowTorque += Time.deltaTime;
+            fastTorque = Mathf.Lerp(fastTorque, 0, elapsedTimeForThrowTorque / torqueDuration);
+            slowTorque = Mathf.Lerp(slowTorque, 0, elapsedTimeForThrowTorque / torqueDuration);
+            if (elapsedTimeForThrowTorque >= torqueDuration) startLerping = false;
         }
 
         //we want to be able to flip the card if we're holding in it our hands. the only time the card is in our hands is if it's kinematic.
@@ -141,7 +156,7 @@ public class PlayingCardScript : InteractionSuperClass {
     void OnCollisionEnter(Collision other)
     {
         startLerping = true;
-        elapsedTime = 0;
+        elapsedTimeForThrowTorque = 0;
     }
 
     public override void OnTriggerEnterX(Collider other)
@@ -189,8 +204,9 @@ public class PlayingCardScript : InteractionSuperClass {
 
     public void RotateCard()
     {
-        Vector2 touch = transform.parent.gameObject.GetComponent<Hand>().controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
-        transform.Rotate(Vector3.forward * Mathf.Clamp01(touch.y) * flipSpeed * Time.deltaTime);
+        flippingCard = true;
+        //Vector2 touch = transform.parent.gameObject.GetComponent<Hand>().controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
+        //transform.Rotate(Vector3.forward * Mathf.Clamp01(touch.y) * flipSpeed * Time.deltaTime);
         //Debug.Log("touch.y = " + touch.y);
     }
 
@@ -209,6 +225,7 @@ public class PlayingCardScript : InteractionSuperClass {
     private void OnSwipeTop()
     {
         Debug.Log("Swipe Top");
+        RotateCard();
         messageIndex = 3;
     }
 
