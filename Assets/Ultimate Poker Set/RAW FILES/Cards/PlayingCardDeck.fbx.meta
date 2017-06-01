@@ -267,6 +267,58 @@ ModelImporter:
     4300098: H4
     4300100: H3
     4300102: H2
+    6400000: C10
+    6400002: C2
+    6400004: C3
+    6400006: C4
+    6400008: C5
+    6400010: C6
+    6400012: C7
+    6400014: C8
+    6400016: C9
+    6400018: Cj
+    6400020: Ck
+    6400022: ClubsACE
+    6400024: Cq
+    6400026: D10
+    6400028: D2
+    6400030: D3
+    6400032: D4
+    6400034: D5
+    6400036: D6
+    6400038: D7
+    6400040: D8
+    6400042: D9
+    6400044: DiamondsACE
+    6400046: Dj
+    6400048: Dk
+    6400050: Dq
+    6400052: H10
+    6400054: H2
+    6400056: H3
+    6400058: H4
+    6400060: H5
+    6400062: H6
+    6400064: H7
+    6400066: H8
+    6400068: H9
+    6400070: HeartsACE
+    6400072: Hj
+    6400074: Hk
+    6400076: Hq
+    6400078: S10
+    6400080: S2
+    6400082: S3
+    6400084: S4
+    6400086: S5
+    6400088: S6
+    6400090: S7
+    6400092: S8
+    6400094: S9
+    6400096: Sj
+    6400098: Sk
+    6400100: SpadesACE
+    6400102: Sq
   materials:
     importMaterials: 1
     materialName: 0
@@ -274,9 +326,11 @@ ModelImporter:
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
-    resampleRotations: 1
+    resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -291,7 +345,7 @@ ModelImporter:
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: 0.6
     meshCompression: 0
     addColliders: 0
     importBlendShapes: 1
@@ -313,6 +367,7 @@ ModelImporter:
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
+    serializedVersion: 2
     human: []
     skeleton: []
     armTwist: 0.5
@@ -323,7 +378,10 @@ ModelImporter:
     legStretch: 0.05
     feetSpacing: 0
     rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 0
   humanoidOversampling: 1
