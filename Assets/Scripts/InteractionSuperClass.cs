@@ -10,7 +10,7 @@ public class InteractionSuperClass : MonoBehaviour {
     public GameObject cardPrefab; //insert playingCard prefab in inspector
     protected bool isHoldingCard;
     protected bool isTouchingDeck = false;
-    const float FORCE_MULTIPLIER = 1.20f;
+    const float FORCE_MULTIPLIER = 1.40f;
     protected Hand deckHand;
     protected Hand throwingHand;
 

@@ -62,7 +62,7 @@ public class CardDeckScript : InteractionSuperClass {
     public override void OnAttachedToHand(Hand attachedHand)
     {
         isTouchingDeck = false;
-        cardDeck.transform.rotation = Quaternion.Euler(0, 90, 0);
+        //cardDeck.transform.rotation = Quaternion.Euler(0, 0, 0);
         if(attachedHand.currentAttachedObject.tag == "CardDeck")
         {
             //Debug.Log("attachedHand = " + attachedHand.name + " and attached to it is " + attachedHand.currentAttachedObject.name);

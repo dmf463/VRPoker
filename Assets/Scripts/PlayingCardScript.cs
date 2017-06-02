@@ -59,21 +59,23 @@ public class PlayingCardScript : InteractionSuperClass {
             //Quaternion startRotation = transform.rotation;
             //Quaternion endRotation = startRotation + Quaternion.Euler
             Quaternion myRotation = transform.rotation;
-            transform.rotation = Quaternion.Euler(myRotation.eulerAngles.x, myRotation.eulerAngles.y, Mathf.Lerp(myRotation.eulerAngles.z, myRotation.eulerAngles.z + 180, Time.deltaTime * flipSpeed));
+            //Quaternion newRotation = new Quaternion(myRotation.x + 180, myRotation.y, myRotation.z, myRotation.w);
+            //Quaternion.Lerp(myRotation, newRotation, Time.deltaTime / flipSpeed);
+            transform.rotation = Quaternion.Euler(Mathf.Lerp(myRotation.eulerAngles.x, myRotation.eulerAngles.x + 180, Time.deltaTime * flipSpeed), myRotation.eulerAngles.y, myRotation.eulerAngles.z);
             if (elapsedTimeForCardFlip >= flipDuration) flippingCard = false;
         }
 
         if (rb.isKinematic == false && startingFastTorque == true)
         {
             throwingRotation = transform.eulerAngles;
-            transform.rotation = Quaternion.Euler(0, throwingRotation.y, 0);
-            transform.Rotate(Vector3.up * (fastTorque * throwingVelocity));
+            transform.rotation = Quaternion.Euler(throwingRotation.x, 0, 0);
+            transform.Rotate(Vector3.forward * (fastTorque * throwingVelocity));
         }
         else if (rb.isKinematic == false && startingSlowTorque == true)
         {
             throwingRotation = transform.eulerAngles;
-            transform.rotation = Quaternion.Euler(0, throwingRotation.y, 0);
-            transform.Rotate(Vector3.up * (slowTorque * throwingVelocity));
+            transform.rotation = Quaternion.Euler(throwingRotation.x, 0, 0);
+            transform.Rotate(Vector3.forward * (slowTorque * throwingVelocity));
         }
 
         if (startLerping == true)
@@ -177,7 +179,8 @@ public class PlayingCardScript : InteractionSuperClass {
 
     public override void OnAttachedToHand(Hand attachedHand)
     {
-        transform.rotation = Quaternion.Euler(0, 90, 0);
+        //transform.rotation = Quaternion.Euler(270, 0, 0);
+        transform.rotation = transform.parent.GetComponent<Hand>().GetAttachmentTransform("Attach_ControllerTip").transform.rotation;
         base.OnAttachedToHand(attachedHand);
     }
 
