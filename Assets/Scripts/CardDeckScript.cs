@@ -74,6 +74,8 @@ public class CardDeckScript : InteractionSuperClass {
             transform.localScale = currentCardDeckScale;
             if(playingCardList.Count == 0)
             {
+                deckIsDestroyed = true;
+                hand.HoverUnlock(interactableObject);
                 Destroy(cardDeck);
             }
         }

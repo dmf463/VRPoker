@@ -22,6 +22,8 @@ public class PlayingCardScript : InteractionSuperClass {
     public float flipDuration;
     bool flippingCard = false;
     Quaternion rotationAtFlipStart;
+    Hand hand1;
+    Hand hand2;
 
     //VARIABLE FOR CHECKING SWIPE
     private int messageIndex = 0;
@@ -48,11 +50,25 @@ public class PlayingCardScript : InteractionSuperClass {
 
         elapsedTimeForCardFlip = 0;
         rb = GetComponent<Rigidbody>();
+        hand1 = GameObject.Find("Hand1").GetComponent<Hand>();
+        hand2 = GameObject.Find("Hand2").GetComponent<Hand>();
 
 	}
 	
 	// Update is called once per frame
 	void Update () {
+        //Debug.Log(deckIsDestroyed);
+        if (deckIsDestroyed == true && hand1.GetStandardInteractionButton() == true && hand1.GetStandardInteractionButton() == true)
+        {
+            rb.isKinematic = true;
+            float speed = 2f;
+            float step = speed * Time.deltaTime;
+            transform.position = Vector3.MoveTowards(transform.position, hand1.transform.position, step);
+            if(transform.position == hand1.transform.position)
+            {
+                rb.isKinematic = false;
+            }
+        }
 
         if (flippingCard == true)
         {
@@ -92,7 +108,7 @@ public class PlayingCardScript : InteractionSuperClass {
         }
 
         //we want to be able to flip the card if we're holding in it our hands. the only time the card is in our hands is if it's kinematic.
-        if (rb.isKinematic == true)
+        if (rb.isKinematic == true && deckIsDestroyed == false)
         {
             Vector2 touch = transform.parent.gameObject.GetComponent<Hand>().controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
             var device = transform.parent.gameObject.GetComponent<Hand>().controller;
@@ -169,6 +185,13 @@ public class PlayingCardScript : InteractionSuperClass {
 
     public override void OnTriggerEnterX(Collider other)
     {
+        if (deckIsDestroyed == true)
+        {
+            if (other.gameObject.tag == "Hand")
+            {
+                Destroy(gameObject);
+            }
+        }
         base.OnTriggerEnterX(other);
     }
 
@@ -179,6 +202,7 @@ public class PlayingCardScript : InteractionSuperClass {
 
     public override void HandHoverUpdate(Hand hand)
     {
+
         base.HandHoverUpdate(hand);
     }
 

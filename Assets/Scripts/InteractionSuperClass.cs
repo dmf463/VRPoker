@@ -13,6 +13,7 @@ public class InteractionSuperClass : MonoBehaviour {
     const float FORCE_MULTIPLIER = 1.80f;
     protected Hand deckHand;
     protected Hand throwingHand;
+    protected static bool deckIsDestroyed = false;
 
     //in the trigger enters and exits, I want to make sure that I'm colliding with the right thing, and also making it so that I can only instantiate a cards if I'm touching the deck of cards.
     public void OnTriggerEnter(Collider other)
