@@ -18,9 +18,10 @@ public class PlayingCardScript : InteractionSuperClass {
     bool startLerping;
     float elapsedTimeForThrowTorque;
     float elapsedTimeForCardFlip;
-    public float flipSpeed;
+    //public float flipSpeed;
     public float flipDuration;
     bool flippingCard = false;
+    Quaternion rotationAtFlipStart;
 
     //VARIABLE FOR CHECKING SWIPE
     private int messageIndex = 0;
@@ -45,6 +46,7 @@ public class PlayingCardScript : InteractionSuperClass {
     // Use this for initialization
     void Start () {
 
+        elapsedTimeForCardFlip = 0;
         rb = GetComponent<Rigidbody>();
 
 	}
@@ -58,10 +60,9 @@ public class PlayingCardScript : InteractionSuperClass {
             elapsedTimeForCardFlip += Time.deltaTime;
             //Quaternion startRotation = transform.rotation;
             //Quaternion endRotation = startRotation + Quaternion.Euler
-            Quaternion myRotation = transform.rotation;
             //Quaternion newRotation = new Quaternion(myRotation.x + 180, myRotation.y, myRotation.z, myRotation.w);
             //Quaternion.Lerp(myRotation, newRotation, Time.deltaTime / flipSpeed);
-            transform.rotation = Quaternion.Euler(Mathf.Lerp(myRotation.eulerAngles.x, myRotation.eulerAngles.x + 180, Time.deltaTime * flipSpeed), myRotation.eulerAngles.y, myRotation.eulerAngles.z);
+            transform.localRotation = Quaternion.Euler(Mathf.Lerp(rotationAtFlipStart.eulerAngles.x, rotationAtFlipStart.eulerAngles.x + 180, elapsedTimeForCardFlip / flipDuration), rotationAtFlipStart.eulerAngles.y, rotationAtFlipStart.eulerAngles.z);
             if (elapsedTimeForCardFlip >= flipDuration) flippingCard = false;
         }
 
@@ -213,6 +214,7 @@ public class PlayingCardScript : InteractionSuperClass {
     public void RotateCard()
     {
         flippingCard = true;
+        rotationAtFlipStart = transform.localRotation;
         //Vector2 touch = transform.parent.gameObject.GetComponent<Hand>().controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
         //transform.Rotate(Vector3.forward * Mathf.Clamp01(touch.y) * flipSpeed * Time.deltaTime);
         //Debug.Log("touch.y = " + touch.y);
