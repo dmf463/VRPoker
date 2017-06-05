@@ -9,6 +9,16 @@ public class CardDeckScript : InteractionSuperClass {
     GameObject cardDeck;
     Quaternion cardDeckPos;
     public List<GameObject> playingCardList = new List<GameObject>();
+    Vector3 newCardDeckScale;
+    Vector3 currentCardDeckScale;
+    Vector3 decreaseCardDeckBy;
+
+    void Start()
+    {
+        newCardDeckScale = transform.localScale;
+        decreaseCardDeckBy = new Vector3 (newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
+        currentCardDeckScale = newCardDeckScale;
+    }
 
 
     void Update()
@@ -56,11 +66,16 @@ public class CardDeckScript : InteractionSuperClass {
             //GameObject playingCard = Instantiate(cardPrefab, interactableObject.transform.position, Quaternion.identity);
             GameObject playingCard = Instantiate(playingCardList[cardPos], interactableObject.transform.position, Quaternion.identity);
             playingCardList.Remove(playingCardList[cardPos]);
-            playingCard.AddComponent<Rigidbody>();
             playingCard.GetComponent<BoxCollider>().enabled = true;
             playingCard.GetComponent<PlayingCardScript>().enabled = true;
             hand.otherHand.AttachObject(playingCard);
 
+            currentCardDeckScale.y = currentCardDeckScale.y - decreaseCardDeckBy.y;
+            transform.localScale = currentCardDeckScale;
+            if(playingCardList.Count == 0)
+            {
+                Destroy(cardDeck);
+            }
         }
     }
 
