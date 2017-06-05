@@ -63,19 +63,23 @@ public class PlayingCardScript : InteractionSuperClass {
             //Quaternion newRotation = new Quaternion(myRotation.x + 180, myRotation.y, myRotation.z, myRotation.w);
             //Quaternion.Lerp(myRotation, newRotation, Time.deltaTime / flipSpeed);
             transform.localRotation = Quaternion.Euler(Mathf.Lerp(rotationAtFlipStart.eulerAngles.x, rotationAtFlipStart.eulerAngles.x + 180, elapsedTimeForCardFlip / flipDuration), rotationAtFlipStart.eulerAngles.y, rotationAtFlipStart.eulerAngles.z);
-            if (elapsedTimeForCardFlip >= flipDuration) flippingCard = false;
+            if (elapsedTimeForCardFlip >= flipDuration)  flippingCard = false;
         }
 
         if (rb.isKinematic == false && startingFastTorque == true)
         {
-            throwingRotation = transform.eulerAngles;
-            transform.rotation = Quaternion.Euler(throwingRotation.x, 0, 0);
+            //throwingRotation = transform.eulerAngles;
+            //transform.rotation = Quaternion.Euler(throwingRotation.x, 0, 0);
+            //rb.AddForce(Vector3.up * 1);
+            rb.AddForce(Vector3.down * 5);
             transform.Rotate(Vector3.forward * (fastTorque * throwingVelocity));
         }
         else if (rb.isKinematic == false && startingSlowTorque == true)
         {
-            throwingRotation = transform.eulerAngles;
-            transform.rotation = Quaternion.Euler(throwingRotation.x, 0, 0);
+            //throwingRotation = transform.eulerAngles;
+            //transform.rotation = Quaternion.Euler(throwingRotation.x, 0, 0);
+            //rb.AddForce(Vector3.up * 1);
+            rb.AddForce(Vector3.down * 5);
             transform.Rotate(Vector3.forward * (slowTorque * throwingVelocity));
         }
 
