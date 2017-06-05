@@ -8,6 +8,7 @@ public class CardDeckScript : InteractionSuperClass {
 
     GameObject cardDeck;
     Quaternion cardDeckPos;
+    public List<GameObject> playingCardList = new List<GameObject>();
 
 
     void Update()
@@ -45,17 +46,21 @@ public class CardDeckScript : InteractionSuperClass {
     public override void HandHoverUpdate(Hand hand)
     {
         base.HandHoverUpdate(hand);
-        if(hand.otherHand.GetStandardInteractionButtonDown() == true && isHoldingCard == false && isTouchingDeck == true)
+        if(hand.otherHand.GetStandardInteractionButtonDown() == true && isHoldingCard == false && isTouchingDeck == true && playingCardList.Count != 0)
         {
             isHoldingCard = true;
             isTouchingDeck = false;
+            int cardPos = Random.Range(0, playingCardList.Count);
             //Debug.Log("Pulling a Card");
             //GameObject playingCard = Instantiate(transform.GetChild(GetCardFromDeck()).gameObject, interactableObject.transform.position, Quaternion.identity);
-            GameObject playingCard = Instantiate(cardPrefab, interactableObject.transform.position, Quaternion.identity);
-            //playingCard.AddComponent<Rigidbody>();
-            //playingCard.AddComponent<BoxCollider>();
-            //playingCard.GetComponent<PlayingCardScript>().enabled = true;
+            //GameObject playingCard = Instantiate(cardPrefab, interactableObject.transform.position, Quaternion.identity);
+            GameObject playingCard = Instantiate(playingCardList[cardPos], interactableObject.transform.position, Quaternion.identity);
+            playingCardList.Remove(playingCardList[cardPos]);
+            playingCard.AddComponent<Rigidbody>();
+            playingCard.GetComponent<BoxCollider>().enabled = true;
+            playingCard.GetComponent<PlayingCardScript>().enabled = true;
             hand.otherHand.AttachObject(playingCard);
+
         }
     }
 
@@ -87,10 +92,10 @@ public class CardDeckScript : InteractionSuperClass {
         base.OnDetachedFromHand(hand);
     }
 
-    public int GetCardFromDeck()
-    {
-        int cardPos = Random.Range(0, 52);
-        return cardPos;
-    }
+    //public int GetCardFromDeck()
+    //{
+    //    int cardPos = Random.Range(0, 52);
+    //    return cardPos;
+    //}
 
 }
