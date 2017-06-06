@@ -13,8 +13,8 @@ public class CardDeckScript : InteractionSuperClass {
     Vector3 currentCardDeckScale;
     Vector3 decreaseCardDeckBy;
     static bool deckGotThrown = false;
-    float explosionPower = 30;
-    float explosionRadius = 30;
+    float explosionPower = 300;
+    float explosionRadius = 300;
 
     void Start()
     {
@@ -120,7 +120,7 @@ public class CardDeckScript : InteractionSuperClass {
         if (deckGotThrown == true)
         {
             int playingCardListCount = playingCardList.Count;
-            for (int i = 0; i < playingCardListCount; i++)
+            for (int i = playingCardListCount - 1; i >= 0; i--)
             {
                 Debug.Log("i = " + i);
                 GameObject playingCard = Instantiate(playingCardList[i], cardDeck.transform.position, Quaternion.identity);
