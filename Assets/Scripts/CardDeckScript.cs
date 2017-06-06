@@ -119,7 +119,8 @@ public class CardDeckScript : InteractionSuperClass {
         if (hand.GetTrackedObjectVelocity().magnitude > 1) deckGotThrown = true;
         if (deckGotThrown == true)
         {
-            for (int i = 0; i < playingCardList.Count; i++)
+            int playingCardListCount = playingCardList.Count;
+            for (int i = 0; i < playingCardListCount; i++)
             {
                 Debug.Log("i = " + i);
                 GameObject playingCard = Instantiate(playingCardList[i], cardDeck.transform.position, Quaternion.identity);
