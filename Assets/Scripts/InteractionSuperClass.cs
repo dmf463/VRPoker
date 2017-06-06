@@ -15,7 +15,6 @@ public class InteractionSuperClass : MonoBehaviour {
     protected Hand throwingHand;
     protected static bool deckIsDestroyed = false;
     protected static bool instantiatingDeck = false;
-    protected static bool deckExists = false;
     protected static bool growingDeck = false;
 
     //in the trigger enters and exits, I want to make sure that I'm colliding with the right thing, and also making it so that I can only instantiate a cards if I'm touching the deck of cards.

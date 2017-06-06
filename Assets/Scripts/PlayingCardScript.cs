@@ -28,6 +28,25 @@ public class PlayingCardScript : InteractionSuperClass {
     Vector3 newCardDeckScale;
     Vector3 currentCardDeckScale;
     Vector3 increaseCardDeckBy;
+    bool badThrow;
+    float badThrowSpeed;
+    ConstantForce constForce;
+
+    //VARIABLES TO CHECK ANGULAR_VELOCITY SO I CAN ADD RANDOM TORQUES IF SOMEONE THROWS LIKE AN IDIOT
+    //holds the previous frames rotation
+    //Quaternion lastRotation;
+    ////references to the relevant axis angle variables
+    //float magnitude;
+    //Vector3 axis;
+    //public Vector3 angularVelocity;
+    //{
+    //    get
+    //    {
+    //        //DIVIDED by Time.deltaTime to give you the degrees of rotation per axis per second
+    //        return (axis * magnitude) / Time.deltaTime;
+    //    }
+    //}
+    Vector3 angularVelocity;
 
     //VARIABLE FOR CHECKING SWIPE
     private int messageIndex = 0;
@@ -48,41 +67,64 @@ public class PlayingCardScript : InteractionSuperClass {
     private const float angleRange = 30;
 
 
-
     // Use this for initialization
     void Start () {
 
         elapsedTimeForCardFlip = 0;
+        badThrowSpeed = 0;
         rb = GetComponent<Rigidbody>();
+        constForce = GetComponent<ConstantForce>();
         hand1 = GameObject.Find("Hand1").GetComponent<Hand>();
         hand2 = GameObject.Find("Hand2").GetComponent<Hand>();
+        //lastRotation = transform.rotation;
 
 	}
 	
-	// Update is called once per frame
-	void Update () {
+    //void FixedUpdate()
+    //{
+    //    //doing the math for rotation
+    //    var deltaRot = transform.rotation * Quaternion.Inverse(lastRotation);
+    //    var eulerRot = new Vector3(Mathf.DeltaAngle(0, deltaRot.eulerAngles.x), Mathf.DeltaAngle(0, deltaRot.eulerAngles.y), Mathf.DeltaAngle(0, deltaRot.eulerAngles.z));
+    //    angularVelocity = eulerRot / Time.deltaTime;
+    //    Debug.Log(angularVelocity);
+    //}
+
+    // Update is called once per frame
+    void Update () {
+        //Debug.Log(rb.transform.rotation);
         //Debug.Log(deckIsDestroyed);
         if (deckIsDestroyed == true && hand1.GetStandardInteractionButton() == true && hand1.GetStandardInteractionButton() == true)
         {
-            rb.isKinematic = true;
-            float speed = 1f;
-            float step = speed * Time.deltaTime;
-            transform.position = Vector3.MoveTowards(transform.position, hand1.transform.position, step);
-            if(transform.position == hand1.transform.position)
-            {
-                rb.isKinematic = false;
-            }
+            instantiatingDeck = true;
+            //rb.isKinematic = true;
+            //float speed = 1f;
+            //float step = speed * Time.deltaTime;
+            //transform.position = Vector3.MoveTowards(transform.position, hand1.transform.position, step);
+            //if(transform.position == hand1.transform.position)
+            //{
+            //    rb.isKinematic = false;
+            //}
         }
 
-        if (instantiatingDeck == true && deckExists == false)
+        if (instantiatingDeck == true)
         {
+            GameObject[] oldCards = GameObject.FindGameObjectsWithTag("PlayingCard");
+            foreach (GameObject deadCard in oldCards)
+            {
+                Destroy(deadCard);
+            }
+            Destroy(GameObject.Find("PlayingCardDeck"));
             newCardDeck = Instantiate(Resources.Load("Prefabs/PlayingCardDeck"), hand1.transform.position, Quaternion.identity) as GameObject;
-            newCardDeck.transform.localScale = new Vector3(newCardDeck.transform.localScale.x, newCardDeck.transform.localScale.y / 52, newCardDeck.transform.localScale.z);
-            newCardDeckScale = newCardDeck.transform.localScale;
-            increaseCardDeckBy = new Vector3(newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
+            //newCardDeckScale = newCardDeck.transform.localScale;
+            //increaseCardDeckBy = new Vector3(newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
+            //newCardDeck.transform.localScale = new Vector3(newCardDeck.transform.localScale.x, newCardDeck.transform.localScale.y / 52, newCardDeck.transform.localScale.z);
+            //currentCardDeckScale = newCardDeck.transform.localScale;
+
+            instantiatingDeck = false;
+            deckIsDestroyed = false;
             hand1.AttachObject(newCardDeck);
-            deckExists = true;
-        } 
+
+        }
 
         if (flippingCard == true)
         {
@@ -94,6 +136,20 @@ public class PlayingCardScript : InteractionSuperClass {
             //Quaternion.Lerp(myRotation, newRotation, Time.deltaTime / flipSpeed);
             transform.localRotation = Quaternion.Euler(Mathf.Lerp(rotationAtFlipStart.eulerAngles.x, rotationAtFlipStart.eulerAngles.x + 180, elapsedTimeForCardFlip / flipDuration), rotationAtFlipStart.eulerAngles.y, rotationAtFlipStart.eulerAngles.z);
             if (elapsedTimeForCardFlip >= flipDuration)  flippingCard = false;
+        }
+
+        if(rb.isKinematic == false && badThrow == true)
+        {
+            badThrowSpeed += Time.deltaTime;
+            constForce.enabled = true;
+            rb.drag = 7;
+            Vector3 torque;
+            torque.x = Random.Range(-200, 200);
+            torque.y = Random.Range(-200, 200);
+            torque.z = Random.Range(-200, 200);
+            constForce.torque = torque;
+            transform.rotation = Random.rotation;
+            
         }
 
         if (rb.isKinematic == false && startingFastTorque == true)
@@ -195,22 +251,31 @@ public class PlayingCardScript : InteractionSuperClass {
     {
         startLerping = true;
         elapsedTimeForThrowTorque = 0;
+        if(badThrow == true)
+        {
+            constForce.enabled = false;
+            badThrow = false;
+        }
     }
 
     public override void OnTriggerEnterX(Collider other)
     {
-        if (deckIsDestroyed == true)
-        {
-            if (other.gameObject.tag == "Hand")
-            {
-                Destroy(gameObject);
-                instantiatingDeck = true;
-                //if(instantiatingDeck == true)
-                //{
-                    
-                //} 
-            }
-        }
+        //if (deckIsDestroyed == true)
+        //{
+        //    if (other.gameObject.tag == "Hand")
+        //    {
+        //        Destroy(gameObject);
+        //        instantiatingDeck = true;
+        //        deckIsDestroyed = false;
+        //        if (deckExists == true)
+        //        {
+        //            //currentCardDeckScale.y = currentCardDeckScale.y + increaseCardDeckBy.y;
+        //            //Debug.Log("currentCardDeckScale = " + currentCardDeckScale);
+        //            //Debug.Log("newCardDeck.transform.localScale = " + newCardDeck.transform.localScale);
+        //            //newCardDeck.transform.localScale = currentCardDeckScale;
+        //        }
+        //    }
+        //}
         base.OnTriggerEnterX(other);
     }
 
@@ -234,11 +299,20 @@ public class PlayingCardScript : InteractionSuperClass {
 
     public override void HandAttachedUpdate(Hand attachedHand)
     {
+        //Debug.Log("angularVelocity for the card is " + rb.angularVelocity);
+        angularVelocity = attachedHand.GetTrackedObjectVelocity();
         base.HandAttachedUpdate(attachedHand);
     }
 
     public override void OnDetachedFromHand(Hand hand)
     {
+        if (rb.transform.rotation.y > 0 || rb.transform.rotation.w > 0.4f || rb.transform.rotation.w < -0.4f)
+        {
+            Debug.Log(this.gameObject.name + " card is facing the wrong way");
+            badThrow = true;
+
+        }
+        //Debug.Log("playingCardRotation = " + transform.localRotation);
         StartCoroutine(CheckVelocity(.025f));
         base.OnDetachedFromHand(hand);
     }
