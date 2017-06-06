@@ -13,8 +13,8 @@ public class CardDeckScript : InteractionSuperClass {
     Vector3 currentCardDeckScale;
     Vector3 decreaseCardDeckBy;
     static bool deckGotThrown = false;
-    float explosionPower = 300;
-    float explosionRadius = 300;
+    float explosionPower = 1;
+    float explosionRadius = 30;
 
     void Start()
     {
@@ -119,16 +119,29 @@ public class CardDeckScript : InteractionSuperClass {
         if (hand.GetTrackedObjectVelocity().magnitude > 1) deckGotThrown = true;
         if (deckGotThrown == true)
         {
-            int playingCardListCount = playingCardList.Count;
+            //int playingCardListCount = playingCardList.Count;
+            //for (int i = playingCardListCount - 1; i >= 0; i--)
+            //{
+            //    Debug.Log("i = " + i);
+            //    GameObject playingCard = Instantiate(playingCardList[i], cardDeck.transform.position, Quaternion.identity);
+            //    playingCardList.Remove(playingCardList[i]);
+            //    playingCard.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);
+            //    //playingCard.GetComponent<Rigidbody>().AddForce(Vector3.up * 5);
+            //    playingCard.GetComponent<Rigidbody>().AddExplosionForce(explosionPower, playingCard.transform.position, explosionRadius);
+            //    Debug.Log("got to the end of the loop");
+            //}
+            int playingCardListCount = cardDeck.transform.childCount;
             for (int i = playingCardListCount - 1; i >= 0; i--)
             {
-                Debug.Log("i = " + i);
-                GameObject playingCard = Instantiate(playingCardList[i], cardDeck.transform.position, Quaternion.identity);
-                playingCardList.Remove(playingCardList[i]);
+                GameObject playingCard = cardDeck.transform.GetChild(i).gameObject;
+                playingCard.transform.parent = null;
+                playingCard.GetComponent<BoxCollider>().enabled = true;
+                playingCard.AddComponent<Rigidbody>();
+                playingCard.GetComponent<PlayingCardScript>().enabled = true;
                 playingCard.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);
-                //playingCard.GetComponent<Rigidbody>().AddForce(Vector3.up * 5);
-                playingCard.GetComponent<Rigidbody>().AddExplosionForce(explosionPower, playingCard.transform.position, explosionRadius);
-                Debug.Log("got to the end of the loop");
+                playingCard.GetComponent<Rigidbody>().AddExplosionForce(explosionPower, playingCard.transform.position, explosionRadius, 0, ForceMode.Impulse);
+                playingCard.GetComponent<Rigidbody>().AddForce(Vector3.down * 5);
+                if (i == 52) Destroy(cardDeck);
             }
         }
         base.OnDetachedFromHand(hand);
