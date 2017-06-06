@@ -12,6 +12,9 @@ public class CardDeckScript : InteractionSuperClass {
     Vector3 newCardDeckScale;
     Vector3 currentCardDeckScale;
     Vector3 decreaseCardDeckBy;
+    static bool deckGotThrown = false;
+    float explosionPower = 30;
+    float explosionRadius = 30;
 
     void Start()
     {
@@ -23,10 +26,16 @@ public class CardDeckScript : InteractionSuperClass {
 
     void Update()
     {
+        //Debug.Log("deckGotThrown is " + deckGotThrown);
         //Debug.Log("cardDeck has this many children (SHOULD BE 52) : " + transform.childCount);
         //Debug.Log("first card in the deck is: " + transform.GetChild(0).name);
         cardDeck = this.gameObject;
         cardDeckPos = cardDeck.transform.rotation;
+        if (playingCardList.Count == 0)
+        {
+            deckIsDestroyed = true;
+            Destroy(cardDeck);
+        }
     }
 
     public override void OnTriggerEnterX(Collider other)
@@ -106,6 +115,21 @@ public class CardDeckScript : InteractionSuperClass {
 
     public override void OnDetachedFromHand(Hand hand)
     {
+        Debug.Log("there are " + playingCardList.Count + " cards in the deck");
+        if (hand.GetTrackedObjectVelocity().magnitude > 1) deckGotThrown = true;
+        if (deckGotThrown == true)
+        {
+            for (int i = 0; i < playingCardList.Count; i++)
+            {
+                Debug.Log("i = " + i);
+                GameObject playingCard = Instantiate(playingCardList[i], cardDeck.transform.position, Quaternion.identity);
+                playingCardList.Remove(playingCardList[i]);
+                playingCard.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);
+                //playingCard.GetComponent<Rigidbody>().AddForce(Vector3.up * 5);
+                playingCard.GetComponent<Rigidbody>().AddExplosionForce(explosionPower, playingCard.transform.position, explosionRadius);
+                Debug.Log("got to the end of the loop");
+            }
+        }
         base.OnDetachedFromHand(hand);
     }
 

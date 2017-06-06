@@ -24,6 +24,10 @@ public class PlayingCardScript : InteractionSuperClass {
     Quaternion rotationAtFlipStart;
     Hand hand1;
     Hand hand2;
+    GameObject newCardDeck;
+    Vector3 newCardDeckScale;
+    Vector3 currentCardDeckScale;
+    Vector3 increaseCardDeckBy;
 
     //VARIABLE FOR CHECKING SWIPE
     private int messageIndex = 0;
@@ -61,7 +65,7 @@ public class PlayingCardScript : InteractionSuperClass {
         if (deckIsDestroyed == true && hand1.GetStandardInteractionButton() == true && hand1.GetStandardInteractionButton() == true)
         {
             rb.isKinematic = true;
-            float speed = 2f;
+            float speed = 1f;
             float step = speed * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, hand1.transform.position, step);
             if(transform.position == hand1.transform.position)
@@ -69,6 +73,16 @@ public class PlayingCardScript : InteractionSuperClass {
                 rb.isKinematic = false;
             }
         }
+
+        if (instantiatingDeck == true && deckExists == false)
+        {
+            newCardDeck = Instantiate(Resources.Load("Prefabs/PlayingCardDeck"), hand1.transform.position, Quaternion.identity) as GameObject;
+            newCardDeck.transform.localScale = new Vector3(newCardDeck.transform.localScale.x, newCardDeck.transform.localScale.y / 52, newCardDeck.transform.localScale.z);
+            newCardDeckScale = newCardDeck.transform.localScale;
+            increaseCardDeckBy = new Vector3(newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
+            hand1.AttachObject(newCardDeck);
+            deckExists = true;
+        } 
 
         if (flippingCard == true)
         {
@@ -190,6 +204,11 @@ public class PlayingCardScript : InteractionSuperClass {
             if (other.gameObject.tag == "Hand")
             {
                 Destroy(gameObject);
+                instantiatingDeck = true;
+                //if(instantiatingDeck == true)
+                //{
+                    
+                //} 
             }
         }
         base.OnTriggerEnterX(other);
