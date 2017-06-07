@@ -61,7 +61,6 @@ public class InteractionSuperClass : MonoBehaviour {
         if (attachedHand.GetStandardInteractionButton() == false)
         {
             attachedHand.DetachObject(gameObject);
-            attachedHand.HoverUnlock(interactableObject);
         }
     }
 
@@ -70,6 +69,7 @@ public class InteractionSuperClass : MonoBehaviour {
     {
         isTouchingDeck = false;
         GetComponent<Rigidbody>().isKinematic = false; //turns on physics
+        hand.HoverUnlock(interactableObject);
 
         //apply forces to it, as if we're throwing it
         GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity() * FORCE_MULTIPLIER, ForceMode.Impulse);
