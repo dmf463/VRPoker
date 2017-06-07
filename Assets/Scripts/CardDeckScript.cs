@@ -121,7 +121,7 @@ public class CardDeckScript : InteractionSuperClass {
         if (deckGotThrown == true)
         {
             deckGotThrown = false;
-            int playingCardListCount = cardDeck.transform.childCount;
+            int playingCardListCount = playingCardList.Count;
             for (int i = playingCardListCount - 1; i >= 0; i--)
             {
                 Debug.Log(i);
@@ -141,7 +141,7 @@ public class CardDeckScript : InteractionSuperClass {
                 {
                     deckIsDestroyed = true;
                     thrownDeck = true;
-                    //Destroy(cardDeck);
+
                 }
             }
         }

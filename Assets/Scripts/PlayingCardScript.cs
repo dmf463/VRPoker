@@ -59,7 +59,7 @@ public class PlayingCardScript : InteractionSuperClass {
 
     void Awake()
     {
-        Debug.Log("rb is called on awake at " + Time.time);
+        //Debug.Log("rb is called on awake at " + Time.time);
     }
 
     // Use this for initialization
@@ -81,7 +81,7 @@ public class PlayingCardScript : InteractionSuperClass {
 
         //Debug.Log("rb = " + rb);
 
-        if (deckIsDestroyed == true && hand1.GetStandardInteractionButton() == true && hand1.GetStandardInteractionButton() == true)
+        if (deckIsDestroyed == true && deckHand.GetStandardInteractionButton() == true && throwingHand.GetStandardInteractionButton() == true)
         {
             instantiatingDeck = true;
         }
@@ -138,12 +138,13 @@ public class PlayingCardScript : InteractionSuperClass {
 
         if (rb.isKinematic == false && badThrow == true && deckScript.thrownDeck == true)
         {
+            float dragAmount = rb.drag;
             Debug.Log("Calling bad throw");
             startingFastTorque = false;
             startingSlowTorque = false;
             //startBadThrowLerp = true;
-            rb.drag = 0;
-            rb.AddForce(Random.Range(0, 1), Random.Range(0, 1), Random.Range(0, 1));
+            dragAmount = 10;
+            rb.AddForce(Random.Range(0, 2), Random.Range(0, 2), Random.Range(0, 2));
             gameObject.GetComponent<ConstantForce>().enabled = true;
             Vector3 torque;
             torque.x = Random.Range(-200, 200);
