@@ -187,8 +187,10 @@ public class PlayingCardScript : InteractionSuperClass {
         //we want to be able to flip the card if we're holding in it our hands. the only time the card is in our hands is if it's kinematic.
         if (rb.isKinematic == true && deckIsDestroyed == false)
         {
-            Vector2 touch = transform.parent.gameObject.GetComponent<Hand>().controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
-            var device = transform.parent.gameObject.GetComponent<Hand>().controller;
+            //Vector2 touch = transform.parent.gameObject.GetComponent<Hand>().controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
+            Vector2 touch = throwingHand.controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
+            //var device = transform.parent.gameObject.GetComponent<Hand>().controller;
+            var device = throwingHand.GetComponent<Hand>().controller;
             if (device.GetTouchDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
             {
                 //Debug.Log("touching Trackpad");
@@ -284,7 +286,7 @@ public class PlayingCardScript : InteractionSuperClass {
 
     public override void OnAttachedToHand(Hand attachedHand)
     {
-        transform.rotation = transform.parent.GetComponent<Hand>().GetAttachmentTransform("Attach_ControllerTip").transform.rotation;
+        transform.rotation = throwingHand.GetAttachmentTransform("Attach_ControllerTip").transform.rotation;
         base.OnAttachedToHand(attachedHand);
     }
 
