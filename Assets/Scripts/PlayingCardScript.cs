@@ -94,7 +94,8 @@ public class PlayingCardScript : InteractionSuperClass {
                 Destroy(deadCard);
             }
             deckScript.thrownDeck = false;
-            Destroy(GameObject.Find("PlayingCardDeck"));
+            Destroy(GameObject.FindGameObjectWithTag("CardDeck"));
+            deckScript.thrownDeck = false;
             newCardDeck = Instantiate(Resources.Load("Prefabs/PlayingCardDeck"), hand1.transform.position, Quaternion.identity) as GameObject;
 
             instantiatingDeck = false;
