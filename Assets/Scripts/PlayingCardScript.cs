@@ -29,7 +29,11 @@ public class PlayingCardScript : InteractionSuperClass {
     Vector3 currentCardDeckScale;
     Vector3 increaseCardDeckBy;
     bool badThrow;
-    float badThrowSpeed;
+    float elapsedTimeForBadDrag;
+    float startDrag;
+    float endDrag;
+    float badThrowDuration = .25f;
+    bool startBadThrowLerp;
     ConstantForce constForce;
 
     //VARIABLES TO CHECK ANGULAR_VELOCITY SO I CAN ADD RANDOM TORQUES IF SOMEONE THROWS LIKE AN IDIOT
@@ -71,7 +75,7 @@ public class PlayingCardScript : InteractionSuperClass {
     void Start () {
 
         elapsedTimeForCardFlip = 0;
-        badThrowSpeed = 0;
+        elapsedTimeForBadDrag = 0;
         rb = GetComponent<Rigidbody>();
         constForce = GetComponent<ConstantForce>();
         hand1 = GameObject.Find("Hand1").GetComponent<Hand>();
@@ -140,17 +144,30 @@ public class PlayingCardScript : InteractionSuperClass {
 
         if(rb.isKinematic == false && badThrow == true)
         {
-            badThrowSpeed += Time.deltaTime;
-            constForce.enabled = true;
+            startingFastTorque = false;
+            startingSlowTorque = false;
+            //startBadThrowLerp = true;
             rb.drag = 7;
+            rb.AddForce(Random.Range(0, 2), Random.Range(0, 2), Random.Range(0, 2));
+            constForce.enabled = true;
             Vector3 torque;
             torque.x = Random.Range(-200, 200);
             torque.y = Random.Range(-200, 200);
             torque.z = Random.Range(-200, 200);
             constForce.torque = torque;
-            transform.rotation = Random.rotation;
-            
+            float badThrowVelocity = 5;
+            Vector3 randomRot = new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
+            transform.Rotate(randomRot * badThrowVelocity * Time.deltaTime);  
         }
+        //if(startBadThrowLerp == true)
+        //{
+        //    float badThrowDrag = rb.drag;
+        //    elapsedTimeForBadDrag += Time.deltaTime;
+        //    startDrag = 0;
+        //    endDrag = 5;
+        //    badThrowDrag = Mathf.Lerp(startDrag, endDrag, elapsedTimeForBadDrag / badThrowDuration);
+        //    if (elapsedTimeForBadDrag >= badThrowDuration) startBadThrowLerp = false;
+        //}
 
         if (rb.isKinematic == false && startingFastTorque == true)
         {
@@ -300,13 +317,15 @@ public class PlayingCardScript : InteractionSuperClass {
     public override void HandAttachedUpdate(Hand attachedHand)
     {
         //Debug.Log("angularVelocity for the card is " + rb.angularVelocity);
-        angularVelocity = attachedHand.GetTrackedObjectVelocity();
+        //angularVelocity = attachedHand.GetTrackedObjectVelocity();
+        //Debug.Log(this.gameObject.name + " card is facing the wrong way, and the rotation is" + rb.transform.rotation);
+        Debug.Log(rb.transform.rotation.eulerAngles);
         base.HandAttachedUpdate(attachedHand);
     }
 
     public override void OnDetachedFromHand(Hand hand)
     {
-        if (rb.transform.rotation.y > 0 || rb.transform.rotation.w > 0.4f || rb.transform.rotation.w < -0.4f)
+        if (rb.transform.rotation.eulerAngles.x > 290)
         {
             Debug.Log(this.gameObject.name + " card is facing the wrong way");
             badThrow = true;
