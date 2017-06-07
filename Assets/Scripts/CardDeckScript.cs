@@ -16,6 +16,7 @@ public class CardDeckScript : InteractionSuperClass {
     float explosionPower = 1;
     float explosionRadius = 30;
     public bool thrownDeck;
+    public float badThrowVelocity;
 
     void Start()
     {
@@ -116,6 +117,7 @@ public class CardDeckScript : InteractionSuperClass {
 
     public override void OnDetachedFromHand(Hand hand)
     {
+        badThrowVelocity = deckHand.GetTrackedObjectVelocity().magnitude;
         Debug.Log("there are " + playingCardList.Count + " cards in the deck");
         if (hand.GetTrackedObjectVelocity().magnitude > 1) deckGotThrown = true;
         if (deckGotThrown == true)
@@ -141,7 +143,6 @@ public class CardDeckScript : InteractionSuperClass {
                 {
                     deckIsDestroyed = true;
                     thrownDeck = true;
-
                 }
             }
         }

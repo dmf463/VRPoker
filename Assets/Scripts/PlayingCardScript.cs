@@ -138,20 +138,19 @@ public class PlayingCardScript : InteractionSuperClass {
 
         if (rb.isKinematic == false && badThrow == true && deckScript.thrownDeck == true)
         {
-            float dragAmount = rb.drag;
             Debug.Log("Calling bad throw");
             startingFastTorque = false;
             startingSlowTorque = false;
             //startBadThrowLerp = true;
-            dragAmount = 10;
+            rb.drag = 0.5f;
             rb.AddForce(Random.Range(0, 2), Random.Range(0, 2), Random.Range(0, 2));
-            gameObject.GetComponent<ConstantForce>().enabled = true;
-            Vector3 torque;
-            torque.x = Random.Range(-200, 200);
-            torque.y = Random.Range(-200, 200);
-            torque.z = Random.Range(-200, 200);
-            gameObject.GetComponent<ConstantForce>().torque = torque;
-            float badThrowVelocity = 5;
+            //gameObject.GetComponent<ConstantForce>().enabled = true;
+            //Vector3 torque;
+            //torque.x = Random.Range(-200, 200);
+            //torque.y = Random.Range(-200, 200);
+            //torque.z = Random.Range(-200, 200);
+            //gameObject.GetComponent<ConstantForce>().torque = torque;
+            float badThrowVelocity = deckScript.badThrowVelocity;
             Vector3 randomRot = new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
             transform.Rotate(randomRot * badThrowVelocity * Time.deltaTime);
         }
@@ -302,7 +301,6 @@ public class PlayingCardScript : InteractionSuperClass {
         {
             Debug.Log(this.gameObject.name + " card is facing the wrong way");
             badThrow = true;
-
         }
         //Debug.Log("playingCardRotation = " + transform.localRotation);
         StartCoroutine(CheckVelocity(.025f));
