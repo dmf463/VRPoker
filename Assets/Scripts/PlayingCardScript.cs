@@ -100,7 +100,7 @@ public class PlayingCardScript : InteractionSuperClass {
 
             instantiatingDeck = false;
             deckIsDestroyed = false;
-            hand1.AttachObject(newCardDeck);
+            deckHand.AttachObject(newCardDeck);
 
         }
 
@@ -143,7 +143,7 @@ public class PlayingCardScript : InteractionSuperClass {
             startingSlowTorque = false;
             //startBadThrowLerp = true;
             rb.drag = 0;
-            rb.AddForce(Random.Range(0, 2), Random.Range(0, 2), Random.Range(0, 2));
+            rb.AddForce(Random.Range(0, 1), Random.Range(0, 1), Random.Range(0, 1));
             gameObject.GetComponent<ConstantForce>().enabled = true;
             Vector3 torque;
             torque.x = Random.Range(-200, 200);

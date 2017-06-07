@@ -11,8 +11,8 @@ public class InteractionSuperClass : MonoBehaviour {
     protected bool isHoldingCard;
     protected bool isTouchingDeck = false;
     protected const float FORCE_MULTIPLIER = 1.80f;
-    protected Hand deckHand;
-    protected Hand throwingHand;
+    protected static Hand deckHand;
+    protected static Hand throwingHand;
     protected static bool deckIsDestroyed = false;
     protected static bool instantiatingDeck = false;
     protected static bool growingDeck = false;
