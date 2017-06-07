@@ -28,29 +28,15 @@ public class PlayingCardScript : InteractionSuperClass {
     Vector3 newCardDeckScale;
     Vector3 currentCardDeckScale;
     Vector3 increaseCardDeckBy;
-    bool badThrow;
+    public bool badThrow;
     float elapsedTimeForBadDrag;
     float startDrag;
     float endDrag;
     float badThrowDuration = .25f;
     bool startBadThrowLerp;
-    ConstantForce constForce;
-
-    //VARIABLES TO CHECK ANGULAR_VELOCITY SO I CAN ADD RANDOM TORQUES IF SOMEONE THROWS LIKE AN IDIOT
-    //holds the previous frames rotation
-    //Quaternion lastRotation;
-    ////references to the relevant axis angle variables
-    //float magnitude;
-    //Vector3 axis;
-    //public Vector3 angularVelocity;
-    //{
-    //    get
-    //    {
-    //        //DIVIDED by Time.deltaTime to give you the degrees of rotation per axis per second
-    //        return (axis * magnitude) / Time.deltaTime;
-    //    }
-    //}
-    Vector3 angularVelocity;
+    bool cardIsFlipped;
+    GameObject cardDeck;
+    CardDeckScript deckScript;
 
     //VARIABLE FOR CHECKING SWIPE
     private int messageIndex = 0;
@@ -71,43 +57,33 @@ public class PlayingCardScript : InteractionSuperClass {
     private const float angleRange = 30;
 
 
+    void Awake()
+    {
+        Debug.Log("rb is called on awake at " + Time.time);
+    }
+
     // Use this for initialization
     void Start () {
 
+        cardDeck = GameObject.FindGameObjectWithTag("CardDeck");
+        deckScript = cardDeck.GetComponent<CardDeckScript>();
+        rb = GetComponent<Rigidbody>();
         elapsedTimeForCardFlip = 0;
         elapsedTimeForBadDrag = 0;
-        rb = GetComponent<Rigidbody>();
-        constForce = GetComponent<ConstantForce>();
         hand1 = GameObject.Find("Hand1").GetComponent<Hand>();
         hand2 = GameObject.Find("Hand2").GetComponent<Hand>();
-        //lastRotation = transform.rotation;
 
 	}
 	
-    //void FixedUpdate()
-    //{
-    //    //doing the math for rotation
-    //    var deltaRot = transform.rotation * Quaternion.Inverse(lastRotation);
-    //    var eulerRot = new Vector3(Mathf.DeltaAngle(0, deltaRot.eulerAngles.x), Mathf.DeltaAngle(0, deltaRot.eulerAngles.y), Mathf.DeltaAngle(0, deltaRot.eulerAngles.z));
-    //    angularVelocity = eulerRot / Time.deltaTime;
-    //    Debug.Log(angularVelocity);
-    //}
 
     // Update is called once per frame
     void Update () {
-        //Debug.Log(rb.transform.rotation);
-        //Debug.Log(deckIsDestroyed);
+
+        //Debug.Log("rb = " + rb);
+
         if (deckIsDestroyed == true && hand1.GetStandardInteractionButton() == true && hand1.GetStandardInteractionButton() == true)
         {
             instantiatingDeck = true;
-            //rb.isKinematic = true;
-            //float speed = 1f;
-            //float step = speed * Time.deltaTime;
-            //transform.position = Vector3.MoveTowards(transform.position, hand1.transform.position, step);
-            //if(transform.position == hand1.transform.position)
-            //{
-            //    rb.isKinematic = false;
-            //}
         }
 
         if (instantiatingDeck == true)
@@ -117,12 +93,9 @@ public class PlayingCardScript : InteractionSuperClass {
             {
                 Destroy(deadCard);
             }
+            deckScript.thrownDeck = false;
             Destroy(GameObject.Find("PlayingCardDeck"));
             newCardDeck = Instantiate(Resources.Load("Prefabs/PlayingCardDeck"), hand1.transform.position, Quaternion.identity) as GameObject;
-            //newCardDeckScale = newCardDeck.transform.localScale;
-            //increaseCardDeckBy = new Vector3(newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
-            //newCardDeck.transform.localScale = new Vector3(newCardDeck.transform.localScale.x, newCardDeck.transform.localScale.y / 52, newCardDeck.transform.localScale.z);
-            //currentCardDeckScale = newCardDeck.transform.localScale;
 
             instantiatingDeck = false;
             deckIsDestroyed = false;
@@ -134,30 +107,51 @@ public class PlayingCardScript : InteractionSuperClass {
         {
             Debug.Log("flippingCard!");
             elapsedTimeForCardFlip += Time.deltaTime;
-            //Quaternion startRotation = transform.rotation;
-            //Quaternion endRotation = startRotation + Quaternion.Euler
-            //Quaternion newRotation = new Quaternion(myRotation.x + 180, myRotation.y, myRotation.z, myRotation.w);
-            //Quaternion.Lerp(myRotation, newRotation, Time.deltaTime / flipSpeed);
             transform.localRotation = Quaternion.Euler(Mathf.Lerp(rotationAtFlipStart.eulerAngles.x, rotationAtFlipStart.eulerAngles.x + 180, elapsedTimeForCardFlip / flipDuration), rotationAtFlipStart.eulerAngles.y, rotationAtFlipStart.eulerAngles.z);
-            if (elapsedTimeForCardFlip >= flipDuration)  flippingCard = false;
+            if (elapsedTimeForCardFlip >= flipDuration)
+            {
+                elapsedTimeForCardFlip = 0;
+                flippingCard = false;
+                cardIsFlipped = true;
+            }
         }
 
-        if(rb.isKinematic == false && badThrow == true)
+        if (rb.isKinematic == false && badThrow == true && deckScript.thrownDeck == false)
         {
+            Debug.Log("Calling bad throw");
             startingFastTorque = false;
             startingSlowTorque = false;
             //startBadThrowLerp = true;
             rb.drag = 7;
             rb.AddForce(Random.Range(0, 2), Random.Range(0, 2), Random.Range(0, 2));
-            constForce.enabled = true;
+            gameObject.GetComponent<ConstantForce>().enabled = true;
             Vector3 torque;
             torque.x = Random.Range(-200, 200);
             torque.y = Random.Range(-200, 200);
             torque.z = Random.Range(-200, 200);
-            constForce.torque = torque;
+            gameObject.GetComponent<ConstantForce>().torque = torque;
             float badThrowVelocity = 5;
             Vector3 randomRot = new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
             transform.Rotate(randomRot * badThrowVelocity * Time.deltaTime);  
+        }
+
+        if (rb.isKinematic == false && badThrow == true && deckScript.thrownDeck == true)
+        {
+            Debug.Log("Calling bad throw");
+            startingFastTorque = false;
+            startingSlowTorque = false;
+            //startBadThrowLerp = true;
+            rb.drag = 0;
+            rb.AddForce(Random.Range(0, 2), Random.Range(0, 2), Random.Range(0, 2));
+            gameObject.GetComponent<ConstantForce>().enabled = true;
+            Vector3 torque;
+            torque.x = Random.Range(-200, 200);
+            torque.y = Random.Range(-200, 200);
+            torque.z = Random.Range(-200, 200);
+            gameObject.GetComponent<ConstantForce>().torque = torque;
+            float badThrowVelocity = 5;
+            Vector3 randomRot = new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
+            transform.Rotate(randomRot * badThrowVelocity * Time.deltaTime);
         }
         //if(startBadThrowLerp == true)
         //{
@@ -171,17 +165,11 @@ public class PlayingCardScript : InteractionSuperClass {
 
         if (rb.isKinematic == false && startingFastTorque == true)
         {
-            //throwingRotation = transform.eulerAngles;
-            //transform.rotation = Quaternion.Euler(throwingRotation.x, 0, 0);
-            //rb.AddForce(Vector3.up * 1);
             rb.AddForce(Vector3.down * 5);
             transform.Rotate(Vector3.forward * (fastTorque * throwingVelocity));
         }
         else if (rb.isKinematic == false && startingSlowTorque == true)
         {
-            //throwingRotation = transform.eulerAngles;
-            //transform.rotation = Quaternion.Euler(throwingRotation.x, 0, 0);
-            //rb.AddForce(Vector3.up * 1);
             rb.AddForce(Vector3.down * 5);
             transform.Rotate(Vector3.forward * (slowTorque * throwingVelocity));
         }
@@ -268,31 +256,16 @@ public class PlayingCardScript : InteractionSuperClass {
     {
         startLerping = true;
         elapsedTimeForThrowTorque = 0;
-        if(badThrow == true)
+        if (badThrow == true && other.gameObject.tag != "CardDeck") 
         {
-            constForce.enabled = false;
+            Debug.Log("hitting " + other.gameObject.tag);
+            gameObject.GetComponent<ConstantForce>().enabled = false;
             badThrow = false;
         }
     }
 
     public override void OnTriggerEnterX(Collider other)
     {
-        //if (deckIsDestroyed == true)
-        //{
-        //    if (other.gameObject.tag == "Hand")
-        //    {
-        //        Destroy(gameObject);
-        //        instantiatingDeck = true;
-        //        deckIsDestroyed = false;
-        //        if (deckExists == true)
-        //        {
-        //            //currentCardDeckScale.y = currentCardDeckScale.y + increaseCardDeckBy.y;
-        //            //Debug.Log("currentCardDeckScale = " + currentCardDeckScale);
-        //            //Debug.Log("newCardDeck.transform.localScale = " + newCardDeck.transform.localScale);
-        //            //newCardDeck.transform.localScale = currentCardDeckScale;
-        //        }
-        //    }
-        //}
         base.OnTriggerEnterX(other);
     }
 
@@ -309,23 +282,19 @@ public class PlayingCardScript : InteractionSuperClass {
 
     public override void OnAttachedToHand(Hand attachedHand)
     {
-        //transform.rotation = Quaternion.Euler(270, 0, 0);
         transform.rotation = transform.parent.GetComponent<Hand>().GetAttachmentTransform("Attach_ControllerTip").transform.rotation;
         base.OnAttachedToHand(attachedHand);
     }
 
     public override void HandAttachedUpdate(Hand attachedHand)
     {
-        //Debug.Log("angularVelocity for the card is " + rb.angularVelocity);
-        //angularVelocity = attachedHand.GetTrackedObjectVelocity();
-        //Debug.Log(this.gameObject.name + " card is facing the wrong way, and the rotation is" + rb.transform.rotation);
-        Debug.Log(rb.transform.rotation.eulerAngles);
+        //Debug.Log(rb.transform.rotation.eulerAngles);
         base.HandAttachedUpdate(attachedHand);
     }
 
     public override void OnDetachedFromHand(Hand hand)
     {
-        if (rb.transform.rotation.eulerAngles.x > 290)
+        if (rb.transform.rotation.eulerAngles.x > 290 || rb.transform.rotation.eulerAngles.x < 250 && cardIsFlipped == false)
         {
             Debug.Log(this.gameObject.name + " card is facing the wrong way");
             badThrow = true;
@@ -355,9 +324,6 @@ public class PlayingCardScript : InteractionSuperClass {
     {
         flippingCard = true;
         rotationAtFlipStart = transform.localRotation;
-        //Vector2 touch = transform.parent.gameObject.GetComponent<Hand>().controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
-        //transform.Rotate(Vector3.forward * Mathf.Clamp01(touch.y) * flipSpeed * Time.deltaTime);
-        //Debug.Log("touch.y = " + touch.y);
     }
 
     private void OnSwipeLeft()

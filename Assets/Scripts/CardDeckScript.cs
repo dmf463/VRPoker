@@ -12,9 +12,10 @@ public class CardDeckScript : InteractionSuperClass {
     Vector3 newCardDeckScale;
     Vector3 currentCardDeckScale;
     Vector3 decreaseCardDeckBy;
-    static bool deckGotThrown = false;
+    public bool deckGotThrown = false;
     float explosionPower = 1;
     float explosionRadius = 30;
+    public bool thrownDeck;
 
     void Start()
     {
@@ -128,13 +129,18 @@ public class CardDeckScript : InteractionSuperClass {
                 playingCard.transform.parent = null;
                 playingCard.GetComponent<BoxCollider>().enabled = true;
                 playingCard.AddComponent<Rigidbody>();
+                Debug.Log("rigidBody added at " + Time.time);
+                playingCard.AddComponent<ConstantForce>();
                 playingCard.GetComponent<PlayingCardScript>().enabled = true;
+                playingCard.GetComponent<PlayingCardScript>().badThrow = true;
                 playingCard.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);
                 playingCard.GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity() * FORCE_MULTIPLIER, ForceMode.Impulse);
                 playingCard.GetComponent<Rigidbody>().AddExplosionForce(explosionPower, playingCard.transform.position, explosionRadius, 0, ForceMode.Impulse);
+
                 if (i == 0)
                 {
                     deckIsDestroyed = true;
+                    thrownDeck = true;
                     //Destroy(cardDeck);
                 }
             }
