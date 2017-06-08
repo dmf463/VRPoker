@@ -53,7 +53,7 @@ public class InteractionSuperClass : MonoBehaviour {
     public virtual void OnAttachedToHand(Hand attachedHand)
     {
         GetComponent<Rigidbody>().isKinematic = true; //turn off the physics, we we can hold it
-        attachedHand.HoverLock(interactableObject);
+        //attachedHand.HoverLock(interactableObject);
     }
 
     //this is like update, as long as we're holding something
