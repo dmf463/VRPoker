@@ -70,8 +70,17 @@ public class PlayingCardScript : InteractionSuperClass {
         rb = GetComponent<Rigidbody>();
         elapsedTimeForCardFlip = 0;
         elapsedTimeForBadDrag = 0;
-        hand1 = GameObject.Find("Hand1").GetComponent<Hand>();
-        hand2 = GameObject.Find("Hand2").GetComponent<Hand>();
+        if (testingOutsideVR == false)
+        {
+            hand1 = GameObject.Find("Hand1").GetComponent<Hand>();
+            hand2 = GameObject.Find("Hand2").GetComponent<Hand>();
+        }
+        else
+        {
+            hand1 = null;
+            hand2 = null;
+        }
+
 
 	}
 	

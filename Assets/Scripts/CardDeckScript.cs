@@ -17,6 +17,10 @@ public class CardDeckScript : InteractionSuperClass {
     float explosionRadius = 30;
     public bool thrownDeck;
     public float badThrowVelocity;
+    public bool testDeal;
+    public List<GameObject> testSpaces = new List<GameObject>();
+    int testCardPos;
+    Vector3 testCardSecondPos;
 
     void Start()
     {
@@ -24,6 +28,9 @@ public class CardDeckScript : InteractionSuperClass {
         decreaseCardDeckBy = new Vector3 (newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
         //Debug.Log("decreaseCardDeckby = " + decreaseCardDeckBy);
         currentCardDeckScale = newCardDeckScale;
+        testDeal = false;
+        testCardPos = 0;
+        testCardSecondPos = new Vector3(-0.05f, 0, 0);
     }
 
 
@@ -38,6 +45,36 @@ public class CardDeckScript : InteractionSuperClass {
         {
             deckIsDestroyed = true;
             Destroy(cardDeck);
+        }
+
+        if(testDeal == false && Input.GetKeyDown(KeyCode.Space))
+        {
+            testingOutsideVR = true;
+            if(testSpaces[testCardPos].GetComponent<PlayerPosition>().doneDealing == false)
+            {
+                int cardPos = Random.Range(0, playingCardList.Count);
+                GameObject playingCard = Instantiate(playingCardList[cardPos], testSpaces[testCardPos].transform.position, Quaternion.identity);
+                if (testSpaces[testCardPos].GetComponent<PlayerPosition>().cardCount == 1)
+                {
+                    playingCard.transform.position = testSpaces[testCardPos].transform.position + testCardSecondPos;
+                }
+                playingCard.transform.eulerAngles = new Vector3(90, 0, 0);
+                playingCardList.Remove(playingCardList[cardPos]);
+                playingCard.GetComponent<BoxCollider>().enabled = true;
+                playingCard.GetComponent<PlayingCardScript>().enabled = true;
+                currentCardDeckScale.y = currentCardDeckScale.y - decreaseCardDeckBy.y;
+                transform.localScale = currentCardDeckScale;
+            }
+
+            if (playingCardList.Count == 0)
+            {
+                Destroy(cardDeck);
+            }
+            testCardPos += 1;
+            if (testCardPos > 3)
+            {
+                testCardPos = 0;
+            }
         }
     }
 
