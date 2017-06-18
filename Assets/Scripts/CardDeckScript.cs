@@ -21,6 +21,8 @@ public class CardDeckScript : InteractionSuperClass {
     public List<GameObject> testSpaces = new List<GameObject>();
     int testCardPos;
     Vector3 testCardSecondPos;
+    GameObject gameManager;
+    GameManager gm;
 
     void Start()
     {
@@ -31,6 +33,8 @@ public class CardDeckScript : InteractionSuperClass {
         testDeal = false;
         testCardPos = 0;
         testCardSecondPos = new Vector3(-0.05f, 0, 0);
+        gameManager = GameObject.Find("GameManager");
+        gm = gameManager.GetComponent<GameManager>();
     }
 
 
@@ -49,6 +53,7 @@ public class CardDeckScript : InteractionSuperClass {
 
         if(testDeal == false && Input.GetKeyDown(KeyCode.Space))
         {
+            gm.cardsDealt += 1;
             testingOutsideVR = true;
             if(testSpaces[testCardPos].GetComponent<PlayerPosition>().doneDealing == false)
             {
@@ -65,6 +70,44 @@ public class CardDeckScript : InteractionSuperClass {
                 currentCardDeckScale.y = currentCardDeckScale.y - decreaseCardDeckBy.y;
                 transform.localScale = currentCardDeckScale;
             }
+
+            if(gm.burnACard == true)
+            {
+                int cardPos = Random.Range(0, playingCardList.Count);
+                GameObject playingCard = Instantiate(playingCardList[cardPos], gm.burn.transform.position, Quaternion.identity);
+                playingCard.transform.eulerAngles = new Vector3(270, 0, 0);
+                gm.burnCards.Add(playingCard.name);
+                playingCardList.Remove(playingCardList[cardPos]);
+                playingCard.GetComponent<BoxCollider>().enabled = true;
+                playingCard.GetComponent<PlayingCardScript>().enabled = true;
+                currentCardDeckScale.y = currentCardDeckScale.y - decreaseCardDeckBy.y;
+                transform.localScale = currentCardDeckScale;
+                gm.burnACard = false;
+            }
+
+            if (gm.cardsDealt == 8 && gm.readyForFlop == false)
+            {
+                gm.burnACard = true;
+            }
+
+            if(gm.cardsDealt == 10)
+            {
+                gm.readyForFlop = true;
+            }
+
+            if(gm.readyForFlop == true)
+            {
+                int cardPos = Random.Range(0, playingCardList.Count);
+                GameObject playingCard = Instantiate(playingCardList[cardPos], gm.flop.transform.position, Quaternion.identity);
+                playingCard.transform.eulerAngles = new Vector3(90, 0, 0);
+                gm.flopCards.Add(playingCard.name);
+                playingCardList.Remove(playingCardList[cardPos]);
+                playingCard.GetComponent<BoxCollider>().enabled = true;
+                playingCard.GetComponent<PlayingCardScript>().enabled = true;
+                currentCardDeckScale.y = currentCardDeckScale.y - decreaseCardDeckBy.y;
+                transform.localScale = currentCardDeckScale;
+            }
+
 
             if (playingCardList.Count == 0)
             {

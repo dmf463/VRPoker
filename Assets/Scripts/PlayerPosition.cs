@@ -6,17 +6,41 @@ public class PlayerPosition : MonoBehaviour {
 
     public float cardCount;
     public bool doneDealing;
+    GameObject gameManager;
+    GameManager gm;
+    string playerName;
+
 
 	// Use this for initialization
 	void Start () {
 
         cardCount = 0;
-		
+        gameManager = GameObject.Find("GameManager");
+        gm = gameManager.GetComponent<GameManager>();
+        playerName = gameObject.name;
+
 	}
 
     public void OnTriggerEnter (Collider other)
     {
         cardCount += 1;
+        switch (playerName)
+        {
+            case "TestSpace1":
+                gm.p1HoleCards.Add(other.name);
+                break;
+            case "TestSpace2":
+                gm.p2HoleCards.Add(other.name);
+                break;
+            case "TestSpace3":
+                gm.p3HoleCards.Add(other.name);
+                break;
+            case "TestSpace4":
+                gm.p4HoleCards.Add(other.name);
+                break;
+            default:
+                break;
+        }
     }
 
     
@@ -28,6 +52,5 @@ public class PlayerPosition : MonoBehaviour {
         {
             doneDealing = true;
         }
-		
-	}
+    }
 }
