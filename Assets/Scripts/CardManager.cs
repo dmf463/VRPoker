@@ -24,27 +24,27 @@ public class CardManager : MonoBehaviour {
     public void OnTriggerEnter (Collider other)
     {
         cardCount += 1;
-        if(other.gameObject.tag != "Hand")
+        if (other.gameObject.tag == "PlayingCard")
         {
             switch (playerName)
             {
                 case "TestSpace1":
-                    gm.p1HoleCards.Add(other.name);
+                    gm.p1HoleCards.Add(other.gameObject);
                     break;
                 case "TestSpace2":
-                    gm.p2HoleCards.Add(other.name);
+                    gm.p2HoleCards.Add(other.gameObject);
                     break;
                 case "TestSpace3":
-                    gm.p3HoleCards.Add(other.name);
+                    gm.p3HoleCards.Add(other.gameObject);
                     break;
                 case "TestSpace4":
-                    gm.p4HoleCards.Add(other.name);
+                    gm.p4HoleCards.Add(other.gameObject);
                     break;
                 case "TheBoard":
-                    gm.boardCards.Add(other.name);
+                    gm.boardCards.Add(other.gameObject);
                     break;
                 case "BurnCards":
-                    gm.burnCards.Add(other.name);
+                    gm.burnCards.Add(other.gameObject);
                     break;
                 default:
                     break;
@@ -57,9 +57,5 @@ public class CardManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        if(cardCount == 2)
-        {
-            doneDealing = true;
-        }
     }
 }
