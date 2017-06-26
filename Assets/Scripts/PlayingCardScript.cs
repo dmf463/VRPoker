@@ -6,6 +6,9 @@ using Valve.VR.InteractionSystem;
 
 public class PlayingCardScript : InteractionSuperClass {
 
+    public RankType rank;
+    public SuitType suit;
+
     const float MAGNITUDE_THRESHOLD = 2.5f;
     Vector3 throwingRotation;
     float throwingVelocity;
