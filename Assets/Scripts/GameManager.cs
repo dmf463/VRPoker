@@ -18,17 +18,6 @@ public class GameManager : MonoBehaviour {
     public GameObject player4;
     public List<string> p4HoleCards = new List<string>();
     [Header("TheBoard")]
-    //public bool readyForFlop;
-    //public GameObject flop;
-    //public List<string> flopCards = new List<string>();
-    //public bool dealtFlop;
-    //public GameObject turn;
-    //public List<string> turnCards = new List<string>();
-    //public bool dealtTurn;
-    //public GameObject river;
-    //public List<string> riverCards = new List<string>();
-    //public bool dealtRiver;
-    //public GameObject burn;
     public GameObject theBoard;
     public List<string> boardCards = new List<string>();
     [Header ("BurnCards")]
