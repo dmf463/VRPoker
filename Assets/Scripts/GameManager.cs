@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class GameManager : MonoBehaviour {
 
@@ -26,6 +27,8 @@ public class GameManager : MonoBehaviour {
     public List<GameObject> burnCards = new List<GameObject>();
 
     private bool readyToEvalute = false;
+    RankType rank;
+    SuitType suit;
 
     // Use this for initialization
     void Start () {
@@ -39,12 +42,41 @@ public class GameManager : MonoBehaviour {
 
         if(boardCards.Count == 5 && readyToEvalute == false)
         {
-            p1HoleCards.AddRange(boardCards);
-            p2HoleCards.AddRange(boardCards);
-            p3HoleCards.AddRange(boardCards);
-            p4HoleCards.AddRange(boardCards);
+            //p1HoleCards.AddRange(boardCards);
+            //p2HoleCards.AddRange(boardCards);
+            //p3HoleCards.AddRange(boardCards);
+            //p4HoleCards.AddRange(boardCards);
+            OrderHands(p1HoleCards);
+            OrderHands(p2HoleCards);
+            OrderHands(p3HoleCards);
+            OrderHands(p4HoleCards);
             readyToEvalute = true;
         }
 		
 	}
+
+    public void OrderHands(List<GameObject> playerCards)
+    {
+        playerCards.AddRange(boardCards);
+
+        playerCards.Sort((s1, s2) => s1.GetComponent<PlayingCardScript>().rank.CompareTo(s2.GetComponent<PlayingCardScript>().rank));
+        /*
+        for (int i = 0; i < playerCards.Count; i++)
+        {
+
+            int cardValue = (int)playerCards[i].GetComponent<PlayingCardScript>().rank;
+            Debug.Log("cardValue is " + cardValue);
+            int firstCardValue = (int)playerCards[0].GetComponent<PlayingCardScript>().rank;
+            if (cardValue > firstCardValue)
+            {
+                playerCards.Insert(i + 1, playerCards[0]);
+                playerCards.Remove(playerCards[0]);
+
+
+            }
+
+        }
+        */
+
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
     public enum RankType
     {
@@ -17,6 +18,7 @@ using UnityEngine;
     public class Cards
 {
     public RankType rank;
+    public int rankInt;
     public SuitType suit;
 
     public Cards(RankType _rank, SuitType _suit)

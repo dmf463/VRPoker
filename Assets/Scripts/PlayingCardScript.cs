@@ -58,7 +58,7 @@ public class PlayingCardScript : InteractionSuperClass {
     private readonly Vector2 yAxis = new Vector2(0, 1);
     // The angle range for detecting swipe
     private const float angleRange = 30;
-
+    
 
     void Awake()
     {
@@ -83,7 +83,6 @@ public class PlayingCardScript : InteractionSuperClass {
             hand1 = null;
             hand2 = null;
         }
-
 
 	}
 	
