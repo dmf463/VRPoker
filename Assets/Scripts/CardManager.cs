@@ -41,6 +41,10 @@ public class CardManager : MonoBehaviour {
                     gm.p4HoleCards.Add(other.gameObject);
                     break;
                 case "TheBoard":
+                    if (gm.boardCards.Contains(other.gameObject))
+                    {
+                        break;
+                    }
                     gm.boardCards.Add(other.gameObject);
                     break;
                 case "BurnCards":

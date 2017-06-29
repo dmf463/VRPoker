@@ -26,9 +26,9 @@ public class GameManager : MonoBehaviour {
     public bool burnACard;
     public List<GameObject> burnCards = new List<GameObject>();
 
+    private bool flopDealt = false;
+    private bool turnDealt = false;
     private bool readyToEvalute = false;
-    RankType rank;
-    SuitType suit;
 
     // Use this for initialization
     void Start () {
@@ -40,43 +40,47 @@ public class GameManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+
+        if (boardCards.Count == 3 && flopDealt == false)
+        {
+            OrderHands(p1HoleCards);
+            OrderHands(p2HoleCards);
+            OrderHands(p3HoleCards);
+            OrderHands(p4HoleCards);
+            flopDealt = true;
+        }
+        if (boardCards.Count == 4 && turnDealt == false)
+        {
+            OrderHands(p1HoleCards);
+            OrderHands(p2HoleCards);
+            OrderHands(p3HoleCards);
+            OrderHands(p4HoleCards);
+            turnDealt = true;
+        }
         if(boardCards.Count == 5 && readyToEvalute == false)
         {
-            //p1HoleCards.AddRange(boardCards);
-            //p2HoleCards.AddRange(boardCards);
-            //p3HoleCards.AddRange(boardCards);
-            //p4HoleCards.AddRange(boardCards);
             OrderHands(p1HoleCards);
             OrderHands(p2HoleCards);
             OrderHands(p3HoleCards);
             OrderHands(p4HoleCards);
             readyToEvalute = true;
         }
-		
-	}
+
+    }
 
     public void OrderHands(List<GameObject> playerCards)
     {
         playerCards.AddRange(boardCards);
-
-        playerCards.Sort((s1, s2) => s1.GetComponent<PlayingCardScript>().rank.CompareTo(s2.GetComponent<PlayingCardScript>().rank));
-        /*
-        for (int i = 0; i < playerCards.Count; i++)
-        {
-
-            int cardValue = (int)playerCards[i].GetComponent<PlayingCardScript>().rank;
-            Debug.Log("cardValue is " + cardValue);
-            int firstCardValue = (int)playerCards[0].GetComponent<PlayingCardScript>().rank;
-            if (cardValue > firstCardValue)
-            {
-                playerCards.Insert(i + 1, playerCards[0]);
-                playerCards.Remove(playerCards[0]);
-
-
-            }
-
-        }
-        */
-
+        List<GameObject> newhand = playerCards.Distinct().ToList();
+        playerCards.Clear();
+        playerCards.AddRange(newhand);
+        playerCards.Sort((cardLow, cardHigh) => cardLow.GetComponent<PlayingCardScript>().rank.CompareTo(cardHigh.GetComponent<PlayingCardScript>().rank));
+        //for (int i = 0; i < playerCards.Count; i++)
+        //{
+        //    if (playerCards[i] == playerCards[i + 1])
+        //    {
+        //        playerCards.Remove(playerCards[i]);
+        //    }
+        //}
     }
 }
