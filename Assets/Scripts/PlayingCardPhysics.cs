@@ -4,10 +4,7 @@ using UnityEngine;
 using Valve.VR; //we need this for SteamVR
 using Valve.VR.InteractionSystem;
 
-public class PlayingCardScript : InteractionSuperClass {
-
-    //public RankType rank;
-    //public SuitType suit;
+public class PlayingCardPhysics : InteractionSuperClass {
 
     const float MAGNITUDE_THRESHOLD = 2.5f;
     Vector3 throwingRotation;
@@ -40,14 +37,6 @@ public class PlayingCardScript : InteractionSuperClass {
     bool cardIsFlipped;
     GameObject cardDeck;
     CardDeckScript deckScript;
-    public Cards card;
-    public HandValue handValue;
-
-    public struct HandValue
-    {
-        public int Total { get; set; }
-        public int HighCard { get; set; }
-    }
 
     //VARIABLE FOR CHECKING SWIPE
     private int messageIndex = 0;
@@ -91,8 +80,6 @@ public class PlayingCardScript : InteractionSuperClass {
             hand1 = null;
             hand2 = null;
         }
-
-        handValue.HighCard = (int)card.rank;
 	}
 	
 

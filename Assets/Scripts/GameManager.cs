@@ -8,25 +8,25 @@ public class GameManager : MonoBehaviour {
 
     //holds all the cards where they need to be
     public float cardsDealt;
-    [Header("Player1")]
-    public GameObject player1;
-    public List<GameObject> p1HoleCards = new List<GameObject>();
-    [Header("Player2")]
-    public GameObject player2;
-    public List<GameObject> p2HoleCards = new List<GameObject>();
-    [Header("Player3")]
-    public GameObject player3;
-    public List<GameObject> p3HoleCards = new List<GameObject>();
-    [Header("Player4")]
-    public GameObject player4;
-    public List<GameObject> p4HoleCards = new List<GameObject>();
-    [Header("TheBoard")]
-    public GameObject theBoard;
-    public List<GameObject> boardCards = new List<GameObject>();
-    [Header ("BurnCards")]
-    public GameObject theBurn;
-    public bool burnACard;
-    public List<GameObject> burnCards = new List<GameObject>();
+    //[Header("Player1")]
+    //public GameObject player1;
+    //public List<GameObject> p1HoleCards = new List<GameObject>();
+    //[Header("Player2")]
+    //public GameObject player2;
+    //public List<GameObject> p2HoleCards = new List<GameObject>();
+    //[Header("Player3")]
+    //public GameObject player3;
+    //public List<GameObject> p3HoleCards = new List<GameObject>();
+    //[Header("Player4")]
+    //public GameObject player4;
+    //public List<GameObject> p4HoleCards = new List<GameObject>();
+    //[Header("TheBoard")]
+    //public GameObject theBoard;
+    //public List<GameObject> boardCards = new List<GameObject>();
+    //[Header ("BurnCards")]
+    //public GameObject theBurn;
+    //public bool burnACard;
+    //public List<GameObject> burnCards = new List<GameObject>();
 
     //keep track of where we are in the game
     private bool flopDealt = false;
@@ -48,11 +48,11 @@ public class GameManager : MonoBehaviour {
         FourOfAKind,
         StraightFlush
     }
-    private int spadeSum;
-    private int heartSum;
-    private int diamondSum;
-    private int clubSum;
-    PlayingCardScript cardScript;
+    public int spadeSum;
+    public int heartSum;
+    public int diamondSum;
+    public int clubSum;
+    PlayingCardPhysics cardScript;
     int highCard;
 
     // Use this for initialization
@@ -64,39 +64,43 @@ public class GameManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            TableCards.instance.DebugHands();
+        }
 
-        if (boardCards.Count == 3 && flopDealt == false)
-        {
-            OrderHands(p1HoleCards);
-            OrderHands(p2HoleCards);
-            OrderHands(p3HoleCards);
-            OrderHands(p4HoleCards);
-            flopDealt = true;
-        }
-        if (boardCards.Count == 4 && turnDealt == false)
-        {
-            OrderHands(p1HoleCards);
-            OrderHands(p2HoleCards);
-            OrderHands(p3HoleCards);
-            OrderHands(p4HoleCards);
-            turnDealt = true;
-        }
-        if(boardCards.Count == 5 && riverDealt == false)
-        {
-            OrderHands(p1HoleCards);
-            OrderHands(p2HoleCards);
-            OrderHands(p3HoleCards);
-            OrderHands(p4HoleCards);
-            riverDealt = true;
-            readyToEvalute = true;
-        }
+        //if (boardCards.Count == 3 && flopDealt == false)
+        //{
+        //    OrderHands(p1HoleCards);
+        //    OrderHands(p2HoleCards);
+        //    OrderHands(p3HoleCards);
+        //    OrderHands(p4HoleCards);
+        //    flopDealt = true;
+        //}
+        //if (boardCards.Count == 4 && turnDealt == false)
+        //{
+        //    OrderHands(p1HoleCards);
+        //    OrderHands(p2HoleCards);
+        //    OrderHands(p3HoleCards);
+        //    OrderHands(p4HoleCards);
+        //    turnDealt = true;
+        //}
+        //if(boardCards.Count == 5 && riverDealt == false)
+        //{
+        //    OrderHands(p1HoleCards);
+        //    OrderHands(p2HoleCards);
+        //    OrderHands(p3HoleCards);
+        //    OrderHands(p4HoleCards);
+        //    riverDealt = true;
+        //    readyToEvalute = true;
+        //}
 
         if(readyToEvalute == true && winnerDeclared == false)
         {
-            EvaluateHand(p1HoleCards, p1HoleCards[6].GetComponent<PlayingCardScript>().handValue.HighCard);
-            EvaluateHand(p2HoleCards, p2HoleCards[6].GetComponent<PlayingCardScript>().handValue.HighCard);
-            EvaluateHand(p3HoleCards, p3HoleCards[6].GetComponent<PlayingCardScript>().handValue.HighCard);
-            EvaluateHand(p4HoleCards, p4HoleCards[6].GetComponent<PlayingCardScript>().handValue.HighCard);
+            //EvaluateHand(p1HoleCards, p1HoleCards[6].GetComponent<PlayingCardScript>().handValue.HighCard);
+            //EvaluateHand(p2HoleCards, p2HoleCards[6].GetComponent<PlayingCardScript>().handValue.HighCard);
+            //EvaluateHand(p3HoleCards, p3HoleCards[6].GetComponent<PlayingCardScript>().handValue.HighCard);
+            //EvaluateHand(p4HoleCards, p4HoleCards[6].GetComponent<PlayingCardScript>().handValue.HighCard);
             winnerDeclared = true;
         }
 
@@ -104,30 +108,30 @@ public class GameManager : MonoBehaviour {
 
     public void OrderHands(List<GameObject> playerCards)
     {
-        playerCards.AddRange(boardCards);
+        //playerCards.AddRange(boardCards);
         List<GameObject> newhand = playerCards.Distinct().ToList();
         playerCards.Clear();
         playerCards.AddRange(newhand);
-        playerCards.Sort((cardLow, cardHigh) => cardLow.GetComponent<PlayingCardScript>().card.rank.CompareTo(cardHigh.GetComponent<PlayingCardScript>().card.rank));
+        //playerCards.Sort((cardLow, cardHigh) => cardLow.GetComponent<PlayingCardScript>().card.rank.CompareTo(cardHigh.GetComponent<PlayingCardScript>().card.rank));
     }
 
-    public List<GameObject> GetHand(int playerNum)
-    {
-        switch(playerNum)
-        {
-            case 1:
-                return p1HoleCards;
-            case 2:
-                return p2HoleCards;
-            case 3:
-                return p3HoleCards;
-            case 4:
-                return p4HoleCards;
-            default:
-                Debug.LogError("Player doesn't exist");
-                return null;
-        }
-    }
+    //public List<GameObject> GetHand(int playerNum)
+    //{
+    //    switch(playerNum)
+    //    {
+    //        case 1:
+    //            return p1HoleCards;
+    //        case 2:
+    //            return p2HoleCards;
+    //        case 3:
+    //            return p3HoleCards;
+    //        case 4:
+    //            return p4HoleCards;
+    //        default:
+    //            Debug.LogError("Player doesn't exist");
+    //            return null;
+    //    }
+    //}
 
     HandType EvaluateHand(List<GameObject> hand, int _highCard)
     {
@@ -148,14 +152,36 @@ public class GameManager : MonoBehaviour {
             return HandType.FullHouse;
         else if (StraightFlush(hand))
             return HandType.StraightFlush;
-        hand[6].GetComponent<PlayingCardScript>().handValue.HighCard = _highCard;
-        Debug.Log(hand + "has a highCard of " + _highCard);
+        //hand[6].GetComponent<PlayingCardScript>().handValue.HighCard = _highCard;
+        Debug.Log(hand[0].name + "has a highCard of " + _highCard);
         return HandType.HighCard;
     }
 
-    public static int getNumberOfSuit(List<GameObject> hand)
+    public void getNumberOfSuit(List<GameObject> hand)
     {
-        return 0;
+        spadeSum = 0;
+        heartSum = 0;
+        diamondSum = 0;
+        clubSum = 0;
+        foreach (GameObject card in hand)
+        {
+            //if(card.GetComponent<PlayingCardScript>().card.suit == Cards.SuitType.Spades)
+            //{
+            //    spadeSum++;
+            //}
+            //else if(card.GetComponent<PlayingCardScript>().card.suit == Cards.SuitType.Hearts)
+            //{
+            //    heartSum++;
+            //}
+            //else if (card.GetComponent<PlayingCardScript>().card.suit == Cards.SuitType.Diamonds)
+            //{
+            //    diamondSum++;
+            //}
+            //else if (card.GetComponent<PlayingCardScript>().card.suit == Cards.SuitType.Clubs)
+            //{
+            //    clubSum++;
+            //}
+        }
     }
 
     public bool HighCard(List<GameObject> hand)
@@ -165,6 +191,22 @@ public class GameManager : MonoBehaviour {
 
     public bool OnePair(List<GameObject> hand)
     {
+        //if(hand[0].GetComponent<PlayingCardScript>().card.rank == hand[1].GetComponent<PlayingCardScript>().card.rank)
+        //{
+        //    hand[0].GetComponent<PlayingCardScript>().handValue.Total = (int)hand[0].GetComponent<PlayingCardScript>().card.rank * 2;
+        //    Debug.Log(hand.ToString());
+        //    return true;
+        //}
+        //else if (hand[1].GetComponent<PlayingCardScript>().card.rank == hand[2].GetComponent<PlayingCardScript>().card.rank)
+        //{
+        //    hand[1].GetComponent<PlayingCardScript>().handValue.Total = (int)hand[1].GetComponent<PlayingCardScript>().card.rank * 2;
+        //    return true;
+        //}
+        //else if (hand[2].GetComponent<PlayingCardScript>().card.rank == hand[3].GetComponent<PlayingCardScript>().card.rank)
+        //{
+        //    hand[2].GetComponent<PlayingCardScript>().handValue.Total = (int)hand[2].GetComponent<PlayingCardScript>().card.rank * 2;
+        //    return true;
+        //}
         return false;
     }
 

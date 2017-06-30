@@ -90,7 +90,7 @@ public class CardDeckScript : InteractionSuperClass {
             playingCard.name = playingCardList[cardPos].name;
             playingCardList.Remove(playingCardList[cardPos]);
             playingCard.GetComponent<BoxCollider>().enabled = true;
-            playingCard.GetComponent<PlayingCardScript>().enabled = true;
+            playingCard.GetComponent<PlayingCardPhysics>().enabled = true;
             hand.otherHand.AttachObject(playingCard);
 
             currentCardDeckScale.y = currentCardDeckScale.y - decreaseCardDeckBy.y;
@@ -144,8 +144,8 @@ public class CardDeckScript : InteractionSuperClass {
                 playingCard.AddComponent<Rigidbody>();
                 Debug.Log("rigidBody added at " + Time.time);
                 playingCard.AddComponent<ConstantForce>();
-                playingCard.GetComponent<PlayingCardScript>().enabled = true;
-                playingCard.GetComponent<PlayingCardScript>().badThrow = true;
+                playingCard.GetComponent<PlayingCardPhysics>().enabled = true;
+                playingCard.GetComponent<PlayingCardPhysics>().badThrow = true;
                 playingCard.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);
                 playingCard.GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity() * FORCE_MULTIPLIER, ForceMode.Impulse);
                 playingCard.GetComponent<Rigidbody>().AddExplosionForce(explosionPower, playingCard.transform.position, explosionRadius, 0, ForceMode.Impulse);
