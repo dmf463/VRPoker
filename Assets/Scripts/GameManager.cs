@@ -28,7 +28,9 @@ public class GameManager : MonoBehaviour {
 
     private bool flopDealt = false;
     private bool turnDealt = false;
+    private bool riverDealt = false;
     private bool readyToEvalute = false;
+    private bool winnerDeclared = false;
 
     // Use this for initialization
     void Start () {
@@ -57,13 +59,21 @@ public class GameManager : MonoBehaviour {
             OrderHands(p4HoleCards);
             turnDealt = true;
         }
-        if(boardCards.Count == 5 && readyToEvalute == false)
+        if(boardCards.Count == 5 && riverDealt == false)
         {
             OrderHands(p1HoleCards);
             OrderHands(p2HoleCards);
             OrderHands(p3HoleCards);
             OrderHands(p4HoleCards);
+            riverDealt = true;
             readyToEvalute = true;
+        }
+
+        if(readyToEvalute == true && winnerDeclared == false)
+        {
+            PokerHands.EvaluateHand(p1HoleCards);
+            //Debug.Log("high card is" + PokerHands.HandValues.HighCard);
+            winnerDeclared = true;
         }
 
     }
@@ -74,13 +84,25 @@ public class GameManager : MonoBehaviour {
         List<GameObject> newhand = playerCards.Distinct().ToList();
         playerCards.Clear();
         playerCards.AddRange(newhand);
-        playerCards.Sort((cardLow, cardHigh) => cardLow.GetComponent<PlayingCardScript>().rank.CompareTo(cardHigh.GetComponent<PlayingCardScript>().rank));
-        //for (int i = 0; i < playerCards.Count; i++)
-        //{
-        //    if (playerCards[i] == playerCards[i + 1])
-        //    {
-        //        playerCards.Remove(playerCards[i]);
-        //    }
-        //}
+        playerCards.Sort((cardLow, cardHigh) => cardLow.GetComponent<PlayingCardScript>().card.rank.CompareTo(cardHigh.GetComponent<PlayingCardScript>().card.rank));
+    }
+
+
+    public List<GameObject> GetHand(int playerNum)
+    {
+        switch(playerNum)
+        {
+            case 1:
+                return p1HoleCards;
+            case 2:
+                return p2HoleCards;
+            case 3:
+                return p3HoleCards;
+            case 4:
+                return p4HoleCards;
+            default:
+                Debug.LogError("Player doesn't exist");
+                return null;
+        }
     }
 }

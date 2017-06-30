@@ -6,8 +6,8 @@ using Valve.VR.InteractionSystem;
 
 public class PlayingCardScript : InteractionSuperClass {
 
-    public RankType rank;
-    public SuitType suit;
+    //public RankType rank;
+    //public SuitType suit;
 
     const float MAGNITUDE_THRESHOLD = 2.5f;
     Vector3 throwingRotation;
@@ -40,6 +40,7 @@ public class PlayingCardScript : InteractionSuperClass {
     bool cardIsFlipped;
     GameObject cardDeck;
     CardDeckScript deckScript;
+    public Cards card;
 
     //VARIABLE FOR CHECKING SWIPE
     private int messageIndex = 0;

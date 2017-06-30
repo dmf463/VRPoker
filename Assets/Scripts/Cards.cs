@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
-    public enum RankType
+public enum RankType
     {
         Two = 2, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King, Ace
     }
@@ -14,16 +15,9 @@ using System.Linq;
     }
 
 
-
+    [Serializable]
     public class Cards
 {
     public RankType rank;
-    public int rankInt;
     public SuitType suit;
-
-    public Cards(RankType _rank, SuitType _suit)
-    {
-        this.rank = _rank;
-        this.suit = _suit;
-    }
 }
