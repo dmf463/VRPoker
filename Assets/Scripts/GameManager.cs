@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 public class GameManager : MonoBehaviour {
 
+    //holds all the cards where they need to be
     public float cardsDealt;
     [Header("Player1")]
     public GameObject player1;
@@ -26,19 +28,39 @@ public class GameManager : MonoBehaviour {
     public bool burnACard;
     public List<GameObject> burnCards = new List<GameObject>();
 
+    //keep track of where we are in the game
     private bool flopDealt = false;
     private bool turnDealt = false;
     private bool riverDealt = false;
     private bool readyToEvalute = false;
     private bool winnerDeclared = false;
 
+    //evaluate hands
+    enum HandType
+    {
+        HighCard,
+        Pair,
+        TwoPair,
+        ThreeOfAKind,
+        Straight,
+        Flush,
+        FullHouse,
+        FourOfAKind,
+        StraightFlush
+    }
+    private int spadeSum;
+    private int heartSum;
+    private int diamondSum;
+    private int clubSum;
+    PlayingCardScript cardScript;
+    int highCard;
+
     // Use this for initialization
     void Start () {
 
         cardsDealt = 0;
-		
-	}
-	
+    }
+
 	// Update is called once per frame
 	void Update () {
 
@@ -71,8 +93,10 @@ public class GameManager : MonoBehaviour {
 
         if(readyToEvalute == true && winnerDeclared == false)
         {
-            PokerHands.EvaluateHand(p1HoleCards);
-            //Debug.Log("high card is" + PokerHands.HandValues.HighCard);
+            EvaluateHand(p1HoleCards, p1HoleCards[6].GetComponent<PlayingCardScript>().handValue.HighCard);
+            EvaluateHand(p2HoleCards, p2HoleCards[6].GetComponent<PlayingCardScript>().handValue.HighCard);
+            EvaluateHand(p3HoleCards, p3HoleCards[6].GetComponent<PlayingCardScript>().handValue.HighCard);
+            EvaluateHand(p4HoleCards, p4HoleCards[6].GetComponent<PlayingCardScript>().handValue.HighCard);
             winnerDeclared = true;
         }
 
@@ -86,7 +110,6 @@ public class GameManager : MonoBehaviour {
         playerCards.AddRange(newhand);
         playerCards.Sort((cardLow, cardHigh) => cardLow.GetComponent<PlayingCardScript>().card.rank.CompareTo(cardHigh.GetComponent<PlayingCardScript>().card.rank));
     }
-
 
     public List<GameObject> GetHand(int playerNum)
     {
@@ -104,5 +127,79 @@ public class GameManager : MonoBehaviour {
                 Debug.LogError("Player doesn't exist");
                 return null;
         }
+    }
+
+    HandType EvaluateHand(List<GameObject> hand, int _highCard)
+    {
+        getNumberOfSuit(hand);
+        if (OnePair(hand))
+            return HandType.Pair;
+        else if (TwoPair(hand))
+            return HandType.TwoPair;
+        else if (ThreeOfKind(hand))
+            return HandType.ThreeOfAKind;
+        else if (Straight(hand))
+            return HandType.Straight;
+        else if (Flush(hand))
+            return HandType.Flush;
+        else if (FourOfKind(hand))
+            return HandType.FourOfAKind;
+        else if (FullHouse(hand))
+            return HandType.FullHouse;
+        else if (StraightFlush(hand))
+            return HandType.StraightFlush;
+        hand[6].GetComponent<PlayingCardScript>().handValue.HighCard = _highCard;
+        Debug.Log(hand + "has a highCard of " + _highCard);
+        return HandType.HighCard;
+    }
+
+    public static int getNumberOfSuit(List<GameObject> hand)
+    {
+        return 0;
+    }
+
+    public bool HighCard(List<GameObject> hand)
+    {
+        return false;
+    }
+
+    public bool OnePair(List<GameObject> hand)
+    {
+        return false;
+    }
+
+    public bool TwoPair(List<GameObject> hand)
+    {
+        return false;
+    }
+
+    public bool ThreeOfKind(List<GameObject> hand)
+    {
+        return false;
+    }
+
+    public bool Straight(List<GameObject> hand)
+    {
+        return false;
+    }
+
+    public bool Flush(List<GameObject> hand)
+    {
+        return false;
+    }
+
+    public bool FourOfKind(List<GameObject> hand)
+    {
+        return false;
+    }
+
+    public bool FullHouse(List<GameObject> hand)
+    {
+        return false;
+    }
+
+    public bool StraightFlush(List<GameObject> hand)
+    {
+        return false;
     }
 }

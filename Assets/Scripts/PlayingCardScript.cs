@@ -41,6 +41,13 @@ public class PlayingCardScript : InteractionSuperClass {
     GameObject cardDeck;
     CardDeckScript deckScript;
     public Cards card;
+    public HandValue handValue;
+
+    public struct HandValue
+    {
+        public int Total { get; set; }
+        public int HighCard { get; set; }
+    }
 
     //VARIABLE FOR CHECKING SWIPE
     private int messageIndex = 0;
@@ -85,6 +92,7 @@ public class PlayingCardScript : InteractionSuperClass {
             hand2 = null;
         }
 
+        handValue.HighCard = (int)card.rank;
 	}
 	
 
