@@ -6,9 +6,11 @@ using Valve.VR.InteractionSystem;
 
 public class CardDeckScript : InteractionSuperClass {
 
+    //everything in the script that controls the physics needs to be in a script, or a section of script attached to an enum we'll call PitchMode that way, depending on what controller mode I'm in, I can either switch on the elements I need in this script, or switch on the RakeMode and do the raking script stuff.
+
     GameObject cardDeck;
     Quaternion cardDeckPos;
-    public List<GameObject> playingCardList = new List<GameObject>();
+    public List<GameObject> playingCardList = new List<GameObject>(); //this should go in a DeckScript
     Vector3 newCardDeckScale;
     Vector3 currentCardDeckScale;
     Vector3 decreaseCardDeckBy;
@@ -36,6 +38,13 @@ public class CardDeckScript : InteractionSuperClass {
         //Debug.Log("deckGotThrown is " + deckGotThrown);
         //Debug.Log("cardDeck has this many children (SHOULD BE 52) : " + transform.childCount);
         //Debug.Log("first card in the deck is: " + transform.GetChild(0).name);
+
+        //
+        //
+        //EVERYTHING IN UPDATE SHOULD BE IN A DECKSCRIPT
+        //
+        //
+
         cardDeck = this.gameObject;
         cardDeckPos = cardDeck.transform.rotation;
         if (playingCardList.Count == 0)
@@ -77,15 +86,19 @@ public class CardDeckScript : InteractionSuperClass {
 
     public override void HandHoverUpdate(Hand hand)
     {
+
+        //
+        //once I rework the DeckScript, this section might change.
+        //
         base.HandHoverUpdate(hand);
-        if(hand.otherHand.GetStandardInteractionButtonDown() == true && isHoldingCard == false && isTouchingDeck == true && playingCardList.Count != 0)
+        if(hand.otherHand.GetStandardInteractionButtonDown() == true && 
+            isHoldingCard == false && 
+            isTouchingDeck == true && 
+            playingCardList.Count != 0)
         {
             isHoldingCard = true;
             isTouchingDeck = false;
             int cardPos = Random.Range(0, playingCardList.Count);
-            //Debug.Log("Pulling a Card");
-            //GameObject playingCard = Instantiate(transform.GetChild(GetCardFromDeck()).gameObject, interactableObject.transform.position, Quaternion.identity);
-            //GameObject playingCard = Instantiate(cardPrefab, interactableObject.transform.position, Quaternion.identity);
             GameObject playingCard = Instantiate(playingCardList[cardPos], interactableObject.transform.position, Quaternion.identity);
             playingCard.name = playingCardList[cardPos].name;
             playingCardList.Remove(playingCardList[cardPos]);
@@ -106,7 +119,6 @@ public class CardDeckScript : InteractionSuperClass {
     public override void OnAttachedToHand(Hand attachedHand)
     {
         isTouchingDeck = false;
-        //cardDeck.transform.rotation = Quaternion.Euler(0, 0, 0);
         if(attachedHand.currentAttachedObject.tag == "CardDeck")
         {
             //Debug.Log("attachedHand = " + attachedHand.name + " and attached to it is " + attachedHand.currentAttachedObject.name);
@@ -129,7 +141,11 @@ public class CardDeckScript : InteractionSuperClass {
     public override void OnDetachedFromHand(Hand hand)
     {
         badThrowVelocity = deckHand.GetTrackedObjectVelocity().magnitude;
-        Debug.Log("there are " + playingCardList.Count + " cards in the deck");
+        //Debug.Log("there are " + playingCardList.Count + " cards in the deck");
+
+        //
+        //should seriously rethink this because of the way it feels between dropping the deck and throwing the deck
+        //
         if (hand.GetTrackedObjectVelocity().magnitude > 1) deckGotThrown = true;
         if (deckGotThrown == true)
         {
@@ -159,11 +175,5 @@ public class CardDeckScript : InteractionSuperClass {
         }
         base.OnDetachedFromHand(hand);
     }
-
-    //public int GetCardFromDeck()
-    //{
-    //    int cardPos = Random.Range(0, 52);
-    //    return cardPos;
-    //}
 
 }

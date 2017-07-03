@@ -55,18 +55,13 @@ public class PlayingCardPhysics : InteractionSuperClass {
     private readonly Vector2 yAxis = new Vector2(0, 1);
     // The angle range for detecting swipe
     private const float angleRange = 30;
-    
-
-    void Awake()
-    {
-        //Debug.Log("rb is called on awake at " + Time.time);
-    }
+   
 
     // Use this for initialization
     void Start () {
 
-        cardDeck = GameObject.FindGameObjectWithTag("CardDeck");
-        deckScript = cardDeck.GetComponent<CardDeckScript>();
+        cardDeck = GameObject.FindGameObjectWithTag("CardDeck"); //DEF will need to change this for recoupling purposes.
+        deckScript = cardDeck.GetComponent<CardDeckScript>();  //gonna need to rework A LOT
         rb = GetComponent<Rigidbody>();
         elapsedTimeForCardFlip = 0;
         elapsedTimeForBadDrag = 0;
@@ -101,8 +96,9 @@ public class PlayingCardPhysics : InteractionSuperClass {
                 Destroy(deadCard);
             }
             deckScript.thrownDeck = false;
-            Destroy(GameObject.FindGameObjectWithTag("CardDeck"));
+            Destroy(GameObject.FindGameObjectWithTag("CardDeck")); //maybe could pool the card decks
             deckScript.thrownDeck = false;
+            //really need my deck to not actually be 52 cards 
             newCardDeck = Instantiate(Resources.Load("Prefabs/PlayingCardDeck"), hand1.transform.position, Quaternion.identity) as GameObject;
 
             instantiatingDeck = false;
@@ -151,25 +147,10 @@ public class PlayingCardPhysics : InteractionSuperClass {
             //startBadThrowLerp = true;
             rb.drag = 0.5f;
             rb.AddForce(Random.Range(0, 2), Random.Range(0, 2), Random.Range(0, 2));
-            //gameObject.GetComponent<ConstantForce>().enabled = true;
-            //Vector3 torque;
-            //torque.x = Random.Range(-200, 200);
-            //torque.y = Random.Range(-200, 200);
-            //torque.z = Random.Range(-200, 200);
-            //gameObject.GetComponent<ConstantForce>().torque = torque;
             float badThrowVelocity = deckScript.badThrowVelocity;
             Vector3 randomRot = new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
             transform.Rotate(randomRot * badThrowVelocity * Time.deltaTime);
         }
-        //if(startBadThrowLerp == true)
-        //{
-        //    float badThrowDrag = rb.drag;
-        //    elapsedTimeForBadDrag += Time.deltaTime;
-        //    startDrag = 0;
-        //    endDrag = 5;
-        //    badThrowDrag = Mathf.Lerp(startDrag, endDrag, elapsedTimeForBadDrag / badThrowDuration);
-        //    if (elapsedTimeForBadDrag >= badThrowDuration) startBadThrowLerp = false;
-        //}
 
         if (rb.isKinematic == false && startingFastTorque == true)
         {
@@ -191,11 +172,13 @@ public class PlayingCardPhysics : InteractionSuperClass {
         }
 
         //we want to be able to flip the card if we're holding in it our hands. the only time the card is in our hands is if it's kinematic.
+
+        //
+        //references to throwing hand will have to be replaced
+        //
         if (rb.isKinematic == true && deckIsDestroyed == false)
         {
-            //Vector2 touch = transform.parent.gameObject.GetComponent<Hand>().controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
             Vector2 touch = throwingHand.controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
-            //var device = transform.parent.gameObject.GetComponent<Hand>().controller;
             var device = throwingHand.GetComponent<Hand>().controller;
             if (device.GetTouchDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
             {
