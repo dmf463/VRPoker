@@ -30,8 +30,14 @@ public class HandEvaluator {
         clubSum = 0;
         straightCount = 0;
         straightFlushCount = 0;
-        incomingCards = new List<Cards>(7);
+        incomingCards = sortedCards;
         Cards = sortedCards;
+    }
+
+    public HandValue HandValues
+    {
+        get { return handValue; }
+        set { handValue = value; }
     }
 
     public List<Cards> Cards

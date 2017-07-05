@@ -67,6 +67,10 @@ public class GameManager : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Space))
         {
             TableCards.instance.DebugHands();
+            TableCards.instance.EvaluatePlayer(Destinations.player0);
+            TableCards.instance.EvaluatePlayer(Destinations.player1);
+            TableCards.instance.EvaluatePlayer(Destinations.player2);
+            TableCards.instance.EvaluatePlayer(Destinations.player3);
         }
 
         //if (boardCards.Count == 3 && flopDealt == false)
