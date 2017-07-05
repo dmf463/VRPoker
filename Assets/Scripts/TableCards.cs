@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public enum Destinations { player0, player1, player2, player3, board, burn, table}
 
@@ -82,21 +83,25 @@ public class TableCards {
         {
             EvaluatedHand = _player0;
             EvaluatedHand.AddRange(_board);
+            EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
         }
         if (dest == Destinations.player1)
         {
             EvaluatedHand = _player1;
             EvaluatedHand.AddRange(_board);
+            EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
         }
         if (dest == Destinations.player2)
         {
             EvaluatedHand = _player2;
             EvaluatedHand.AddRange(_board);
+            EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
         }
         if (dest == Destinations.player3)
         {
             EvaluatedHand = _player3;
             EvaluatedHand.AddRange(_board);
+            EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
         }
 
         //Pass To Whatever

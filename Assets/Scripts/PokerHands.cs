@@ -87,45 +87,45 @@
 //        return 0;
 //    }
 
-//    public static bool OnePair()
-//    {
-//        return false;
-//    }
+    //public static bool OnePair()
+    //{
+    //    return false;
+    //}
 
-//    public static bool TwoPair()
-//    {
-//        return false;
-//    }
+    //public static bool TwoPair()
+    //{
+    //    return false;
+    //}
 
-//    public static bool ThreeOfKind()
-//    {
-//        return false;
-//    }
+    //public static bool ThreeOfKind()
+    //{
+    //    return false;
+    //}
 
-//    public static bool Straight()
-//    {
-//        return false;
-//    }
+    //public static bool Straight()
+    //{
+    //    return false;
+    //}
 
-//    public static bool Flush()
-//    {
-//        return false;
-//    }
+    //public static bool Flush()
+    //{
+    //    return false;
+    //}
 
-//    public static bool FourOfKind()
-//    {
-//        return false;
-//    }
+    //public static bool FourOfKind()
+    //{
+    //    return false;
+    //}
 
-//    public static bool FullHouse()
-//    {
-//        return false;
-//    }
+    //public static bool FullHouse()
+    //{
+    //    return false;
+    //}
 
-//    public static bool StraightFlush()
-//    {
-//        return false;
-//    }
+    //public static bool StraightFlush()
+    //{
+    //    return false;
+    //}
 
 //}
 
