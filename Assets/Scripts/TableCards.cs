@@ -104,9 +104,8 @@ public class TableCards {
             EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
         }
 
-        HandEvaluator playerHandEvaluator = new HandEvaluator(EvaluatedHand);
-        //playerHandEvaluator.EvaluateHand();
-        Debug.Log(dest + " has " + playerHandEvaluator.EvaluateHand());
+        //HandEvaluator playerHandEvaluator = new HandEvaluator(EvaluatedHand);
+        //Debug.Log(dest + " has " + playerHandEvaluator.EvaluateHand() + " with a highCard of " + playerHandEvaluator.HandValues.HighCard);
     }
 
     public void DebugHands()
