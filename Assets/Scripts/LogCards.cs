@@ -25,35 +25,74 @@ public class LogCards : MonoBehaviour
         cardCount += 1;
         if (other.gameObject.tag == "PlayingCard")
         {
-            Debug.Log(other.GetComponent<CardManager>().card);
-            switch (playerName)
+            //Debug.Log(other.GetComponent<CardManager>().card);
+            if (this.gameObject.name == "TestSpace1")
             {
-                case "TestSpace1":
-                    Debug.Log(other.GetComponent<CardManager>().card.rank + "" + other.GetComponent<CardManager>().card.suit);
-                    TableCards.instance.AddCardTo(Destinations.player0, other.GetComponent<CardManager>().card);
-                    break;
-                case "TestSpace2":
-                    TableCards.instance.AddCardTo(Destinations.player1, other.GetComponent<CardManager>().card);
-                    break;
-                case "TestSpace3":
-                    TableCards.instance.AddCardTo(Destinations.player2, other.GetComponent<CardManager>().card);
-                    break;
-                case "TestSpace4":
-                    TableCards.instance.AddCardTo(Destinations.player3, other.GetComponent<CardManager>().card);
-                    break;
-                case "TheBoard":
-                    if (TableCards.instance._board.Contains(other.GetComponent<CardManager>().card))
-                    {
-                        break;
-                    }
-                    TableCards.instance.AddCardTo(Destinations.board, other.GetComponent<CardManager>().card);
-                    break;
-                case "BurnCards":
-                    TableCards.instance.AddCardTo(Destinations.burn, other.GetComponent<CardManager>().card);
-                    break;
-                default:
-                    break;
+                TableCards.instance.AddCardTo(Destinations.player0, other.GetComponent<CardManager>().card);
+                Debug.Log("Card went into " + this.gameObject.name);
             }
+            else if (this.gameObject.name == "TestSpace2")
+            {
+                TableCards.instance.AddCardTo(Destinations.player1, other.GetComponent<CardManager>().card);
+                Debug.Log("Card went into " + this.gameObject.name);
+            }
+            else if (this.gameObject.name == "TestSpace3")
+            {
+                TableCards.instance.AddCardTo(Destinations.player2, other.GetComponent<CardManager>().card);
+                Debug.Log("Card went into " + this.gameObject.name);
+            }
+            else if (this.gameObject.name == "TestSpace4")
+            {
+                TableCards.instance.AddCardTo(Destinations.player3, other.GetComponent<CardManager>().card);
+                Debug.Log("Card went into " + this.gameObject.name);
+            }
+            else if (this.gameObject.name == "TheBoard")
+            {
+                if (TableCards.instance._board.Contains(other.GetComponent<CardManager>().card))
+                {
+                    Debug.Log(other.gameObject.name + " is already in play");
+                }
+                else
+                {
+                    TableCards.instance.AddCardTo(Destinations.board, other.GetComponent<CardManager>().card);
+                    Debug.Log("Card went into " + this.gameObject.name);
+                }
+
+            }
+            else if (this.gameObject.name == "BurnCards")
+            {
+                TableCards.instance.AddCardTo(Destinations.burn, other.GetComponent<CardManager>().card);
+                Debug.Log("Card went into " + this.gameObject.name);
+            }
+
+            //switch (playerName)
+            //{
+            //    case "TestSpace1":
+            //        Debug.Log(other.GetComponent<CardManager>().card.rank + "" + other.GetComponent<CardManager>().card.suit);
+            //        TableCards.instance.AddCardTo(Destinations.player0, other.GetComponent<CardManager>().card);
+            //        break;
+            //    case "TestSpace2":
+            //        TableCards.instance.AddCardTo(Destinations.player1, other.GetComponent<CardManager>().card);
+            //        break;
+            //    case "TestSpace3":
+            //        TableCards.instance.AddCardTo(Destinations.player2, other.GetComponent<CardManager>().card);
+            //        break;
+            //    case "TestSpace4":
+            //        TableCards.instance.AddCardTo(Destinations.player3, other.GetComponent<CardManager>().card);
+            //        break;
+            //    case "TheBoard":
+            //        if (TableCards.instance._board.Contains(other.GetComponent<CardManager>().card))
+            //        {
+            //            break;
+            //        }
+            //        TableCards.instance.AddCardTo(Destinations.board, other.GetComponent<CardManager>().card);
+            //        break;
+            //    case "BurnCards":
+            //        TableCards.instance.AddCardTo(Destinations.burn, other.GetComponent<CardManager>().card);
+            //        break;
+            //    default:
+            //        break;
+            //}
         }
     }
 }
