@@ -300,27 +300,63 @@ public class HandEvaluator {
         {
             straightCount++;
         }
+        else if (incomingCards[0].rank == incomingCards[1].rank)
+        {
+            straightCount += 0;
+        }
+        else straightCount = 0;
+        
         if (incomingCards[1].rank + 1 == incomingCards[2].rank)
         {
             straightCount++;
         }
+        else if (incomingCards[1].rank == incomingCards[2].rank)
+        {
+            straightCount += 0;
+        }
+        else straightCount = 0;
+
         if (incomingCards[2].rank + 1 == incomingCards[3].rank)
         {
             straightCount++;
         }
+        else if (incomingCards[2].rank == incomingCards[3].rank)
+        {
+            straightCount += 0;
+        }
+        else straightCount = 0;
+
         if (incomingCards[3].rank + 1 == incomingCards[4].rank)
         {
             straightCount++;
         }
+        else if (incomingCards[3].rank == incomingCards[4].rank)
+        {
+            straightCount += 0;
+        }
+        else straightCount = 0;
+
         if (incomingCards[4].rank + 1 == incomingCards[5].rank)
         {
             straightCount++;
         }
+        else if (incomingCards[4].rank == incomingCards[5].rank)
+        {
+            straightCount += 0;
+        }
+        else straightCount = 0;
+
         if (incomingCards[5].rank + 1 == incomingCards[6].rank)
         {
             straightCount++;
         }
-        if(straightCount >= 4)
+        else if (incomingCards[5].rank == incomingCards[6].rank)
+        {
+            straightCount += 0;
+        }
+        else straightCount = 0;
+
+        if (straightCount >= 4)
         {
             if(incomingCards[4].rank + 1 == incomingCards[5].rank && incomingCards[5].rank + 1 == incomingCards[6].rank)
             {
