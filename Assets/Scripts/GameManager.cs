@@ -31,7 +31,10 @@ public class GameManager : MonoBehaviour
         //Debug.Log("player0 in GM has " + player0Cards.Count + " cards");
         if (Input.GetKeyDown(KeyCode.Space))
         {
-
+            //this is purelyfor testing purposes
+            //I need to write a function to do this, but also need to write comparisons
+            //I need to log who had the highest hand, the second highest, and so forth, so that eventually I can add in side pots and shit
+            //I COULD do that in another script? some kind of Comparer Script maybe? and make instances of itself to compare? but either way it's gonna be a pain in the ass
             TableCards.instance.DebugHands();
             TableCards.instance.EvaluatePlayer(Destinations.player0);
             TableCards.instance.EvaluatePlayer(Destinations.player1);
