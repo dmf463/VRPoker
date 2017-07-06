@@ -29,17 +29,16 @@ public class PlayingCardPhysics : InteractionSuperClass {
     Vector3 currentCardDeckScale;
     Vector3 increaseCardDeckBy;
     public bool badThrow;
-    float elapsedTimeForBadDrag;
     float startDrag;
     float endDrag;
-    float badThrowDuration = .25f;
     bool startBadThrowLerp;
     bool cardIsFlipped;
     GameObject cardDeck;
     CardDeckScript deckScript;
+    bool cardFacingUp = false;
 
     //VARIABLE FOR CHECKING SWIPE
-    private int messageIndex = 0;
+
     private bool trackingSwipe;
     private bool checkSwipe;
     private Vector2 startPosition;
@@ -64,7 +63,6 @@ public class PlayingCardPhysics : InteractionSuperClass {
         deckScript = cardDeck.GetComponent<CardDeckScript>();  //gonna need to rework A LOT
         rb = GetComponent<Rigidbody>();
         elapsedTimeForCardFlip = 0;
-        elapsedTimeForBadDrag = 0;
         if (testingOutsideVR == false)
         {
             hand1 = GameObject.Find("Hand1").GetComponent<Hand>();
@@ -81,8 +79,8 @@ public class PlayingCardPhysics : InteractionSuperClass {
     // Update is called once per frame
     void Update () {
 
-        //Debug.Log("rb = " + rb);
 
+        //BASICALLY NEED TO REWORK ALL THIS. IT WAS A SHORT TERM SOLUTION
         if (deckIsDestroyed == true && deckHand.GetStandardInteractionButton() == true && throwingHand.GetStandardInteractionButton() == true)
         {
             instantiatingDeck = true;
@@ -98,7 +96,6 @@ public class PlayingCardPhysics : InteractionSuperClass {
             deckScript.thrownDeck = false;
             Destroy(GameObject.FindGameObjectWithTag("CardDeck")); //maybe could pool the card decks
             deckScript.thrownDeck = false;
-            //really need my deck to not actually be 52 cards 
             newCardDeck = Instantiate(Resources.Load("Prefabs/PlayingCardDeck"), hand1.transform.position, Quaternion.identity) as GameObject;
 
             instantiatingDeck = false;
@@ -117,6 +114,14 @@ public class PlayingCardPhysics : InteractionSuperClass {
                 elapsedTimeForCardFlip = 0;
                 flippingCard = false;
                 cardIsFlipped = true;
+                if(cardFacingUp == false)
+                {
+                    cardFacingUp = true;
+                }
+                else if (cardFacingUp == true)
+                {
+                    cardFacingUp = false;
+                }
             }
         }
 
@@ -125,7 +130,6 @@ public class PlayingCardPhysics : InteractionSuperClass {
             Debug.Log("Calling bad throw");
             startingFastTorque = false;
             startingSlowTorque = false;
-            //startBadThrowLerp = true;
             rb.drag = 7;
             rb.AddForce(Random.Range(0, 2), Random.Range(0, 2), Random.Range(0, 2));
             gameObject.GetComponent<ConstantForce>().enabled = true;
@@ -144,7 +148,6 @@ public class PlayingCardPhysics : InteractionSuperClass {
             Debug.Log("Calling bad throw");
             startingFastTorque = false;
             startingSlowTorque = false;
-            //startBadThrowLerp = true;
             rb.drag = 0.5f;
             rb.AddForce(Random.Range(0, 2), Random.Range(0, 2), Random.Range(0, 2));
             float badThrowVelocity = deckScript.badThrowVelocity;
@@ -236,7 +239,7 @@ public class PlayingCardPhysics : InteractionSuperClass {
                         }
                         else
                         {
-                            messageIndex = 0;
+                            //messageIndex = 0;
                         }
                     }
                 }
@@ -275,13 +278,20 @@ public class PlayingCardPhysics : InteractionSuperClass {
 
     public override void OnAttachedToHand(Hand attachedHand)
     {
-        transform.rotation = throwingHand.GetAttachmentTransform("Attach_ControllerTip").transform.rotation;
+        if (cardFacingUp == false)
+        {
+            transform.rotation = throwingHand.GetAttachmentTransform("CardFaceDown").transform.rotation;
+        }
+        else if(cardFacingUp == true)
+        {
+            transform.rotation = throwingHand.GetAttachmentTransform("CardFaceUp").transform.rotation;
+        }
+
         base.OnAttachedToHand(attachedHand);
     }
 
     public override void HandAttachedUpdate(Hand attachedHand)
     {
-        //Debug.Log(rb.transform.rotation.eulerAngles);
         base.HandAttachedUpdate(attachedHand);
     }
 
@@ -292,7 +302,6 @@ public class PlayingCardPhysics : InteractionSuperClass {
             Debug.Log(this.gameObject.name + " card is facing the wrong way");
             badThrow = true;
         }
-        //Debug.Log("playingCardRotation = " + transform.localRotation);
         StartCoroutine(CheckVelocity(.025f));
         base.OnDetachedFromHand(hand);
     }
@@ -321,25 +330,21 @@ public class PlayingCardPhysics : InteractionSuperClass {
     private void OnSwipeLeft()
     {
         Debug.Log("Swipe Left");
-        messageIndex = 1;
     }
 
     private void OnSwipeRight()
     {
         Debug.Log("Swipe right");
-        messageIndex = 2;
     }
 
     private void OnSwipeTop()
     {
         Debug.Log("Swipe Top");
         RotateCard();
-        messageIndex = 3;
     }
 
     private void OnSwipeBottom()
     {
         Debug.Log("Swipe Bottom");
-        messageIndex = 4;
     }
 }

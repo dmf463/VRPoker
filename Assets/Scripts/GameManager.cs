@@ -11,11 +11,11 @@ public class GameManager : MonoBehaviour
     public float cardsDealt;
 
     //keep track of where we are in the game
-    private bool flopDealt = false;
-    private bool turnDealt = false;
-    private bool riverDealt = false;
-    private bool readyToEvalute = false;
-    private bool winnerDeclared = false;
+    //private bool flopDealt = false;
+    //private bool turnDealt = false;
+    //private bool riverDealt = false;
+    //private bool readyToEvalute = false;
+    //private bool winnerDeclared = false;
 
     // Use this for initialization
     void Start()
@@ -58,10 +58,10 @@ public class GameManager : MonoBehaviour
             Debug.Log("player3 has " + finalP3Hand + " with a highCard of " + player3Hand.HandValues.HighCard);
         }
 
-        if (readyToEvalute == true && winnerDeclared == false)
-        {
-            winnerDeclared = true;
-        }
+        //if (readyToEvalute == true && winnerDeclared == false)
+        //{
+        //    winnerDeclared = true;
+        //}
 
     }
 }

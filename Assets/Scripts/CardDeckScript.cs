@@ -8,9 +8,9 @@ public class CardDeckScript : InteractionSuperClass {
 
     //everything in the script that controls the physics needs to be in a script, or a section of script attached to an enum we'll call PitchMode that way, depending on what controller mode I'm in, I can either switch on the elements I need in this script, or switch on the RakeMode and do the raking script stuff.
 
+    public List<GameObject> playingCardList = new List<GameObject>();
     GameObject cardDeck;
-    Quaternion cardDeckPos;
-    public List<GameObject> playingCardList = new List<GameObject>(); //this should go in a DeckScript
+
     Vector3 newCardDeckScale;
     Vector3 currentCardDeckScale;
     Vector3 decreaseCardDeckBy;
@@ -19,34 +19,19 @@ public class CardDeckScript : InteractionSuperClass {
     float explosionRadius = 30;
     public bool thrownDeck;
     public float badThrowVelocity;
-    GameObject gameManager;
-    GameManager gm;
 
     void Start()
     {
         newCardDeckScale = transform.localScale;
         decreaseCardDeckBy = new Vector3 (newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
-        //Debug.Log("decreaseCardDeckby = " + decreaseCardDeckBy);
         currentCardDeckScale = newCardDeckScale;
-        gameManager = GameObject.Find("GameManager");
-        gm = gameManager.GetComponent<GameManager>();
     }
 
 
     void Update()
     {
-        //Debug.Log("deckGotThrown is " + deckGotThrown);
-        //Debug.Log("cardDeck has this many children (SHOULD BE 52) : " + transform.childCount);
-        //Debug.Log("first card in the deck is: " + transform.GetChild(0).name);
-
-        //
-        //
-        //EVERYTHING IN UPDATE SHOULD BE IN A DECKSCRIPT
-        //
-        //
 
         cardDeck = this.gameObject;
-        cardDeckPos = cardDeck.transform.rotation;
         if (playingCardList.Count == 0)
         {
             deckIsDestroyed = true;
@@ -67,7 +52,6 @@ public class CardDeckScript : InteractionSuperClass {
             if(other.gameObject.GetComponent<Hand>() == throwingHand)
             {
                 isTouchingDeck = true;
-                //Debug.Log("isTouchingDeck = " + isTouchingDeck);
             }
         }
     }
@@ -79,17 +63,12 @@ public class CardDeckScript : InteractionSuperClass {
             if(other.GetComponent<Hand>() == throwingHand)
             {
                 isTouchingDeck = false;
-                //Debug.Log("isTouchingDeck = " + isTouchingDeck);
             }
         }
     }
 
     public override void HandHoverUpdate(Hand hand)
     {
-
-        //
-        //once I rework the DeckScript, this section might change.
-        //
         base.HandHoverUpdate(hand);
         if(hand.otherHand.GetStandardInteractionButtonDown() == true && 
             isHoldingCard == false && 
@@ -121,7 +100,6 @@ public class CardDeckScript : InteractionSuperClass {
         isTouchingDeck = false;
         if(attachedHand.currentAttachedObject.tag == "CardDeck")
         {
-            //Debug.Log("attachedHand = " + attachedHand.name + " and attached to it is " + attachedHand.currentAttachedObject.name);
             deckHand = attachedHand;
             throwingHand = attachedHand.otherHand;
             Debug.Log("deckHand = " + attachedHand.name + " and throwingHand = " + attachedHand.otherHand.name);
@@ -141,7 +119,6 @@ public class CardDeckScript : InteractionSuperClass {
     public override void OnDetachedFromHand(Hand hand)
     {
         badThrowVelocity = deckHand.GetTrackedObjectVelocity().magnitude;
-        //Debug.Log("there are " + playingCardList.Count + " cards in the deck");
 
         //
         //should seriously rethink this because of the way it feels between dropping the deck and throwing the deck
