@@ -79,7 +79,11 @@ public class PlayingCardPhysics : InteractionSuperClass {
     // Update is called once per frame
     void Update () {
 
-
+        if (transform.eulerAngles.x > 89 && transform.eulerAngles.x < 92)
+        {
+            cardFacingUp = true;
+        }
+        else cardFacingUp = false;
         //BASICALLY NEED TO REWORK ALL THIS. IT WAS A SHORT TERM SOLUTION
         if (deckIsDestroyed == true && deckHand.GetStandardInteractionButton() == true && throwingHand.GetStandardInteractionButton() == true)
         {
@@ -114,14 +118,14 @@ public class PlayingCardPhysics : InteractionSuperClass {
                 elapsedTimeForCardFlip = 0;
                 flippingCard = false;
                 cardIsFlipped = true;
-                if(cardFacingUp == false)
-                {
-                    cardFacingUp = true;
-                }
-                else if (cardFacingUp == true)
-                {
-                    cardFacingUp = false;
-                }
+                //if (cardFacingUp == false)
+                //{
+                //    cardFacingUp = true;
+                //}
+                //else if (cardFacingUp == true)
+                //{
+                //    cardFacingUp = false;
+                //}
             }
         }
 
@@ -157,11 +161,13 @@ public class PlayingCardPhysics : InteractionSuperClass {
 
         if (rb.isKinematic == false && startingFastTorque == true)
         {
+            rb.drag = 0;
             rb.AddForce(Vector3.down * 5);
             transform.Rotate(Vector3.forward * (fastTorque * throwingVelocity));
         }
         else if (rb.isKinematic == false && startingSlowTorque == true)
         {
+            rb.drag = 0;
             rb.AddForce(Vector3.down * 5);
             transform.Rotate(Vector3.forward * (slowTorque * throwingVelocity));
         }
@@ -171,7 +177,11 @@ public class PlayingCardPhysics : InteractionSuperClass {
             elapsedTimeForThrowTorque += Time.deltaTime;
             fastTorque = Mathf.Lerp(fastTorque, 0, elapsedTimeForThrowTorque / torqueDuration);
             slowTorque = Mathf.Lerp(slowTorque, 0, elapsedTimeForThrowTorque / torqueDuration);
-            if (elapsedTimeForThrowTorque >= torqueDuration) startLerping = false;
+            if (elapsedTimeForThrowTorque >= torqueDuration)
+            {
+                startLerping = false;
+            } 
+
         }
 
         //we want to be able to flip the card if we're holding in it our hands. the only time the card is in our hands is if it's kinematic.
@@ -282,11 +292,12 @@ public class PlayingCardPhysics : InteractionSuperClass {
         {
             transform.rotation = throwingHand.GetAttachmentTransform("CardFaceDown").transform.rotation;
         }
-        else if(cardFacingUp == true)
+        else if (cardFacingUp == true)
         {
             transform.rotation = throwingHand.GetAttachmentTransform("CardFaceUp").transform.rotation;
         }
-
+        fastTorque = 3;
+        slowTorque = .25f;
         base.OnAttachedToHand(attachedHand);
     }
 
