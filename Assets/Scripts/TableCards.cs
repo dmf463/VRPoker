@@ -18,15 +18,15 @@ public class TableCards {
         }
     }
 
-    public List<Cards> _player0 = new List<Cards>();
-    public List<Cards> _player1 = new List<Cards>();
-    public List<Cards> _player2 = new List<Cards>();
-    public List<Cards> _player3 = new List<Cards>();
-    public List<Cards> _board = new List<Cards>();
-    public List<Cards> _burn = new List<Cards>();
-    public List<Cards> _table = new List<Cards>();
+    public List<CardType> _player0 = new List<CardType>();
+    public List<CardType> _player1 = new List<CardType>();
+    public List<CardType> _player2 = new List<CardType>();
+    public List<CardType> _player3 = new List<CardType>();
+    public List<CardType> _board = new List<CardType>();
+    public List<CardType> _burn = new List<CardType>();
+    public List<CardType> _table = new List<CardType>();
 
-    public void AddCardTo (Destinations dest, Cards card)
+    public void AddCardTo (Destinations dest, CardType card)
     {
         if (dest == Destinations.player0)
         {
@@ -78,7 +78,7 @@ public class TableCards {
 
     public void EvaluatePlayer(Destinations dest)
     {
-        List<Cards> EvaluatedHand = new List<Cards>();
+        List<CardType> EvaluatedHand = new List<CardType>();
         if (dest == Destinations.player0)
         {
             EvaluatedHand = _player0;

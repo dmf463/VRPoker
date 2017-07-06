@@ -24,40 +24,40 @@ public class LogCards : MonoBehaviour
         {
             if (this.gameObject.name == "TestSpace1")
             {
-                TableCards.instance.AddCardTo(Destinations.player0, other.GetComponent<CardManager>().card);
+                TableCards.instance.AddCardTo(Destinations.player0, other.GetComponent<Card>().cardType);
                 Debug.Log("Card went into " + this.gameObject.name);
             }
             else if (this.gameObject.name == "TestSpace2")
             {
-                TableCards.instance.AddCardTo(Destinations.player1, other.GetComponent<CardManager>().card);
+                TableCards.instance.AddCardTo(Destinations.player1, other.GetComponent<Card>().cardType);
                 Debug.Log("Card went into " + this.gameObject.name);
             }
             else if (this.gameObject.name == "TestSpace3")
             {
-                TableCards.instance.AddCardTo(Destinations.player2, other.GetComponent<CardManager>().card);
+                TableCards.instance.AddCardTo(Destinations.player2, other.GetComponent<Card>().cardType);
                 Debug.Log("Card went into " + this.gameObject.name);
             }
             else if (this.gameObject.name == "TestSpace4")
             {
-                TableCards.instance.AddCardTo(Destinations.player3, other.GetComponent<CardManager>().card);
+                TableCards.instance.AddCardTo(Destinations.player3, other.GetComponent<Card>().cardType);
                 Debug.Log("Card went into " + this.gameObject.name);
             }
             else if (this.gameObject.name == "TheBoard")
             {
-                if (TableCards.instance._board.Contains(other.GetComponent<CardManager>().card))
+                if (TableCards.instance._board.Contains(other.GetComponent<Card>().cardType))
                 {
                     Debug.Log(other.gameObject.name + " is already in play");
                 }
                 else
                 {
-                    TableCards.instance.AddCardTo(Destinations.board, other.GetComponent<CardManager>().card);
+                    TableCards.instance.AddCardTo(Destinations.board, other.GetComponent<Card>().cardType);
                     Debug.Log("Card went into " + this.gameObject.name);
                 }
 
             }
             else if (this.gameObject.name == "BurnCards")
             {
-                TableCards.instance.AddCardTo(Destinations.burn, other.GetComponent<CardManager>().card);
+                TableCards.instance.AddCardTo(Destinations.burn, other.GetComponent<Card>().cardType);
                 Debug.Log("Card went into " + this.gameObject.name);
             }
 

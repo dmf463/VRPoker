@@ -4,7 +4,9 @@ using UnityEngine;
 using Valve.VR; //we need this for SteamVR
 using Valve.VR.InteractionSystem;
 
-public class PlayingCardPhysics : InteractionSuperClass {
+public class Card : InteractionSuperClass {
+
+    public CardType cardType;
 
     const float MAGNITUDE_THRESHOLD = 2.5f;
     Vector3 throwingRotation;
@@ -118,14 +120,6 @@ public class PlayingCardPhysics : InteractionSuperClass {
                 elapsedTimeForCardFlip = 0;
                 flippingCard = false;
                 cardIsFlipped = true;
-                //if (cardFacingUp == false)
-                //{
-                //    cardFacingUp = true;
-                //}
-                //else if (cardFacingUp == true)
-                //{
-                //    cardFacingUp = false;
-                //}
             }
         }
 
@@ -149,7 +143,7 @@ public class PlayingCardPhysics : InteractionSuperClass {
 
         if (rb.isKinematic == false && badThrow == true && deckScript.thrownDeck == true)
         {
-            Debug.Log("Calling bad throw");
+            Debug.Log("Calling bad throw at time: " + Time.time);
             startingFastTorque = false;
             startingSlowTorque = false;
             rb.drag = 0.5f;
@@ -264,7 +258,7 @@ public class PlayingCardPhysics : InteractionSuperClass {
         elapsedTimeForThrowTorque = 0;
         if (badThrow == true && other.gameObject.tag != "CardDeck") 
         {
-            Debug.Log("hitting " + other.gameObject.tag);
+            Debug.Log("hitting " + other.gameObject.name);
             gameObject.GetComponent<ConstantForce>().enabled = false;
             badThrow = false;
         }

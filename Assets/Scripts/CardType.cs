@@ -13,13 +13,16 @@ public enum SuitType
 {
     Spades, Hearts, Diamonds, Clubs
 }
-    [Serializable]
-    public class Cards
+
+
+
+[Serializable]
+public class CardType
 {
     [SerializeField] public RankType rank { get; set; }
     [SerializeField] public SuitType suit { get; set; }
 
-    public Cards(RankType _rank, SuitType _suit)
+    public CardType(RankType _rank, SuitType _suit)
     {
         rank = _rank;
         suit = _suit;

@@ -19,10 +19,10 @@ public class HandEvaluator {
     private int clubSum;
     private int straightCount;
     private int straightFlushCount;
-    private List<Cards> incomingCards;
+    private List<CardType> incomingCards;
     private HandValue handValue;
 
-    public HandEvaluator(List<Cards> sortedCards)
+    public HandEvaluator(List<CardType> sortedCards)
     {
         spadeSum = 0;
         heartSum = 0;
@@ -40,7 +40,7 @@ public class HandEvaluator {
         set { handValue = value; }
     }
 
-    public List<Cards> Cards
+    public List<CardType> Cards
     {
         get { return incomingCards; }
         set
@@ -99,7 +99,7 @@ public class HandEvaluator {
 
     private void getNumberOfSuit()
     {
-        foreach (Cards card in Cards)
+        foreach (CardType card in Cards)
         {
             if(card.suit == SuitType.Spades)
             {

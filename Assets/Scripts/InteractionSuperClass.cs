@@ -7,7 +7,6 @@ using Valve.VR.InteractionSystem;
 public class InteractionSuperClass : MonoBehaviour {
 
     public Interactable interactableObject; //insert cardDeck, or other interactable that you need hoverlocked in inspector
-    public GameObject cardPrefab; //insert playingCard prefab in inspector
     protected bool isHoldingCard;
     protected bool isTouchingDeck = false;
     protected const float FORCE_MULTIPLIER = 1.80f;
