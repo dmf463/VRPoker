@@ -4,15 +4,18 @@ using UnityEngine;
 using Valve.VR; //we need this for SteamVR
 using Valve.VR.InteractionSystem;
 
+enum DealerState { DealingState, ShufflingState };
+
 public class InteractionSuperClass : MonoBehaviour {
 
     public Interactable interactableObject; //insert cardDeck, or other interactable that you need hoverlocked in inspector
-    protected bool isHoldingCard;
-    protected bool isTouchingDeck = false;
+    protected bool handIsHoldingCard;
+    protected bool handTouchingDeck = false;
+    protected bool handIsTouchingCard;
     protected const float FORCE_MULTIPLIER = 1.80f;
     protected static Hand deckHand;
     protected static Hand throwingHand;
-    protected static bool deckIsDestroyed = false;
+    protected static bool deckIsEmpty = false;
     protected static bool instantiatingDeck = false;
     protected static bool growingDeck = false;
     protected static bool testingOutsideVR = false;
@@ -68,7 +71,7 @@ public class InteractionSuperClass : MonoBehaviour {
     //this happens whent he object is detached from the hand for whatever reason
     public virtual void OnDetachedFromHand(Hand hand)
     {
-        isTouchingDeck = false;
+        handTouchingDeck = false;
         GetComponent<Rigidbody>().isKinematic = false; //turns on physics
         hand.HoverUnlock(interactableObject);
 

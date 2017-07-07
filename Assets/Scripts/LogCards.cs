@@ -5,6 +5,8 @@ using UnityEngine;
 public class LogCards : MonoBehaviour
 {
     public float cardCount;
+    Card[] cardsOnTable = new Card[0];
+    int cardsDestroyed = 0;
 
     // Use this for initialization
     void Start()
@@ -59,6 +61,18 @@ public class LogCards : MonoBehaviour
             {
                 TableCards.instance.AddCardTo(Destinations.burn, other.GetComponent<Card>().cardType);
                 Debug.Log("Card went into " + this.gameObject.name);
+            }
+            else if(this.gameObject.name == "ShufflingArea")
+            {
+                cardsOnTable = FindObjectsOfType<Card>();
+                Debug.Log("cardsOnTable = " + cardsOnTable.Length + cardsOnTable[0].name);
+                Destroy(other.gameObject);
+                //if (cardsOnTable.Length == 1)
+                //{
+                //    TableCards.instance.NewGame();
+                //    Destroy(GameObject.Find("PlayingCardDeck").gameObject);
+                //    GameObject newCardDeck = Instantiate(Resources.Load("Prefabs/PlayingCardDeck"), transform.position, Quaternion.identity) as GameObject;
+                //}
             }
 
         }

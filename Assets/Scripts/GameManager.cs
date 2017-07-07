@@ -52,10 +52,12 @@ public class GameManager : MonoBehaviour
             PokerHand finalP2Hand = player2Hand.EvaluateHand();
             PokerHand finalP3Hand = player3Hand.EvaluateHand();
 
-            Debug.Log("player0 has " + finalP0Hand + " with a highCard of " + player0Hand.HandValues.HighCard);
-            Debug.Log("player1 has " + finalP1Hand + " with a highCard of " + player1Hand.HandValues.HighCard);
-            Debug.Log("player2 has " + finalP2Hand + " with a highCard of " + player2Hand.HandValues.HighCard);
-            Debug.Log("player3 has " + finalP3Hand + " with a highCard of " + player3Hand.HandValues.HighCard);
+            Debug.Log("player0 has " + finalP0Hand + " with a total HandValue of " + player0Hand.HandValues.Total + " with a highCard of " + player0Hand.HandValues.HighCard);
+            Debug.Log("player1 has " + finalP1Hand + " with a total HandValue of " + player1Hand.HandValues.Total + " with a highCard of " + player1Hand.HandValues.HighCard);
+            Debug.Log("player2 has " + finalP2Hand + " with a total HandValue of " + player2Hand.HandValues.Total + " with a highCard of " + player2Hand.HandValues.HighCard);
+            Debug.Log("player3 has " + finalP3Hand + " with a total HandValue of " + player3Hand.HandValues.Total + " with a highCard of " + player3Hand.HandValues.HighCard);
+
+
         }
 
         //if (readyToEvalute == true && winnerDeclared == false)

@@ -7,6 +7,8 @@ using Valve.VR.InteractionSystem;
 public class Card : InteractionSuperClass {
 
     public CardType cardType;
+    static DealerState _state;
+    bool cardOnTable;
 
     const float MAGNITUDE_THRESHOLD = 2.5f;
     Vector3 throwingRotation;
@@ -60,7 +62,7 @@ public class Card : InteractionSuperClass {
 
     // Use this for initialization
     void Start () {
-
+        //_state = DealerState.DealingState;
         cardDeck = GameObject.FindGameObjectWithTag("CardDeck"); //DEF will need to change this for recoupling purposes.
         deckScript = cardDeck.GetComponent<CardDeckScript>();  //gonna need to rework A LOT
         rb = GetComponent<Rigidbody>();
@@ -81,13 +83,29 @@ public class Card : InteractionSuperClass {
     // Update is called once per frame
     void Update () {
 
+        //Debug.Log("currently in " + _state);
+        switch (_state)
+        {
+            case DealerState.DealingState:
+                CardForDealingMode();
+        break;
+            case DealerState.ShufflingState:
+                break;
+        default:
+                break;
+    }
+
+}
+
+    public void CardForDealingMode()
+    {
         if (transform.eulerAngles.x > 89 && transform.eulerAngles.x < 92)
         {
             cardFacingUp = true;
         }
         else cardFacingUp = false;
         //BASICALLY NEED TO REWORK ALL THIS. IT WAS A SHORT TERM SOLUTION
-        if (deckIsDestroyed == true && deckHand.GetStandardInteractionButton() == true && throwingHand.GetStandardInteractionButton() == true)
+        if (deckIsEmpty == true && deckHand.GetStandardInteractionButton() == true && throwingHand.GetStandardInteractionButton() == true)
         {
             instantiatingDeck = true;
         }
@@ -105,7 +123,7 @@ public class Card : InteractionSuperClass {
             newCardDeck = Instantiate(Resources.Load("Prefabs/PlayingCardDeck"), hand1.transform.position, Quaternion.identity) as GameObject;
 
             instantiatingDeck = false;
-            deckIsDestroyed = false;
+            deckIsEmpty = false;
             deckHand.AttachObject(newCardDeck);
 
         }
@@ -138,12 +156,12 @@ public class Card : InteractionSuperClass {
             gameObject.GetComponent<ConstantForce>().torque = torque;
             float badThrowVelocity = 5;
             Vector3 randomRot = new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
-            transform.Rotate(randomRot * badThrowVelocity * Time.deltaTime);  
+            transform.Rotate(randomRot * badThrowVelocity * Time.deltaTime);
         }
 
         if (rb.isKinematic == false && badThrow == true && deckScript.thrownDeck == true)
         {
-            Debug.Log("Calling bad throw at time: " + Time.time);
+            //Debug.Log("Calling bad throw at time: " + Time.time);
             startingFastTorque = false;
             startingSlowTorque = false;
             rb.drag = 0.5f;
@@ -174,7 +192,7 @@ public class Card : InteractionSuperClass {
             if (elapsedTimeForThrowTorque >= torqueDuration)
             {
                 startLerping = false;
-            } 
+            }
 
         }
 
@@ -183,7 +201,7 @@ public class Card : InteractionSuperClass {
         //
         //references to throwing hand will have to be replaced
         //
-        if (rb.isKinematic == true && deckIsDestroyed == false)
+        if (rb.isKinematic == true && deckIsEmpty == false)
         {
             Vector2 touch = throwingHand.controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
             var device = throwingHand.GetComponent<Hand>().controller;
@@ -213,14 +231,14 @@ public class Card : InteractionSuperClass {
                 Vector2 swipeVector = endPosition - startPosition;
                 float velocity = swipeVector.magnitude / deltaTime;
                 //Debug.Log("velocity is " + velocity);
-                if(velocity > MIN_VELOCITY && swipeVector.magnitude > MIN_SWIPE_DIST)
+                if (velocity > MIN_VELOCITY && swipeVector.magnitude > MIN_SWIPE_DIST)
                 {
                     // if the swipe has enough velocity and enough distance
                     swipeVector.Normalize();
                     float angleOfSwipe = Vector2.Dot(swipeVector, xAxis);
                     angleOfSwipe = Mathf.Acos(angleOfSwipe) * Mathf.Rad2Deg;
                     // Detect left and right swipe
-                    if(angleOfSwipe < angleRange)
+                    if (angleOfSwipe < angleRange)
                     {
                         OnSwipeRight();
                     }
@@ -233,11 +251,11 @@ public class Card : InteractionSuperClass {
                         // Detect top and bottom swipe
                         angleOfSwipe = Vector2.Dot(swipeVector, yAxis);
                         angleOfSwipe = Mathf.Acos(angleOfSwipe) * Mathf.Rad2Deg;
-                        if(angleOfSwipe < angleRange)
+                        if (angleOfSwipe < angleRange)
                         {
                             OnSwipeTop();
                         }
-                        else if((180f - angleOfSwipe) < angleRange)
+                        else if ((180f - angleOfSwipe) < angleRange)
                         {
                             OnSwipeBottom();
                         }
@@ -249,7 +267,22 @@ public class Card : InteractionSuperClass {
                 }
             }
         }
+    }
 
+    public void CardForShufflingMode()
+    {
+
+    }
+
+    public void SwitchToShuffling()
+    {
+        Debug.Log("ShufflingNow");
+        _state = DealerState.ShufflingState;
+    }
+
+    public void SwitchToDealing()
+    {
+        _state = DealerState.DealingState;
     }
 
     void OnCollisionEnter(Collision other)
@@ -264,6 +297,31 @@ public class Card : InteractionSuperClass {
         }
     }
 
+    void OnCollisionStay(Collision other)
+    {
+        if(other.gameObject.tag == "Table")
+        {
+            cardOnTable = true;
+        }
+    }
+
+    void OnCollisionExit(Collision other)
+    {
+        cardOnTable = false;
+    }
+
+    void OnTriggerStay(Collider other)
+    {
+        if (_state == DealerState.ShufflingState)
+        {
+            if (other.gameObject.tag == "Hand" && cardOnTable == true)
+            {
+                //handIsTouchingCard = true;
+                transform.position = new Vector3 (other.transform.position.x, transform.position.y, other.transform.position.z);
+            }
+        }
+    }
+
     public override void OnTriggerEnterX(Collider other)
     {
         base.OnTriggerEnterX(other);
@@ -271,27 +329,34 @@ public class Card : InteractionSuperClass {
 
     public override void OnTriggerExitX(Collider other)
     {
+        if(_state == DealerState.ShufflingState)
+        {
+            handIsTouchingCard = false;
+        }
         base.OnTriggerExitX(other);
     }
 
     public override void HandHoverUpdate(Hand hand)
     {
-
         base.HandHoverUpdate(hand);
     }
 
     public override void OnAttachedToHand(Hand attachedHand)
     {
-        if (cardFacingUp == false)
+        if(_state == DealerState.DealingState)
         {
-            transform.rotation = throwingHand.GetAttachmentTransform("CardFaceDown").transform.rotation;
+            if (cardFacingUp == false)
+            {
+                transform.rotation = throwingHand.GetAttachmentTransform("CardFaceDown").transform.rotation;
+            }
+            else if (cardFacingUp == true)
+            {
+                transform.rotation = throwingHand.GetAttachmentTransform("CardFaceUp").transform.rotation;
+            }
+            fastTorque = 3;
+            slowTorque = .25f;
         }
-        else if (cardFacingUp == true)
-        {
-            transform.rotation = throwingHand.GetAttachmentTransform("CardFaceUp").transform.rotation;
-        }
-        fastTorque = 3;
-        slowTorque = .25f;
+
         base.OnAttachedToHand(attachedHand);
     }
 
@@ -302,12 +367,15 @@ public class Card : InteractionSuperClass {
 
     public override void OnDetachedFromHand(Hand hand)
     {
-        if (rb.transform.rotation.eulerAngles.x > 290 || rb.transform.rotation.eulerAngles.x < 250 && cardIsFlipped == false)
+        if(_state == DealerState.DealingState)
         {
-            Debug.Log(this.gameObject.name + " card is facing the wrong way");
-            badThrow = true;
+            if (rb.transform.rotation.eulerAngles.x > 290 || rb.transform.rotation.eulerAngles.x < 250 && cardIsFlipped == false)
+            {
+                Debug.Log(this.gameObject.name + " card is facing the wrong way");
+                badThrow = true;
+            }
+            StartCoroutine(CheckVelocity(.025f));
         }
-        StartCoroutine(CheckVelocity(.025f));
         base.OnDetachedFromHand(hand);
     }
 

@@ -6,7 +6,7 @@ using Valve.VR.InteractionSystem;
 
 public class CardDeckScript : InteractionSuperClass {
 
-    //everything in the script that controls the physics needs to be in a script, or a section of script attached to an enum we'll call PitchMode that way, depending on what controller mode I'm in, I can either switch on the elements I need in this script, or switch on the RakeMode and do the raking script stuff.
+    //everything in the script that controls the physics needs to be in a script, or a section of script attached to an enum we'll call PitchMode that way, depending on what controller mode I'm in, I can either switch on the elements I need in this script, or switch on the ShuffleMode and do the Shuffle script stuff.
 
     List<CardType> cardsInDeck;
     GameObject cardDeck;
@@ -50,7 +50,7 @@ public class CardDeckScript : InteractionSuperClass {
         cardDeck = this.gameObject;
         if (cardsInDeck.Count == 0)
         {
-            deckIsDestroyed = true;
+            deckIsEmpty = true;
             Destroy(cardDeck);
         }
 
@@ -67,7 +67,7 @@ public class CardDeckScript : InteractionSuperClass {
         {
             if(other.gameObject.GetComponent<Hand>() == throwingHand)
             {
-                isTouchingDeck = true;
+                handTouchingDeck = true;
             }
         }
     }
@@ -78,7 +78,7 @@ public class CardDeckScript : InteractionSuperClass {
         {
             if(other.GetComponent<Hand>() == throwingHand)
             {
-                isTouchingDeck = false;
+                handTouchingDeck = false;
             }
         }
     }
@@ -87,15 +87,16 @@ public class CardDeckScript : InteractionSuperClass {
     {
         base.HandHoverUpdate(hand);
         if(hand.otherHand.GetStandardInteractionButtonDown() == true && 
-            isHoldingCard == false && 
-            isTouchingDeck == true && 
+            handIsHoldingCard == false && 
+            handTouchingDeck == true && 
             cardsInDeck.Count != 0)
         {
-            isHoldingCard = true;
-            isTouchingDeck = false;
+            handIsHoldingCard = true;
+            handTouchingDeck = false;
             int cardPos = Random.Range(0, cardsInDeck.Count);
             CardType cardType = cardsInDeck[cardPos];
             Card card = CreateCard(cardType, interactableObject.transform.position, Quaternion.identity);
+            card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
             hand.otherHand.AttachObject(card.gameObject);
             currentCardDeckScale.y = currentCardDeckScale.y - decreaseCardDeckBy.y;
             transform.localScale = currentCardDeckScale;
@@ -109,7 +110,7 @@ public class CardDeckScript : InteractionSuperClass {
 
     public override void OnAttachedToHand(Hand attachedHand)
     {
-        isTouchingDeck = false;
+        handTouchingDeck = false;
         if(attachedHand.currentAttachedObject.tag == "CardDeck")
         {
             deckHand = attachedHand;
@@ -124,7 +125,7 @@ public class CardDeckScript : InteractionSuperClass {
         base.HandAttachedUpdate(attachedHand);
         if (attachedHand.otherHand.GetStandardInteractionButton() == false)
         {
-            isHoldingCard = false;
+            handIsHoldingCard = false;
         }
     }
 
@@ -170,9 +171,10 @@ public class CardDeckScript : InteractionSuperClass {
                 playingCard.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);
                 playingCard.GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity() * FORCE_MULTIPLIER, ForceMode.Impulse);
                 playingCard.GetComponent<Rigidbody>().AddExplosionForce(explosionPower, playingCard.transform.position, explosionRadius, 0, ForceMode.Impulse);
+                playingCard.GetComponent<Card>().SwitchToShuffling();
             }
             Debug.Log("deck thrown at time " + Time.time);
-            deckIsDestroyed = true;
+            deckIsEmpty = true;
             thrownDeck = true;
         }
         base.OnDetachedFromHand(hand);
