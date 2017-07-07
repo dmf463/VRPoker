@@ -5,8 +5,9 @@ using UnityEngine;
 public class LogCards : MonoBehaviour
 {
     public float cardCount;
-    Card[] cardsOnTable = new Card[0];
-    int cardsDestroyed = 0;
+    Vector3 newCardDeckScale;
+    Vector3 currentCardDeckScale;
+    Vector3 decreaseCardDeckBy;
 
     // Use this for initialization
     void Start()
@@ -26,34 +27,50 @@ public class LogCards : MonoBehaviour
         {
             if (this.gameObject.name == "TestSpace1")
             {
-                TableCards.instance.AddCardTo(Destinations.player0, other.GetComponent<Card>().cardType);
-                Debug.Log("Card went into " + this.gameObject.name);
+                if(TableCards.dealerState == DealerState.DealingState)
+                {
+                    TableCards.instance.AddCardTo(Destinations.player0, other.GetComponent<Card>().cardType);
+                    Debug.Log("Card went into " + this.gameObject.name);
+                }
             }
             else if (this.gameObject.name == "TestSpace2")
             {
-                TableCards.instance.AddCardTo(Destinations.player1, other.GetComponent<Card>().cardType);
-                Debug.Log("Card went into " + this.gameObject.name);
+                if(TableCards.dealerState == DealerState.DealingState)
+                {
+                    TableCards.instance.AddCardTo(Destinations.player1, other.GetComponent<Card>().cardType);
+                    Debug.Log("Card went into " + this.gameObject.name);
+                }
             }
             else if (this.gameObject.name == "TestSpace3")
             {
-                TableCards.instance.AddCardTo(Destinations.player2, other.GetComponent<Card>().cardType);
-                Debug.Log("Card went into " + this.gameObject.name);
+                if(TableCards.dealerState == DealerState.DealingState)
+                {
+                    TableCards.instance.AddCardTo(Destinations.player2, other.GetComponent<Card>().cardType);
+                    Debug.Log("Card went into " + this.gameObject.name);
+                }
             }
             else if (this.gameObject.name == "TestSpace4")
             {
-                TableCards.instance.AddCardTo(Destinations.player3, other.GetComponent<Card>().cardType);
-                Debug.Log("Card went into " + this.gameObject.name);
+                if(TableCards.dealerState == DealerState.DealingState)
+                {
+                    TableCards.instance.AddCardTo(Destinations.player3, other.GetComponent<Card>().cardType);
+                    Debug.Log("Card went into " + this.gameObject.name);
+                }
+
             }
             else if (this.gameObject.name == "TheBoard")
             {
-                if (TableCards.instance._board.Contains(other.GetComponent<Card>().cardType))
+                if(TableCards.dealerState == DealerState.DealingState)
                 {
-                    Debug.Log(other.gameObject.name + " is already in play");
-                }
-                else
-                {
-                    TableCards.instance.AddCardTo(Destinations.board, other.GetComponent<Card>().cardType);
-                    Debug.Log("Card went into " + this.gameObject.name);
+                    if (TableCards.instance._board.Contains(other.GetComponent<Card>().cardType))
+                    {
+                        Debug.Log(other.gameObject.name + " is already in play");
+                    }
+                    else
+                    {
+                        TableCards.instance.AddCardTo(Destinations.board, other.GetComponent<Card>().cardType);
+                        Debug.Log("Card went into " + this.gameObject.name);
+                    }
                 }
 
             }
@@ -64,9 +81,19 @@ public class LogCards : MonoBehaviour
             }
             else if(this.gameObject.name == "ShufflingArea")
             {
-                cardsOnTable = FindObjectsOfType<Card>();
-                Debug.Log("cardsOnTable = " + cardsOnTable.Length + cardsOnTable[0].name);
-                Destroy(other.gameObject);
+                if(TableCards.dealerState == DealerState.ShufflingState)
+                {
+                    if(GameObject.FindGameObjectWithTag("CardDeck") == null)
+                    {
+                        GameObject newCardDeck = Instantiate(Resources.Load("Prefabs/PlayingCardDeck"), transform.position, Quaternion.identity) as GameObject;
+                        newCardDeckScale = newCardDeck.transform.localScale;
+                        decreaseCardDeckBy = new Vector3(newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
+                        newCardDeck.transform.localScale = new Vector3(newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
+                        //have it increase every time it destroys an object until the deck is full and then TableCards.instance.PopulateDeck();
+                    }
+                    Destroy(other.gameObject);
+                }
+
                 //if (cardsOnTable.Length == 1)
                 //{
                 //    TableCards.instance.NewGame();

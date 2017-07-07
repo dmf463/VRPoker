@@ -41,6 +41,7 @@ public class CardDeckScript : InteractionSuperClass {
         decreaseCardDeckBy = new Vector3 (newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
         currentCardDeckScale = newCardDeckScale;
         PopulateCardDeck();
+        deckIsEmpty = false;
     }
 
 
@@ -48,18 +49,11 @@ public class CardDeckScript : InteractionSuperClass {
     {
 
         cardDeck = this.gameObject;
-        if (cardsInDeck.Count == 0)
+        if (cardsInDeck.Count == 0 || deckIsEmpty == true)
         {
-            deckIsEmpty = true;
             Destroy(cardDeck);
         }
-
-
-            if (cardsInDeck.Count == 0)
-            {
-                Destroy(cardDeck);
-            }
-        }
+    }
 
     public override void OnTriggerEnterX(Collider other)
     {
@@ -171,11 +165,11 @@ public class CardDeckScript : InteractionSuperClass {
                 playingCard.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);
                 playingCard.GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity() * FORCE_MULTIPLIER, ForceMode.Impulse);
                 playingCard.GetComponent<Rigidbody>().AddExplosionForce(explosionPower, playingCard.transform.position, explosionRadius, 0, ForceMode.Impulse);
-                playingCard.GetComponent<Card>().SwitchToShuffling();
             }
             Debug.Log("deck thrown at time " + Time.time);
             deckIsEmpty = true;
             thrownDeck = true;
+            TableCards.dealerState = DealerState.ShufflingState;
         }
         base.OnDetachedFromHand(hand);
     }

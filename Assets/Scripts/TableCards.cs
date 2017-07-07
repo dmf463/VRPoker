@@ -4,9 +4,10 @@ using UnityEngine;
 using System.Linq;
 
 public enum Destinations { player0, player1, player2, player3, board, burn, table}
+public enum DealerState { DealingState, ShufflingState };
 
 public class TableCards {
-
+    
     private static TableCards _instance;
     public static TableCards instance
     {
@@ -17,6 +18,8 @@ public class TableCards {
             return _instance;
         }
     }
+
+    public static DealerState dealerState;
 
     public List<CardType> _player0 = new List<CardType>();
     public List<CardType> _player1 = new List<CardType>();

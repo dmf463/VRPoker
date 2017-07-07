@@ -7,7 +7,6 @@ using Valve.VR.InteractionSystem;
 public class Card : InteractionSuperClass {
 
     public CardType cardType;
-    static DealerState _state;
     bool cardOnTable;
 
     const float MAGNITUDE_THRESHOLD = 2.5f;
@@ -84,7 +83,7 @@ public class Card : InteractionSuperClass {
     void Update () {
 
         //Debug.Log("currently in " + _state);
-        switch (_state)
+        switch (TableCards.dealerState)
         {
             case DealerState.DealingState:
                 CardForDealingMode();
@@ -277,12 +276,12 @@ public class Card : InteractionSuperClass {
     public void SwitchToShuffling()
     {
         Debug.Log("ShufflingNow");
-        _state = DealerState.ShufflingState;
+        TableCards.dealerState = DealerState.ShufflingState;
     }
 
     public void SwitchToDealing()
     {
-        _state = DealerState.DealingState;
+        TableCards.dealerState = DealerState.DealingState;
     }
 
     void OnCollisionEnter(Collision other)
@@ -312,7 +311,7 @@ public class Card : InteractionSuperClass {
 
     void OnTriggerStay(Collider other)
     {
-        if (_state == DealerState.ShufflingState)
+        if (TableCards.dealerState == DealerState.ShufflingState)
         {
             if (other.gameObject.tag == "Hand" && cardOnTable == true)
             {
@@ -329,7 +328,7 @@ public class Card : InteractionSuperClass {
 
     public override void OnTriggerExitX(Collider other)
     {
-        if(_state == DealerState.ShufflingState)
+        if(TableCards.dealerState == DealerState.ShufflingState)
         {
             handIsTouchingCard = false;
         }
@@ -343,7 +342,7 @@ public class Card : InteractionSuperClass {
 
     public override void OnAttachedToHand(Hand attachedHand)
     {
-        if(_state == DealerState.DealingState)
+        if(TableCards.dealerState == DealerState.DealingState)
         {
             if (cardFacingUp == false)
             {
@@ -367,7 +366,7 @@ public class Card : InteractionSuperClass {
 
     public override void OnDetachedFromHand(Hand hand)
     {
-        if(_state == DealerState.DealingState)
+        if(TableCards.dealerState == DealerState.DealingState)
         {
             if (rb.transform.rotation.eulerAngles.x > 290 || rb.transform.rotation.eulerAngles.x < 250 && cardIsFlipped == false)
             {

@@ -4,8 +4,6 @@ using UnityEngine;
 using Valve.VR; //we need this for SteamVR
 using Valve.VR.InteractionSystem;
 
-enum DealerState { DealingState, ShufflingState };
-
 public class InteractionSuperClass : MonoBehaviour {
 
     public Interactable interactableObject; //insert cardDeck, or other interactable that you need hoverlocked in inspector
