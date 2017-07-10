@@ -5,9 +5,10 @@ using UnityEngine;
 public class LogCards : MonoBehaviour
 {
     public float cardCount;
-    Vector3 newCardDeckScale;
-    Vector3 currentCardDeckScale;
-    Vector3 decreaseCardDeckBy;
+    private GameObject newCardDeck;
+    private Vector3 newCardDeckScale;
+    private Vector3 currentCardDeckScale;
+    private Vector3 decreaseCardDeckBy;
 
     // Use this for initialization
     void Start()
@@ -66,6 +67,10 @@ public class LogCards : MonoBehaviour
                     {
                         Debug.Log(other.gameObject.name + " is already in play");
                     }
+                    else if(TableCards.instance._board.Count == 5)
+                    {
+                        Debug.Log(other.gameObject.name + "cannot be added to the board");
+                    }
                     else
                     {
                         TableCards.instance.AddCardTo(Destinations.board, other.GetComponent<Card>().cardType);
@@ -85,13 +90,36 @@ public class LogCards : MonoBehaviour
                 {
                     if(GameObject.FindGameObjectWithTag("CardDeck") == null)
                     {
-                        GameObject newCardDeck = Instantiate(Resources.Load("Prefabs/PlayingCardDeck"), transform.position, Quaternion.identity) as GameObject;
+                        Debug.Log("Could not find CardDeck, instantiating new one");
+                        newCardDeck = Instantiate(Resources.Load("Prefabs/PlayingCardDeck"), transform.position, Quaternion.identity) as GameObject;
                         newCardDeckScale = newCardDeck.transform.localScale;
+                        newCardDeck.GetComponent<CardDeckScript>().newCardDeckScale = newCardDeckScale;
                         decreaseCardDeckBy = new Vector3(newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
-                        newCardDeck.transform.localScale = new Vector3(newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
-                        //have it increase every time it destroys an object until the deck is full and then TableCards.instance.PopulateDeck();
+                        newCardDeck.transform.localScale = decreaseCardDeckBy;
+                        currentCardDeckScale = newCardDeck.transform.localScale;
                     }
+                    if(GameObject.FindGameObjectWithTag("CardDeck") != null && 
+                        GameObject.FindGameObjectWithTag("CardDeck").GetComponent<Transform>().childCount == 0 &&
+                        GameObject.FindGameObjectsWithTag("CardDeck").Length == 1)
+                    {
+                        Destroy(GameObject.FindGameObjectWithTag("CardDeck"));
+                        newCardDeck = Instantiate(Resources.Load("Prefabs/PlayingCardDeck"), transform.position, Quaternion.identity) as GameObject;
+                        newCardDeckScale = newCardDeck.transform.localScale;
+                        newCardDeck.GetComponent<CardDeckScript>().newCardDeckScale = newCardDeckScale;
+                        decreaseCardDeckBy = new Vector3(newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
+                        newCardDeck.transform.localScale = decreaseCardDeckBy;
+                        currentCardDeckScale = newCardDeck.transform.localScale;
+                    }
+   
                     Destroy(other.gameObject);
+                    Debug.Log("destroying cards");
+                    currentCardDeckScale.y = currentCardDeckScale.y + decreaseCardDeckBy.y;
+                    newCardDeck.transform.localScale = currentCardDeckScale;   
+                    if(currentCardDeckScale.y > newCardDeckScale.y)
+                    {
+                        Debug.Log("currentCardsDeck.y is " + currentCardDeckScale.y + " and newCardDeckScale.y - decreaseCardDeckBy.y is " + (newCardDeckScale.y - decreaseCardDeckBy.y));
+                        TableCards.dealerState = DealerState.DealingState;
+                    }
                 }
 
                 //if (cardsOnTable.Length == 1)

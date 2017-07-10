@@ -82,17 +82,7 @@ public class Card : InteractionSuperClass {
     // Update is called once per frame
     void Update () {
 
-        //Debug.Log("currently in " + _state);
-        switch (TableCards.dealerState)
-        {
-            case DealerState.DealingState:
-                CardForDealingMode();
-        break;
-            case DealerState.ShufflingState:
-                break;
-        default:
-                break;
-    }
+        CardForDealingMode();
 
 }
 
@@ -129,7 +119,7 @@ public class Card : InteractionSuperClass {
 
         if (flippingCard == true)
         {
-            Debug.Log("flippingCard!");
+            //Debug.Log("flippingCard!");
             elapsedTimeForCardFlip += Time.deltaTime;
             transform.localRotation = Quaternion.Euler(Mathf.Lerp(rotationAtFlipStart.eulerAngles.x, rotationAtFlipStart.eulerAngles.x + 180, elapsedTimeForCardFlip / flipDuration), rotationAtFlipStart.eulerAngles.y, rotationAtFlipStart.eulerAngles.z);
             if (elapsedTimeForCardFlip >= flipDuration)
@@ -142,7 +132,7 @@ public class Card : InteractionSuperClass {
 
         if (rb.isKinematic == false && badThrow == true && deckScript.thrownDeck == false)
         {
-            Debug.Log("Calling bad throw");
+            //Debug.Log("Calling bad throw");
             startingFastTorque = false;
             startingSlowTorque = false;
             rb.drag = 7;
@@ -166,8 +156,10 @@ public class Card : InteractionSuperClass {
             rb.drag = 0.5f;
             rb.AddForce(Random.Range(0, 2), Random.Range(0, 2), Random.Range(0, 2));
             float badThrowVelocity = deckScript.badThrowVelocity;
+            Debug.Log("badThrowVelocity from Card is " + badThrowVelocity);
             Vector3 randomRot = new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
             transform.Rotate(randomRot * badThrowVelocity * Time.deltaTime);
+            //TableCards.dealerState = DealerState.ShufflingState;
         }
 
         if (rb.isKinematic == false && startingFastTorque == true)
@@ -275,7 +267,7 @@ public class Card : InteractionSuperClass {
 
     public void SwitchToShuffling()
     {
-        Debug.Log("ShufflingNow");
+        //Debug.Log("ShufflingNow");
         TableCards.dealerState = DealerState.ShufflingState;
     }
 
@@ -290,7 +282,7 @@ public class Card : InteractionSuperClass {
         elapsedTimeForThrowTorque = 0;
         if (badThrow == true && other.gameObject.tag != "CardDeck") 
         {
-            Debug.Log("hitting " + other.gameObject.name);
+            //Debug.Log("hitting " + other.gameObject.name);
             gameObject.GetComponent<ConstantForce>().enabled = false;
             badThrow = false;
         }
@@ -370,7 +362,7 @@ public class Card : InteractionSuperClass {
         {
             if (rb.transform.rotation.eulerAngles.x > 290 || rb.transform.rotation.eulerAngles.x < 250 && cardIsFlipped == false)
             {
-                Debug.Log(this.gameObject.name + " card is facing the wrong way");
+                //Debug.Log(this.gameObject.name + " card is facing the wrong way");
                 badThrow = true;
             }
             StartCoroutine(CheckVelocity(.025f));

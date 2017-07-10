@@ -18,8 +18,8 @@ public class CardDeckScript : InteractionSuperClass {
     public List<Mesh> diamondMeshes;
     public List<Mesh> clubMeshes;
 
-
-    Vector3 newCardDeckScale;
+    [HideInInspector]
+    public Vector3 newCardDeckScale;
     Vector3 currentCardDeckScale;
     Vector3 decreaseCardDeckBy;
     public bool deckGotThrown = false;
@@ -37,7 +37,7 @@ public class CardDeckScript : InteractionSuperClass {
             diamondMeshes,
             clubMeshes
         };
-        newCardDeckScale = transform.localScale;
+        //Debug.Log("newCardDeckScale.y = " + newCardDeckScale.y);
         decreaseCardDeckBy = new Vector3 (newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
         currentCardDeckScale = newCardDeckScale;
         PopulateCardDeck();
@@ -49,7 +49,7 @@ public class CardDeckScript : InteractionSuperClass {
     {
 
         cardDeck = this.gameObject;
-        if (cardsInDeck.Count == 0 || deckIsEmpty == true)
+        if (cardsInDeck.Count == 0)
         {
             Destroy(cardDeck);
         }
@@ -94,10 +94,11 @@ public class CardDeckScript : InteractionSuperClass {
             hand.otherHand.AttachObject(card.gameObject);
             currentCardDeckScale.y = currentCardDeckScale.y - decreaseCardDeckBy.y;
             transform.localScale = currentCardDeckScale;
-            if(cardsInDeck.Count == 0)
+            if (cardsInDeck.Count == 0)
             {
                 hand.HoverUnlock(interactableObject);
                 Destroy(cardDeck);
+                TableCards.dealerState = DealerState.ShufflingState;
             }
         }
     }
@@ -109,7 +110,7 @@ public class CardDeckScript : InteractionSuperClass {
         {
             deckHand = attachedHand;
             throwingHand = attachedHand.otherHand;
-            Debug.Log("deckHand = " + attachedHand.name + " and throwingHand = " + attachedHand.otherHand.name);
+            //Debug.Log("deckHand = " + attachedHand.name + " and throwingHand = " + attachedHand.otherHand.name);
         }
         base.OnAttachedToHand(attachedHand);
     }
@@ -126,6 +127,7 @@ public class CardDeckScript : InteractionSuperClass {
     public override void OnDetachedFromHand(Hand hand)
     {
         badThrowVelocity = deckHand.GetTrackedObjectVelocity().magnitude;
+        Debug.Log("badThrowVelocity from CardDeck = " + badThrowVelocity);
 
         //
         //should seriously rethink this because of the way it feels between dropping the deck and throwing the deck
@@ -147,28 +149,36 @@ public class CardDeckScript : InteractionSuperClass {
                 //playingCard.GetComponent<Rigidbody>().angularVelocity = GetComponent<Rigidbody>().angularVelocity;
 
                 GameObject playingCard = cardDeck.transform.GetChild(i).gameObject;
+                //Debug.Log("playingCard is " + playingCard.name);
 
                 playingCard.transform.parent = null;
+                //Debug.Log("playingCard parent = " + playingCard.transform.parent);
 
                 playingCard.GetComponent<BoxCollider>().enabled = true;
+                //Debug.Log("playing card boxCollider enabled = " + playingCard.GetComponent<BoxCollider>().enabled);
 
                 playingCard.AddComponent<Rigidbody>();
+                //Debug.Log("playing Card has rb and rb is " + playingCard.GetComponent<Rigidbody>());
 
-                Debug.Log("rigidBody added at " + Time.time);
+                //Debug.Log("rigidBody added at " + Time.time);
 
                 playingCard.AddComponent<ConstantForce>();
+                //Debug.Log("playing card has constantForce and constantForce is " + playingCard.GetComponent<ConstantForce>());
 
                 playingCard.GetComponent<Card>().enabled = true;
+                //Debug.Log("playingCard script is enabled = " + playingCard.GetComponent<Card>().enabled);
 
 
                 playingCard.GetComponent<Card>().badThrow = true;
+                //Debug.Log("bad throw is = " + playingCard.GetComponent<Card>().badThrow);
                 playingCard.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);
                 playingCard.GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity() * FORCE_MULTIPLIER, ForceMode.Impulse);
                 playingCard.GetComponent<Rigidbody>().AddExplosionForce(explosionPower, playingCard.transform.position, explosionRadius, 0, ForceMode.Impulse);
             }
-            Debug.Log("deck thrown at time " + Time.time);
+            //Debug.Log("deck thrown at time " + Time.time);
             deckIsEmpty = true;
             thrownDeck = true;
+            //Destroy(cardDeck);
             TableCards.dealerState = DealerState.ShufflingState;
         }
         base.OnDetachedFromHand(hand);
