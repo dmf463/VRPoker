@@ -6,7 +6,6 @@ public static class Services {
 
 
     //UNIVERSAL UTITLITIES
-
-    public static CardDeckScript CardDeckScript { get; set; }
+    public static PrefabDB PrefabDB { get; set; }
 
 }

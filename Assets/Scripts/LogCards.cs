@@ -6,9 +6,9 @@ public class LogCards : MonoBehaviour
 {
     public float cardCount;
     private GameObject newCardDeck;
-    private Vector3 newCardDeckScale;
-    private Vector3 currentCardDeckScale;
-    private Vector3 decreaseCardDeckBy;
+    //private Vector3 newCardDeckScale;
+    //private Vector3 currentCardDeckScale;
+    //private Vector3 decreaseCardDeckBy;
 
     // Use this for initialization
     void Start()
@@ -30,32 +30,76 @@ public class LogCards : MonoBehaviour
             {
                 if(TableCards.dealerState == DealerState.DealingState)
                 {
-                    TableCards.instance.AddCardTo(Destinations.player0, other.GetComponent<Card>().cardType);
-                    Debug.Log("Card went into " + this.gameObject.name);
+                    if (TableCards.instance._player0.Contains(other.GetComponent<Card>().cardType))
+                    {
+                        Debug.Log(other.gameObject.name + " is already in play");
+                    }
+                    else if (TableCards.instance._player0.Count == 2)
+                    {
+                        Debug.Log(other.gameObject.name + "cannot be added to the board");
+                    }
+                    else
+                    {
+                        TableCards.instance.AddCardTo(Destinations.player0, other.GetComponent<Card>().cardType);
+                        Debug.Log("Card went into " + this.gameObject.name);
+                    }
                 }
             }
             else if (this.gameObject.name == "TestSpace2")
             {
                 if(TableCards.dealerState == DealerState.DealingState)
                 {
-                    TableCards.instance.AddCardTo(Destinations.player1, other.GetComponent<Card>().cardType);
-                    Debug.Log("Card went into " + this.gameObject.name);
+                    if (TableCards.instance._player1.Contains(other.GetComponent<Card>().cardType))
+                    {
+                        Debug.Log(other.gameObject.name + " is already in play");
+                    }
+                    else if (TableCards.instance._player1.Count == 2)
+                    {
+                        Debug.Log(other.gameObject.name + "cannot be added to the board");
+                    }
+                    else
+                    {
+                        TableCards.instance.AddCardTo(Destinations.player1, other.GetComponent<Card>().cardType);
+                        Debug.Log("Card went into " + this.gameObject.name);
+                    }
                 }
             }
             else if (this.gameObject.name == "TestSpace3")
             {
                 if(TableCards.dealerState == DealerState.DealingState)
                 {
-                    TableCards.instance.AddCardTo(Destinations.player2, other.GetComponent<Card>().cardType);
-                    Debug.Log("Card went into " + this.gameObject.name);
+                    if (TableCards.instance._player2.Contains(other.GetComponent<Card>().cardType))
+                    {
+                        Debug.Log(other.gameObject.name + " is already in play");
+                    }
+                    else if (TableCards.instance._player2.Count == 2)
+                    {
+                        Debug.Log(other.gameObject.name + "cannot be added to the board");
+                    }
+                    else
+                    {
+                        TableCards.instance.AddCardTo(Destinations.player2, other.GetComponent<Card>().cardType);
+                        Debug.Log("Card went into " + this.gameObject.name);
+                    }
                 }
             }
             else if (this.gameObject.name == "TestSpace4")
             {
                 if(TableCards.dealerState == DealerState.DealingState)
                 {
-                    TableCards.instance.AddCardTo(Destinations.player3, other.GetComponent<Card>().cardType);
-                    Debug.Log("Card went into " + this.gameObject.name);
+                    if (TableCards.instance._player3.Contains(other.GetComponent<Card>().cardType))
+                    {
+                        Debug.Log(other.gameObject.name + " is already in play");
+                    }
+                    else if (TableCards.instance._player3.Count == 2)
+                    {
+                        Debug.Log(other.gameObject.name + "cannot be added to the board");
+                    }
+                    else
+                    {
+                        TableCards.instance.AddCardTo(Destinations.player3, other.GetComponent<Card>().cardType);
+                        Debug.Log("Card went into " + this.gameObject.name);
+                    }
                 }
 
             }
@@ -91,43 +135,27 @@ public class LogCards : MonoBehaviour
                     if(GameObject.FindGameObjectWithTag("CardDeck") == null)
                     {
                         Debug.Log("Could not find CardDeck, instantiating new one");
-                        newCardDeck = Instantiate(Resources.Load("Prefabs/PlayingCardDeck"), transform.position, Quaternion.identity) as GameObject;
-                        newCardDeckScale = newCardDeck.transform.localScale;
-                        newCardDeck.GetComponent<CardDeckScript>().newCardDeckScale = newCardDeckScale;
-                        decreaseCardDeckBy = new Vector3(newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
-                        newCardDeck.transform.localScale = decreaseCardDeckBy;
-                        currentCardDeckScale = newCardDeck.transform.localScale;
+                        newCardDeck = Instantiate(Services.PrefabDB.CardDeck, transform.position, Quaternion.identity) as GameObject;
+                        newCardDeck.GetComponent<CardDeckScript>().BuildDeckFromOneCard(newCardDeck);
                     }
                     if(GameObject.FindGameObjectWithTag("CardDeck") != null && 
                         GameObject.FindGameObjectWithTag("CardDeck").GetComponent<Transform>().childCount == 0 &&
                         GameObject.FindGameObjectsWithTag("CardDeck").Length == 1)
                     {
                         Destroy(GameObject.FindGameObjectWithTag("CardDeck"));
-                        newCardDeck = Instantiate(Resources.Load("Prefabs/PlayingCardDeck"), transform.position, Quaternion.identity) as GameObject;
-                        newCardDeckScale = newCardDeck.transform.localScale;
-                        newCardDeck.GetComponent<CardDeckScript>().newCardDeckScale = newCardDeckScale;
-                        decreaseCardDeckBy = new Vector3(newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
-                        newCardDeck.transform.localScale = decreaseCardDeckBy;
-                        currentCardDeckScale = newCardDeck.transform.localScale;
+                        newCardDeck = Instantiate(Services.PrefabDB.CardDeck, transform.position, Quaternion.identity) as GameObject;
+                        newCardDeck.GetComponent<CardDeckScript>().BuildDeckFromOneCard(newCardDeck);
                     }
    
                     Destroy(other.gameObject);
                     Debug.Log("destroying cards");
-                    currentCardDeckScale.y = currentCardDeckScale.y + decreaseCardDeckBy.y;
-                    newCardDeck.transform.localScale = currentCardDeckScale;   
-                    if(currentCardDeckScale.y > newCardDeckScale.y)
+                    newCardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();   
+                    if(newCardDeck.GetComponent<CardDeckScript>().currentCardDeckScale.y > newCardDeck.GetComponent<CardDeckScript>().newCardDeckScale.y)
                     {
-                        Debug.Log("currentCardsDeck.y is " + currentCardDeckScale.y + " and newCardDeckScale.y - decreaseCardDeckBy.y is " + (newCardDeckScale.y - decreaseCardDeckBy.y));
+                        //Debug.Log("currentCardsDeck.y is " + newCardDeck.GetComponent<CardDeckScript>().currentCardDeckScale.y + " and newCardDeckScale.y + oneCardScale.y is " + (newCardDeck.GetComponent<CardDeckScript>().newCardDeckScale.y + newCardDeck.GetComponent<CardDeckScript>().oneCardScale.y));
                         TableCards.dealerState = DealerState.DealingState;
                     }
                 }
-
-                //if (cardsOnTable.Length == 1)
-                //{
-                //    TableCards.instance.NewGame();
-                //    Destroy(GameObject.Find("PlayingCardDeck").gameObject);
-                //    GameObject newCardDeck = Instantiate(Resources.Load("Prefabs/PlayingCardDeck"), transform.position, Quaternion.identity) as GameObject;
-                //}
             }
 
         }

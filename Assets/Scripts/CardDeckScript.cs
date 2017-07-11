@@ -10,7 +10,6 @@ public class CardDeckScript : InteractionSuperClass {
 
     List<CardType> cardsInDeck;
     GameObject cardDeck;
-    public GameObject cardPrefab;
 
     List<Mesh>[] cardMeshes;
     public List<Mesh> spadeMeshes;
@@ -20,12 +19,15 @@ public class CardDeckScript : InteractionSuperClass {
 
     [HideInInspector]
     public Vector3 newCardDeckScale;
-    Vector3 currentCardDeckScale;
-    Vector3 decreaseCardDeckBy;
-    public bool deckGotThrown = false;
+    [HideInInspector]
+    public Vector3 currentCardDeckScale;
+    [HideInInspector]
+    public Vector3 oneCardScale;
+    [HideInInspector]
+    public bool deckIsBeingThrown = false;
     float explosionPower = 1;
     float explosionRadius = 30;
-    public bool thrownDeck;
+    public bool deckWasThrown;
     public float badThrowVelocity;
 
     void Start()
@@ -37,9 +39,13 @@ public class CardDeckScript : InteractionSuperClass {
             diamondMeshes,
             clubMeshes
         };
-        //Debug.Log("newCardDeckScale.y = " + newCardDeckScale.y);
-        decreaseCardDeckBy = new Vector3 (newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
-        currentCardDeckScale = newCardDeckScale;
+        if (newCardDeckScale.y == 0)
+        {
+            newCardDeckScale = transform.localScale;
+            currentCardDeckScale = newCardDeckScale;
+        } 
+        oneCardScale = new Vector3 (newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
+
         PopulateCardDeck();
         deckIsEmpty = false;
     }
@@ -47,7 +53,8 @@ public class CardDeckScript : InteractionSuperClass {
 
     void Update()
     {
-
+        Debug.Log("transform.localScale.y = " + transform.localScale.y);
+        Debug.Log("currentCardDeckScale.y = " + currentCardDeckScale.y);
         cardDeck = this.gameObject;
         if (cardsInDeck.Count == 0)
         {
@@ -92,12 +99,12 @@ public class CardDeckScript : InteractionSuperClass {
             Card card = CreateCard(cardType, interactableObject.transform.position, Quaternion.identity);
             card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
             hand.otherHand.AttachObject(card.gameObject);
-            currentCardDeckScale.y = currentCardDeckScale.y - decreaseCardDeckBy.y;
-            transform.localScale = currentCardDeckScale;
+            MakeDeckSmaller();
             if (cardsInDeck.Count == 0)
             {
                 hand.HoverUnlock(interactableObject);
                 Destroy(cardDeck);
+                Debug.Log("Destroyed Deck");
                 TableCards.dealerState = DealerState.ShufflingState;
             }
         }
@@ -132,52 +139,13 @@ public class CardDeckScript : InteractionSuperClass {
         //
         //should seriously rethink this because of the way it feels between dropping the deck and throwing the deck
         //
-        if (hand.GetTrackedObjectVelocity().magnitude > 1) deckGotThrown = true;
-        if (deckGotThrown == true)
+        if (hand.GetTrackedObjectVelocity().magnitude > 1) deckIsBeingThrown = true;
+        if (deckIsBeingThrown == true)
         {
-            deckGotThrown = false;
-            int cardsInDeckCount = cardsInDeck.Count;
-            for (int i = cardsInDeckCount - 1; i >= 0; i--)
-            {
-                //Debug.Log(i);
-                //GameObject referenceCard = cardDeck.transform.GetChild(i).gameObject;
-                //Vector3 pos = referenceCard.transform.position;
-                //Quaternion rot = referenceCard.transform.rotation;
-
-                //GameObject playingCard = CreateCard(cardsInDeck[i], pos, rot).gameObject;
-                //playingCard.GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity;
-                //playingCard.GetComponent<Rigidbody>().angularVelocity = GetComponent<Rigidbody>().angularVelocity;
-
-                GameObject playingCard = cardDeck.transform.GetChild(i).gameObject;
-                //Debug.Log("playingCard is " + playingCard.name);
-
-                playingCard.transform.parent = null;
-                //Debug.Log("playingCard parent = " + playingCard.transform.parent);
-
-                playingCard.GetComponent<BoxCollider>().enabled = true;
-                //Debug.Log("playing card boxCollider enabled = " + playingCard.GetComponent<BoxCollider>().enabled);
-
-                playingCard.AddComponent<Rigidbody>();
-                //Debug.Log("playing Card has rb and rb is " + playingCard.GetComponent<Rigidbody>());
-
-                //Debug.Log("rigidBody added at " + Time.time);
-
-                playingCard.AddComponent<ConstantForce>();
-                //Debug.Log("playing card has constantForce and constantForce is " + playingCard.GetComponent<ConstantForce>());
-
-                playingCard.GetComponent<Card>().enabled = true;
-                //Debug.Log("playingCard script is enabled = " + playingCard.GetComponent<Card>().enabled);
-
-
-                playingCard.GetComponent<Card>().badThrow = true;
-                //Debug.Log("bad throw is = " + playingCard.GetComponent<Card>().badThrow);
-                playingCard.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);
-                playingCard.GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity() * FORCE_MULTIPLIER, ForceMode.Impulse);
-                playingCard.GetComponent<Rigidbody>().AddExplosionForce(explosionPower, playingCard.transform.position, explosionRadius, 0, ForceMode.Impulse);
-            }
-            //Debug.Log("deck thrown at time " + Time.time);
+            deckIsBeingThrown = false;
+            FiftyTwoCardPickUp();
             deckIsEmpty = true;
-            thrownDeck = true;
+            deckWasThrown = true;
             //Destroy(cardDeck);
             TableCards.dealerState = DealerState.ShufflingState;
         }
@@ -223,10 +191,73 @@ public class CardDeckScript : InteractionSuperClass {
     public Card CreateCard(CardType cardType, Vector3 position, Quaternion rotation)
     {
         cardsInDeck.Remove(cardType);
-        GameObject playingCard = Instantiate(cardPrefab, position, rotation);
+        GameObject playingCard = Instantiate(Services.PrefabDB.Card, position, rotation);
         playingCard.GetComponent<MeshFilter>().mesh = cardMeshes[(int)cardType.suit][(int)cardType.rank - 2];
         playingCard.GetComponent<Card>().cardType = cardType;
         return playingCard.GetComponent<Card>();
+    }
+
+    public void BuildDeckFromOneCard(GameObject newCardDeck)
+    {
+        newCardDeckScale = newCardDeck.transform.localScale;
+        oneCardScale = new Vector3(newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
+        newCardDeck.transform.localScale = oneCardScale;
+        currentCardDeckScale = newCardDeck.transform.localScale;
+    }
+
+    public void MakeDeckSmaller()
+    {
+        currentCardDeckScale.y = currentCardDeckScale.y - oneCardScale.y;
+        transform.localScale = currentCardDeckScale;
+    }
+
+    public void MakeDeckLarger()
+    {
+        currentCardDeckScale.y = currentCardDeckScale.y + oneCardScale.y;
+        transform.localScale = currentCardDeckScale;
+    }
+
+    public void FiftyTwoCardPickUp()
+    {
+        int cardsInDeckCount = cardsInDeck.Count;
+        for (int i = cardsInDeckCount - 1; i >= 0; i--)
+        {
+            //Debug.Log(i);
+            //GameObject referenceCard = cardDeck.transform.GetChild(i).gameObject;
+            //Vector3 pos = referenceCard.transform.position;
+            //Quaternion rot = referenceCard.transform.rotation;
+
+            //GameObject playingCard = CreateCard(cardsInDeck[i], pos, rot).gameObject;
+            //playingCard.GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity;
+            //playingCard.GetComponent<Rigidbody>().angularVelocity = GetComponent<Rigidbody>().angularVelocity;
+
+            GameObject playingCard = cardDeck.transform.GetChild(i).gameObject;
+            //Debug.Log("playingCard is " + playingCard.name);
+
+            playingCard.transform.parent = null;
+            //Debug.Log("playingCard parent = " + playingCard.transform.parent);
+
+            playingCard.GetComponent<BoxCollider>().enabled = true;
+            //Debug.Log("playing card boxCollider enabled = " + playingCard.GetComponent<BoxCollider>().enabled);
+
+            playingCard.AddComponent<Rigidbody>();
+            //Debug.Log("playing Card has rb and rb is " + playingCard.GetComponent<Rigidbody>());
+
+            //Debug.Log("rigidBody added at " + Time.time);
+
+            playingCard.AddComponent<ConstantForce>();
+            //Debug.Log("playing card has constantForce and constantForce is " + playingCard.GetComponent<ConstantForce>());
+
+            playingCard.GetComponent<Card>().enabled = true;
+            //Debug.Log("playingCard script is enabled = " + playingCard.GetComponent<Card>().enabled);
+
+
+            playingCard.GetComponent<Card>().cardThrownWrong = true;
+            //Debug.Log("bad throw is = " + playingCard.GetComponent<Card>().badThrow);
+            playingCard.GetComponent<Rigidbody>().AddForce(deckHand.GetTrackedObjectVelocity(), ForceMode.Impulse);
+            playingCard.GetComponent<Rigidbody>().AddTorque(deckHand.GetTrackedObjectAngularVelocity() * FORCE_MULTIPLIER, ForceMode.Impulse);
+            playingCard.GetComponent<Rigidbody>().AddExplosionForce(explosionPower, playingCard.transform.position, explosionRadius, 0, ForceMode.Impulse);
+        }
     }
 
 }

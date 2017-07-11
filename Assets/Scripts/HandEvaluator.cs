@@ -19,6 +19,7 @@ public class HandEvaluator {
     private int clubSum;
     private int straightCount;
     private int straightFlushCount;
+    private int AceToFiveCount;
     private List<CardType> incomingCards;
     private HandValue handValue;
 
@@ -30,6 +31,7 @@ public class HandEvaluator {
         clubSum = 0;
         straightCount = 0;
         straightFlushCount = 0;
+        AceToFiveCount = 0;
         incomingCards = sortedCards;
         Cards = sortedCards;
     }
@@ -296,6 +298,7 @@ public class HandEvaluator {
         // if 5 and 6 are consecutive, then 6 is the high card
         //if 4 and 5 are consectuive, then 5 is the high card,
         //if neither 4, 5, or 6 are consecutive then ONE of them MUST be consecutive to card 3, so I check that
+        //EDGE CASE, THE WHEEL: A, 2, 3, 4, 5. A = 1 and RANK5 is the high card, because we don't know where the 5 is, but we know it's the highcard
         if (incomingCards[0].rank + 1 == incomingCards[1].rank)
         {
             straightCount++;
@@ -355,6 +358,8 @@ public class HandEvaluator {
             straightCount += 0;
         }
         else straightCount = 0;
+
+//NEED TO MAKE A FRINGE CASE FOR CHECK FOR THE WHEEL (A, 2, 3, 4, 5)
 
         if (straightCount >= 4)
         {

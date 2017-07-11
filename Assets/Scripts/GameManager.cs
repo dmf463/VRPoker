@@ -17,6 +17,11 @@ public class GameManager : MonoBehaviour
     //private bool readyToEvalute = false;
     //private bool winnerDeclared = false;
 
+    void Awake()
+    {
+        Services.PrefabDB = Resources.Load<PrefabDB>("Prefabs/PrefabDB");
+    }
+
     // Use this for initialization
     void Start()
     {

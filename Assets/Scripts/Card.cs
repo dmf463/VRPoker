@@ -10,7 +10,6 @@ public class Card : InteractionSuperClass {
     bool cardOnTable;
 
     const float MAGNITUDE_THRESHOLD = 2.5f;
-    Vector3 throwingRotation;
     float throwingVelocity;
     Rigidbody rb;
     bool startingFastTorque;
@@ -21,27 +20,19 @@ public class Card : InteractionSuperClass {
     bool startLerping;
     float elapsedTimeForThrowTorque;
     float elapsedTimeForCardFlip;
-    //public float flipSpeed;
     public float flipDuration;
     bool flippingCard = false;
     Quaternion rotationAtFlipStart;
     Hand hand1;
     Hand hand2;
     GameObject newCardDeck;
-    Vector3 newCardDeckScale;
-    Vector3 currentCardDeckScale;
-    Vector3 increaseCardDeckBy;
-    public bool badThrow;
-    float startDrag;
-    float endDrag;
-    bool startBadThrowLerp;
+    public bool cardThrownWrong;
     bool cardIsFlipped;
     GameObject cardDeck;
     CardDeckScript deckScript;
     bool cardFacingUp = false;
 
     //VARIABLE FOR CHECKING SWIPE
-
     private bool trackingSwipe;
     private bool checkSwipe;
     private Vector2 startPosition;
@@ -66,16 +57,8 @@ public class Card : InteractionSuperClass {
         deckScript = cardDeck.GetComponent<CardDeckScript>();  //gonna need to rework A LOT
         rb = GetComponent<Rigidbody>();
         elapsedTimeForCardFlip = 0;
-        if (testingOutsideVR == false)
-        {
-            hand1 = GameObject.Find("Hand1").GetComponent<Hand>();
-            hand2 = GameObject.Find("Hand2").GetComponent<Hand>();
-        }
-        else
-        {
-            hand1 = null;
-            hand2 = null;
-        }
+        hand1 = GameObject.Find("Hand1").GetComponent<Hand>();
+        hand2 = GameObject.Find("Hand2").GetComponent<Hand>();
 	}
 	
 
@@ -106,14 +89,15 @@ public class Card : InteractionSuperClass {
             {
                 Destroy(deadCard);
             }
-            deckScript.thrownDeck = false;
+            deckScript.deckWasThrown = false;
             Destroy(GameObject.FindGameObjectWithTag("CardDeck")); //maybe could pool the card decks
-            deckScript.thrownDeck = false;
-            newCardDeck = Instantiate(Resources.Load("Prefabs/PlayingCardDeck"), hand1.transform.position, Quaternion.identity) as GameObject;
+            deckScript.deckWasThrown = false;
+            newCardDeck = Instantiate(Services.PrefabDB.CardDeck, hand1.transform.position, Quaternion.identity) as GameObject;
 
             instantiatingDeck = false;
             deckIsEmpty = false;
             deckHand.AttachObject(newCardDeck);
+            TableCards.dealerState = DealerState.DealingState;
 
         }
 
@@ -130,36 +114,15 @@ public class Card : InteractionSuperClass {
             }
         }
 
-        if (rb.isKinematic == false && badThrow == true && deckScript.thrownDeck == false)
+        if (rb.isKinematic == false && cardThrownWrong == true && deckScript.deckWasThrown == false)
         {
-            //Debug.Log("Calling bad throw");
-            startingFastTorque = false;
-            startingSlowTorque = false;
-            rb.drag = 7;
-            rb.AddForce(Random.Range(0, 2), Random.Range(0, 2), Random.Range(0, 2));
-            gameObject.GetComponent<ConstantForce>().enabled = true;
-            Vector3 torque;
-            torque.x = Random.Range(-200, 200);
-            torque.y = Random.Range(-200, 200);
-            torque.z = Random.Range(-200, 200);
-            gameObject.GetComponent<ConstantForce>().torque = torque;
-            float badThrowVelocity = 5;
-            Vector3 randomRot = new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
-            transform.Rotate(randomRot * badThrowVelocity * Time.deltaTime);
+            ThrewSingleCardBadPhysics();
+
         }
 
-        if (rb.isKinematic == false && badThrow == true && deckScript.thrownDeck == true)
+        if (rb.isKinematic == false && cardThrownWrong == true && deckScript.deckWasThrown == true)
         {
-            //Debug.Log("Calling bad throw at time: " + Time.time);
-            startingFastTorque = false;
-            startingSlowTorque = false;
-            rb.drag = 0.5f;
-            rb.AddForce(Random.Range(0, 2), Random.Range(0, 2), Random.Range(0, 2));
-            float badThrowVelocity = deckScript.badThrowVelocity;
-            Debug.Log("badThrowVelocity from Card is " + badThrowVelocity);
-            Vector3 randomRot = new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
-            transform.Rotate(randomRot * badThrowVelocity * Time.deltaTime);
-            //TableCards.dealerState = DealerState.ShufflingState;
+            ThrewWholeDeckPhysics();
         }
 
         if (rb.isKinematic == false && startingFastTorque == true)
@@ -187,76 +150,9 @@ public class Card : InteractionSuperClass {
 
         }
 
-        //we want to be able to flip the card if we're holding in it our hands. the only time the card is in our hands is if it's kinematic.
-
-        //
-        //references to throwing hand will have to be replaced
-        //
         if (rb.isKinematic == true && deckIsEmpty == false)
         {
-            Vector2 touch = throwingHand.controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
-            var device = throwingHand.GetComponent<Hand>().controller;
-            if (device.GetTouchDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
-            {
-                //Debug.Log("touching Trackpad");
-                trackingSwipe = true;
-                startPosition = new Vector2(touch.x, touch.y);
-                swipeStartTime = Time.time;
-            }
-            else if (device.GetTouchUp(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
-            {
-                //Debug.Log("not touching trackpad");
-                trackingSwipe = false;
-                trackingSwipe = true;
-                checkSwipe = true;
-                //Debug.Log("Tracking Finish");
-            }
-            else if (trackingSwipe)
-            {
-                endPosition = new Vector2(touch.x, touch.y);
-            }
-            if (checkSwipe)
-            {
-                checkSwipe = false;
-                float deltaTime = Time.time - swipeStartTime;
-                Vector2 swipeVector = endPosition - startPosition;
-                float velocity = swipeVector.magnitude / deltaTime;
-                //Debug.Log("velocity is " + velocity);
-                if (velocity > MIN_VELOCITY && swipeVector.magnitude > MIN_SWIPE_DIST)
-                {
-                    // if the swipe has enough velocity and enough distance
-                    swipeVector.Normalize();
-                    float angleOfSwipe = Vector2.Dot(swipeVector, xAxis);
-                    angleOfSwipe = Mathf.Acos(angleOfSwipe) * Mathf.Rad2Deg;
-                    // Detect left and right swipe
-                    if (angleOfSwipe < angleRange)
-                    {
-                        OnSwipeRight();
-                    }
-                    else if ((180f - angleOfSwipe) < angleRange)
-                    {
-                        OnSwipeLeft();
-                    }
-                    else
-                    {
-                        // Detect top and bottom swipe
-                        angleOfSwipe = Vector2.Dot(swipeVector, yAxis);
-                        angleOfSwipe = Mathf.Acos(angleOfSwipe) * Mathf.Rad2Deg;
-                        if (angleOfSwipe < angleRange)
-                        {
-                            OnSwipeTop();
-                        }
-                        else if ((180f - angleOfSwipe) < angleRange)
-                        {
-                            OnSwipeBottom();
-                        }
-                        else
-                        {
-                            //messageIndex = 0;
-                        }
-                    }
-                }
-            }
+            CheckSwipeDirection();
         }
     }
 
@@ -276,15 +172,45 @@ public class Card : InteractionSuperClass {
         TableCards.dealerState = DealerState.DealingState;
     }
 
+    public void ThrewSingleCardBadPhysics()
+    {
+        startingFastTorque = false;
+        startingSlowTorque = false;
+        rb.drag = 7;
+        rb.AddForce(Random.Range(0, 2), Random.Range(0, 2), Random.Range(0, 2));
+        gameObject.GetComponent<ConstantForce>().enabled = true;
+        Vector3 torque;
+        torque.x = Random.Range(-200, 200);
+        torque.y = Random.Range(-200, 200);
+        torque.z = Random.Range(-200, 200);
+        gameObject.GetComponent<ConstantForce>().torque = torque;
+        float badThrowVelocity = 5;
+        Vector3 randomRot = new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
+        transform.Rotate(randomRot * badThrowVelocity * Time.deltaTime);
+    }
+
+    public void ThrewWholeDeckPhysics()
+    {
+        //Debug.Log("Calling bad throw at time: " + Time.time);
+        startingFastTorque = false;
+        startingSlowTorque = false;
+        rb.drag = 0.5f;
+        rb.AddForce(Random.Range(0, 2), Random.Range(0, 2), Random.Range(0, 2));
+        float badThrowVelocity = deckScript.badThrowVelocity;
+        Debug.Log("badThrowVelocity from Card is " + badThrowVelocity);
+        Vector3 randomRot = new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
+        transform.Rotate(randomRot * badThrowVelocity * Time.deltaTime);
+    }
+
     void OnCollisionEnter(Collision other)
     {
         startLerping = true;
         elapsedTimeForThrowTorque = 0;
-        if (badThrow == true && other.gameObject.tag != "CardDeck") 
+        if (cardThrownWrong == true && other.gameObject.tag != "CardDeck") 
         {
             //Debug.Log("hitting " + other.gameObject.name);
             gameObject.GetComponent<ConstantForce>().enabled = false;
-            badThrow = false;
+            cardThrownWrong = false;
         }
     }
 
@@ -363,7 +289,7 @@ public class Card : InteractionSuperClass {
             if (rb.transform.rotation.eulerAngles.x > 290 || rb.transform.rotation.eulerAngles.x < 250 && cardIsFlipped == false)
             {
                 //Debug.Log(this.gameObject.name + " card is facing the wrong way");
-                badThrow = true;
+                cardThrownWrong = true;
             }
             StartCoroutine(CheckVelocity(.025f));
         }
@@ -382,6 +308,73 @@ public class Card : InteractionSuperClass {
         else
         {
             startingSlowTorque = true;
+        }
+    }
+
+    public void CheckSwipeDirection()
+    {
+        Vector2 touch = throwingHand.controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
+        var device = throwingHand.GetComponent<Hand>().controller;
+        if (device.GetTouchDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
+        {
+            //Debug.Log("touching Trackpad");
+            trackingSwipe = true;
+            startPosition = new Vector2(touch.x, touch.y);
+            swipeStartTime = Time.time;
+        }
+        else if (device.GetTouchUp(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
+        {
+            //Debug.Log("not touching trackpad");
+            trackingSwipe = false;
+            trackingSwipe = true;
+            checkSwipe = true;
+            //Debug.Log("Tracking Finish");
+        }
+        else if (trackingSwipe)
+        {
+            endPosition = new Vector2(touch.x, touch.y);
+        }
+        if (checkSwipe)
+        {
+            checkSwipe = false;
+            float deltaTime = Time.time - swipeStartTime;
+            Vector2 swipeVector = endPosition - startPosition;
+            float velocity = swipeVector.magnitude / deltaTime;
+            //Debug.Log("velocity is " + velocity);
+            if (velocity > MIN_VELOCITY && swipeVector.magnitude > MIN_SWIPE_DIST)
+            {
+                // if the swipe has enough velocity and enough distance
+                swipeVector.Normalize();
+                float angleOfSwipe = Vector2.Dot(swipeVector, xAxis);
+                angleOfSwipe = Mathf.Acos(angleOfSwipe) * Mathf.Rad2Deg;
+                // Detect left and right swipe
+                if (angleOfSwipe < angleRange)
+                {
+                    OnSwipeRight();
+                }
+                else if ((180f - angleOfSwipe) < angleRange)
+                {
+                    OnSwipeLeft();
+                }
+                else
+                {
+                    // Detect top and bottom swipe
+                    angleOfSwipe = Vector2.Dot(swipeVector, yAxis);
+                    angleOfSwipe = Mathf.Acos(angleOfSwipe) * Mathf.Rad2Deg;
+                    if (angleOfSwipe < angleRange)
+                    {
+                        OnSwipeTop();
+                    }
+                    else if ((180f - angleOfSwipe) < angleRange)
+                    {
+                        OnSwipeBottom();
+                    }
+                    else
+                    {
+                        //messageIndex = 0;
+                    }
+                }
+            }
         }
     }
 
