@@ -258,6 +258,13 @@ public class CardDeckScript : InteractionSuperClass {
             playingCard.GetComponent<Rigidbody>().AddTorque(deckHand.GetTrackedObjectAngularVelocity() * FORCE_MULTIPLIER, ForceMode.Impulse);
             playingCard.GetComponent<Rigidbody>().AddExplosionForce(explosionPower, playingCard.transform.position, explosionRadius, 0, ForceMode.Impulse);
         }
+        StartCoroutine(WaitToDestroy(0.25f));
+        
+    }
+    IEnumerator WaitToDestroy(float time)
+    {
+        yield return new WaitForSeconds(time);
+        Destroy(cardDeck);
     }
 
 }

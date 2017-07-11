@@ -6,9 +6,6 @@ public class LogCards : MonoBehaviour
 {
     public float cardCount;
     private GameObject newCardDeck;
-    //private Vector3 newCardDeckScale;
-    //private Vector3 currentCardDeckScale;
-    //private Vector3 decreaseCardDeckBy;
 
     // Use this for initialization
     void Start()
@@ -138,21 +135,11 @@ public class LogCards : MonoBehaviour
                         newCardDeck = Instantiate(Services.PrefabDB.CardDeck, transform.position, Quaternion.identity) as GameObject;
                         newCardDeck.GetComponent<CardDeckScript>().BuildDeckFromOneCard(newCardDeck);
                     }
-                    if(GameObject.FindGameObjectWithTag("CardDeck") != null && 
-                        GameObject.FindGameObjectWithTag("CardDeck").GetComponent<Transform>().childCount == 0 &&
-                        GameObject.FindGameObjectsWithTag("CardDeck").Length == 1)
-                    {
-                        Destroy(GameObject.FindGameObjectWithTag("CardDeck"));
-                        newCardDeck = Instantiate(Services.PrefabDB.CardDeck, transform.position, Quaternion.identity) as GameObject;
-                        newCardDeck.GetComponent<CardDeckScript>().BuildDeckFromOneCard(newCardDeck);
-                    }
-   
                     Destroy(other.gameObject);
                     Debug.Log("destroying cards");
                     newCardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();   
                     if(newCardDeck.GetComponent<CardDeckScript>().currentCardDeckScale.y > newCardDeck.GetComponent<CardDeckScript>().newCardDeckScale.y)
                     {
-                        //Debug.Log("currentCardsDeck.y is " + newCardDeck.GetComponent<CardDeckScript>().currentCardDeckScale.y + " and newCardDeckScale.y + oneCardScale.y is " + (newCardDeck.GetComponent<CardDeckScript>().newCardDeckScale.y + newCardDeck.GetComponent<CardDeckScript>().oneCardScale.y));
                         TableCards.dealerState = DealerState.DealingState;
                     }
                 }

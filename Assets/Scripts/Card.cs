@@ -71,35 +71,16 @@ public class Card : InteractionSuperClass {
 
     public void CardForDealingMode()
     {
+        if (deckIsEmpty == true && Input.GetKeyDown(KeyCode.R))//deckHand.GetStandardInteractionButton() == true && throwingHand.GetStandardInteractionButton() == true)
+        {
+            InstantiateNewDeck();
+        }
+
         if (transform.eulerAngles.x > 89 && transform.eulerAngles.x < 92)
         {
             cardFacingUp = true;
         }
         else cardFacingUp = false;
-        //BASICALLY NEED TO REWORK ALL THIS. IT WAS A SHORT TERM SOLUTION
-        if (deckIsEmpty == true && deckHand.GetStandardInteractionButton() == true && throwingHand.GetStandardInteractionButton() == true)
-        {
-            instantiatingDeck = true;
-        }
-
-        if (instantiatingDeck == true)
-        {
-            GameObject[] oldCards = GameObject.FindGameObjectsWithTag("PlayingCard");
-            foreach (GameObject deadCard in oldCards)
-            {
-                Destroy(deadCard);
-            }
-            deckScript.deckWasThrown = false;
-            Destroy(GameObject.FindGameObjectWithTag("CardDeck")); //maybe could pool the card decks
-            deckScript.deckWasThrown = false;
-            newCardDeck = Instantiate(Services.PrefabDB.CardDeck, hand1.transform.position, Quaternion.identity) as GameObject;
-
-            instantiatingDeck = false;
-            deckIsEmpty = false;
-            deckHand.AttachObject(newCardDeck);
-            TableCards.dealerState = DealerState.DealingState;
-
-        }
 
         if (flippingCard == true)
         {
@@ -169,6 +150,24 @@ public class Card : InteractionSuperClass {
 
     public void SwitchToDealing()
     {
+        TableCards.dealerState = DealerState.DealingState;
+    }
+
+    public void InstantiateNewDeck()
+    {
+        GameObject[] oldCards = GameObject.FindGameObjectsWithTag("PlayingCard");
+        foreach (GameObject deadCard in oldCards)
+        {
+            Destroy(deadCard);
+        }
+        deckScript.deckWasThrown = false;
+        Destroy(GameObject.FindGameObjectWithTag("CardDeck")); //maybe could pool the card decks
+        deckScript.deckWasThrown = false;
+        newCardDeck = Instantiate(Services.PrefabDB.CardDeck, hand1.transform.position, Quaternion.identity) as GameObject;
+
+        instantiatingDeck = false;
+        deckIsEmpty = false;
+        deckHand.AttachObject(newCardDeck);
         TableCards.dealerState = DealerState.DealingState;
     }
 
