@@ -6,8 +6,6 @@ using Valve.VR.InteractionSystem;
 
 public class CardDeckScript : InteractionSuperClass {
 
-    //everything in the script that controls the physics needs to be in a script, or a section of script attached to an enum we'll call PitchMode that way, depending on what controller mode I'm in, I can either switch on the elements I need in this script, or switch on the ShuffleMode and do the Shuffle script stuff.
-
     List<CardType> cardsInDeck;
     GameObject cardDeck;
 
@@ -32,6 +30,7 @@ public class CardDeckScript : InteractionSuperClass {
 
     void Start()
     {
+        cardDeck = this.gameObject;
         cardMeshes = new List<Mesh>[4]
         {
             spadeMeshes,
@@ -45,7 +44,6 @@ public class CardDeckScript : InteractionSuperClass {
             currentCardDeckScale = newCardDeckScale;
         } 
         oneCardScale = new Vector3 (newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
-
         PopulateCardDeck();
         deckIsEmpty = false;
     }
@@ -53,13 +51,7 @@ public class CardDeckScript : InteractionSuperClass {
 
     void Update()
     {
-        Debug.Log("transform.localScale.y = " + transform.localScale.y);
-        Debug.Log("currentCardDeckScale.y = " + currentCardDeckScale.y);
-        cardDeck = this.gameObject;
-        if (cardsInDeck.Count == 0)
-        {
-            Destroy(cardDeck);
-        }
+
     }
 
     public override void OnTriggerEnterX(Collider other)
@@ -146,8 +138,6 @@ public class CardDeckScript : InteractionSuperClass {
             FiftyTwoCardPickUp();
             deckIsEmpty = true;
             deckWasThrown = true;
-            //Destroy(cardDeck);
-            TableCards.dealerState = DealerState.ShufflingState;
         }
         base.OnDetachedFromHand(hand);
     }
@@ -258,13 +248,14 @@ public class CardDeckScript : InteractionSuperClass {
             playingCard.GetComponent<Rigidbody>().AddTorque(deckHand.GetTrackedObjectAngularVelocity() * FORCE_MULTIPLIER, ForceMode.Impulse);
             playingCard.GetComponent<Rigidbody>().AddExplosionForce(explosionPower, playingCard.transform.position, explosionRadius, 0, ForceMode.Impulse);
         }
-        StartCoroutine(WaitToDestroy(0.25f));
+        StartCoroutine(WaitToDestroyDeck(0.25f));
         
     }
-    IEnumerator WaitToDestroy(float time)
+    IEnumerator WaitToDestroyDeck(float time)
     {
         yield return new WaitForSeconds(time);
         Destroy(cardDeck);
+        TableCards.dealerState = DealerState.ShufflingState;
     }
 
 }

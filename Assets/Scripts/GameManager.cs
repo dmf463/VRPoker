@@ -65,10 +65,5 @@ public class GameManager : MonoBehaviour
 
         }
 
-        //if (readyToEvalute == true && winnerDeclared == false)
-        //{
-        //    winnerDeclared = true;
-        //}
-
     }
 }

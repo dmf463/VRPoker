@@ -9,14 +9,11 @@ public class InteractionSuperClass : MonoBehaviour {
     public Interactable interactableObject; //insert cardDeck, or other interactable that you need hoverlocked in inspector
     protected bool handIsHoldingCard;
     protected bool handTouchingDeck = false;
-    protected bool handIsTouchingCard;
     protected const float FORCE_MULTIPLIER = 1.80f;
     protected static Hand deckHand;
     protected static Hand throwingHand;
     protected static bool deckIsEmpty = false;
-    protected static bool instantiatingDeck = false;
 
-    //in the trigger enters and exits, I want to make sure that I'm colliding with the right thing, and also making it so that I can only instantiate a cards if I'm touching the deck of cards.
     public void OnTriggerEnter(Collider other)
     {
         OnTriggerEnterX(other);
@@ -24,7 +21,7 @@ public class InteractionSuperClass : MonoBehaviour {
 
     public virtual void OnTriggerEnterX(Collider other)
     {
-        //Debug.Log(this.name + " is touching " + other.name);
+
     }
 
     public void OnTriggerExit(Collider other)
@@ -34,7 +31,7 @@ public class InteractionSuperClass : MonoBehaviour {
 
     public virtual void OnTriggerExitX(Collider other)
     {
-        //Debug.Log(this.name + " is touching " + other.name);
+
     }
 
     //this happens whenever a hand is near this object
@@ -52,7 +49,6 @@ public class InteractionSuperClass : MonoBehaviour {
     public virtual void OnAttachedToHand(Hand attachedHand)
     {
         GetComponent<Rigidbody>().isKinematic = true; //turn off the physics, we we can hold it
-        //attachedHand.HoverLock(interactableObject);
     }
 
     //this is like update, as long as we're holding something

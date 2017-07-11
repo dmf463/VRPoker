@@ -23,8 +23,7 @@ public class Card : InteractionSuperClass {
     public float flipDuration;
     bool flippingCard = false;
     Quaternion rotationAtFlipStart;
-    Hand hand1;
-    Hand hand2;
+    Hand playerHand;
     GameObject newCardDeck;
     public bool cardThrownWrong;
     bool cardIsFlipped;
@@ -52,13 +51,13 @@ public class Card : InteractionSuperClass {
 
     // Use this for initialization
     void Start () {
-        //_state = DealerState.DealingState;
+
         cardDeck = GameObject.FindGameObjectWithTag("CardDeck"); //DEF will need to change this for recoupling purposes.
         deckScript = cardDeck.GetComponent<CardDeckScript>();  //gonna need to rework A LOT
         rb = GetComponent<Rigidbody>();
         elapsedTimeForCardFlip = 0;
-        hand1 = GameObject.Find("Hand1").GetComponent<Hand>();
-        hand2 = GameObject.Find("Hand2").GetComponent<Hand>();
+        playerHand = GameObject.Find("Hand1").GetComponent<Hand>();
+
 	}
 	
 
@@ -71,20 +70,16 @@ public class Card : InteractionSuperClass {
 
     public void CardForDealingMode()
     {
-        if (deckIsEmpty == true && Input.GetKeyDown(KeyCode.R))//deckHand.GetStandardInteractionButton() == true && throwingHand.GetStandardInteractionButton() == true)
+        if (deckIsEmpty == true && Input.GetKeyDown(KeyCode.R))
         {
             InstantiateNewDeck();
         }
 
-        if (transform.eulerAngles.x > 89 && transform.eulerAngles.x < 92)
-        {
-            cardFacingUp = true;
-        }
+        if (transform.eulerAngles.x > 89 && transform.eulerAngles.x < 92) cardFacingUp = true;
         else cardFacingUp = false;
 
         if (flippingCard == true)
         {
-            //Debug.Log("flippingCard!");
             elapsedTimeForCardFlip += Time.deltaTime;
             transform.localRotation = Quaternion.Euler(Mathf.Lerp(rotationAtFlipStart.eulerAngles.x, rotationAtFlipStart.eulerAngles.x + 180, elapsedTimeForCardFlip / flipDuration), rotationAtFlipStart.eulerAngles.y, rotationAtFlipStart.eulerAngles.z);
             if (elapsedTimeForCardFlip >= flipDuration)
@@ -98,7 +93,6 @@ public class Card : InteractionSuperClass {
         if (rb.isKinematic == false && cardThrownWrong == true && deckScript.deckWasThrown == false)
         {
             ThrewSingleCardBadPhysics();
-
         }
 
         if (rb.isKinematic == false && cardThrownWrong == true && deckScript.deckWasThrown == true)
@@ -137,22 +131,6 @@ public class Card : InteractionSuperClass {
         }
     }
 
-    public void CardForShufflingMode()
-    {
-
-    }
-
-    public void SwitchToShuffling()
-    {
-        //Debug.Log("ShufflingNow");
-        TableCards.dealerState = DealerState.ShufflingState;
-    }
-
-    public void SwitchToDealing()
-    {
-        TableCards.dealerState = DealerState.DealingState;
-    }
-
     public void InstantiateNewDeck()
     {
         GameObject[] oldCards = GameObject.FindGameObjectsWithTag("PlayingCard");
@@ -163,9 +141,7 @@ public class Card : InteractionSuperClass {
         deckScript.deckWasThrown = false;
         Destroy(GameObject.FindGameObjectWithTag("CardDeck")); //maybe could pool the card decks
         deckScript.deckWasThrown = false;
-        newCardDeck = Instantiate(Services.PrefabDB.CardDeck, hand1.transform.position, Quaternion.identity) as GameObject;
-
-        instantiatingDeck = false;
+        newCardDeck = Instantiate(Services.PrefabDB.CardDeck, playerHand.transform.position, Quaternion.identity) as GameObject;
         deckIsEmpty = false;
         deckHand.AttachObject(newCardDeck);
         TableCards.dealerState = DealerState.DealingState;
@@ -232,7 +208,6 @@ public class Card : InteractionSuperClass {
         {
             if (other.gameObject.tag == "Hand" && cardOnTable == true)
             {
-                //handIsTouchingCard = true;
                 transform.position = new Vector3 (other.transform.position.x, transform.position.y, other.transform.position.z);
             }
         }
@@ -245,10 +220,6 @@ public class Card : InteractionSuperClass {
 
     public override void OnTriggerExitX(Collider other)
     {
-        if(TableCards.dealerState == DealerState.ShufflingState)
-        {
-            handIsTouchingCard = false;
-        }
         base.OnTriggerExitX(other);
     }
 
@@ -269,6 +240,7 @@ public class Card : InteractionSuperClass {
             {
                 transform.rotation = throwingHand.GetAttachmentTransform("CardFaceUp").transform.rotation;
             }
+            //resetting the torque so they throw properly each time
             fastTorque = 3;
             slowTorque = .25f;
         }
