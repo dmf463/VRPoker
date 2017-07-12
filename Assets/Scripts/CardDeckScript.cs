@@ -61,8 +61,13 @@ public class CardDeckScript : InteractionSuperClass {
                 Destroy(other.gameObject);
                 MakeDeckLarger();
             }
-            if (currentCardDeckScale.y == newCardDeckScale.y)
+            if (currentCardDeckScale.y >= newCardDeckScale.y)
             {
+                GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
+                foreach(GameObject card in deadCards)
+                {
+                    Destroy(card);
+                }
                 RefillCardDeck();
                 TableCards.dealerState = DealerState.DealingState;
             }
