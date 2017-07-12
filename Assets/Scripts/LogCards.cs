@@ -6,6 +6,7 @@ public class LogCards : MonoBehaviour
 {
     public float cardCount;
     private GameObject newCardDeck;
+    private bool madeNewDeck;
 
     // Use this for initialization
     void Start()
@@ -127,19 +128,21 @@ public class LogCards : MonoBehaviour
             }
             else if(this.gameObject.name == "ShufflingArea")
             {
-                if(TableCards.dealerState == DealerState.ShufflingState)
+                if (GameObject.FindGameObjectWithTag("CardDeck") == null)
                 {
-                    if(GameObject.FindGameObjectWithTag("CardDeck") == null)
-                    {
-                        Debug.Log("Could not find CardDeck, instantiating new one");
-                        newCardDeck = Instantiate(Services.PrefabDB.CardDeck, transform.position, Quaternion.identity) as GameObject;
-                        newCardDeck.GetComponent<CardDeckScript>().BuildDeckFromOneCard(newCardDeck);
-                    }
+                    Debug.Log("Could not find CardDeck, instantiating new one");
+                    newCardDeck = Instantiate(Services.PrefabDB.CardDeck, transform.position, Quaternion.identity) as GameObject;
+                    newCardDeck.GetComponent<CardDeckScript>().BuildDeckFromOneCard(newCardDeck);
+                    madeNewDeck = true;
+                }
+                if (TableCards.dealerState == DealerState.ShufflingState && madeNewDeck == true)
+                {
                     Destroy(other.gameObject);
                     Debug.Log("destroying cards");
                     newCardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();   
                     if(newCardDeck.GetComponent<CardDeckScript>().currentCardDeckScale.y > newCardDeck.GetComponent<CardDeckScript>().newCardDeckScale.y)
                     {
+                        madeNewDeck = false;
                         TableCards.dealerState = DealerState.DealingState;
                     }
                 }

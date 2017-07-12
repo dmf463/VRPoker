@@ -52,6 +52,23 @@ public class CardDeckScript : InteractionSuperClass {
 
     }
 
+    void OnCollisionEnter(Collision other)
+    {
+        if(TableCards.dealerState == DealerState.ShufflingState)
+        {
+            if(other.gameObject.tag == "PlayingCard")
+            {
+                Destroy(other.gameObject);
+                MakeDeckLarger();
+            }
+            if (currentCardDeckScale.y == newCardDeckScale.y)
+            {
+                RefillCardDeck();
+                TableCards.dealerState = DealerState.DealingState;
+            }
+        }
+    }
+
     public override void OnTriggerEnterX(Collider other)
     {
         if(other.gameObject.tag == "Hand")
@@ -138,6 +155,47 @@ public class CardDeckScript : InteractionSuperClass {
             deckWasThrown = true;
         }
         base.OnDetachedFromHand(hand);
+    }
+
+    public void RefillCardDeck()
+    {
+        cardsInDeck.Clear();
+        SuitType[] suits = new SuitType[4]
+        {
+            SuitType.Spades,
+            SuitType.Hearts,
+            SuitType.Diamonds,
+            SuitType.Clubs
+        };
+        RankType[] ranks = new RankType[13]
+        {
+            RankType.Two,
+            RankType.Three,
+            RankType.Four,
+            RankType.Five,
+            RankType.Six,
+            RankType.Seven,
+            RankType.Eight,
+            RankType.Nine,
+            RankType.Ten,
+            RankType.Jack,
+            RankType.Queen,
+            RankType.King,
+            RankType.Ace
+        };
+
+        foreach (SuitType suit in suits)
+        {
+            foreach (RankType rank in ranks)
+            {
+                cardsInDeck.Add(new CardType(rank, suit));
+            }
+        }
+        Debug.Log("deck has" + cardsInDeck.Count + "cards");
+        foreach(CardType card in cardsInDeck)
+        {
+            Debug.Log(card.rank + " of " + card.suit);
+        }
     }
 
     public void PopulateCardDeck()

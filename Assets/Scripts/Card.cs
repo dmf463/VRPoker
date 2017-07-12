@@ -58,6 +58,7 @@ public class Card : InteractionSuperClass {
         rb = GetComponent<Rigidbody>();
         elapsedTimeForCardFlip = 0;
         playerHand = GameObject.Find("Hand1").GetComponent<Hand>();
+        cardsInHand = 0;
 
 	}
 	
@@ -74,6 +75,11 @@ public class Card : InteractionSuperClass {
         if (Input.GetKeyDown(KeyCode.R))
         {
             InstantiateNewDeck();
+        }
+
+        if(throwingHand.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_Grip))
+        {
+            TableCards.dealerState = DealerState.ShufflingState;
         }
 
         if (transform.eulerAngles.x > 89 && transform.eulerAngles.x < 92) cardFacingUp = true;
