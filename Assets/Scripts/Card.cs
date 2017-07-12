@@ -30,6 +30,7 @@ public class Card : InteractionSuperClass {
     GameObject cardDeck;
     CardDeckScript deckScript;
     bool cardFacingUp = false;
+    static float cardsInHand;
 
     //VARIABLE FOR CHECKING SWIPE
     private bool trackingSwipe;
@@ -70,7 +71,7 @@ public class Card : InteractionSuperClass {
 
     public void CardForDealingMode()
     {
-        if (deckIsEmpty == true && Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R))
         {
             InstantiateNewDeck();
         }
@@ -139,7 +140,10 @@ public class Card : InteractionSuperClass {
             Destroy(deadCard);
         }
         deckScript.deckWasThrown = false;
-        Destroy(GameObject.FindGameObjectWithTag("CardDeck")); //maybe could pool the card decks
+        if(GameObject.FindGameObjectWithTag("CardDeck") != null)
+        {
+            Destroy(GameObject.FindGameObjectWithTag("CardDeck")); //maybe could pool the card decks
+        }
         deckScript.deckWasThrown = false;
         newCardDeck = Instantiate(Services.PrefabDB.CardDeck, playerHand.transform.position, Quaternion.identity) as GameObject;
         deckIsEmpty = false;
@@ -181,11 +185,22 @@ public class Card : InteractionSuperClass {
     {
         startLerping = true;
         elapsedTimeForThrowTorque = 0;
-        if (cardThrownWrong == true && other.gameObject.tag != "CardDeck") 
+        if (cardThrownWrong == true && other.gameObject.tag != "CardDeck" && other.gameObject.tag != "PlayingCard") 
         {
             //Debug.Log("hitting " + other.gameObject.name);
             gameObject.GetComponent<ConstantForce>().enabled = false;
             cardThrownWrong = false;
+        }
+        if(TableCards.dealerState == DealerState.ShufflingState)
+        {
+            if (other.gameObject.tag == "PlayingCard")
+            {
+                if (cardsInHand > 5)
+                {
+                    //Debug.Log("Turning of some physics");
+                    Physics.IgnoreCollision(GetComponent<Collider>(), other.gameObject.GetComponent<Collider>(), true);
+                }
+            }
         }
     }
 
@@ -215,6 +230,14 @@ public class Card : InteractionSuperClass {
 
     public override void OnTriggerEnterX(Collider other)
     {
+        if (TableCards.dealerState == DealerState.ShufflingState)
+        {
+            if (other.gameObject.tag == "Hand" && cardOnTable == true)
+            {
+                cardsInHand += 1;
+                Debug.Log("cardsInHand = " + cardsInHand);
+            }
+        }
         base.OnTriggerEnterX(other);
     }
 

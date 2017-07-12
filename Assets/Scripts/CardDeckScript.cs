@@ -23,8 +23,6 @@ public class CardDeckScript : InteractionSuperClass {
     public Vector3 oneCardScale;
     [HideInInspector]
     public bool deckIsBeingThrown = false;
-    float explosionPower = 1;
-    float explosionRadius = 30;
     public bool deckWasThrown;
     public float badThrowVelocity;
 
@@ -217,36 +215,35 @@ public class CardDeckScript : InteractionSuperClass {
             //Vector3 pos = referenceCard.transform.position;
             //Quaternion rot = referenceCard.transform.rotation;
 
-            //GameObject playingCard = CreateCard(cardsInDeck[i], pos, rot).gameObject;
-            //playingCard.GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity;
-            //playingCard.GetComponent<Rigidbody>().angularVelocity = GetComponent<Rigidbody>().angularVelocity;
+            GameObject playingCard = CreateCard(cardsInDeck[i], transform.position, Quaternion.identity).gameObject;
+            playingCard.GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity;
+            playingCard.GetComponent<Rigidbody>().angularVelocity = GetComponent<Rigidbody>().angularVelocity;
 
-            GameObject playingCard = cardDeck.transform.GetChild(i).gameObject;
-            //Debug.Log("playingCard is " + playingCard.name);
+            //GameObject playingCard = cardDeck.transform.GetChild(i).gameObject;
+            ////Debug.Log("playingCard is " + playingCard.name);
 
-            playingCard.transform.parent = null;
-            //Debug.Log("playingCard parent = " + playingCard.transform.parent);
+            //playingCard.transform.parent = null;
+            ////Debug.Log("playingCard parent = " + playingCard.transform.parent);
 
-            playingCard.GetComponent<BoxCollider>().enabled = true;
-            //Debug.Log("playing card boxCollider enabled = " + playingCard.GetComponent<BoxCollider>().enabled);
+            //playingCard.GetComponent<BoxCollider>().enabled = true;
+            ////Debug.Log("playing card boxCollider enabled = " + playingCard.GetComponent<BoxCollider>().enabled);
 
-            playingCard.AddComponent<Rigidbody>();
-            //Debug.Log("playing Card has rb and rb is " + playingCard.GetComponent<Rigidbody>());
+            //playingCard.AddComponent<Rigidbody>();
+            ////Debug.Log("playing Card has rb and rb is " + playingCard.GetComponent<Rigidbody>());
 
-            //Debug.Log("rigidBody added at " + Time.time);
+            ////Debug.Log("rigidBody added at " + Time.time);
 
-            playingCard.AddComponent<ConstantForce>();
-            //Debug.Log("playing card has constantForce and constantForce is " + playingCard.GetComponent<ConstantForce>());
+            //playingCard.AddComponent<ConstantForce>();
+            ////Debug.Log("playing card has constantForce and constantForce is " + playingCard.GetComponent<ConstantForce>());
 
-            playingCard.GetComponent<Card>().enabled = true;
-            //Debug.Log("playingCard script is enabled = " + playingCard.GetComponent<Card>().enabled);
+            //playingCard.GetComponent<Card>().enabled = true;
+            ////Debug.Log("playingCard script is enabled = " + playingCard.GetComponent<Card>().enabled);
 
 
             playingCard.GetComponent<Card>().cardThrownWrong = true;
-            //Debug.Log("bad throw is = " + playingCard.GetComponent<Card>().badThrow);
+            ////Debug.Log("bad throw is = " + playingCard.GetComponent<Card>().badThrow);
             playingCard.GetComponent<Rigidbody>().AddForce(deckHand.GetTrackedObjectVelocity(), ForceMode.Impulse);
             playingCard.GetComponent<Rigidbody>().AddTorque(deckHand.GetTrackedObjectAngularVelocity() * FORCE_MULTIPLIER, ForceMode.Impulse);
-            playingCard.GetComponent<Rigidbody>().AddExplosionForce(explosionPower, playingCard.transform.position, explosionRadius, 0, ForceMode.Impulse);
         }
         StartCoroutine(WaitToDestroyDeck(0.25f));
         
