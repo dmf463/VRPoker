@@ -273,34 +273,10 @@ public class CardDeckScript : InteractionSuperClass {
         int cardsInDeckCount = cardsInDeck.Count;
         for (int i = cardsInDeckCount - 1; i >= 0; i--)
         {
-            //Debug.Log(i);
-            //GameObject referenceCard = cardDeck.transform.GetChild(i).gameObject;
-            //Vector3 pos = referenceCard.transform.position;
-            //Quaternion rot = referenceCard.transform.rotation;
 
-            GameObject playingCard = CreateCard(cardsInDeck[i], transform.position, Quaternion.identity).gameObject;
+            GameObject playingCard = CreateCard(cardsInDeck[i], transform.position + Random.insideUnitSphere * 0.1f , Quaternion.identity).gameObject;
             playingCard.GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity;
             playingCard.GetComponent<Rigidbody>().angularVelocity = GetComponent<Rigidbody>().angularVelocity;
-
-            //GameObject playingCard = cardDeck.transform.GetChild(i).gameObject;
-            ////Debug.Log("playingCard is " + playingCard.name);
-
-            //playingCard.transform.parent = null;
-            ////Debug.Log("playingCard parent = " + playingCard.transform.parent);
-
-            //playingCard.GetComponent<BoxCollider>().enabled = true;
-            ////Debug.Log("playing card boxCollider enabled = " + playingCard.GetComponent<BoxCollider>().enabled);
-
-            //playingCard.AddComponent<Rigidbody>();
-            ////Debug.Log("playing Card has rb and rb is " + playingCard.GetComponent<Rigidbody>());
-
-            ////Debug.Log("rigidBody added at " + Time.time);
-
-            //playingCard.AddComponent<ConstantForce>();
-            ////Debug.Log("playing card has constantForce and constantForce is " + playingCard.GetComponent<ConstantForce>());
-
-            //playingCard.GetComponent<Card>().enabled = true;
-            ////Debug.Log("playingCard script is enabled = " + playingCard.GetComponent<Card>().enabled);
 
 
             playingCard.GetComponent<Card>().cardThrownWrong = true;
