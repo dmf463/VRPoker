@@ -182,7 +182,7 @@ public class Card : InteractionSuperClass {
         rb.drag = 0.5f;
         rb.AddForce(Random.Range(0, 2), Random.Range(0, 2), Random.Range(0, 2));
         float badThrowVelocity = deckScript.badThrowVelocity;
-        Debug.Log("badThrowVelocity from Card is " + badThrowVelocity);
+        //Debug.Log("badThrowVelocity from Card is " + badThrowVelocity);
         Vector3 randomRot = new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
         transform.Rotate(randomRot * badThrowVelocity * Time.deltaTime);
     }
@@ -241,7 +241,7 @@ public class Card : InteractionSuperClass {
             if (other.gameObject.tag == "Hand" && cardOnTable == true)
             {
                 cardsInHand += 1;
-                Debug.Log("cardsInHand = " + cardsInHand);
+                //Debug.Log("cardsInHand = " + cardsInHand);
             }
         }
         base.OnTriggerEnterX(other);

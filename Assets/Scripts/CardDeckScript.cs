@@ -8,6 +8,8 @@ public class CardDeckScript : InteractionSuperClass {
 
     List<CardType> cardsInDeck;
     GameObject cardDeck;
+    public float cardSpawnOffset;
+    public float velocityThreshold;
 
     List<Mesh>[] cardMeshes;
     public List<Mesh> spadeMeshes;
@@ -146,12 +148,12 @@ public class CardDeckScript : InteractionSuperClass {
     public override void OnDetachedFromHand(Hand hand)
     {
         badThrowVelocity = deckHand.GetTrackedObjectVelocity().magnitude;
-        Debug.Log("badThrowVelocity from CardDeck = " + badThrowVelocity);
+        //Debug.Log("badThrowVelocity from CardDeck = " + badThrowVelocity);
 
         //
         //should seriously rethink this because of the way it feels between dropping the deck and throwing the deck
         //
-        if (hand.GetTrackedObjectVelocity().magnitude > 1) deckIsBeingThrown = true;
+        if (hand.GetTrackedObjectVelocity().magnitude > velocityThreshold) deckIsBeingThrown = true;
         if (deckIsBeingThrown == true)
         {
             deckIsBeingThrown = false;
@@ -195,11 +197,6 @@ public class CardDeckScript : InteractionSuperClass {
             {
                 cardsInDeck.Add(new CardType(rank, suit));
             }
-        }
-        Debug.Log("deck has" + cardsInDeck.Count + "cards");
-        foreach(CardType card in cardsInDeck)
-        {
-            Debug.Log(card.rank + " of " + card.suit);
         }
     }
 
@@ -274,7 +271,7 @@ public class CardDeckScript : InteractionSuperClass {
         for (int i = cardsInDeckCount - 1; i >= 0; i--)
         {
 
-            GameObject playingCard = CreateCard(cardsInDeck[i], transform.position + Random.insideUnitSphere * 0.1f , Quaternion.identity).gameObject;
+            GameObject playingCard = CreateCard(cardsInDeck[i], transform.position + Random.insideUnitSphere * cardSpawnOffset , Quaternion.identity).gameObject;
             playingCard.GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity;
             playingCard.GetComponent<Rigidbody>().angularVelocity = GetComponent<Rigidbody>().angularVelocity;
 

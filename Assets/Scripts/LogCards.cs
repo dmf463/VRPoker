@@ -143,6 +143,11 @@ public class LogCards : MonoBehaviour
                     if(newCardDeck.GetComponent<CardDeckScript>().currentCardDeckScale.y > newCardDeck.GetComponent<CardDeckScript>().newCardDeckScale.y)
                     {
                         madeNewDeck = false;
+                        GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
+                        foreach (GameObject card in deadCards)
+                        {
+                            Destroy(card);
+                        }
                         TableCards.dealerState = DealerState.DealingState;
                     }
                 }
