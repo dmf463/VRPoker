@@ -167,7 +167,7 @@ public class CardDeckScript : InteractionSuperClass {
     public void RefillCardDeck()
     {
         cardsInDeck.Clear();
-        TableCards.instance.NewGame();
+        TableCards.instance.NewHand();
         SuitType[] suits = new SuitType[4]
         {
             SuitType.Spades,
@@ -203,7 +203,7 @@ public class CardDeckScript : InteractionSuperClass {
 
     public void PopulateCardDeck()
     {
-        TableCards.instance.NewGame();
+        TableCards.instance.NewHand();
         cardsInDeck = new List<CardType>();
         SuitType[] suits = new SuitType[4] 
         {

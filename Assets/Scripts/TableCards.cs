@@ -63,7 +63,7 @@ public class TableCards {
         }
     }
 
-    public void NewGame()
+    public void NewHand()
     {
         _player0.Clear();
         _player1.Clear();

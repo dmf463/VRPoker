@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
 
     //holds all the cards where they need to be
     public float cardsDealt;
-    //public List<HandEvaluator> playerHands = new List<HandEvaluator>();
+    public List<PokerPlayer> players = new List<PokerPlayer>();
 
     //keep track of where we are in the game
     //private bool flopDealt = false;
@@ -39,6 +39,7 @@ public class GameManager : MonoBehaviour
         player1.SeatPos = Destinations.player1;
         player2.SeatPos = Destinations.player2;
         player3.SeatPos = Destinations.player3;
+
         cardsDealt = 0;
 
     }
@@ -79,20 +80,17 @@ public class GameManager : MonoBehaviour
             Debug.Log(player2.SeatPos + " has " + player2.Hand.HandValues.pokerHand + " with a total HandValue of " + player2.Hand.HandValues.Total + " with a highCard of " + player2.Hand.HandValues.HighCard);
             Debug.Log(player3.SeatPos + " has " + player3.Hand.HandValues.pokerHand + " with a total HandValue of " + player3.Hand.HandValues.Total + " with a highCard of " + player3.Hand.HandValues.HighCard);
 
-            //Debug.Log("player0 has " + player0Hand.HandValues.pokerHand + " with a total HandValue of " + player0Hand.HandValues.Total + " with a highCard of " + player0Hand.HandValues.HighCard);
-            //Debug.Log("player1 has " + player1Hand.HandValues.pokerHand + " with a total HandValue of " + player1Hand.HandValues.Total + " with a highCard of " + player1Hand.HandValues.HighCard);
-            //Debug.Log("player2 has " + player2Hand.HandValues.pokerHand + " with a total HandValue of " + player2Hand.HandValues.Total + " with a highCard of " + player2Hand.HandValues.HighCard);
-            //Debug.Log("player3 has " + player3Hand.HandValues.pokerHand + " with a total HandValue of " + player3Hand.HandValues.Total + " with a highCard of " + player3Hand.HandValues.HighCard);
+            players.Add(player0);
+            players.Add(player1);
+            players.Add(player2);
+            players.Add(player3);
 
-            //playerHands.Add(player0Hand);
-            //playerHands.Add(player1Hand);
-            //playerHands.Add(player2Hand);
-            //playerHands.Add(player3Hand);
-            //playerHands.Sort((bestHand, worstHand) => bestHand.HandValues.pokerHand.CompareTo((worstHand.HandValues.pokerHand)));
-            //Debug.Log("And first place is " + playerHands[0]);
-            //Debug.Log("And second place is " + playerHands[1]);
-            //Debug.Log("And third place is " + playerHands[2]);
-            //Debug.Log("And fourth place is " + playerHands[3]);
+            //players.Sort((bestHand, worstHand) => worstHand.Hand.HandValues.pokerHand.CompareTo(bestHand.Hand.HandValues.pokerHand));
+            List<PokerPlayer> sortedPlayers = new List<PokerPlayer>(players.OrderByDescending(bestHand => bestHand.Hand.HandValues.pokerHand).ThenByDescending(bestHand => bestHand.Hand.HandValues.Total).ThenByDescending(bestHand => bestHand.Hand.HandValues.HighCard));
+            Debug.Log(sortedPlayers[0].SeatPos + " has the best hand with a " + sortedPlayers[0].Hand.HandValues.pokerHand + " with a highCard of " + sortedPlayers[0].Hand.HandValues.HighCard + " and a handTotal of " + sortedPlayers[0].Hand.HandValues.Total);
+            Debug.Log(sortedPlayers[1].SeatPos + " has the second best hand with a " + sortedPlayers[1].Hand.HandValues.pokerHand + " with a highCard of " + sortedPlayers[1].Hand.HandValues.HighCard + " and a handTotal of " + sortedPlayers[1].Hand.HandValues.Total);
+            Debug.Log(sortedPlayers[2].SeatPos + " has the third best hand with a " + sortedPlayers[2].Hand.HandValues.pokerHand + " with a highCard of " + sortedPlayers[2].Hand.HandValues.HighCard + " and a handTotal of " + sortedPlayers[2].Hand.HandValues.Total);
+            Debug.Log(sortedPlayers[3].SeatPos + " has the worst hand with a " + sortedPlayers[3].Hand.HandValues.pokerHand + " with a highCard of " + sortedPlayers[3].Hand.HandValues.HighCard + " and a handTotal of " + sortedPlayers[3].Hand.HandValues.Total);
 
         }
 
