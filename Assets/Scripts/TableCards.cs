@@ -61,11 +61,6 @@ public class TableCards {
             _burn.Add(card);
             //Debug.Log(_burn[0].rank);
         }
-        else if (dest == Destinations.table)
-        {
-            _player0.Add(card);
-            //Debug.Log(_table[0].rank);
-        }
     }
 
     public void NewGame()
@@ -107,8 +102,6 @@ public class TableCards {
             EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
         }
 
-        //HandEvaluator playerHandEvaluator = new HandEvaluator(EvaluatedHand);
-        //Debug.Log(dest + " has " + playerHandEvaluator.EvaluateHand() + " with a highCard of " + playerHandEvaluator.HandValues.HighCard);
     }
 
     public void DebugHands()
