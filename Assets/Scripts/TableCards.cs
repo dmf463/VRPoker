@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public enum Destinations { player0, player1, player2, player3, board, burn, table}
+public enum Destination { player0, player1, player2, player3, board, burn, table}
 public enum DealerState { DealingState, ShufflingState };
 
 public class TableCards {
@@ -29,34 +29,34 @@ public class TableCards {
     public List<CardType> _burn = new List<CardType>();
     public List<CardType> _table = new List<CardType>();
 
-    public void AddCardTo (Destinations dest, CardType card)
+    public void AddCardTo (Destination dest, CardType card)
     {
-        if (dest == Destinations.player0)
+        if (dest == Destination.player0)
         {
             _player0.Add(card);
             //Debug.Log(_player0[0].rank);
         }
-        else if (dest == Destinations.player1)
+        else if (dest == Destination.player1)
         {
             _player1.Add(card);
             //Debug.Log(_player1[0].rank);
         }
-        else if (dest == Destinations.player2)
+        else if (dest == Destination.player2)
         {
             _player2.Add(card);
             //Debug.Log(_player2[0].rank);
         }
-        else if (dest == Destinations.player3)
+        else if (dest == Destination.player3)
         {
             _player3.Add(card);
             //Debug.Log(_player3[0].rank);
         }
-        else if(dest == Destinations.board)
+        else if(dest == Destination.board)
         {
             _board.Add(card);
            // Debug.Log(_board[0].rank);
         }
-        else if (dest == Destinations.burn)
+        else if (dest == Destination.burn)
         {
             _burn.Add(card);
             //Debug.Log(_burn[0].rank);
@@ -74,34 +74,34 @@ public class TableCards {
         _table.Clear();
     }
 
-    public void EvaluatePlayer(Destinations dest)
+    public List<CardType> EvaluatePlayer(int seatPos)
     {
         List<CardType> EvaluatedHand = new List<CardType>();
-        if (dest == Destinations.player0)
+        if (seatPos == 0)
         {
             EvaluatedHand = _player0;
             EvaluatedHand.AddRange(_board);
             EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
         }
-        if (dest == Destinations.player1)
+        if (seatPos == 1)
         {
             EvaluatedHand = _player1;
             EvaluatedHand.AddRange(_board);
             EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
         }
-        if (dest == Destinations.player2)
+        if (seatPos == 2)
         {
             EvaluatedHand = _player2;
             EvaluatedHand.AddRange(_board);
             EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
         }
-        if (dest == Destinations.player3)
+        if (seatPos == 3)
         {
             EvaluatedHand = _player3;
             EvaluatedHand.AddRange(_board);
             EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
         }
-
+        return EvaluatedHand;
     }
 
     public void DebugHands()

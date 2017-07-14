@@ -7,7 +7,7 @@ public enum PlayerState { Playing, NoHand, Winner, Loser}
 
 public class PokerPlayer {
 
-    public Destinations SeatPos { get; set; }
+    public int SeatPos { get; set; }
     public int ChipCount { get; set; }
     public HandEvaluator Hand { get; set; }
     public PlayerState PlayerState { get; set; }

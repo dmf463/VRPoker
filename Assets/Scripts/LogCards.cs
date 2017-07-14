@@ -38,7 +38,7 @@ public class LogCards : MonoBehaviour
                     }
                     else
                     {
-                        TableCards.instance.AddCardTo(Destinations.player0, other.GetComponent<Card>().cardType);
+                        TableCards.instance.AddCardTo(Destination.player0, other.GetComponent<Card>().cardType);
                         Debug.Log("Card went into " + this.gameObject.name);
                     }
                 }
@@ -57,7 +57,7 @@ public class LogCards : MonoBehaviour
                     }
                     else
                     {
-                        TableCards.instance.AddCardTo(Destinations.player1, other.GetComponent<Card>().cardType);
+                        TableCards.instance.AddCardTo(Destination.player1, other.GetComponent<Card>().cardType);
                         Debug.Log("Card went into " + this.gameObject.name);
                     }
                 }
@@ -76,7 +76,7 @@ public class LogCards : MonoBehaviour
                     }
                     else
                     {
-                        TableCards.instance.AddCardTo(Destinations.player2, other.GetComponent<Card>().cardType);
+                        TableCards.instance.AddCardTo(Destination.player2, other.GetComponent<Card>().cardType);
                         Debug.Log("Card went into " + this.gameObject.name);
                     }
                 }
@@ -95,7 +95,7 @@ public class LogCards : MonoBehaviour
                     }
                     else
                     {
-                        TableCards.instance.AddCardTo(Destinations.player3, other.GetComponent<Card>().cardType);
+                        TableCards.instance.AddCardTo(Destination.player3, other.GetComponent<Card>().cardType);
                         Debug.Log("Card went into " + this.gameObject.name);
                     }
                 }
@@ -115,7 +115,7 @@ public class LogCards : MonoBehaviour
                     }
                     else
                     {
-                        TableCards.instance.AddCardTo(Destinations.board, other.GetComponent<Card>().cardType);
+                        TableCards.instance.AddCardTo(Destination.board, other.GetComponent<Card>().cardType);
                         Debug.Log("Card went into " + this.gameObject.name);
                     }
                 }
@@ -123,7 +123,7 @@ public class LogCards : MonoBehaviour
             }
             else if (this.gameObject.name == "BurnCards")
             {
-                TableCards.instance.AddCardTo(Destinations.burn, other.GetComponent<Card>().cardType);
+                TableCards.instance.AddCardTo(Destination.burn, other.GetComponent<Card>().cardType);
                 Debug.Log("Card went into " + this.gameObject.name);
             }
             else if(this.gameObject.name == "ShufflingArea")
