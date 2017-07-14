@@ -91,46 +91,51 @@ public class GameManager : MonoBehaviour
             players.Add(player3);
 
             List<PokerPlayer> sortedPlayers = new List<PokerPlayer>(players.OrderByDescending(bestHand => bestHand.Hand.HandValues.PokerHand).ThenByDescending(bestHand => bestHand.Hand.HandValues.Total).ThenByDescending(bestHand => bestHand.Hand.HandValues.HighCard));
-            //sortedPlayers[0].PlayerState = PlayerState.Winner;
+            sortedPlayers[0].PlayerState = PlayerState.Winner;
+            List<List<PokerPlayer>> PlayerRank = new List<List<PokerPlayer>>();
+            for (int i = 0; i < sortedPlayers.Count; i++)
+            {
+                if(PlayerRank.Count == 0)
+                {
+                    PlayerRank.Add(new List<PokerPlayer>() { sortedPlayers[i] });
+                }
+                else if(sortedPlayers[i].Hand.HandValues == PlayerRank[PlayerRank.Count - 1][0].Hand.HandValues)
+                {
+                    PlayerRank[PlayerRank.Count - 1].Add(sortedPlayers[i]);
+                }
+                else
+                {
+                    PlayerRank.Add(new List<PokerPlayer>() { sortedPlayers[i]});
+                }
+            }
 
-            //so I COULD do it manually, like:
-            //if(sortedplayers[0].Hand.HandValues.pokerHand == sortedPlayers[1].Hand.HandValues.pokerHand && sortedPlayer[0].Hand.HandValues.pokerHand == sortedPlayers[2].....
-            //BUT THAT WILL TAKE FOREVER
-            //because I need to compare the pokerHand, then the total, then the highCard to see if they're the same or not. 
-            //and doing that for EACH variation of possible tie combinations seems fucking ridiculous
-            //I could make the list Distinct(), but that wouldn't help me with determining a draw. I wish two objects could occupy the same position in a list...
-            //if I can make a new list, that returns duplicates, then compare that list to the first list, and assign winners based on that?
-            /*
-             * so like, if list A has:
-             *                  2, 4, 6, A, A
-             *                  2, 4, 6, A, A
-             *                  2, 2, 6, K, A
-             *                  2, 2, 6, K, A
-             *  that would means that a list of it's duplicates would look like
-             *                  2, 4, 6, A, A
-             *                  2, 2, 6, K, A
-             *  then I can say, if (duplicates[0].Hand.HandValue.PokerHand == ListA[0].Hand.HandValue.PokerHand)
-             *                     {
-             *                          ListA[0].Hand.HandValue.PlayerState == PlayerState.Winner;
-             *                     }
-             *                     AND THEN CHECK THAT ACROSS EVERY SINGLE OTHER PLAYER FOR POKERHAND, TOTAL, AND HIGH CARD. UGH.
-             *                     
-             *What about if I check the first versuse the last. So like, if sortedPlayer[0] != sortedPlayer[3], then I know that they don't ALL have the same hand
-             * but that still leaves me in the same position of having to write out a SHIT TON of logic, just backwards (which if I do, should probably be the case).
-             * the problem is, the amount of players I may have at a given moment might change depending on the state of the game,
-             * so I'm hesitant to hardcose positions in the list, because right now I'm only check for 4 players, but in the game there might be 6, or 10!
-             * 
-             * /*
-             */
+            for (int i = 0; i < PlayerRank.Count; i++)
+            {
+                if(i == 0)
+                {
+                    foreach (PokerPlayer player in PlayerRank[0])
+                    {
+                        player.PlayerState = PlayerState.Winner;
+                    }
+                }
+                else
+                {
+                    foreach (PokerPlayer player in PlayerRank[i])
+                    {
+                        player.PlayerState = PlayerState.Loser;
+                    }
+                }
+            }
 
+            //Debug.Log(sortedPlayers[0].SeatPos + " has the best hand with a " + sortedPlayers[0].Hand.HandValues.PokerHand + " with a highCard of " + sortedPlayers[0].Hand.HandValues.HighCard + " and a handTotal of " + sortedPlayers[0].Hand.HandValues.Total);
+            //Debug.Log(sortedPlayers[1].SeatPos + " has the second best hand with a " + sortedPlayers[1].Hand.HandValues.PokerHand + " with a highCard of " + sortedPlayers[1].Hand.HandValues.HighCard + " and a handTotal of " + sortedPlayers[1].Hand.HandValues.Total);
+            //Debug.Log(sortedPlayers[2].SeatPos + " has the third best hand with a " + sortedPlayers[2].Hand.HandValues.PokerHand + " with a highCard of " + sortedPlayers[2].Hand.HandValues.HighCard + " and a handTotal of " + sortedPlayers[2].Hand.HandValues.Total);
+            //Debug.Log(sortedPlayers[3].SeatPos + " has the worst hand with a " + sortedPlayers[3].Hand.HandValues.PokerHand + " with a highCard of " + sortedPlayers[3].Hand.HandValues.HighCard + " and a handTotal of " + sortedPlayers[3].Hand.HandValues.Total);
 
-
-
-
-            Debug.Log(sortedPlayers[0].SeatPos + " has the best hand with a " + sortedPlayers[0].Hand.HandValues.PokerHand + " with a highCard of " + sortedPlayers[0].Hand.HandValues.HighCard + " and a handTotal of " + sortedPlayers[0].Hand.HandValues.Total);
-            Debug.Log(sortedPlayers[1].SeatPos + " has the second best hand with a " + sortedPlayers[1].Hand.HandValues.PokerHand + " with a highCard of " + sortedPlayers[1].Hand.HandValues.HighCard + " and a handTotal of " + sortedPlayers[1].Hand.HandValues.Total);
-            Debug.Log(sortedPlayers[2].SeatPos + " has the third best hand with a " + sortedPlayers[2].Hand.HandValues.PokerHand + " with a highCard of " + sortedPlayers[2].Hand.HandValues.HighCard + " and a handTotal of " + sortedPlayers[2].Hand.HandValues.Total);
-            Debug.Log(sortedPlayers[3].SeatPos + " has the worst hand with a " + sortedPlayers[3].Hand.HandValues.PokerHand + " with a highCard of " + sortedPlayers[3].Hand.HandValues.HighCard + " and a handTotal of " + sortedPlayers[3].Hand.HandValues.Total);
+            for (int i = 0; i < players.Count; i++)
+            {
+                Debug.Log(players[i].SeatPos + "is the " + players[i].PlayerState + " with (a) " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
+            }
 
             sortedPlayers.Clear();
             players.Clear();
