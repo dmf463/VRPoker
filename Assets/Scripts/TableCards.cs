@@ -5,6 +5,7 @@ using System.Linq;
 
 public enum Destination { player0, player1, player2, player3, board, burn, table}
 public enum DealerState { DealingState, ShufflingState };
+public enum GameState { PreFlop, Flop, Turn, River, ShowDown }
 
 public class TableCards {
     
@@ -19,6 +20,7 @@ public class TableCards {
         }
     }
 
+    public static GameState gameState;
     public static DealerState dealerState;
 
     public List<CardType> _player0 = new List<CardType>();
@@ -34,32 +36,26 @@ public class TableCards {
         if (dest == Destination.player0)
         {
             _player0.Add(card);
-            //Debug.Log(_player0[0].rank);
         }
         else if (dest == Destination.player1)
         {
             _player1.Add(card);
-            //Debug.Log(_player1[0].rank);
         }
         else if (dest == Destination.player2)
         {
             _player2.Add(card);
-            //Debug.Log(_player2[0].rank);
         }
         else if (dest == Destination.player3)
         {
             _player3.Add(card);
-            //Debug.Log(_player3[0].rank);
         }
         else if(dest == Destination.board)
         {
             _board.Add(card);
-           // Debug.Log(_board[0].rank);
         }
         else if (dest == Destination.burn)
         {
             _burn.Add(card);
-            //Debug.Log(_burn[0].rank);
         }
     }
 
@@ -74,7 +70,34 @@ public class TableCards {
         _table.Clear();
     }
 
-    public List<CardType> EvaluatePlayer(int seatPos)
+    public List<CardType> EvaluatePlayerPreFlop(int seatPos)
+    {
+        List<CardType> EvaluatedHand = new List<CardType>();
+        if (seatPos == 0)
+        {
+            EvaluatedHand = _player0;
+            EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
+        }
+        if (seatPos == 1)
+        {
+            EvaluatedHand = _player1;
+            EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
+        }
+        if (seatPos == 2)
+        {
+            EvaluatedHand = _player2;
+            EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
+        }
+        if (seatPos == 3)
+        {
+            EvaluatedHand = _player3;
+            EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
+        }
+        return EvaluatedHand;
+
+    }
+
+    public List<CardType> EvaluatePlayerAtFlop(int seatPos)
     {
         List<CardType> EvaluatedHand = new List<CardType>();
         if (seatPos == 0)
@@ -104,9 +127,68 @@ public class TableCards {
         return EvaluatedHand;
     }
 
+    public List<CardType> EvaluatePlayerAtTurn(int seatPos)
+    {
+        List<CardType> EvaluatedHand = new List<CardType>();
+        if (seatPos == 0)
+        {
+            EvaluatedHand = _player0;
+            EvaluatedHand.Add(_board[3]);
+            EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
+        }
+        if (seatPos == 1)
+        {
+            EvaluatedHand = _player1;
+            EvaluatedHand.Add(_board[3]);
+            EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
+        }
+        if (seatPos == 2)
+        {
+            EvaluatedHand = _player2;
+            EvaluatedHand.Add(_board[3]);
+            EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
+        }
+        if (seatPos == 3)
+        {
+            EvaluatedHand = _player3;
+            EvaluatedHand.Add(_board[3]);
+            EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
+        }
+        return EvaluatedHand;
+    }
+
+    public List<CardType> EvaluatePlayerAtRiver(int seatPos)
+    {
+        List<CardType> EvaluatedHand = new List<CardType>();
+        if (seatPos == 0)
+        {
+            EvaluatedHand = _player0;
+            EvaluatedHand.Add(_board[4]);
+            EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
+        }
+        if (seatPos == 1)
+        {
+            EvaluatedHand = _player1;
+            EvaluatedHand.Add(_board[4]);
+            EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
+        }
+        if (seatPos == 2)
+        {
+            EvaluatedHand = _player2;
+            EvaluatedHand.Add(_board[4]);
+            EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
+        }
+        if (seatPos == 3)
+        {
+            EvaluatedHand = _player3;
+            EvaluatedHand.Add(_board[4]);
+            EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
+        }
+        return EvaluatedHand;
+    }
+
     public void DebugHands()
     {
-        //Debug.Log("player0 has " + _player0.Count + "card(s)");
         for (int i = 0; i < _player0.Count; i++)
         {
             Debug.Log("Player 0 Card " + i + " is " + _player0[i].rank + " of " + _player0[i].suit);

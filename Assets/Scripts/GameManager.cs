@@ -47,7 +47,8 @@ public class GameManager : MonoBehaviour
         //Debug.Log("player0 in GM has " + player0Cards.Count + " cards");
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            EvaluateHandOnRiver();
+            EvaluateHandPreFlop();
+            //EvaluateHandOnRiver();
         }
 
     }
@@ -63,14 +64,27 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void EvaluateHandPreFlop()
+    {
+        TableCards.gameState = GameState.PreFlop;
+        for (int i = 0; i < players.Count; i++)
+        {
+            List<CardType> sortedCards = TableCards.instance.EvaluatePlayerPreFlop(players[i].SeatPos);
+            HandEvaluator playerHand = new HandEvaluator(sortedCards);
+            playerHand.EvaluateHandAtPreFlop();
+            players[i].Hand = playerHand;
+            Debug.Log("player" + players[i].SeatPos + "is the " + players[i].PlayerState + " with (a) " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
+        }
+    }
+
     public void EvaluateHandOnRiver()
     {
         TableCards.instance.DebugHands();
         for (int i = 0; i < players.Count; i++)
         {
-            List<CardType> sortedCards = TableCards.instance.EvaluatePlayer(players[i].SeatPos);
+            List<CardType> sortedCards = TableCards.instance.EvaluatePlayerAtRiver(players[i].SeatPos);
             HandEvaluator playerHand = new HandEvaluator(sortedCards);
-            playerHand.EvaluateHand();
+            playerHand.EvaluateHandAtRiver();
             players[i].Hand = playerHand;
         }
 

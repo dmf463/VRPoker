@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public enum PokerHand { highCard, onePair, twoPair, threeOfKind, straight, flush, fullHouse, fourOfKind, straightFlush }
+public enum PokerHand { Connectors, SuitedConnectors, HighCard, OnePair, TwoPair, ThreeOfKind, Straight, Flush, FullHouse, FourOfKind, StraightFlush }
+
 
 public struct HandValue
 {
@@ -50,56 +51,191 @@ public class HandEvaluator {
         get { return incomingCards; }
         set
         {
-            incomingCards[0] = value[0];
-            incomingCards[1] = value[1];
-            incomingCards[2] = value[2];
-            incomingCards[3] = value[3];
-            incomingCards[4] = value[4];
-            incomingCards[5] = value[5];
-            incomingCards[6] = value[6];
+            GameState _gameState = TableCards.gameState;
+            if(_gameState == GameState.PreFlop)
+            {
+                incomingCards[0] = value[0];
+                incomingCards[1] = value[1];
+            }
+
+            else if(_gameState == GameState.Flop)
+            {
+                incomingCards[0] = value[0];
+                incomingCards[1] = value[1];
+                incomingCards[2] = value[2];
+                incomingCards[3] = value[3];
+                incomingCards[4] = value[4];
+            }
+
+            else if (_gameState == GameState.Turn)
+            {
+                incomingCards[0] = value[0];
+                incomingCards[1] = value[1];
+                incomingCards[2] = value[2];
+                incomingCards[3] = value[3];
+                incomingCards[4] = value[4];
+                incomingCards[5] = value[5];
+            }
+
+            else if(_gameState == GameState.River || _gameState == GameState.ShowDown)
+            {
+                incomingCards[0] = value[0];
+                incomingCards[1] = value[1];
+                incomingCards[2] = value[2];
+                incomingCards[3] = value[3];
+                incomingCards[4] = value[4];
+                incomingCards[5] = value[5];
+                incomingCards[6] = value[6];
+            }
         }
     }
 
-    public PokerHand EvaluateHand()
+    public PokerHand EvaluateHandAtPreFlop()
     {
         //get number of suit in each hand
         getNumberOfSuit();
-        if (StraightFlush())
+        if (PocketPair())
         {
-            return PokerHand.straightFlush;
+            return PokerHand.OnePair;
         }
-        else if (FourOfKind())
+        else if (SuitedConnectors())
         {
-            return PokerHand.fourOfKind;
+            return PokerHand.SuitedConnectors;
         }
-        else if (FullHouse())
+        else if (Connectors())
         {
-            return PokerHand.fullHouse;
+            return PokerHand.Connectors;
         }
-        else if (Flush())
+        handValue.HighCard = (int)incomingCards[1].rank;
+        handValue.PokerHand = PokerHand.HighCard;
+        return PokerHand.HighCard;
+    }
+
+    public PokerHand EvaluateHandAtFlop()
+    {
+        //get number of suit in each hand
+        getNumberOfSuit();
+        if (StraightFlushAtRiver())
         {
-            return PokerHand.flush;
+            return PokerHand.StraightFlush;
         }
-        else if (Straight())
+        else if (FourOfKindAtRiver())
         {
-            return PokerHand.straight;
+            return PokerHand.FourOfKind;
         }
-        else if (ThreeOfKind())
+        else if (FullHouseRiver())
         {
-            return PokerHand.threeOfKind;
+            return PokerHand.FullHouse;
         }
-        else if (TwoPair())
+        else if (FlushAtRiver())
         {
-            return PokerHand.twoPair;
+            return PokerHand.Flush;
         }
-        else if (OnePair())
+        else if (StraightAtRiver())
         {
-            return PokerHand.onePair;
+            return PokerHand.Straight;
+        }
+        else if (ThreeOfKindAtRiver())
+        {
+            return PokerHand.ThreeOfKind;
+        }
+        else if (TwoPairRiver())
+        {
+            return PokerHand.TwoPair;
+        }
+        else if (OnePairAtRiver())
+        {
+            return PokerHand.OnePair;
+        }
+        //if the hand is nothing, than the player with highest card wins
+        handValue.HighCard = (int)incomingCards[4].rank;
+        handValue.PokerHand = PokerHand.HighCard;
+        return PokerHand.HighCard;
+    }
+
+    public PokerHand EvaluateHandAtTurn()
+    {
+        //get number of suit in each hand
+        getNumberOfSuit();
+        if (StraightFlushAtRiver())
+        {
+            return PokerHand.StraightFlush;
+        }
+        else if (FourOfKindAtRiver())
+        {
+            return PokerHand.FourOfKind;
+        }
+        else if (FullHouseRiver())
+        {
+            return PokerHand.FullHouse;
+        }
+        else if (FlushAtRiver())
+        {
+            return PokerHand.Flush;
+        }
+        else if (StraightAtRiver())
+        {
+            return PokerHand.Straight;
+        }
+        else if (ThreeOfKindAtRiver())
+        {
+            return PokerHand.ThreeOfKind;
+        }
+        else if (TwoPairRiver())
+        {
+            return PokerHand.TwoPair;
+        }
+        else if (OnePairAtRiver())
+        {
+            return PokerHand.OnePair;
+        }
+        //if the hand is nothing, than the player with highest card wins
+        handValue.HighCard = (int)incomingCards[5].rank;
+        handValue.PokerHand = PokerHand.HighCard;
+        return PokerHand.HighCard;
+    }
+
+
+    public PokerHand EvaluateHandAtRiver()
+    {
+        //get number of suit in each hand
+        getNumberOfSuit();
+        if (StraightFlushAtRiver())
+        {
+            return PokerHand.StraightFlush;
+        }
+        else if (FourOfKindAtRiver())
+        {
+            return PokerHand.FourOfKind;
+        }
+        else if (FullHouseRiver())
+        {
+            return PokerHand.FullHouse;
+        }
+        else if (FlushAtRiver())
+        {
+            return PokerHand.Flush;
+        }
+        else if (StraightAtRiver())
+        {
+            return PokerHand.Straight;
+        }
+        else if (ThreeOfKindAtRiver())
+        {
+            return PokerHand.ThreeOfKind;
+        }
+        else if (TwoPairRiver())
+        {
+            return PokerHand.TwoPair;
+        }
+        else if (OnePairAtRiver())
+        {
+            return PokerHand.OnePair;
         }
         //if the hand is nothing, than the player with highest card wins
         handValue.HighCard = (int)incomingCards[6].rank;
-        handValue.PokerHand = PokerHand.highCard;
-        return PokerHand.highCard;
+        handValue.PokerHand = PokerHand.HighCard;
+        return PokerHand.HighCard;
 
     }
 
@@ -126,7 +262,46 @@ public class HandEvaluator {
         }
     }
 
-    public bool OnePair()
+    public bool PocketPair()
+    {
+        //if your preflop cards are the same, you have a pocket pair
+        if(incomingCards[0].rank == incomingCards[1].rank)
+        {
+            handValue.Total = (int)incomingCards[0].rank * 2;
+            handValue.HighCard = (int)incomingCards[1].rank;
+            handValue.PokerHand = PokerHand.OnePair;
+            return true;
+        }
+        return false;
+    }
+
+    public bool SuitedConnectors()
+    {
+        //if you're cards fall into a sequence and have the same suit, then you have suitedConnectors
+        if(incomingCards[0].rank + 1 == incomingCards[1].rank && incomingCards[0].suit == incomingCards[1].suit)
+        {
+            handValue.Total = (int)incomingCards[0].rank + (int)incomingCards[1].rank;
+            handValue.HighCard = (int)incomingCards[1].rank;
+            handValue.PokerHand = PokerHand.SuitedConnectors;
+            return true;
+        }
+        return false;
+    }
+
+    public bool Connectors()
+    {
+        //if you're cards fall into a sequence, then you have Connectors
+        if (incomingCards[0].rank + 1 == incomingCards[1].rank)
+        {
+            handValue.Total = (int)incomingCards[0].rank + (int)incomingCards[1].rank;
+            handValue.HighCard = (int)incomingCards[1].rank;
+            handValue.PokerHand = PokerHand.Connectors;
+            return true;
+        }
+        return false;
+    }
+
+    public bool OnePairAtRiver()
     {
         //if there are two cards that are the same, it's a pair
         //0, 1 with 6 high card
@@ -134,7 +309,7 @@ public class HandEvaluator {
         {
             handValue.Total = (int)incomingCards[0].rank * 2;
             handValue.HighCard = (int)incomingCards[6].rank;
-            handValue.PokerHand = PokerHand.onePair;
+            handValue.PokerHand = PokerHand.OnePair;
             return true;
         }
         //1, 2 with 6 high card
@@ -142,7 +317,7 @@ public class HandEvaluator {
         {
             handValue.Total = (int)incomingCards[1].rank * 2;
             handValue.HighCard = (int)incomingCards[6].rank;
-            handValue.PokerHand = PokerHand.onePair;
+            handValue.PokerHand = PokerHand.OnePair;
             return true;
         }
         //2, 3 with 6 high card
@@ -150,7 +325,7 @@ public class HandEvaluator {
         {
             handValue.Total = (int)incomingCards[2].rank * 2;
             handValue.HighCard = (int)incomingCards[6].rank;
-            handValue.PokerHand = PokerHand.onePair;
+            handValue.PokerHand = PokerHand.OnePair;
             return true;
         }
         //3, 4 with 6 high card
@@ -158,7 +333,7 @@ public class HandEvaluator {
         {
             handValue.Total = (int)incomingCards[3].rank * 2;
             handValue.HighCard = (int)incomingCards[6].rank;
-            handValue.PokerHand = PokerHand.onePair;
+            handValue.PokerHand = PokerHand.OnePair;
             return true;
         }
         //4, 5 with 6 high card
@@ -166,7 +341,7 @@ public class HandEvaluator {
         {
             handValue.Total = (int)incomingCards[4].rank * 2;
             handValue.HighCard = (int)incomingCards[6].rank;
-            handValue.PokerHand = PokerHand.onePair;
+            handValue.PokerHand = PokerHand.OnePair;
             return true;
         }
         //5, 6 with 4 high card
@@ -174,13 +349,13 @@ public class HandEvaluator {
         {
             handValue.Total = (int)incomingCards[5].rank * 2;
             handValue.HighCard = (int)incomingCards[4].rank;
-            handValue.PokerHand = PokerHand.onePair;
+            handValue.PokerHand = PokerHand.OnePair;
             return true;
         }
         return false;
     }
 
-    public bool TwoPair()
+    public bool TwoPairRiver()
     {
         //if there are two pairs of cards that are the same then it's two pair
         //currently have an issue where the ordered hands can actually have THREE pairs
@@ -193,7 +368,7 @@ public class HandEvaluator {
         {
             handValue.Total = ((int)incomingCards[3].rank * 2) + ((int)incomingCards[5].rank * 2);
             handValue.HighCard = (int)incomingCards[2].rank;
-            handValue.PokerHand = PokerHand.twoPair;
+            handValue.PokerHand = PokerHand.TwoPair;
             return true;
         }
         //2, 3 && 5, 6
@@ -201,7 +376,7 @@ public class HandEvaluator {
         {
             handValue.Total = ((int)incomingCards[2].rank * 2) + ((int)incomingCards[5].rank * 2);
             handValue.HighCard = (int)incomingCards[4].rank;
-            handValue.PokerHand = PokerHand.twoPair;
+            handValue.PokerHand = PokerHand.TwoPair;
             return true;
         }
         //1, 2 && 5, 6
@@ -209,7 +384,7 @@ public class HandEvaluator {
         {
             handValue.Total = ((int)incomingCards[1].rank * 2) + ((int)incomingCards[5].rank * 2);
             handValue.HighCard = (int)incomingCards[4].rank;
-            handValue.PokerHand = PokerHand.twoPair;
+            handValue.PokerHand = PokerHand.TwoPair;
             return true;
         }
         //0, 1 && 5, 6
@@ -217,7 +392,7 @@ public class HandEvaluator {
         {
             handValue.Total = ((int)incomingCards[0].rank * 2) + ((int)incomingCards[5].rank * 2);
             handValue.HighCard = (int)incomingCards[4].rank;
-            handValue.PokerHand = PokerHand.twoPair;
+            handValue.PokerHand = PokerHand.TwoPair;
             return true;
         }
         //2, 3 && 4, 5
@@ -225,7 +400,7 @@ public class HandEvaluator {
         {
             handValue.Total = ((int)incomingCards[2].rank * 2) + ((int)incomingCards[4].rank * 2);
             handValue.HighCard = (int)incomingCards[6].rank;
-            handValue.PokerHand = PokerHand.twoPair;
+            handValue.PokerHand = PokerHand.TwoPair;
             return true;
         }
         //1, 2 && 4, 5
@@ -233,7 +408,7 @@ public class HandEvaluator {
         {
             handValue.Total = ((int)incomingCards[1].rank * 2) + ((int)incomingCards[4].rank * 2);
             handValue.HighCard = (int)incomingCards[6].rank;
-            handValue.PokerHand = PokerHand.twoPair;
+            handValue.PokerHand = PokerHand.TwoPair;
             return true;
         }
         //0, 1 && 4, 5
@@ -241,7 +416,7 @@ public class HandEvaluator {
         {
             handValue.Total = ((int)incomingCards[0].rank * 2) + ((int)incomingCards[4].rank * 2);
             handValue.HighCard = (int)incomingCards[6].rank;
-            handValue.PokerHand = PokerHand.twoPair;
+            handValue.PokerHand = PokerHand.TwoPair;
             return true;
         }
         //1, 2 && 3, 4
@@ -249,7 +424,7 @@ public class HandEvaluator {
         {
             handValue.Total = ((int)incomingCards[1].rank * 2) + ((int)incomingCards[3].rank * 2);
             handValue.HighCard = (int)incomingCards[6].rank;
-            handValue.PokerHand = PokerHand.twoPair;
+            handValue.PokerHand = PokerHand.TwoPair;
             return true;
         }
         //0, 1 && 3, 4
@@ -257,7 +432,7 @@ public class HandEvaluator {
         {
             handValue.Total = ((int)incomingCards[0].rank * 2) + ((int)incomingCards[3].rank * 2);
             handValue.HighCard = (int)incomingCards[6].rank;
-            handValue.PokerHand = PokerHand.twoPair;
+            handValue.PokerHand = PokerHand.TwoPair;
             return true;
         }
         //0, 1 && 2, 3
@@ -265,13 +440,13 @@ public class HandEvaluator {
         {
             handValue.Total = ((int)incomingCards[0].rank * 2) + ((int)incomingCards[2].rank * 2);
             handValue.HighCard = (int)incomingCards[6].rank;
-            handValue.PokerHand = PokerHand.twoPair;
+            handValue.PokerHand = PokerHand.TwoPair;
             return true;
         }
         return false;
     }
 
-    public bool ThreeOfKind()
+    public bool ThreeOfKindAtRiver()
     {
         //if 3 cards are the same then it's a three of a kind
         //0, 1, 2
@@ -279,7 +454,7 @@ public class HandEvaluator {
         {
             handValue.Total = (int)incomingCards[0].rank * 3;
             handValue.HighCard = (int)incomingCards[6].rank;
-            handValue.PokerHand = PokerHand.threeOfKind;
+            handValue.PokerHand = PokerHand.ThreeOfKind;
             return true;
         }
         //1, 2, 3
@@ -287,7 +462,7 @@ public class HandEvaluator {
         {
             handValue.Total = (int)incomingCards[1].rank * 3;
             handValue.HighCard = (int)incomingCards[6].rank;
-            handValue.PokerHand = PokerHand.threeOfKind;
+            handValue.PokerHand = PokerHand.ThreeOfKind;
             return true;
         }
         //2, 3, 4
@@ -295,7 +470,7 @@ public class HandEvaluator {
         {
             handValue.Total = (int)incomingCards[2].rank * 3;
             handValue.HighCard = (int)incomingCards[6].rank;
-            handValue.PokerHand = PokerHand.threeOfKind;
+            handValue.PokerHand = PokerHand.ThreeOfKind;
             return true;
         }
         //3, 4, 5
@@ -303,7 +478,7 @@ public class HandEvaluator {
         {
             handValue.Total = (int)incomingCards[5].rank * 3;
             handValue.HighCard = (int)incomingCards[6].rank;
-            handValue.PokerHand = PokerHand.threeOfKind;
+            handValue.PokerHand = PokerHand.ThreeOfKind;
             return true;
         }
         //4, 5, 6
@@ -311,13 +486,13 @@ public class HandEvaluator {
         {
             handValue.Total = (int)incomingCards[4].rank * 3;
             handValue.HighCard = (int)incomingCards[3].rank;
-            handValue.PokerHand = PokerHand.threeOfKind;
+            handValue.PokerHand = PokerHand.ThreeOfKind;
             return true;
         }
         return false;
     }
 
-    public bool Straight()
+    public bool StraightAtRiver()
     {
         //need to check the straight, but because of the possibility of pairs in the middle of the straight I need to check each sequence
         //if the cards rank is equal to the following card + 1, then they are connectors and the "straight count" goes up
@@ -428,7 +603,7 @@ public class HandEvaluator {
             if(straightCount == 3)
             {
                 handValue.Total = 5;
-                handValue.PokerHand = PokerHand.straight;
+                handValue.PokerHand = PokerHand.Straight;
                 return true;
             }
         }
@@ -438,25 +613,25 @@ public class HandEvaluator {
             if(incomingCards[4].rank + 1 == incomingCards[5].rank && incomingCards[5].rank + 1 == incomingCards[6].rank)
             {
                 handValue.Total = (int)incomingCards[6].rank;
-                handValue.PokerHand = PokerHand.straight;
+                handValue.PokerHand = PokerHand.Straight;
                 return true;
             }
             else if(incomingCards[4].rank + 1 == incomingCards[5].rank && incomingCards[5].rank + 1 != incomingCards[6].rank)
             {
                 handValue.Total = (int)incomingCards[5].rank;
-                handValue.PokerHand = PokerHand.straight;
+                handValue.PokerHand = PokerHand.Straight;
                 return true;
             }
             else if (incomingCards[4].rank + 1 != incomingCards[5].rank && incomingCards[5].rank + 1 == incomingCards[6].rank)
             {
                 handValue.Total = (int)incomingCards[6].rank;
-                handValue.PokerHand = PokerHand.straight;
+                handValue.PokerHand = PokerHand.Straight;
                 return true;
             }
             else if (incomingCards[4].rank + 1 != incomingCards[5].rank && incomingCards[4].rank + 1 == incomingCards[6].rank)
             {
                 handValue.Total = (int)incomingCards[6].rank;
-                handValue.PokerHand = PokerHand.straight;
+                handValue.PokerHand = PokerHand.Straight;
                 return true;
             }
             else if (incomingCards[4].rank + 1 != incomingCards[5].rank && incomingCards[5].rank + 1 != incomingCards[6].rank && incomingCards[4].rank + 1 != incomingCards[6].rank)
@@ -464,19 +639,19 @@ public class HandEvaluator {
                 if(incomingCards[3].rank + 1 == incomingCards[4].rank)
                 {
                     handValue.Total = (int)incomingCards[4].rank;
-                    handValue.PokerHand = PokerHand.straight;
+                    handValue.PokerHand = PokerHand.Straight;
                     return true;
                 }
                 else if (incomingCards[3].rank + 1 == incomingCards[5].rank)
                 {
                     handValue.Total = (int)incomingCards[5].rank;
-                    handValue.PokerHand = PokerHand.straight;
+                    handValue.PokerHand = PokerHand.Straight;
                     return true;
                 }
                 else if (incomingCards[3].rank + 1 == incomingCards[6].rank)
                 {
                     handValue.Total = (int)incomingCards[6].rank;
-                    handValue.PokerHand = PokerHand.straight;
+                    handValue.PokerHand = PokerHand.Straight;
                     return true;
                 }
             }
@@ -484,7 +659,7 @@ public class HandEvaluator {
         return false;
     }
 
-    public bool Flush()
+    public bool FlushAtRiver()
     {
         //if there are at least 5 of the same suited cards, then the player has a flush
         //since they are ordered by rank, cards 4, 5, or 6 MUST be in the hand, but whether those cards are PART of the flush I need to check
@@ -499,25 +674,25 @@ public class HandEvaluator {
             if (incomingCards[4].suit == incomingCards[5].suit && incomingCards[4].suit == incomingCards[6].suit)
             {
                 handValue.Total = (int)incomingCards[6].rank;
-                handValue.PokerHand = PokerHand.flush;
+                handValue.PokerHand = PokerHand.Flush;
                 return true;
             }
             else if (incomingCards[4].suit == incomingCards[5].suit && incomingCards[4].suit != incomingCards[6].suit)
             {
                 handValue.Total = (int)incomingCards[5].rank;
-                handValue.PokerHand = PokerHand.flush;
+                handValue.PokerHand = PokerHand.Flush;
                 return true;
             }
             else if (incomingCards[4].suit != incomingCards[5].suit && incomingCards[5].suit == incomingCards[6].suit)
             {
                 handValue.Total = (int)incomingCards[6].rank;
-                handValue.PokerHand = PokerHand.flush;
+                handValue.PokerHand = PokerHand.Flush;
                 return true;
             }
             else if (incomingCards[4].suit != incomingCards[5].suit && incomingCards[4].suit == incomingCards[6].suit)
             {
                 handValue.Total = (int)incomingCards[6].rank;
-                handValue.PokerHand = PokerHand.flush;
+                handValue.PokerHand = PokerHand.Flush;
                 return true;
             }
             else if(incomingCards[4].suit != incomingCards[5].suit && incomingCards[4].suit != incomingCards[6].suit && incomingCards[5].suit != incomingCards[6].suit)
@@ -525,19 +700,19 @@ public class HandEvaluator {
                 if(incomingCards[0].suit == incomingCards[4].suit)
                 {
                     handValue.Total = (int)incomingCards[4].rank;
-                    handValue.PokerHand = PokerHand.flush;
+                    handValue.PokerHand = PokerHand.Flush;
                     return true;
                 }
                 else if (incomingCards[0].suit == incomingCards[5].suit)
                 {
                     handValue.Total = (int)incomingCards[5].rank;
-                    handValue.PokerHand = PokerHand.flush;
+                    handValue.PokerHand = PokerHand.Flush;
                     return true;
                 }
                 else if (incomingCards[0].suit == incomingCards[6].suit)
                 {
                     handValue.Total = (int)incomingCards[6].rank;
-                    handValue.PokerHand = PokerHand.flush;
+                    handValue.PokerHand = PokerHand.Flush;
                     return true;
                 }
             }
@@ -546,7 +721,7 @@ public class HandEvaluator {
         return false;
     }
 
-    public bool FullHouse()
+    public bool FullHouseRiver()
     {
         //if there is a pair and trips within the 7 cards, it's a full house
 
@@ -554,90 +729,90 @@ public class HandEvaluator {
         if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[2].rank == incomingCards[3].rank && incomingCards[2].rank == incomingCards[4].rank)
         {
             handValue.Total = (int)(incomingCards[0].rank) + (int)(incomingCards[1].rank) + (int)(incomingCards[2].rank) + (int)(incomingCards[3].rank) + (int)(incomingCards[4].rank);
-            handValue.PokerHand = PokerHand.fullHouse;
+            handValue.PokerHand = PokerHand.FullHouse;
             return true;
         }
         //0 = 1, 3 = 4 = 5
         else if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[3].rank == incomingCards[4].rank && incomingCards[3].rank == incomingCards[5].rank)
         {
             handValue.Total = (int)(incomingCards[0].rank) + (int)(incomingCards[1].rank) + (int)(incomingCards[3].rank) + (int)(incomingCards[4].rank) + (int)(incomingCards[5].rank);
-            handValue.PokerHand = PokerHand.fullHouse;
+            handValue.PokerHand = PokerHand.FullHouse;
             return true;
         }
         //0 = 1, 4 = 5 = 6
         else if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[4].rank == incomingCards[5].rank && incomingCards[4].rank == incomingCards[6].rank)
         {
             handValue.Total = (int)(incomingCards[0].rank) + (int)(incomingCards[1].rank) + (int)(incomingCards[4].rank) + (int)(incomingCards[5].rank) + (int)(incomingCards[6].rank);
-            handValue.PokerHand = PokerHand.fullHouse;
+            handValue.PokerHand = PokerHand.FullHouse;
             return true;
         }
         //1 = 2, 3 = 4 = 5
         else if (incomingCards[1].rank == incomingCards[2].rank && incomingCards[3].rank == incomingCards[4].rank && incomingCards[3].rank == incomingCards[5].rank)
         {
             handValue.Total = (int)(incomingCards[1].rank) + (int)(incomingCards[2].rank) + (int)(incomingCards[3].rank) + (int)(incomingCards[4].rank) + (int)(incomingCards[5].rank);
-            handValue.PokerHand = PokerHand.fullHouse;
+            handValue.PokerHand = PokerHand.FullHouse;
             return true;
         }
         //1 = 2, 4 = 5 = 6
         else if (incomingCards[1].rank == incomingCards[2].rank && incomingCards[4].rank == incomingCards[5].rank && incomingCards[4].rank == incomingCards[6].rank)
         {
             handValue.Total = (int)(incomingCards[1].rank) + (int)(incomingCards[2].rank) + (int)(incomingCards[4].rank) + (int)(incomingCards[5].rank) + (int)(incomingCards[6].rank);
-            handValue.PokerHand = PokerHand.fullHouse;
+            handValue.PokerHand = PokerHand.FullHouse;
             return true;
         }
         //2 = 3, 4 =  5 = 6
         else if (incomingCards[2].rank == incomingCards[3].rank && incomingCards[4].rank == incomingCards[5].rank && incomingCards[4].rank == incomingCards[6].rank)
         {
             handValue.Total = (int)(incomingCards[2].rank) + (int)(incomingCards[3].rank) + (int)(incomingCards[4].rank) + (int)(incomingCards[5].rank) + (int)(incomingCards[6].rank);
-            handValue.PokerHand = PokerHand.fullHouse;
+            handValue.PokerHand = PokerHand.FullHouse;
             return true;
         }
         //0 = 1 = 2, 3 = 4
         else if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[0].rank == incomingCards[2].rank && incomingCards[3].rank == incomingCards[4].rank)
         {
             handValue.Total = (int)(incomingCards[0].rank) + (int)(incomingCards[1].rank) + (int)(incomingCards[2].rank) + (int)(incomingCards[3].rank) + (int)(incomingCards[4].rank);
-            handValue.PokerHand = PokerHand.fullHouse;
+            handValue.PokerHand = PokerHand.FullHouse;
             return true;
         }
         //0 = 1 = 2, 4 = 5
         else if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[0].rank == incomingCards[2].rank && incomingCards[4].rank == incomingCards[5].rank)
         {
             handValue.Total = (int)(incomingCards[0].rank) + (int)(incomingCards[1].rank) + (int)(incomingCards[2].rank) + (int)(incomingCards[4].rank) + (int)(incomingCards[5].rank);
-            handValue.PokerHand = PokerHand.fullHouse;
+            handValue.PokerHand = PokerHand.FullHouse;
             return true;
         }
         //0 = 1 = 2, 5 = 6
         else if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[0].rank == incomingCards[2].rank && incomingCards[5].rank == incomingCards[6].rank)
         {
             handValue.Total = (int)(incomingCards[0].rank) + (int)(incomingCards[1].rank) + (int)(incomingCards[2].rank) + (int)(incomingCards[5].rank) + (int)(incomingCards[6].rank);
-            handValue.PokerHand = PokerHand.fullHouse;
+            handValue.PokerHand = PokerHand.FullHouse;
             return true;
         }
         //1 = 2 = 3, 4 = 5
         else if (incomingCards[1].rank == incomingCards[2].rank && incomingCards[1].rank == incomingCards[3].rank && incomingCards[4].rank == incomingCards[5].rank)
         {
             handValue.Total = (int)(incomingCards[1].rank) + (int)(incomingCards[2].rank) + (int)(incomingCards[3].rank) + (int)(incomingCards[4].rank) + (int)(incomingCards[5].rank);
-            handValue.PokerHand = PokerHand.fullHouse;
+            handValue.PokerHand = PokerHand.FullHouse;
             return true;
         }
         //1 = 2 = 3, 5 = 6
         else if (incomingCards[1].rank == incomingCards[2].rank && incomingCards[1].rank == incomingCards[3].rank && incomingCards[5].rank == incomingCards[6].rank)
         {
             handValue.Total = (int)(incomingCards[1].rank) + (int)(incomingCards[2].rank) + (int)(incomingCards[3].rank) + (int)(incomingCards[5].rank) + (int)(incomingCards[6].rank);
-            handValue.PokerHand = PokerHand.fullHouse;
+            handValue.PokerHand = PokerHand.FullHouse;
             return true;
         }
         //2 = 3 = 4, 5 = 6
         else if (incomingCards[2].rank == incomingCards[3].rank && incomingCards[2].rank == incomingCards[4].rank && incomingCards[5].rank == incomingCards[6].rank)
         {
             handValue.Total = (int)(incomingCards[2].rank) + (int)(incomingCards[3].rank) + (int)(incomingCards[4].rank) + (int)(incomingCards[5].rank) + (int)(incomingCards[6].rank);
-            handValue.PokerHand = PokerHand.fullHouse;
+            handValue.PokerHand = PokerHand.FullHouse;
             return true;
         }
         return false;
     }
 
-    public bool FourOfKind()
+    public bool FourOfKindAtRiver()
     {
         //if any 4 ordered cards are the same, it's a 4 of a kind
         //0, 1, 2, 3
@@ -648,34 +823,34 @@ public class HandEvaluator {
         {
             handValue.Total = (int)incomingCards[0].rank * 4;
             handValue.HighCard = (int)incomingCards[6].rank;
-            handValue.PokerHand = PokerHand.fourOfKind;
+            handValue.PokerHand = PokerHand.FourOfKind;
             return true;
         }
         else if (incomingCards[1].rank == incomingCards[2].rank && incomingCards[1].rank == incomingCards[3].rank && incomingCards[2].rank == incomingCards[4].rank)
         {
             handValue.Total = (int)incomingCards[1].rank * 4;
             handValue.HighCard = (int)incomingCards[6].rank;
-            handValue.PokerHand = PokerHand.fourOfKind;
+            handValue.PokerHand = PokerHand.FourOfKind;
             return true;
         }
         else if (incomingCards[2].rank == incomingCards[3].rank && incomingCards[2].rank == incomingCards[5].rank && incomingCards[2].rank == incomingCards[5].rank)
         {
             handValue.Total = (int)incomingCards[2].rank * 4;
             handValue.HighCard = (int)incomingCards[6].rank;
-            handValue.PokerHand = PokerHand.fourOfKind;
+            handValue.PokerHand = PokerHand.FourOfKind;
             return true;
         }
         else if (incomingCards[3].rank == incomingCards[4].rank && incomingCards[3].rank == incomingCards[5].rank && incomingCards[3].rank == incomingCards[6].rank)
         {
             handValue.Total = (int)incomingCards[3].rank * 4;
             handValue.HighCard = (int)incomingCards[2].rank;
-            handValue.PokerHand = PokerHand.fourOfKind;
+            handValue.PokerHand = PokerHand.FourOfKind;
             return true;
         }
         return false;
     }
 
-    public bool StraightFlush()
+    public bool StraightFlushAtRiver()
     {
         //need to check the straight AND the flush, but I can't just check for a straight and a flush.
         //instead, I'm taking the Straight() and just adding to check if the connecting cards are also suited.
@@ -748,7 +923,7 @@ public class HandEvaluator {
             if (straightFlushCount == 3)
             {
                 handValue.Total = 5;
-                handValue.PokerHand = PokerHand.straightFlush;
+                handValue.PokerHand = PokerHand.StraightFlush;
                 return true;
             }
         }
@@ -759,28 +934,28 @@ public class HandEvaluator {
                 && incomingCards[4].suit == incomingCards[5].suit && incomingCards[5].suit == incomingCards[6].suit)
             {
                 handValue.Total = (int)incomingCards[6].rank;
-                handValue.PokerHand = PokerHand.straightFlush;
+                handValue.PokerHand = PokerHand.StraightFlush;
                 return true;
             }
             else if (incomingCards[4].rank + 1 == incomingCards[5].rank && incomingCards[5].rank + 1 != incomingCards[6].rank
                 && incomingCards[4].suit == incomingCards[5].suit)
             {
                 handValue.Total = (int)incomingCards[5].rank;
-                handValue.PokerHand = PokerHand.straightFlush;
+                handValue.PokerHand = PokerHand.StraightFlush;
                 return true;
             }
             else if (incomingCards[4].rank + 1 != incomingCards[5].rank && incomingCards[5].rank + 1 == incomingCards[6].rank
                 && incomingCards[5].suit == incomingCards[6].suit)
             {
                 handValue.Total = (int)incomingCards[6].rank;
-                handValue.PokerHand = PokerHand.straightFlush;
+                handValue.PokerHand = PokerHand.StraightFlush;
                 return true;
             }
             else if (incomingCards[4].rank + 1 != incomingCards[5].rank && incomingCards[4].rank + 1 == incomingCards[6].rank
                 && incomingCards[4].suit == incomingCards[6].suit)
             {
                 handValue.Total = (int)incomingCards[6].rank;
-                handValue.PokerHand = PokerHand.straightFlush;
+                handValue.PokerHand = PokerHand.StraightFlush;
                 return true;
             }
             else if (incomingCards[4].rank + 1 != incomingCards[5].rank && incomingCards[5].rank + 1 != incomingCards[6].rank && incomingCards[4].rank + 1 != incomingCards[6].rank)
@@ -788,19 +963,19 @@ public class HandEvaluator {
                 if (incomingCards[3].rank + 1 == incomingCards[4].rank && incomingCards[3].suit == incomingCards[4].suit)
                 {
                     handValue.Total = (int)incomingCards[4].rank;
-                    handValue.PokerHand = PokerHand.straightFlush;
+                    handValue.PokerHand = PokerHand.StraightFlush;
                     return true;
                 }
                 else if (incomingCards[3].rank + 1 == incomingCards[5].rank && incomingCards[3].suit == incomingCards[5].suit)
                 {
                     handValue.Total = (int)incomingCards[5].rank;
-                    handValue.PokerHand = PokerHand.straightFlush;
+                    handValue.PokerHand = PokerHand.StraightFlush;
                     return true;
                 }
                 else if (incomingCards[3].rank + 1 == incomingCards[6].rank && incomingCards[3].suit == incomingCards[6].suit)
                 {
                     handValue.Total = (int)incomingCards[6].rank;
-                    handValue.PokerHand = PokerHand.straightFlush;
+                    handValue.PokerHand = PokerHand.StraightFlush;
                     return true;
                 }
             }
