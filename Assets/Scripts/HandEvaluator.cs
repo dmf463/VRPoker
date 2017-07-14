@@ -239,6 +239,7 @@ public class HandEvaluator {
 
     }
 
+
     private void getNumberOfSuit()
     {
         foreach (CardType card in Cards)
@@ -261,6 +262,12 @@ public class HandEvaluator {
             }
         }
     }
+
+ /*
+ * 
+ * Everything below here is the logic for pre-flop hand evaluation 
+ * 
+ */
 
     public bool PocketPair()
     {
@@ -300,6 +307,134 @@ public class HandEvaluator {
         }
         return false;
     }
+
+
+/*
+* 
+* Everything below here is the logic for flop hand evaluation 
+* 
+*/
+
+
+    public bool OnePairAtFlop()
+    {
+        //if there are two cards that are the same, it's a pair
+        //0, 1 with 4 high card
+        if (incomingCards[0].rank == incomingCards[1].rank)
+        {
+            handValue.Total = (int)incomingCards[0].rank * 2;
+            handValue.HighCard = (int)incomingCards[4].rank;
+            handValue.PokerHand = PokerHand.OnePair;
+            return true;
+        }
+        //1, 2 with 4 high card
+        else if (incomingCards[1].rank == incomingCards[2].rank)
+        {
+            handValue.Total = (int)incomingCards[1].rank * 2;
+            handValue.HighCard = (int)incomingCards[4].rank;
+            handValue.PokerHand = PokerHand.OnePair;
+            return true;
+        }
+        //2, 3 with 4 high card
+        else if (incomingCards[2].rank == incomingCards[3].rank)
+        {
+            handValue.Total = (int)incomingCards[2].rank * 2;
+            handValue.HighCard = (int)incomingCards[4].rank;
+            handValue.PokerHand = PokerHand.OnePair;
+            return true;
+        }
+        //3, 4 with 2 high card
+        else if (incomingCards[3].rank == incomingCards[4].rank)
+        {
+            handValue.Total = (int)incomingCards[3].rank * 2;
+            handValue.HighCard = (int)incomingCards[2].rank;
+            handValue.PokerHand = PokerHand.OnePair;
+            return true;
+        }
+        return false;
+    }
+
+    public bool TwoPairAtFlop()
+    {
+        //if there are two pairs of cards that are the same then it's two pair
+
+        //1, 2 && 3, 4
+        if (incomingCards[1].rank == incomingCards[2].rank && incomingCards[3].rank == incomingCards[4].rank)
+        {
+            handValue.Total = ((int)incomingCards[1].rank * 2) + ((int)incomingCards[3].rank * 2);
+            handValue.HighCard = (int)incomingCards[0].rank;
+            handValue.PokerHand = PokerHand.TwoPair;
+            return true;
+        }
+        //0, 1 && 3, 4
+        else if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[3].rank == incomingCards[4].rank)
+        {
+            handValue.Total = ((int)incomingCards[0].rank * 2) + ((int)incomingCards[3].rank * 2);
+            handValue.HighCard = (int)incomingCards[2].rank;
+            handValue.PokerHand = PokerHand.TwoPair;
+            return true;
+        }
+        //0, 1 && 2, 3
+        else if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[2].rank == incomingCards[3].rank)
+        {
+            handValue.Total = ((int)incomingCards[0].rank * 2) + ((int)incomingCards[2].rank * 2);
+            handValue.HighCard = (int)incomingCards[4].rank;
+            handValue.PokerHand = PokerHand.TwoPair;
+            return true;
+        }
+        return false;
+    }
+
+    public bool ThreeOfKindAtFlop()
+    {
+        //if 3 cards are the same then it's a three of a kind
+        //0, 1, 2
+        if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[0].rank == incomingCards[2].rank)
+        {
+            handValue.Total = (int)incomingCards[0].rank * 3;
+            handValue.HighCard = (int)incomingCards[4].rank;
+            handValue.PokerHand = PokerHand.ThreeOfKind;
+            return true;
+        }
+        //1, 2, 3
+        else if (incomingCards[1].rank == incomingCards[2].rank && incomingCards[1].rank == incomingCards[3].rank)
+        {
+            handValue.Total = (int)incomingCards[1].rank * 3;
+            handValue.HighCard = (int)incomingCards[4].rank;
+            handValue.PokerHand = PokerHand.ThreeOfKind;
+            return true;
+        }
+        //2, 3, 4
+        else if (incomingCards[2].rank == incomingCards[3].rank && incomingCards[2].rank == incomingCards[4].rank)
+        {
+            handValue.Total = (int)incomingCards[2].rank * 3;
+            handValue.HighCard = (int)incomingCards[1].rank;
+            handValue.PokerHand = PokerHand.ThreeOfKind;
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool StraightAtFlop()
+    {
+        if( incomingCards[0].rank + 1 == incomingCards[1].rank &&
+            incomingCards[1].rank + 1 == incomingCards[2].rank &&
+            incomingCards[2].rank + 1 == incomingCards[3].rank &&
+            incomingCards[3].rank + 1 == incomingCards[4].rank)
+        {
+            handValue.Total = (int)incomingCards[4].rank;
+            handValue.PokerHand = PokerHand.Straight;
+            return true;
+        }
+        return false;
+    }
+
+/*
+* 
+* Everything below here is the logic for River and ShowDown hand evaluation 
+* 
+*/
 
     public bool OnePairAtRiver()
     {

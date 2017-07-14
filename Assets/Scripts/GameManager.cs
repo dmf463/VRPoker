@@ -55,7 +55,6 @@ public class GameManager : MonoBehaviour
 
     public void InitializePlayers()
     {
-        int[] enumValues = new int[] { 0, 1, 2, 3 };
         for (int i = 0; i < players.Count; i++)
         {  
             players[i] = new PokerPlayer();
