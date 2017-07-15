@@ -519,11 +519,121 @@ public class HandEvaluator {
         return false;
     }
 
-    /*
-    * 
-    * Everything below here is the logic for River and ShowDown hand evaluation 
-    * 
-    */
+
+/*
+* 
+* Everything below here is the logic for Turn hand evaluation 
+* 
+*/
+
+    public bool OnePairAtTurn()
+    {
+        //if there are two cards that are the same, it's a pair
+        //0, 1 with 5 high card
+        if (incomingCards[0].rank == incomingCards[1].rank)
+        {
+            handValue.Total = (int)incomingCards[0].rank * 2;
+            handValue.HighCard = (int)incomingCards[5].rank;
+            handValue.PokerHand = PokerHand.OnePair;
+            return true;
+        }
+        //1, 2 with 5 high card
+        else if (incomingCards[1].rank == incomingCards[2].rank)
+        {
+            handValue.Total = (int)incomingCards[1].rank * 2;
+            handValue.HighCard = (int)incomingCards[5].rank;
+            handValue.PokerHand = PokerHand.OnePair;
+            return true;
+        }
+        //2, 3 with 5 high card
+        else if (incomingCards[2].rank == incomingCards[3].rank)
+        {
+            handValue.Total = (int)incomingCards[2].rank * 2;
+            handValue.HighCard = (int)incomingCards[5].rank;
+            handValue.PokerHand = PokerHand.OnePair;
+            return true;
+        }
+        //3, 4 with 5 high card
+        else if (incomingCards[3].rank == incomingCards[4].rank)
+        {
+            handValue.Total = (int)incomingCards[3].rank * 2;
+            handValue.HighCard = (int)incomingCards[5].rank;
+            handValue.PokerHand = PokerHand.OnePair;
+            return true;
+        }
+        //4, 5 with 3 high card
+        else if (incomingCards[4].rank == incomingCards[5].rank)
+        {
+            handValue.Total = (int)incomingCards[4].rank * 2;
+            handValue.HighCard = (int)incomingCards[3].rank;
+            handValue.PokerHand = PokerHand.OnePair;
+            return true;
+        }
+        return false;
+
+    }
+
+    public bool TwoPairAtTurn()
+    {
+        //if there are two pairs of cards that are the same then it's two pair
+
+        //2, 3 && 4, 5
+        if (incomingCards[2].rank == incomingCards[3].rank && incomingCards[4].rank == incomingCards[5].rank)
+        {
+            handValue.Total = ((int)incomingCards[2].rank * 2) + ((int)incomingCards[4].rank * 2);
+            handValue.HighCard = (int)incomingCards[1].rank;
+            handValue.PokerHand = PokerHand.TwoPair;
+            return true;
+        }
+        //1, 2 && 4, 5
+        else if (incomingCards[1].rank == incomingCards[2].rank && incomingCards[4].rank == incomingCards[5].rank)
+        {
+            handValue.Total = ((int)incomingCards[1].rank * 2) + ((int)incomingCards[4].rank * 2);
+            handValue.HighCard = (int)incomingCards[3].rank;
+            handValue.PokerHand = PokerHand.TwoPair;
+            return true;
+        }
+        //0, 1 && 4, 5
+        else if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[4].rank == incomingCards[5].rank)
+        {
+            handValue.Total = ((int)incomingCards[0].rank * 2) + ((int)incomingCards[4].rank * 2);
+            handValue.HighCard = (int)incomingCards[3].rank;
+            handValue.PokerHand = PokerHand.TwoPair;
+            return true;
+        }
+        //1, 2 && 3, 4
+        else if (incomingCards[1].rank == incomingCards[2].rank && incomingCards[3].rank == incomingCards[4].rank)
+        {
+            handValue.Total = ((int)incomingCards[1].rank * 2) + ((int)incomingCards[3].rank * 2);
+            handValue.HighCard = (int)incomingCards[5].rank;
+            handValue.PokerHand = PokerHand.TwoPair;
+            return true;
+        }
+        //0, 1 && 3, 4
+        else if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[3].rank == incomingCards[4].rank)
+        {
+            handValue.Total = ((int)incomingCards[0].rank * 2) + ((int)incomingCards[3].rank * 2);
+            handValue.HighCard = (int)incomingCards[5].rank;
+            handValue.PokerHand = PokerHand.TwoPair;
+            return true;
+        }
+        //0, 1 && 2, 3
+        else if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[2].rank == incomingCards[3].rank)
+        {
+            handValue.Total = ((int)incomingCards[0].rank * 2) + ((int)incomingCards[2].rank * 2);
+            handValue.HighCard = (int)incomingCards[5].rank;
+            handValue.PokerHand = PokerHand.TwoPair;
+            return true;
+        }
+        return false;
+    }
+
+
+/*
+* 
+* Everything below here is the logic for River and ShowDown hand evaluation 
+* 
+ */
 
     public bool OnePairAtRiver()
     {

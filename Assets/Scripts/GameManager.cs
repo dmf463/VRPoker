@@ -45,15 +45,13 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         //Debug.Log("player0 in GM has " + player0Cards.Count + " cards");
-        if (Input.GetKeyDown(KeyCode.Keypad0))
+        if (Input.GetKeyDown(KeyCode.Q))
         {
             EvaluateHandPreFlop();
-            //EvaluateHandOnRiver();
         }
-        if (Input.GetKeyDown(KeyCode.Keypad1))
+        if (Input.GetKeyDown(KeyCode.W))
         {
             EvaluateHandOnFlop();
-            //EvaluateHandOnRiver();
         }
 
 
