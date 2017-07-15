@@ -115,35 +115,35 @@ public class HandEvaluator {
     {
         //get number of suit in each hand
         getNumberOfSuit();
-        if (StraightFlushAtRiver())
+        if (StraightFlushAtFlop())
         {
             return PokerHand.StraightFlush;
         }
-        else if (FourOfKindAtRiver())
+        else if (FourOfKindAtFlop())
         {
             return PokerHand.FourOfKind;
         }
-        else if (FullHouseRiver())
+        else if (FullHouseAtFlop())
         {
             return PokerHand.FullHouse;
         }
-        else if (FlushAtRiver())
+        else if (FlushAtFlop())
         {
             return PokerHand.Flush;
         }
-        else if (StraightAtRiver())
+        else if (StraightAtFlop())
         {
             return PokerHand.Straight;
         }
-        else if (ThreeOfKindAtRiver())
+        else if (ThreeOfKindAtFlop())
         {
             return PokerHand.ThreeOfKind;
         }
-        else if (TwoPairRiver())
+        else if (TwoPairAtFlop())
         {
             return PokerHand.TwoPair;
         }
-        else if (OnePairAtRiver())
+        else if (OnePairAtFlop())
         {
             return PokerHand.OnePair;
         }
@@ -427,14 +427,103 @@ public class HandEvaluator {
             handValue.PokerHand = PokerHand.Straight;
             return true;
         }
+        if (incomingCards[0].rank == RankType.Two &&
+            incomingCards[1].rank == RankType.Three &&
+            incomingCards[2].rank == RankType.Four &&
+            incomingCards[3].rank == RankType.Five &&
+            incomingCards[4].rank == RankType.Ace)
+        {
+            handValue.Total = (int)incomingCards[3].rank;
+            handValue.PokerHand = PokerHand.Straight;
+            return true;
+        }
         return false;
     }
 
-/*
-* 
-* Everything below here is the logic for River and ShowDown hand evaluation 
-* 
-*/
+    public bool FlushAtFlop()
+    {
+        if (spadeSum == 5 || heartSum == 5 || diamondSum == 5 || clubSum == 5)
+        {
+            handValue.Total = (int)incomingCards[4].rank;
+            handValue.PokerHand = PokerHand.Flush;
+            return true;
+        }
+        return false;
+    }
+
+    public bool FullHouseAtFlop()
+    {
+        //if there is a pair and trips , it's a full house
+
+        //0 = 1, 2 = 3 = 4
+        if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[2].rank == incomingCards[3].rank && incomingCards[2].rank == incomingCards[4].rank)
+        {
+            handValue.Total = (int)(incomingCards[0].rank) + (int)(incomingCards[1].rank) + (int)(incomingCards[2].rank) + (int)(incomingCards[3].rank) + (int)(incomingCards[4].rank);
+            handValue.PokerHand = PokerHand.FullHouse;
+            return true;
+        }
+        //0 = 1 = 2, 3 = 4
+        else if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[0].rank == incomingCards[2].rank && incomingCards[3].rank == incomingCards[4].rank)
+        {
+            handValue.Total = (int)(incomingCards[0].rank) + (int)(incomingCards[1].rank) + (int)(incomingCards[2].rank) + (int)(incomingCards[3].rank) + (int)(incomingCards[4].rank);
+            handValue.PokerHand = PokerHand.FullHouse;
+            return true;
+        }
+        return false;
+    }
+
+    public bool FourOfKindAtFlop()
+    {
+        //if any 4 ordered cards are the same, it's a 4 of a kind
+        //0, 1, 2, 3
+        //1, 2, 3, 4
+        if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[0].rank == incomingCards[2].rank && incomingCards[0].rank == incomingCards[3].rank)
+        {
+            handValue.Total = (int)incomingCards[0].rank * 4;
+            handValue.HighCard = (int)incomingCards[6].rank;
+            handValue.PokerHand = PokerHand.FourOfKind;
+            return true;
+        }
+        else if (incomingCards[1].rank == incomingCards[2].rank && incomingCards[1].rank == incomingCards[3].rank && incomingCards[2].rank == incomingCards[4].rank)
+        {
+            handValue.Total = (int)incomingCards[1].rank * 4;
+            handValue.HighCard = (int)incomingCards[6].rank;
+            handValue.PokerHand = PokerHand.FourOfKind;
+            return true;
+        }
+        return false;
+
+    }
+
+    public bool StraightFlushAtFlop()
+    {
+        if (incomingCards[0].rank + 1 == incomingCards[1].rank && incomingCards[0].suit == incomingCards[1].suit &&
+            incomingCards[1].rank + 1 == incomingCards[2].rank && incomingCards[1].suit == incomingCards[2].suit &&
+            incomingCards[2].rank + 1 == incomingCards[3].rank && incomingCards[2].suit == incomingCards[3].suit &&
+            incomingCards[3].rank + 1 == incomingCards[4].rank && incomingCards[3].suit == incomingCards[4].suit)
+        {
+            handValue.Total = (int)incomingCards[4].rank;
+            handValue.PokerHand = PokerHand.StraightFlush;
+            return true;
+        }
+        if (incomingCards[0].rank == RankType.Two && incomingCards[0].suit == incomingCards[1].suit &&
+            incomingCards[1].rank == RankType.Three && incomingCards[1].suit == incomingCards[2].suit &&
+            incomingCards[2].rank == RankType.Four && incomingCards[2].suit == incomingCards[3].suit &&
+            incomingCards[3].rank == RankType.Five && incomingCards[3].suit == incomingCards[4].suit &&
+            incomingCards[4].rank == RankType.Ace)
+        {
+            handValue.Total = (int)incomingCards[3].rank;
+            handValue.PokerHand = PokerHand.StraightFlush;
+            return true;
+        }
+        return false;
+    }
+
+    /*
+    * 
+    * Everything below here is the logic for River and ShowDown hand evaluation 
+    * 
+    */
 
     public bool OnePairAtRiver()
     {

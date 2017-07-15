@@ -45,11 +45,17 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         //Debug.Log("player0 in GM has " + player0Cards.Count + " cards");
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Keypad0))
         {
             EvaluateHandPreFlop();
             //EvaluateHandOnRiver();
         }
+        if (Input.GetKeyDown(KeyCode.Keypad1))
+        {
+            EvaluateHandOnFlop();
+            //EvaluateHandOnRiver();
+        }
+
 
     }
 
@@ -71,6 +77,19 @@ public class GameManager : MonoBehaviour
             List<CardType> sortedCards = TableCards.instance.EvaluatePlayerPreFlop(players[i].SeatPos);
             HandEvaluator playerHand = new HandEvaluator(sortedCards);
             playerHand.EvaluateHandAtPreFlop();
+            players[i].Hand = playerHand;
+            Debug.Log("player" + players[i].SeatPos + "is the " + players[i].PlayerState + " with (a) " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
+        }
+    }
+
+    public void EvaluateHandOnFlop()
+    {
+        TableCards.gameState = GameState.Flop;
+        for (int i = 0; i < players.Count; i++)
+        {
+            List<CardType> sortedCards = TableCards.instance.EvaluatePlayerAtFlop(players[i].SeatPos);
+            HandEvaluator playerHand = new HandEvaluator(sortedCards);
+            playerHand.EvaluateHandAtFlop();
             players[i].Hand = playerHand;
             Debug.Log("player" + players[i].SeatPos + "is the " + players[i].PlayerState + " with (a) " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
         }
