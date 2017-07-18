@@ -44,7 +44,10 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Debug.Log("player0 in GM has " + player0Cards.Count + " cards");
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            TableCards.instance.DebugHands();
+        }
         if (Input.GetKeyDown(KeyCode.Q))
         {
             EvaluateHandPreFlop();
@@ -52,6 +55,22 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.W))
         {
             EvaluateHandOnFlop();
+        }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            EvaluateHandOnTurn();
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            EvaluateHandOnRiver();
+        }
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            EvaluatePlayersAtShowdown();
+        }
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            ResetPlayerStatus();
         }
 
 
@@ -76,7 +95,7 @@ public class GameManager : MonoBehaviour
             HandEvaluator playerHand = new HandEvaluator(sortedCards);
             playerHand.EvaluateHandAtPreFlop();
             players[i].Hand = playerHand;
-            Debug.Log("player" + players[i].SeatPos + "is the " + players[i].PlayerState + " with (a) " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
+            Debug.Log("player" + players[i].SeatPos + " has " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
         }
     }
 
@@ -89,21 +108,39 @@ public class GameManager : MonoBehaviour
             HandEvaluator playerHand = new HandEvaluator(sortedCards);
             playerHand.EvaluateHandAtFlop();
             players[i].Hand = playerHand;
-            Debug.Log("player" + players[i].SeatPos + "is the " + players[i].PlayerState + " with (a) " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
+            Debug.Log("player" + players[i].SeatPos + " has " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
+        }
+    }
+
+    public void EvaluateHandOnTurn()
+    {
+        TableCards.gameState = GameState.Turn;
+        for (int i = 0; i < players.Count; i++)
+        {
+            List<CardType> sortedCards = TableCards.instance.EvaluatePlayerAtTurn(players[i].SeatPos);
+            HandEvaluator playerHand = new HandEvaluator(sortedCards);
+            playerHand.EvaluateHandAtTurn();
+            players[i].Hand = playerHand;
+            Debug.Log("player" + players[i].SeatPos + " has " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
         }
     }
 
     public void EvaluateHandOnRiver()
     {
-        TableCards.instance.DebugHands();
+        TableCards.gameState = GameState.River;
         for (int i = 0; i < players.Count; i++)
         {
             List<CardType> sortedCards = TableCards.instance.EvaluatePlayerAtRiver(players[i].SeatPos);
             HandEvaluator playerHand = new HandEvaluator(sortedCards);
             playerHand.EvaluateHandAtRiver();
             players[i].Hand = playerHand;
+            Debug.Log("player" + players[i].SeatPos + " has " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
         }
 
+    }
+
+    public void EvaluatePlayersAtShowdown()
+    {
         List<PokerPlayer> sortedPlayers = new List<PokerPlayer>(players.OrderByDescending(bestHand => bestHand.Hand.HandValues.PokerHand).ThenByDescending(bestHand => bestHand.Hand.HandValues.Total).ThenByDescending(bestHand => bestHand.Hand.HandValues.HighCard));
         sortedPlayers[0].PlayerState = PlayerState.Winner;
         List<List<PokerPlayer>> PlayerRank = new List<List<PokerPlayer>>();
@@ -113,9 +150,16 @@ public class GameManager : MonoBehaviour
             {
                 PlayerRank.Add(new List<PokerPlayer>() { sortedPlayers[i] });
             }
-            else if (sortedPlayers[i].Hand.HandValues == PlayerRank[PlayerRank.Count - 1][0].Hand.HandValues)
+            else if (sortedPlayers[i].Hand.HandValues.PokerHand == PlayerRank[PlayerRank.Count - 1][0].Hand.HandValues.PokerHand)
             {
-                PlayerRank[PlayerRank.Count - 1].Add(sortedPlayers[i]);
+                if(sortedPlayers[i].Hand.HandValues.Total == PlayerRank[PlayerRank.Count - 1][0].Hand.HandValues.Total)
+                {
+                    if(sortedPlayers[i].Hand.HandValues.HighCard == PlayerRank[PlayerRank.Count - 1][0].Hand.HandValues.HighCard)
+                    {
+                        PlayerRank[PlayerRank.Count - 1].Add(sortedPlayers[i]);
+                    }
+                }
+                
             }
             else
             {
@@ -147,6 +191,14 @@ public class GameManager : MonoBehaviour
         }
 
         sortedPlayers.Clear();
-
     }
+
+    public void ResetPlayerStatus()
+    {
+        for (int i = 0; i < players.Count; i++)
+        {
+            players[i].PlayerState = PlayerState.Playing;
+        }
+    }
+
 }

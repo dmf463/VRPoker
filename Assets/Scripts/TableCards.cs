@@ -68,6 +68,7 @@ public class TableCards {
         _board.Clear();
         _burn.Clear();
         _table.Clear();
+        gameState = GameState.PreFlop;
     }
 
     public List<CardType> EvaluatePlayerPreFlop(int seatPos)

@@ -72,7 +72,7 @@ public class Card : InteractionSuperClass {
 
     public void CardForDealingMode()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.P))
         {
             InstantiateNewDeck();
         }

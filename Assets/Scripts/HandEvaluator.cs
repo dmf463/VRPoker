@@ -107,6 +107,7 @@ public class HandEvaluator {
             return PokerHand.Connectors;
         }
         handValue.HighCard = (int)incomingCards[1].rank;
+        handValue.Total = (int)incomingCards[0].rank + (int)incomingCards[1].rank;
         handValue.PokerHand = PokerHand.HighCard;
         return PokerHand.HighCard;
     }
@@ -157,35 +158,35 @@ public class HandEvaluator {
     {
         //get number of suit in each hand
         getNumberOfSuit();
-        if (StraightFlushAtRiver())
+        if (StraightFlushAtTurn())
         {
             return PokerHand.StraightFlush;
         }
-        else if (FourOfKindAtRiver())
+        else if (FourOfKindAtTurn())
         {
             return PokerHand.FourOfKind;
         }
-        else if (FullHouseRiver())
+        else if (FullHouseAtTurn())
         {
             return PokerHand.FullHouse;
         }
-        else if (FlushAtRiver())
+        else if (FlushAtTurn())
         {
             return PokerHand.Flush;
         }
-        else if (StraightAtRiver())
+        else if (StraightAtTurn())
         {
             return PokerHand.Straight;
         }
-        else if (ThreeOfKindAtRiver())
+        else if (ThreeOfKindAtTurn())
         {
             return PokerHand.ThreeOfKind;
         }
-        else if (TwoPairRiver())
+        else if (TwoPairAtTurn())
         {
             return PokerHand.TwoPair;
         }
-        else if (OnePairAtRiver())
+        else if (OnePairAtTurn())
         {
             return PokerHand.OnePair;
         }
@@ -265,7 +266,7 @@ public class HandEvaluator {
 
  /*
  * 
- * Everything below here is the logic for pre-flop hand evaluation 
+ * Everything below here is the logic for PRE-FLOP hand evaluation 
  * 
  */
 
@@ -311,7 +312,7 @@ public class HandEvaluator {
 
 /*
 * 
-* Everything below here is the logic for flop hand evaluation 
+* Everything below here is the logic for FLOP hand evaluation 
 * 
 */
 
@@ -522,7 +523,7 @@ public class HandEvaluator {
 
 /*
 * 
-* Everything below here is the logic for Turn hand evaluation 
+* Everything below here is the logic for TURN hand evaluation 
 * 
 */
 
@@ -628,12 +629,365 @@ public class HandEvaluator {
         return false;
     }
 
+    public bool ThreeOfKindAtTurn()
+    {
+        //if 3 cards are the same then it's a three of a kind
+        //0, 1, 2
+        if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[0].rank == incomingCards[2].rank)
+        {
+            handValue.Total = (int)incomingCards[0].rank * 3;
+            handValue.HighCard = (int)incomingCards[5].rank;
+            handValue.PokerHand = PokerHand.ThreeOfKind;
+            return true;
+        }
+        //1, 2, 3
+        else if (incomingCards[1].rank == incomingCards[2].rank && incomingCards[1].rank == incomingCards[3].rank)
+        {
+            handValue.Total = (int)incomingCards[1].rank * 3;
+            handValue.HighCard = (int)incomingCards[5].rank;
+            handValue.PokerHand = PokerHand.ThreeOfKind;
+            return true;
+        }
+        //2, 3, 4
+        else if (incomingCards[2].rank == incomingCards[3].rank && incomingCards[2].rank == incomingCards[4].rank)
+        {
+            handValue.Total = (int)incomingCards[2].rank * 3;
+            handValue.HighCard = (int)incomingCards[5].rank;
+            handValue.PokerHand = PokerHand.ThreeOfKind;
+            return true;
+        }
+        //3, 4, 5
+        else if (incomingCards[3].rank == incomingCards[4].rank && incomingCards[3].rank == incomingCards[5].rank)
+        {
+            handValue.Total = (int)incomingCards[5].rank * 3;
+            handValue.HighCard = (int)incomingCards[2].rank;
+            handValue.PokerHand = PokerHand.ThreeOfKind;
+            return true;
+        }
+        return false;
+    }
+
+    public bool StraightAtTurn()
+    {
+        //need to check the straight, but because of the possibility of pairs in the middle of the straight I need to check each sequence
+        //if the cards rank is equal to the following card + 1, then they are connectors and the "straight count" goes up
+        //if the straight count reachs 4, that means there were at least 4 instances of connectors and there MUST be a straight
+        //to check the high card, I do the same thing as the flush
+        //if 4, 5, and 6 are consecutive, 6 is the high card
+        //if 4 and 6 are consecutive, then 6 is the high card
+        // if 5 and 6 are consecutive, then 6 is the high card
+        //if 4 and 5 are consectuive, then 5 is the high card,
+        //if neither 4, 5, or 6 are consecutive then ONE of them MUST be consecutive to card 3, so I check that
+        //EDGE CASE, THE WHEEL: A, 2, 3, 4, 5. A = 1 and RANK5 is the high card, because we don't know where the 5 is, but we know it's the highcard
+
+
+        if (incomingCards[0].rank + 1 == incomingCards[1].rank)
+        {
+            straightCount++;
+        }
+        else if (incomingCards[0].rank == incomingCards[1].rank)
+        {
+            straightCount += 0;
+        }
+        else straightCount = 0;
+
+        if (incomingCards[1].rank + 1 == incomingCards[2].rank)
+        {
+            straightCount++;
+        }
+        else if (incomingCards[1].rank == incomingCards[2].rank)
+        {
+            straightCount += 0;
+        }
+        else straightCount = 0;
+
+        if (incomingCards[2].rank + 1 == incomingCards[3].rank)
+        {
+            straightCount++;
+        }
+        else if (incomingCards[2].rank == incomingCards[3].rank)
+        {
+            straightCount += 0;
+        }
+        else straightCount = 0;
+
+        if (incomingCards[3].rank + 1 == incomingCards[4].rank)
+        {
+            straightCount++;
+        }
+        else if (incomingCards[3].rank == incomingCards[4].rank)
+        {
+            straightCount += 0;
+        }
+        else straightCount = 0;
+
+        if (incomingCards[4].rank + 1 == incomingCards[5].rank)
+        {
+            straightCount++;
+        }
+        else if (incomingCards[4].rank == incomingCards[5].rank)
+        {
+            straightCount += 0;
+        }
+        else straightCount = 0;
+
+        //NEED TO MAKE A FRINGE CASE FOR CHECK FOR THE WHEEL (A, 2, 3, 4, 5)
+        //will be ordered with as (2..3..4..5..A) with two cards inserted at any other point, but the order would make the straigh count = 0
+        //so need to run a check AFTER the straight count has been recalculated to see if it's THE WHEEL
+
+
+        if (straightCount == 0)
+        {
+            if (incomingCards[0].rank == RankType.Two && incomingCards[5].rank == RankType.Ace)
+            {
+                if (incomingCards[0].rank + 1 == incomingCards[1].rank)
+                {
+                    straightCount++;
+                }
+                if (incomingCards[1].rank + 1 == incomingCards[2].rank)
+                {
+                    straightCount++;
+                }
+                if (incomingCards[2].rank + 1 == incomingCards[3].rank)
+                {
+                    straightCount++;
+                }
+                if (incomingCards[3].rank + 1 == incomingCards[4].rank)
+                {
+                    straightCount++;
+                }
+                if (incomingCards[4].rank + 1 == incomingCards[5].rank)
+                {
+                    straightCount++;
+                }
+            }
+        }
+
+        if (incomingCards[0].rank == RankType.Two && incomingCards[5].rank == RankType.Ace)
+        {
+            if (straightCount == 3)
+            {
+                handValue.Total = 5;
+                handValue.PokerHand = PokerHand.Straight;
+                return true;
+            }
+        }
+
+        if (straightCount >= 4)
+        {
+           if(incomingCards[4].rank + 1 == incomingCards[5].rank)
+            {
+                handValue.Total = (int)incomingCards[5].rank;
+                handValue.PokerHand = PokerHand.Straight;
+                return true;
+            }
+            else
+            {
+                handValue.Total = (int)incomingCards[4].rank;
+                handValue.PokerHand = PokerHand.Straight;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool FlushAtTurn()
+    {
+        if (spadeSum >= 5 || heartSum >= 5 || diamondSum >= 5 || clubSum >= 5)
+        {
+            if (incomingCards[4].suit == incomingCards[5].suit)
+            {
+                handValue.Total = (int)incomingCards[5].rank;
+                handValue.PokerHand = PokerHand.Flush;
+                return true;
+            }
+            else
+            {
+                handValue.Total = (int)incomingCards[4].rank;
+                handValue.PokerHand = PokerHand.Flush;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool FullHouseAtTurn()
+    {
+        //if there is a pair and trips within the 7 cards, it's a full house
+
+        //0 = 1, 2 = 3 = 4
+        if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[2].rank == incomingCards[3].rank && incomingCards[2].rank == incomingCards[4].rank)
+        {
+            handValue.Total = (int)(incomingCards[0].rank) + (int)(incomingCards[1].rank) + (int)(incomingCards[2].rank) + (int)(incomingCards[3].rank) + (int)(incomingCards[4].rank);
+            handValue.PokerHand = PokerHand.FullHouse;
+            return true;
+        }
+        //0 = 1, 3 = 4 = 5
+        else if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[3].rank == incomingCards[4].rank && incomingCards[3].rank == incomingCards[5].rank)
+        {
+            handValue.Total = (int)(incomingCards[0].rank) + (int)(incomingCards[1].rank) + (int)(incomingCards[3].rank) + (int)(incomingCards[4].rank) + (int)(incomingCards[5].rank);
+            handValue.PokerHand = PokerHand.FullHouse;
+            return true;
+        }
+        //1 = 2, 3 = 4 = 5
+        else if (incomingCards[1].rank == incomingCards[2].rank && incomingCards[3].rank == incomingCards[4].rank && incomingCards[3].rank == incomingCards[5].rank)
+        {
+            handValue.Total = (int)(incomingCards[1].rank) + (int)(incomingCards[2].rank) + (int)(incomingCards[3].rank) + (int)(incomingCards[4].rank) + (int)(incomingCards[5].rank);
+            handValue.PokerHand = PokerHand.FullHouse;
+            return true;
+        }
+        //0 = 1 = 2, 3 = 4
+        else if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[0].rank == incomingCards[2].rank && incomingCards[3].rank == incomingCards[4].rank)
+        {
+            handValue.Total = (int)(incomingCards[0].rank) + (int)(incomingCards[1].rank) + (int)(incomingCards[2].rank) + (int)(incomingCards[3].rank) + (int)(incomingCards[4].rank);
+            handValue.PokerHand = PokerHand.FullHouse;
+            return true;
+        }
+        //0 = 1 = 2, 4 = 5
+        else if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[0].rank == incomingCards[2].rank && incomingCards[4].rank == incomingCards[5].rank)
+        {
+            handValue.Total = (int)(incomingCards[0].rank) + (int)(incomingCards[1].rank) + (int)(incomingCards[2].rank) + (int)(incomingCards[4].rank) + (int)(incomingCards[5].rank);
+            handValue.PokerHand = PokerHand.FullHouse;
+            return true;
+        }
+        //1 = 2 = 3, 4 = 5
+        else if (incomingCards[1].rank == incomingCards[2].rank && incomingCards[1].rank == incomingCards[3].rank && incomingCards[4].rank == incomingCards[5].rank)
+        {
+            handValue.Total = (int)(incomingCards[1].rank) + (int)(incomingCards[2].rank) + (int)(incomingCards[3].rank) + (int)(incomingCards[4].rank) + (int)(incomingCards[5].rank);
+            handValue.PokerHand = PokerHand.FullHouse;
+            return true;
+        }
+        return false;
+    }
+
+    public bool FourOfKindAtTurn()
+    {
+        //if any 4 ordered cards are the same, it's a 4 of a kind
+        //0, 1, 2, 3
+        //1, 2, 3, 4
+        //2, 3, 4, 5
+        if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[0].rank == incomingCards[2].rank && incomingCards[0].rank == incomingCards[3].rank)
+        {
+            handValue.Total = (int)incomingCards[0].rank * 4;
+            handValue.HighCard = (int)incomingCards[5].rank;
+            handValue.PokerHand = PokerHand.FourOfKind;
+            return true;
+        }
+        else if (incomingCards[1].rank == incomingCards[2].rank && incomingCards[1].rank == incomingCards[3].rank && incomingCards[2].rank == incomingCards[4].rank)
+        {
+            handValue.Total = (int)incomingCards[1].rank * 4;
+            handValue.HighCard = (int)incomingCards[5].rank;
+            handValue.PokerHand = PokerHand.FourOfKind;
+            return true;
+        }
+        else if (incomingCards[2].rank == incomingCards[3].rank && incomingCards[2].rank == incomingCards[4].rank && incomingCards[2].rank == incomingCards[5].rank)
+        {
+            handValue.Total = (int)incomingCards[2].rank * 4;
+            handValue.HighCard = (int)incomingCards[1].rank;
+            handValue.PokerHand = PokerHand.FourOfKind;
+            return true;
+        }
+        return false;
+    }
+
+    public bool StraightFlushAtTurn()
+    {
+        //need to check the straight AND the flush, but I can't just check for a straight and a flush.
+        //instead, I'm taking the Straight() and just adding to check if the connecting cards are also suited.
+        //if the count reaches 4, then hey, you've got yourself a straight flush!
+
+        //need to check the straight, but because of the possibility of pairs in the middle of the straight I need to check each sequence
+        //if the cards rank is equal to the following card + 1, then they are connectors and the "straight count" goes up
+        //if the straight count reachs 4, that means there were at least 4 instances of connectors and there MUST be a straight
+        //to check the high card, I do the same thing as the flush
+        //if 4, 5, and 6 are consecutive, 6 is the high card
+        //if 4 and 6 are consecutive, then 6 is the high card
+        // if 5 and 6 are consecutive, then 6 is the high card
+        //if 4 and 5 are consectuive, then 5 is the high card,
+        //if neither 4, 5, or 6 are consecutive then ONE of them MUST be consecutive to card 3, so I check that
+        if (incomingCards[0].rank + 1 == incomingCards[1].rank && incomingCards[0].suit == incomingCards[1].suit)
+        {
+            straightFlushCount++;
+        }
+        if (incomingCards[1].rank + 1 == incomingCards[2].rank && incomingCards[1].suit == incomingCards[2].suit)
+        {
+            straightFlushCount++;
+        }
+        if (incomingCards[2].rank + 1 == incomingCards[3].rank && incomingCards[2].suit == incomingCards[3].suit)
+        {
+            straightFlushCount++;
+        }
+        if (incomingCards[3].rank + 1 == incomingCards[4].rank && incomingCards[3].suit == incomingCards[4].suit)
+        {
+            straightFlushCount++;
+        }
+        if (incomingCards[4].rank + 1 == incomingCards[5].rank && incomingCards[4].suit == incomingCards[5].suit)
+        {
+            straightFlushCount++;
+        }
+
+        //FRINGE CASE FOR THE WHEEL
+        if (straightFlushCount == 0)
+        {
+            if (incomingCards[0].rank == RankType.Two && incomingCards[5].rank == RankType.Ace && incomingCards[0].suit == incomingCards[5].suit)
+            {
+                if (incomingCards[0].rank + 1 == incomingCards[1].rank && incomingCards[0].suit == incomingCards[1].suit)
+                {
+                    straightFlushCount++;
+                }
+                if (incomingCards[1].rank + 1 == incomingCards[2].rank && incomingCards[1].suit == incomingCards[2].suit)
+                {
+                    straightFlushCount++;
+                }
+                if (incomingCards[2].rank + 1 == incomingCards[3].rank && incomingCards[2].suit == incomingCards[3].suit)
+                {
+                    straightFlushCount++;
+                }
+                if (incomingCards[3].rank + 1 == incomingCards[4].rank && incomingCards[3].suit == incomingCards[4].suit)
+                {
+                    straightFlushCount++;
+                }
+                if (incomingCards[4].rank + 1 == incomingCards[5].rank && incomingCards[4].suit == incomingCards[5].suit)
+                {
+                    straightFlushCount++;
+                }
+            }
+        }
+
+        if (incomingCards[0].rank == RankType.Two && incomingCards[5].rank == RankType.Ace && incomingCards[0].suit == incomingCards[5].suit)
+        {
+            if (straightFlushCount == 3)
+            {
+                handValue.Total = 5;
+                handValue.PokerHand = PokerHand.StraightFlush;
+                return true;
+            }
+        }
+
+        if (straightFlushCount >= 4)
+        {
+            if (incomingCards[4].rank + 1 == incomingCards[5].rank && incomingCards[4].suit == incomingCards[5].suit)
+            {
+                handValue.Total = (int)incomingCards[5].rank;
+                handValue.PokerHand = PokerHand.StraightFlush;
+                return true;
+            }
+            else
+            {
+                handValue.Total = (int)incomingCards[4].rank;
+                handValue.PokerHand = PokerHand.StraightFlush;
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 /*
 * 
-* Everything below here is the logic for River and ShowDown hand evaluation 
+* Everything below here is the logic for RIVER and ShowDown hand evaluation 
 * 
- */
+*/
 
     public bool OnePairAtRiver()
     {
@@ -1167,7 +1521,7 @@ public class HandEvaluator {
             handValue.PokerHand = PokerHand.FourOfKind;
             return true;
         }
-        else if (incomingCards[2].rank == incomingCards[3].rank && incomingCards[2].rank == incomingCards[5].rank && incomingCards[2].rank == incomingCards[5].rank)
+        else if (incomingCards[2].rank == incomingCards[3].rank && incomingCards[2].rank == incomingCards[4].rank && incomingCards[2].rank == incomingCards[5].rank)
         {
             handValue.Total = (int)incomingCards[2].rank * 4;
             handValue.HighCard = (int)incomingCards[6].rank;
