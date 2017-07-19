@@ -17,8 +17,6 @@ public class ChipStack : MonoBehaviour {
 
         chips.Add(gameObject.GetComponent<Chip>());
         stackValue = chips[0].chipValue;
-        firstChipPos = chips[0].gameObject.transform.position;
-        firstChipRot = chips[0].gameObject.transform.rotation;
         incrementStackBy = chips[0].gameObject.GetComponent<Collider>().bounds.size.y;
 
 	}
@@ -54,7 +52,8 @@ public class ChipStack : MonoBehaviour {
         newChip.GetComponent<BoxCollider>().enabled = false;
         newChip.GetComponent<Rigidbody>().isKinematic = true;
         newChip.transform.parent = gameObject.transform;
-        newChip.transform.position = new Vector3(firstChipPos.x, (firstChipPos.y - (incrementStackBy * chips.Count)), firstChipPos.z);
+        newChip.transform.position = new Vector3(chips[0].transform.position.x, (chips[chips.Count - 1].transform.position.y + incrementStackBy / 4), chips[0].transform.position.z);
+        newChip.transform.rotation = chips[0].transform.rotation;
         chips.Add(newChip.GetComponent<Chip>());
         stackValue += newChip.GetComponent<Chip>().chipValue;
 
