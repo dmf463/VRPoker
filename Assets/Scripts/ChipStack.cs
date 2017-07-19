@@ -4,12 +4,22 @@ using UnityEngine;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
 
-public class ChipStack : InteractionSuperClass {
+public class ChipStack : MonoBehaviour {
 
-    public List<GameObject> chips = new List<GameObject>();
+    public List<Chip> chips = new List<Chip>();
+    public int stackValue;
+    private Vector3 firstChipPos;
+    private Quaternion firstChipRot;
+    private float incrementStackBy;
 
 	// Use this for initialization
 	void Start () {
+
+        chips.Add(gameObject.GetComponent<Chip>());
+        stackValue = chips[0].chipValue;
+        firstChipPos = chips[0].gameObject.transform.position;
+        firstChipRot = chips[0].gameObject.transform.rotation;
+        incrementStackBy = chips[0].gameObject.GetComponent<Collider>().bounds.size.y;
 
 	}
 	
@@ -18,30 +28,18 @@ public class ChipStack : InteractionSuperClass {
 		
 	}
 
-    //void OnCollisionEnter(Collision other)
-    //{
-    //    if(other.gameObject.tag == "Chip")
-    //    {
-    //        AddToStack(other.gameObject.GetComponent<Chip>());
-    //    }
-    //}
 
     public void AddToStack(Chip chip)
     {
-
-        //need to make it so that when it adds it to the stack, it adds it in the right position
-        //I think I need to rethink this, Chris said I shouldn't be using gameObjects, yet here I am.
-        //these things in this stack need to like, NOT be gameObjects.
-        //that's what I was trying to avoid in the first place...I think?
         int chipValue = chip.chipValue;
+        Debug.Log(chip.gameObject.name + " wants to be destroyed");
         Destroy(chip.gameObject);
         GameObject newChip = null;
-
-        if(chipValue == 5)
+        if (chipValue == 5)
         {
             newChip = Instantiate(Services.PrefabDB.RedChip5, transform.position, Quaternion.identity);
         }
-        else if(chipValue == 25)
+        else if (chipValue == 25)
         {
             newChip = Instantiate(Services.PrefabDB.BlueChip25, transform.position, Quaternion.identity);
         }
@@ -56,9 +54,9 @@ public class ChipStack : InteractionSuperClass {
         newChip.GetComponent<BoxCollider>().enabled = false;
         newChip.GetComponent<Rigidbody>().isKinematic = true;
         newChip.transform.parent = gameObject.transform;
-        newChip.GetComponent<Chip>().chipStack = this;
-        chips.Add(newChip);
-
+        newChip.transform.position = new Vector3(firstChipPos.x, (firstChipPos.y - (incrementStackBy * chips.Count)), firstChipPos.z);
+        chips.Add(newChip.GetComponent<Chip>());
+        stackValue += newChip.GetComponent<Chip>().chipValue;
 
     }
 
@@ -70,35 +68,5 @@ public class ChipStack : InteractionSuperClass {
     public void ClearStack()
     {
 
-    }
-
-    public override void HandAttachedUpdate(Hand attachedHand)
-    {
-        base.HandAttachedUpdate(attachedHand);
-    }
-
-    public override void HandHoverUpdate(Hand hand)
-    {
-        base.HandHoverUpdate(hand);
-    }
-
-    public override void OnDetachedFromHand(Hand hand)
-    {
-        base.OnDetachedFromHand(hand);
-    }
-
-    public override void OnAttachedToHand(Hand attachedHand)
-    {
-        base.OnAttachedToHand(attachedHand);
-    }
-
-    public override void OnTriggerEnterX(Collider other)
-    {
-        base.OnTriggerEnterX(other);
-    }
-
-    public override void OnTriggerExitX(Collider other)
-    {
-        base.OnTriggerExitX(other);
     }
 }

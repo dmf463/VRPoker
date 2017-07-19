@@ -12,5 +12,6 @@ public class PokerPlayer {
     public HandEvaluator Hand { get; set; }
     public PlayerState PlayerState { get; set; }
 
+
 }
 
