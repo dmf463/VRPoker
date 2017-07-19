@@ -8,8 +8,6 @@ public class ChipStack : MonoBehaviour {
 
     public List<Chip> chips = new List<Chip>();
     public int stackValue;
-    private Vector3 firstChipPos;
-    private Quaternion firstChipRot;
     private float incrementStackBy;
 
 	// Use this for initialization
@@ -17,12 +15,17 @@ public class ChipStack : MonoBehaviour {
 
         chips.Add(gameObject.GetComponent<Chip>());
         stackValue = chips[0].chipValue;
-        incrementStackBy = chips[0].gameObject.GetComponent<Collider>().bounds.size.y;
+        incrementStackBy = chips[0].gameObject.GetComponent<Collider>().bounds.size.y / 4;
 
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            TakeFromStack();
+        }
 		
 	}
 
@@ -52,16 +55,42 @@ public class ChipStack : MonoBehaviour {
         newChip.GetComponent<BoxCollider>().enabled = false;
         newChip.GetComponent<Rigidbody>().isKinematic = true;
         newChip.transform.parent = gameObject.transform;
-        newChip.transform.position = new Vector3(chips[0].transform.position.x, (chips[chips.Count - 1].transform.position.y + incrementStackBy / 4), chips[0].transform.position.z);
+        newChip.transform.position = new Vector3(chips[0].transform.position.x, (chips[chips.Count - 1].transform.position.y + incrementStackBy), chips[0].transform.position.z);
         newChip.transform.rotation = chips[0].transform.rotation;
-        chips.Add(newChip.GetComponent<Chip>());
         stackValue += newChip.GetComponent<Chip>().chipValue;
+        chips.Add(newChip.GetComponent<Chip>());
+        Debug.Log("chipStack is worth " + stackValue);
 
     }
 
     public void TakeFromStack()
     {
-
+        if(chips.Count > 1)
+        {
+            chips[0].gameObject.GetComponent<MeshFilter>().mesh = chips[1].gameObject.GetComponent<MeshFilter>().mesh;
+            chips[0].ChipColor = chips[1].ChipColor;
+            chips[0].chipValue = chips[1].chipValue;
+            Physics.IgnoreCollision(chips[1].gameObject.GetComponent<Collider>(), this.GetComponent<Collider>(), true);
+            chips[1].gameObject.transform.parent = null;
+            chips[1].GetComponent<BoxCollider>().enabled = true;
+            chips[1].GetComponent<Rigidbody>().isKinematic = false;
+            stackValue -= chips[1].chipValue;
+            chips.Remove(chips[1]);
+            chips.TrimExcess();
+            for (int i = 1; i < chips.Count; i++)
+            {
+                chips[i].transform.position = new Vector3(chips[i].transform.position.x, chips[i].transform.position.y - incrementStackBy, chips[i].transform.position.z);
+            }
+            Debug.Log("stackValue is" + stackValue);
+        }
+        else
+        {
+            GameObject[] chipsOnTable = GameObject.FindGameObjectsWithTag("Chip");
+            foreach (GameObject chip in chipsOnTable)
+            {
+                Physics.IgnoreCollision(chip.GetComponent<Collider>(), chips[0].gameObject.GetComponent<Collider>(), false);
+            }
+        }
     }
 
     public void ClearStack()

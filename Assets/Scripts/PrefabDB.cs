@@ -29,4 +29,8 @@ public class PrefabDB : ScriptableObject {
     private GameObject blackChip100;
     public GameObject BlackChip100 { get { return blackChip100; } }
 
+    [SerializeField]
+    private GameObject chipStack;
+    public GameObject ChipStack { get { return chipStack; } }
+
 }
