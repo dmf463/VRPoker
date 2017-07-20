@@ -23,8 +23,10 @@ public class Chip : InteractionSuperClass {
     public int chipValue;
     private bool isTouchingChip;
     private bool isTouchingStack;
-    private Chip incomingChip;
-    private List<Chip> incomingStack;
+    [HideInInspector]
+    public Chip incomingChip;
+    [HideInInspector]
+    public List<Chip> incomingStack;
     public bool canBeGrabbed;
     private bool regrabCoroutineActive;
     public ChipStack chipStack;
@@ -63,7 +65,6 @@ public class Chip : InteractionSuperClass {
 
         if (!canBeGrabbed)
         {
-            Debug.Log(gameObject.name + "can't be grabbed at time " + Time.time);
             if (!regrabCoroutineActive)
             {
                 regrabCoroutineActive = true;
@@ -76,8 +77,8 @@ public class Chip : InteractionSuperClass {
     IEnumerator ReadyToBeGrabbed(float time)
     {
         yield return new WaitForSeconds(time);
-        //canBeGrabbed = true;
-        //regrabCoroutineActive = false;
+        canBeGrabbed = true;
+        regrabCoroutineActive = false;
         Debug.Log("coroutine finished at time " + Time.time);
     }
 
@@ -95,11 +96,24 @@ public class Chip : InteractionSuperClass {
         }
     }
 
+    void OnCollisionExit(Collision other)
+    {
+        if (other.gameObject.tag == "Chip" && other.gameObject.GetComponent<Chip>().chipStack == null)
+        {
+            isTouchingChip = false;
+        }
+        else if (other.gameObject.tag == "Chip" && other.gameObject.GetComponent<Chip>().chipStack != null)
+        {
+            isTouchingStack = false;
+        }
+    }
+
 
     public override void HandAttachedUpdate(Hand attachedHand)
     {
         if(isTouchingChip && incomingChip.canBeGrabbed)
         {
+            Debug.Log("adding " + incomingChip.gameObject.name);
             chipStack.AddToStack(incomingChip);
             isTouchingChip = false;
         }
