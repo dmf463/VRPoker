@@ -181,14 +181,14 @@ public class InteractionSuperClass : MonoBehaviour {
         Debug.Log("Swipe Top");
     }
 
-    public virtual void OnPressBottom()
-    {
-        Debug.Log("Press Bottom");
-    }
-
     public virtual void OnSwipeBottom()
     {
         Debug.Log("Swipe Bottom");
+    }
+
+    public virtual void OnPressBottom()
+    {
+        Debug.Log("Press Bottom");
     }
 
 }

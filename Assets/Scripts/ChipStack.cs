@@ -15,7 +15,7 @@ public class ChipStack : InteractionSuperClass {
 
         chips.Add(gameObject.GetComponent<Chip>());
         stackValue = chips[0].chipValue;
-        incrementStackBy = chips[0].gameObject.GetComponent<Collider>().bounds.size.y / 4;
+        incrementStackBy = chips[0].gameObject.GetComponent<Collider>().bounds.size.y / 16;
 
 	}
 	
@@ -50,7 +50,7 @@ public class ChipStack : InteractionSuperClass {
         newChip.GetComponent<BoxCollider>().enabled = false;
         newChip.GetComponent<Rigidbody>().isKinematic = true;
         newChip.transform.parent = gameObject.transform;
-        newChip.transform.position = new Vector3(chips[0].transform.position.x, (chips[chips.Count - 1].transform.position.y + incrementStackBy), chips[0].transform.position.z);
+        newChip.transform.localPosition = new Vector3(chips[0].transform.localPosition.x, chips[0].transform.localPosition.y, (chips[chips.Count - 1].transform.localPosition.z + incrementStackBy));
         newChip.transform.rotation = chips[0].transform.rotation;
         stackValue += newChip.GetComponent<Chip>().chipValue;
         chips.Add(newChip.GetComponent<Chip>());
@@ -62,9 +62,19 @@ public class ChipStack : InteractionSuperClass {
     {
         if(chips.Count > 1)
         {
+            Chip fakeChip = new Chip();
+            fakeChip.ChipColor = chips[0].ChipColor;
+            fakeChip.chipValue = chips[0].chipValue;
+            Mesh fakeMesh = chips[0].gameObject.GetComponent<MeshFilter>().mesh;
+
             chips[0].gameObject.GetComponent<MeshFilter>().mesh = chips[1].gameObject.GetComponent<MeshFilter>().mesh;
             chips[0].ChipColor = chips[1].ChipColor;
             chips[0].chipValue = chips[1].chipValue;
+
+            chips[1].gameObject.GetComponent<MeshFilter>().mesh = fakeMesh;
+            chips[1].ChipColor = fakeChip.ChipColor;
+            chips[1].chipValue = fakeChip.chipValue;
+
             Physics.IgnoreCollision(chips[1].gameObject.GetComponent<Collider>(), this.GetComponent<Collider>(), true);
             chips[1].gameObject.transform.parent = null;
             chips[1].GetComponent<BoxCollider>().enabled = true;
@@ -74,7 +84,7 @@ public class ChipStack : InteractionSuperClass {
             chips.TrimExcess();
             for (int i = 1; i < chips.Count; i++)
             {
-                chips[i].transform.position = new Vector3(chips[i].transform.position.x, chips[i].transform.position.y - incrementStackBy, chips[i].transform.position.z);
+                chips[i].transform.localPosition = new Vector3(chips[i].transform.localPosition.x, chips[i].transform.localPosition.y, chips[i].transform.localPosition.z - incrementStackBy);
             }
             Debug.Log("stackValue is" + stackValue);
         }
@@ -83,7 +93,7 @@ public class ChipStack : InteractionSuperClass {
             GameObject[] chipsOnTable = GameObject.FindGameObjectsWithTag("Chip");
             foreach (GameObject chip in chipsOnTable)
             {
-                Physics.IgnoreCollision(chip.GetComponent<Collider>(), chips[0].gameObject.GetComponent<Collider>(), false);
+                Physics.IgnoreCollision(chip.GetComponent<Collider>(), chip.gameObject.GetComponent<Collider>(), false);
             }
         }
     }

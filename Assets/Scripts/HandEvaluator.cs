@@ -23,7 +23,6 @@ public class HandEvaluator {
     private int clubSum;
     private int straightCount;
     private int straightFlushCount;
-    private int AceToFiveCount;
     private List<CardType> incomingCards;
     private HandValue handValue;
 
@@ -35,7 +34,6 @@ public class HandEvaluator {
         clubSum = 0;
         straightCount = 0;
         straightFlushCount = 0;
-        AceToFiveCount = 0;
         incomingCards = sortedCards;
         Cards = sortedCards;
     }
