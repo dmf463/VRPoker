@@ -25,10 +25,15 @@ public class Chip : InteractionSuperClass {
     private bool isTouchingStack;
     private Chip incomingChip;
     private List<Chip> incomingStack;
+    public bool canBeGrabbed;
+    private bool regrabCoroutineActive;
+    public ChipStack chipStack;
 
 	// Use this for initialization
 	void Start () {
 
+        canBeGrabbed = true;
+        regrabCoroutineActive = false;
         switch (GetComponent<MeshFilter>().mesh.name)
         {
             case "RedChip Instance":
@@ -55,38 +60,60 @@ public class Chip : InteractionSuperClass {
 	
 	// Update is called once per frame
 	void Update () {
-		
-	}
+
+        if (!canBeGrabbed)
+        {
+            Debug.Log(gameObject.name + "can't be grabbed at time " + Time.time);
+            if (!regrabCoroutineActive)
+            {
+                regrabCoroutineActive = true;
+                StartCoroutine(ReadyToBeGrabbed(1.5f));
+            }
+        }
+
+    }
+
+    IEnumerator ReadyToBeGrabbed(float time)
+    {
+        yield return new WaitForSeconds(time);
+        //canBeGrabbed = true;
+        //regrabCoroutineActive = false;
+        Debug.Log("coroutine finished at time " + Time.time);
+    }
 
     void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.tag == "Chip" && other.gameObject.GetComponent<ChipStack>() == null)
+        if (other.gameObject.tag == "Chip" && other.gameObject.GetComponent<Chip>().chipStack == null)
         {
             isTouchingChip = true;
             incomingChip = other.gameObject.GetComponent<Chip>();
         }
-        else if(other.gameObject.tag == "Chip" && other.gameObject.GetComponent<ChipStack>() != null)
+        else if(other.gameObject.tag == "Chip" && other.gameObject.GetComponent<Chip>().chipStack != null)
         {
             isTouchingStack = true;
-            incomingStack = other.gameObject.GetComponent<ChipStack>().chips;
+            incomingStack = other.gameObject.GetComponent<Chip>().chipStack.chips;
         }
     }
 
 
     public override void HandAttachedUpdate(Hand attachedHand)
     {
-        if(isTouchingChip == true)
+        if(isTouchingChip && incomingChip.canBeGrabbed)
         {
-            GetComponent<ChipStack>().AddToStack(incomingChip);
+            chipStack.AddToStack(incomingChip);
             isTouchingChip = false;
         }
-        if(isTouchingStack == true)
+        if(isTouchingStack)
         {
             foreach(Chip chip in incomingStack)
             {
-                GetComponent<ChipStack>().AddToStack(chip);
+                chipStack.AddToStack(chip);
                 isTouchingStack = false;
             }
+        }
+        if (chipStack != null)
+        {
+            CheckPressPosition(attachedHand);
         }
         base.HandAttachedUpdate(attachedHand);
     }
@@ -98,13 +125,20 @@ public class Chip : InteractionSuperClass {
 
     public override void OnDetachedFromHand(Hand hand)
     {
+        if(chipStack != null && chipStack.chips.Count == 1)
+        {
+            chipStack = null;
+        }
         base.OnDetachedFromHand(hand);
     }
 
     public override void OnAttachedToHand(Hand attachedHand)
     {
         transform.rotation = attachedHand.GetAttachmentTransform("CardFaceDown").transform.rotation;
-        gameObject.AddComponent<ChipStack>();
+        if(chipStack == null)
+        {
+            chipStack = new ChipStack(this);
+        }
         base.OnAttachedToHand(attachedHand);
     }
 
@@ -116,6 +150,15 @@ public class Chip : InteractionSuperClass {
     public override void OnTriggerExitX(Collider other)
     {
         base.OnTriggerExitX(other);
+    }
+
+    public override void OnPressBottom()
+    {
+        if(chipStack != null)
+        {
+            if (chipStack.chips.Count > 1) chipStack.TakeFromStack();
+        }
+        base.OnPressBottom();
     }
 
 }

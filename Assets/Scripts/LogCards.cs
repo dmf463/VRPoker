@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class LogCards : MonoBehaviour
 {
+    #region MonoBehaviour Stuff
     public float cardCount;
     private GameObject newCardDeck;
     private bool madeNewDeck;
@@ -18,7 +19,7 @@ public class LogCards : MonoBehaviour
     {
 
     }
-
+    #endregion
     public void OnTriggerEnter(Collider other)
     {
         cardCount += 1;

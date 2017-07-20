@@ -4,121 +4,109 @@ using UnityEngine;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
 
-public class ChipStack : InteractionSuperClass {
+public class ChipStack {
 
     public List<Chip> chips = new List<Chip>();
     public int stackValue;
     private float incrementStackBy;
 
-	// Use this for initialization
-	void Start () {
-
-        chips.Add(gameObject.GetComponent<Chip>());
+    public ChipStack(Chip chip)
+    {
+        chips.Add(chip);
         stackValue = chips[0].chipValue;
-        incrementStackBy = chips[0].gameObject.GetComponent<Collider>().bounds.size.y / 16;
-
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+        incrementStackBy = ((chips[0].gameObject.GetComponent<Collider>().bounds.size.z / 88) * -1);
+    }
 
 
     public void AddToStack(Chip chip)
     {
+        Debug.Log("trying to destroy " + chip.gameObject.name);
         int chipValue = chip.chipValue;
-        Debug.Log(chip.gameObject.name + " wants to be destroyed");
-        Destroy(chip.gameObject);
+        GameObject.Destroy(chip.gameObject);
         GameObject newChip = null;
+        //Vector3 bottomPos = chips[chips.Count - 1].transform.position;
         if (chipValue == 5)
         {
-            newChip = Instantiate(Services.PrefabDB.RedChip5, transform.position, Quaternion.identity);
+            newChip = GameObject.Instantiate(Services.PrefabDB.RedChip5, Vector3.zero, Quaternion.identity);
         }
         else if (chipValue == 25)
         {
-            newChip = Instantiate(Services.PrefabDB.BlueChip25, transform.position, Quaternion.identity);
+            newChip = GameObject.Instantiate(Services.PrefabDB.BlueChip25, Vector3.zero, Quaternion.identity);
         }
         else if (chipValue == 50)
         {
-            newChip = Instantiate(Services.PrefabDB.WhiteChip50, transform.position, Quaternion.identity);
+            newChip = GameObject.Instantiate(Services.PrefabDB.WhiteChip50, Vector3.zero, Quaternion.identity);
         }
         else if (chipValue == 100)
         {
-            newChip = Instantiate(Services.PrefabDB.BlackChip100, transform.position, Quaternion.identity);
+            newChip = GameObject.Instantiate(Services.PrefabDB.BlackChip100, Vector3.zero, Quaternion.identity);
         }
-        newChip.GetComponent<BoxCollider>().enabled = false;
-        newChip.GetComponent<Rigidbody>().isKinematic = true;
-        newChip.transform.parent = gameObject.transform;
+        //Chip oldParent = chips[chips.Count - 1];
+        //Hand hand = oldParent.GetComponentInParent<Hand>();
+        //hand.DetachObject(oldParent.gameObject);
+        //hand.AttachObject(newChip);
+        //for (int i = 0; i < chips.Count; i++)
+        //{
+        //    Chip chipInStack = chips[i];
+        //    chipInStack.transform.parent = newChip.transform;
+        //    chipInStack.transform.localPosition = new Vector3(0, 0, (chips.Count - i) * incrementStackBy);
+        //}
+        GameObject.Destroy(newChip.GetComponent<Rigidbody>());
+        //newChip.GetComponent<Rigidbody>().isKinematic = true;
+        newChip.transform.parent = chips[0].transform;
         newChip.transform.localPosition = new Vector3(chips[0].transform.localPosition.x, chips[0].transform.localPosition.y, (chips[chips.Count - 1].transform.localPosition.z + incrementStackBy));
         newChip.transform.rotation = chips[0].transform.rotation;
         stackValue += newChip.GetComponent<Chip>().chipValue;
+
+
+        //oldParent.GetComponent<BoxCollider>().enabled = false;
+        //oldParent.GetComponent<Rigidbody>().isKinematic = true;
+        //oldParent.chipStack = null;
+        //newChip.GetComponent<Chip>().chipStack = this;
         chips.Add(newChip.GetComponent<Chip>());
-        Debug.Log("chipStack is worth " + stackValue);
+        //Debug.Log("chipStack is worth " + stackValue);
 
     }
 
     public void TakeFromStack()
     {
-        if(chips.Count > 1)
-        {
-            Chip fakeChip = new Chip();
-            fakeChip.ChipColor = chips[0].ChipColor;
-            fakeChip.chipValue = chips[0].chipValue;
-            Mesh fakeMesh = chips[0].gameObject.GetComponent<MeshFilter>().mesh;
+        chips[chips.Count - 1].transform.parent = null;
+        chips[chips.Count - 1].gameObject.AddComponent<Rigidbody>();
+        stackValue -= chips[chips.Count - 1].chipValue;
+        chips[chips.Count - 1].canBeGrabbed = false;
+        chips.Remove(chips[chips.Count - 1]);
+        chips.TrimExcess();
 
-            chips[0].gameObject.GetComponent<MeshFilter>().mesh = chips[1].gameObject.GetComponent<MeshFilter>().mesh;
-            chips[0].ChipColor = chips[1].ChipColor;
-            chips[0].chipValue = chips[1].chipValue;
+        ////Debug.Log("chips.count = " + chips.Count);
 
-            chips[1].gameObject.GetComponent<MeshFilter>().mesh = fakeMesh;
-            chips[1].ChipColor = fakeChip.ChipColor;
-            chips[1].chipValue = fakeChip.chipValue;
+        //Chip oldParent = chips[chips.Count - 1];
+        //Hand hand = oldParent.GetComponentInParent<Hand>();
+        //Chip newParent = chips[chips.Count - 2];
+        //hand.DetachObject(oldParent.gameObject);
+        //newParent.GetComponent<BoxCollider>().enabled = true;
+        //newParent.GetComponent<Rigidbody>().isKinematic = true;
+        //hand.AttachObject(newParent.gameObject);
+        //chips.Remove(oldParent);
+        //chips.TrimExcess();
+        //for (int i = 0; i < chips.Count - 1; i++)
+        //{
+        //    Chip chipInStack = chips[i];
+        //    chipInStack.transform.parent = newParent.transform;
+        //    chipInStack.transform.localPosition = new Vector3(0, 0, (chips.Count - i) * incrementStackBy);
+        //}
+        //stackValue -= oldParent.chipValue;
 
-            Physics.IgnoreCollision(chips[1].gameObject.GetComponent<Collider>(), this.GetComponent<Collider>(), true);
-            chips[1].gameObject.transform.parent = null;
-            chips[1].GetComponent<BoxCollider>().enabled = true;
-            chips[1].GetComponent<Rigidbody>().isKinematic = false;
-            stackValue -= chips[1].chipValue;
-            chips.Remove(chips[1]);
-            chips.TrimExcess();
-            for (int i = 1; i < chips.Count; i++)
-            {
-                chips[i].transform.localPosition = new Vector3(chips[i].transform.localPosition.x, chips[i].transform.localPosition.y, chips[i].transform.localPosition.z - incrementStackBy);
-            }
-            Debug.Log("stackValue is" + stackValue);
-        }
-        else
-        {
-            GameObject[] chipsOnTable = GameObject.FindGameObjectsWithTag("Chip");
-            foreach (GameObject chip in chipsOnTable)
-            {
-                Physics.IgnoreCollision(chip.GetComponent<Collider>(), chip.gameObject.GetComponent<Collider>(), false);
-            }
-        }
+        //oldParent.GetComponent<BoxCollider>().enabled = true;
+        //oldParent.GetComponent<Rigidbody>().isKinematic = false;
+        //oldParent.chipStack = null;
+        //newParent.chipStack = this;
+        //oldParent.transform.parent = null;
+        //oldParent.canBeGrabbed = false;
     }
 
     public void ClearStack()
     {
 
-    }
-
-    public override void CheckSwipeDirection()
-    {
-        
-        base.CheckSwipeDirection();
-    }
-
-    public override void HandAttachedUpdate(Hand attachedHand)
-    {
-        CheckPressPosition(attachedHand);
-        base.HandAttachedUpdate(attachedHand);
-    }
-
-    public override void OnPressBottom()
-    {
-        TakeFromStack();
-        base.OnPressBottom();
     }
 
 

@@ -55,11 +55,15 @@ public class InteractionSuperClass : MonoBehaviour {
     public virtual void HandHoverUpdate(Hand hand) //this applies to either controller
     {
         //Debug.Log("Hand is holding " + hand.AttachedObjects.Count + " objects.");
-        if (hand.GetStandardInteractionButtonDown() == true && gameObject.GetComponent<Rigidbody>().isKinematic == false) //on Vive controller, this is the trigger
+        if(gameObject.GetComponent<Rigidbody>() != null)
         {
-            hand.AttachObject(gameObject);
-            hand.HoverLock(interactableObject);
+            if (hand.GetStandardInteractionButtonDown() == true && gameObject.GetComponent<Rigidbody>().isKinematic == false) //on Vive controller, this is the trigger
+            {
+                hand.AttachObject(gameObject);
+                hand.HoverLock(interactableObject);
+            }
         }
+
     }
 
     //this happens whenever an object is attached to this hand, for whatever reason
