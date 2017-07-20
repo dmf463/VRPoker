@@ -31,23 +31,6 @@ public class Card : InteractionSuperClass {
     CardDeckScript deckScript;
     bool cardFacingUp = false;
     static float cardsInHand;
-
-    //VARIABLE FOR CHECKING SWIPE
-    private bool trackingSwipe;
-    private bool checkSwipe;
-    private Vector2 startPosition;
-    private Vector2 endPosition;
-    private float swipeStartTime;
-    // To recognize as swipe user should at lease swipe for this many pixels
-    private const float MIN_SWIPE_DIST = .2f;
-    // To recognize as a swipe the velocity of the swipe
-    // should be at least mMinVelocity
-    // Reduce or increase to control the swipe speed
-    private const float MIN_VELOCITY = 3f;
-    private readonly Vector2 xAxis = new Vector2(1, 0);
-    private readonly Vector2 yAxis = new Vector2(0, 1);
-    // The angle range for detecting swipe
-    private const float angleRange = 30;
    
 
     // Use this for initialization
@@ -311,71 +294,15 @@ public class Card : InteractionSuperClass {
         }
     }
 
-    public void CheckSwipeDirection()
+    public override void CheckSwipeDirection()
     {
-        Vector2 touch = throwingHand.controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
-        var device = throwingHand.GetComponent<Hand>().controller;
-        if (device.GetTouchDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
-        {
-            //Debug.Log("touching Trackpad");
-            trackingSwipe = true;
-            startPosition = new Vector2(touch.x, touch.y);
-            swipeStartTime = Time.time;
-        }
-        else if (device.GetTouchUp(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
-        {
-            //Debug.Log("not touching trackpad");
-            trackingSwipe = false;
-            trackingSwipe = true;
-            checkSwipe = true;
-            //Debug.Log("Tracking Finish");
-        }
-        else if (trackingSwipe)
-        {
-            endPosition = new Vector2(touch.x, touch.y);
-        }
-        if (checkSwipe)
-        {
-            checkSwipe = false;
-            float deltaTime = Time.time - swipeStartTime;
-            Vector2 swipeVector = endPosition - startPosition;
-            float velocity = swipeVector.magnitude / deltaTime;
-            //Debug.Log("velocity is " + velocity);
-            if (velocity > MIN_VELOCITY && swipeVector.magnitude > MIN_SWIPE_DIST)
-            {
-                // if the swipe has enough velocity and enough distance
-                swipeVector.Normalize();
-                float angleOfSwipe = Vector2.Dot(swipeVector, xAxis);
-                angleOfSwipe = Mathf.Acos(angleOfSwipe) * Mathf.Rad2Deg;
-                // Detect left and right swipe
-                if (angleOfSwipe < angleRange)
-                {
-                    OnSwipeRight();
-                }
-                else if ((180f - angleOfSwipe) < angleRange)
-                {
-                    OnSwipeLeft();
-                }
-                else
-                {
-                    // Detect top and bottom swipe
-                    angleOfSwipe = Vector2.Dot(swipeVector, yAxis);
-                    angleOfSwipe = Mathf.Acos(angleOfSwipe) * Mathf.Rad2Deg;
-                    if (angleOfSwipe < angleRange)
-                    {
-                        OnSwipeTop();
-                    }
-                    else if ((180f - angleOfSwipe) < angleRange)
-                    {
-                        OnSwipeBottom();
-                    }
-                    else
-                    {
-                        //messageIndex = 0;
-                    }
-                }
-            }
-        }
+        base.CheckSwipeDirection();
+    }
+
+    public override void OnSwipeTop()
+    {
+        RotateCard();
+        base.OnSwipeTop();
     }
 
     public void RotateCard()
@@ -384,24 +311,4 @@ public class Card : InteractionSuperClass {
         rotationAtFlipStart = transform.localRotation;
     }
 
-    private void OnSwipeLeft()
-    {
-        Debug.Log("Swipe Left");
-    }
-
-    private void OnSwipeRight()
-    {
-        Debug.Log("Swipe right");
-    }
-
-    private void OnSwipeTop()
-    {
-        Debug.Log("Swipe Top");
-        RotateCard();
-    }
-
-    private void OnSwipeBottom()
-    {
-        Debug.Log("Swipe Bottom");
-    }
 }

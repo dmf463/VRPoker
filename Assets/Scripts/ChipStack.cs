@@ -4,7 +4,7 @@ using UnityEngine;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
 
-public class ChipStack : MonoBehaviour {
+public class ChipStack : InteractionSuperClass {
 
     public List<Chip> chips = new List<Chip>();
     public int stackValue;
@@ -21,11 +21,6 @@ public class ChipStack : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            TakeFromStack();
-        }
 		
 	}
 
@@ -97,4 +92,25 @@ public class ChipStack : MonoBehaviour {
     {
 
     }
+
+    public override void CheckSwipeDirection()
+    {
+        
+        base.CheckSwipeDirection();
+    }
+
+    public override void HandAttachedUpdate(Hand attachedHand)
+    {
+        CheckPressPosition(attachedHand);
+        base.HandAttachedUpdate(attachedHand);
+    }
+
+    public override void OnPressBottom()
+    {
+        TakeFromStack();
+        base.OnPressBottom();
+    }
+
+
+
 }
