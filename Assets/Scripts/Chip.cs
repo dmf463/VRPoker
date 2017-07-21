@@ -105,6 +105,7 @@ public class Chip : InteractionSuperClass {
         else if (other.gameObject.tag == "Chip" && other.gameObject.GetComponent<Chip>().chipStack != null)
         {
             isTouchingStack = false;
+            isTouchingChip = false;
         }
     }
 
