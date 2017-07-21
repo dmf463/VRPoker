@@ -30,9 +30,10 @@ public class Chip : InteractionSuperClass {
     public bool canBeGrabbed;
     private bool regrabCoroutineActive;
     public ChipStack chipStack;
+    const float MAGNITUDE_THRESHOLD = 1;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 
         canBeGrabbed = true;
         regrabCoroutineActive = false;
@@ -82,8 +83,10 @@ public class Chip : InteractionSuperClass {
         Debug.Log("coroutine finished at time " + Time.time);
     }
 
+
     void OnCollisionEnter(Collision other)
     {
+        Debug.Log("hitting " + other.gameObject.name);
         if (other.gameObject.tag == "Chip" && other.gameObject.GetComponent<Chip>().chipStack == null)
         {
             isTouchingChip = true;
@@ -144,7 +147,16 @@ public class Chip : InteractionSuperClass {
         {
             chipStack = null;
         }
-        base.OnDetachedFromHand(hand);
+        if(chipStack != null)
+        {
+            StartCoroutine(CheckVelocityForChipThrowing(.025f, hand));
+        }
+        GetComponent<Rigidbody>().isKinematic = false; //turns on physics
+        hand.HoverUnlock(interactableObject);
+
+        //apply forces to it, as if we're throwing it
+        GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);
+        GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);
     }
 
     public override void OnAttachedToHand(Hand attachedHand)
@@ -157,16 +169,6 @@ public class Chip : InteractionSuperClass {
         base.OnAttachedToHand(attachedHand);
     }
 
-    public override void OnTriggerEnterX(Collider other)
-    {
-        base.OnTriggerEnterX(other);
-    }
-
-    public override void OnTriggerExitX(Collider other)
-    {
-        base.OnTriggerExitX(other);
-    }
-
     public override void OnPressBottom()
     {
         if(chipStack != null)
@@ -174,6 +176,26 @@ public class Chip : InteractionSuperClass {
             if (chipStack.chips.Count > 1) chipStack.TakeFromStack();
         }
         base.OnPressBottom();
+    }
+
+    IEnumerator CheckVelocityForChipThrowing(float time, Hand hand)
+    {
+        yield return new WaitForSeconds(time);
+        //Debug.Log("rb.velocity.magnitude = " + rb.velocity.magnitude);
+        if (GetComponent<Rigidbody>().velocity.magnitude > MAGNITUDE_THRESHOLD)
+        {
+            foreach(Chip chip in chipStack.chips)
+            {
+                chip.gameObject.AddComponent<Rigidbody>();
+                chip.gameObject.transform.parent = null;
+                chip.gameObject.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity() * FORCE_MULTIPLIER, ForceMode.Impulse);
+                chip.gameObject.GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);
+                if (chip.chipStack != null)
+                {
+                    chip.chipStack = null;
+                }
+            }
+        }
     }
 
 }

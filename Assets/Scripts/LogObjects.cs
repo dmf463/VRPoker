@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LogCards : MonoBehaviour
+public class LogObjects : MonoBehaviour
 {
     #region MonoBehaviour Stuff
     public float cardCount;
@@ -23,6 +23,7 @@ public class LogCards : MonoBehaviour
     public void OnTriggerEnter(Collider other)
     {
         cardCount += 1;
+        #region Logging the PlayingCard for each space
         if (other.gameObject.tag == "PlayingCard")
         {
             if (this.gameObject.name == "TestSpace1")
@@ -153,6 +154,11 @@ public class LogCards : MonoBehaviour
                     }
                 }
             }
+
+        }
+        #endregion
+        if(other.gameObject.tag == "Chip")
+        {
 
         }
     }
