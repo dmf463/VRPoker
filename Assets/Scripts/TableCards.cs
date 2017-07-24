@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public enum Destination { player0, player1, player2, player3, player4, board, burn, table}
+public enum Destination { player0, player1, player2, player3, player4, board, burn, pot}
 public enum DealerState { DealingState, ShufflingState };
 public enum GameState { PreFlop, Flop, Turn, River, ShowDown }
 
@@ -23,6 +23,7 @@ public class TableCards {
     public static GameState gameState;
     public static DealerState dealerState;
 
+    //Where the cards could possibly go
     public List<CardType> _player0 = new List<CardType>();
     public List<CardType> _player1 = new List<CardType>();
     public List<CardType> _player2 = new List<CardType>();
@@ -30,7 +31,86 @@ public class TableCards {
     public List<CardType> _player4 = new List<CardType>();
     public List<CardType> _board = new List<CardType>();
     public List<CardType> _burn = new List<CardType>();
-    public List<CardType> _table = new List<CardType>();
+
+    //where the chips could possibly go
+    public List<Chip> _player0ChipStack = new List<Chip>();
+    public List<Chip> _player1ChipStack = new List<Chip>();
+    public List<Chip> _player2ChipStack = new List<Chip>();
+    public List<Chip> _player3ChipStack = new List<Chip>();
+    public List<Chip> _player4ChipStack = new List<Chip>();
+    public List<Chip> _pot = new List<Chip>();
+
+    public int GetChipStack(int seatPos)
+    {
+        int chipStack = 0;
+        if (seatPos == 0)
+        {
+            for (int i = 0; i < _player0ChipStack.Count; i++)
+            {
+                chipStack += _player0ChipStack[i].chipValue;
+            }
+        }
+        else if (seatPos == 1)
+        {
+            for (int i = 0; i < _player1ChipStack.Count; i++)
+            {
+                chipStack += _player1ChipStack[i].chipValue;
+            }
+        }
+        else if (seatPos == 2)
+        {
+            for (int i = 0; i < _player2ChipStack.Count; i++)
+            {
+                chipStack += _player2ChipStack[i].chipValue;
+            }
+        }
+        else if (seatPos == 3)
+        {
+            for (int i = 0; i < _player3ChipStack.Count; i++)
+            {
+                chipStack += _player3ChipStack[i].chipValue;
+            }
+        }
+        else if (seatPos == 3)
+        {
+            for (int i = 0; i < _player3ChipStack.Count; i++)
+            {
+                chipStack += _player3ChipStack[i].chipValue;
+            }
+        }
+        else if (seatPos == 4)
+        {
+            for (int i = 0; i < _player4ChipStack.Count; i++)
+            {
+                chipStack += _player4ChipStack[i].chipValue;
+            }
+        }
+        return chipStack;
+    }
+
+    public void AddChipTo(Destination dest, Chip chip) 
+    {
+        if(dest == Destination.player0) 
+        {
+            _player0ChipStack.Add(chip);
+        }
+        if (dest == Destination.player1) 
+        {
+            _player1ChipStack.Add(chip);
+        }
+        if (dest == Destination.player2) 
+        {
+            _player2ChipStack.Add(chip);
+        }
+        if (dest == Destination.player3)
+        {
+            _player3ChipStack.Add(chip);
+        }
+        if(dest == Destination.player4)
+        {
+            _player4ChipStack.Add(chip);
+        }
+    }
 
     public void AddCardTo (Destination dest, CardType card)
     {
@@ -72,7 +152,6 @@ public class TableCards {
         _player4.Clear();
         _board.Clear();
         _burn.Clear();
-        _table.Clear();
         gameState = GameState.PreFlop;
     }
 

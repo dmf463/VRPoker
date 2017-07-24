@@ -40,7 +40,6 @@ public class GameManager : MonoBehaviour
         InitializePlayers();
 
         cardsDealt = 0;
-
     }
 
     // Update is called once per frame
@@ -52,23 +51,35 @@ public class GameManager : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            EvaluateHandPreFlop();
+            foreach(PokerPlayer player in players) 
+            {
+                player.EvaluateHandPreFlop();
+            }
         }
         if (Input.GetKeyDown(KeyCode.W))
         {
-            EvaluateHandOnFlop();
+            foreach (PokerPlayer player in players) 
+            {
+                player.EvaluateHandOnFlop();
+            }
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
-            EvaluateHandOnTurn();
+            foreach (PokerPlayer player in players) 
+            {
+                player.EvaluateHandOnTurn();
+            }
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
-            EvaluateHandOnRiver();
+            foreach (PokerPlayer player in players) 
+            {
+                player.EvaluateHandOnRiver();
+            }
         }
         if (Input.GetKeyDown(KeyCode.T))
         {
-            EvaluatePlayersAtShowdown();
+            EvaluatePlayersOnShowdown();
         }
         if (Input.GetKeyDown(KeyCode.Y))
         {
@@ -88,60 +99,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void EvaluateHandPreFlop()
-    {
-        TableCards.gameState = GameState.PreFlop;
-        for (int i = 0; i < players.Count; i++)
-        {
-            List<CardType> sortedCards = TableCards.instance.EvaluatePlayerPreFlop(players[i].SeatPos);
-            HandEvaluator playerHand = new HandEvaluator(sortedCards);
-            playerHand.EvaluateHandAtPreFlop();
-            players[i].Hand = playerHand;
-            Debug.Log("player" + players[i].SeatPos + " has " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
-        }
-    }
-
-    public void EvaluateHandOnFlop()
-    {
-        TableCards.gameState = GameState.Flop;
-        for (int i = 0; i < players.Count; i++)
-        {
-            List<CardType> sortedCards = TableCards.instance.EvaluatePlayerAtFlop(players[i].SeatPos);
-            HandEvaluator playerHand = new HandEvaluator(sortedCards);
-            playerHand.EvaluateHandAtFlop();
-            players[i].Hand = playerHand;
-            Debug.Log("player" + players[i].SeatPos + " has " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
-        }
-    }
-
-    public void EvaluateHandOnTurn()
-    {
-        TableCards.gameState = GameState.Turn;
-        for (int i = 0; i < players.Count; i++)
-        {
-            List<CardType> sortedCards = TableCards.instance.EvaluatePlayerAtTurn(players[i].SeatPos);
-            HandEvaluator playerHand = new HandEvaluator(sortedCards);
-            playerHand.EvaluateHandAtTurn();
-            players[i].Hand = playerHand;
-            Debug.Log("player" + players[i].SeatPos + " has " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
-        }
-    }
-
-    public void EvaluateHandOnRiver()
-    {
-        TableCards.gameState = GameState.River;
-        for (int i = 0; i < players.Count; i++)
-        {
-            List<CardType> sortedCards = TableCards.instance.EvaluatePlayerAtRiver(players[i].SeatPos);
-            HandEvaluator playerHand = new HandEvaluator(sortedCards);
-            playerHand.EvaluateHandAtRiver();
-            players[i].Hand = playerHand;
-            Debug.Log("player" + players[i].SeatPos + " has " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
-        }
-
-    }
-
-    public void EvaluatePlayersAtShowdown()
+    public void EvaluatePlayersOnShowdown()
     {
         List<PokerPlayer> sortedPlayers = new List<PokerPlayer>(players.OrderByDescending(bestHand => bestHand.Hand.HandValues.PokerHand).ThenByDescending(bestHand => bestHand.Hand.HandValues.Total).ThenByDescending(bestHand => bestHand.Hand.HandValues.HighCard));
         sortedPlayers[0].PlayerState = PlayerState.Winner;

@@ -12,6 +12,7 @@ public class LogObjects : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+
     }
 
     // Update is called once per frame
@@ -177,9 +178,85 @@ public class LogObjects : MonoBehaviour
 
         }
         #endregion
-        if(other.gameObject.tag == "Chip")
+        #region Logging the Chip for each Space
+        if (other.gameObject.tag == "Chip")
         {
+            if(gameObject.name == "Player0") 
+            {
+                if(other.GetComponent<Chip>().chipStack == null)
+                {
+                    TableCards.instance.AddChipTo(Destination.player0, other.GetComponent<Chip>());
+                }
+                else if(other.GetComponent<Chip>().chipStack != null)
+                {
+                    foreach(Chip chip in other.GetComponent<Chip>().chipStack.chips)
+                    {
+                        TableCards.instance.AddChipTo(Destination.player0, chip);
+                    }
+                }
 
+            }
+            else if (gameObject.name == "Player1")
+            {
+                if (other.GetComponent<Chip>().chipStack == null)
+                {
+                    TableCards.instance.AddChipTo(Destination.player1, other.GetComponent<Chip>());
+                }
+                else if (other.GetComponent<Chip>().chipStack != null)
+                {
+                    foreach (Chip chip in other.GetComponent<Chip>().chipStack.chips)
+                    {
+                        TableCards.instance.AddChipTo(Destination.player1, chip);
+                    }
+                }
+
+            }
+            else if (gameObject.name == "Player2")
+            {
+                if (other.GetComponent<Chip>().chipStack == null)
+                {
+                    TableCards.instance.AddChipTo(Destination.player2, other.GetComponent<Chip>());
+                }
+                else if (other.GetComponent<Chip>().chipStack != null)
+                {
+                    foreach (Chip chip in other.GetComponent<Chip>().chipStack.chips)
+                    {
+                        TableCards.instance.AddChipTo(Destination.player2, chip);
+                    }
+                }
+
+            }
+            else if (gameObject.name == "Player3")
+            {
+                if (other.GetComponent<Chip>().chipStack == null)
+                {
+                    TableCards.instance.AddChipTo(Destination.player3, other.GetComponent<Chip>());
+                }
+                else if (other.GetComponent<Chip>().chipStack != null)
+                {
+                    foreach (Chip chip in other.GetComponent<Chip>().chipStack.chips)
+                    {
+                        TableCards.instance.AddChipTo(Destination.player3, chip);
+                    }
+                }
+
+            }
+            else if (gameObject.name == "Player4")
+            {
+                if (other.GetComponent<Chip>().chipStack == null)
+                {
+                    TableCards.instance.AddChipTo(Destination.player4, other.GetComponent<Chip>());
+                }
+                else if (other.GetComponent<Chip>().chipStack != null)
+                {
+                    foreach (Chip chip in other.GetComponent<Chip>().chipStack.chips)
+                    {
+                        TableCards.instance.AddChipTo(Destination.player4, chip);
+                    }
+                }
+
+            }
         }
+        #endregion
     }
 }

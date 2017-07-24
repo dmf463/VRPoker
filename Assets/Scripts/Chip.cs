@@ -80,13 +80,13 @@ public class Chip : InteractionSuperClass {
         yield return new WaitForSeconds(time);
         canBeGrabbed = true;
         regrabCoroutineActive = false;
-        Debug.Log("coroutine finished at time " + Time.time);
+        //Debug.Log("coroutine finished at time " + Time.time);
     }
 
 
     void OnCollisionEnter(Collision other)
     {
-        Debug.Log("hitting " + other.gameObject.name);
+        //Debug.Log("hitting " + other.gameObject.name);
         if (other.gameObject.tag == "Chip" && other.gameObject.GetComponent<Chip>().chipStack == null)
         {
             isTouchingChip = true;
@@ -117,7 +117,7 @@ public class Chip : InteractionSuperClass {
     {
         if(isTouchingChip && incomingChip.canBeGrabbed)
         {
-            Debug.Log("adding " + incomingChip.gameObject.name);
+            //Debug.Log("adding " + incomingChip.gameObject.name);
             chipStack.AddToStack(incomingChip);
             isTouchingChip = false;
         }

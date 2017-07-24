@@ -20,7 +20,7 @@ public class ChipStack {
 
     public void AddToStack(Chip chip)
     {
-        Debug.Log("trying to destroy " + chip.gameObject.name);
+        //Debug.Log("trying to destroy " + chip.gameObject.name);
         int chipValue = chip.chipValue;
         GameObject.Destroy(chip.gameObject);
         GameObject newChip = null;
