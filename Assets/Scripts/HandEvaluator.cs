@@ -49,7 +49,7 @@ public class HandEvaluator {
         get { return incomingCards; }
         set
         {
-            GameState _gameState = TableCards.gameState;
+            GameState _gameState = Table.gameState;
             if(_gameState == GameState.PreFlop)
             {
                 incomingCards[0] = value[0];

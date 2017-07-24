@@ -62,7 +62,7 @@ public class Card : InteractionSuperClass {
 
         if(throwingHand.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_Grip))
         {
-            TableCards.dealerState = DealerState.ShufflingState;
+            Table.dealerState = DealerState.ShufflingState;
         }
 
         if (transform.eulerAngles.x > 89 && transform.eulerAngles.x < 92) cardFacingUp = true;
@@ -137,7 +137,7 @@ public class Card : InteractionSuperClass {
         newCardDeck = Instantiate(Services.PrefabDB.CardDeck, playerHand.transform.position, Quaternion.identity) as GameObject;
         deckIsEmpty = false;
         deckHand.AttachObject(newCardDeck);
-        TableCards.dealerState = DealerState.DealingState;
+        Table.dealerState = DealerState.DealingState;
     }
 
     public void ThrewSingleCardBadPhysics()
@@ -180,7 +180,7 @@ public class Card : InteractionSuperClass {
             gameObject.GetComponent<ConstantForce>().enabled = false;
             cardThrownWrong = false;
         }
-        if(TableCards.dealerState == DealerState.ShufflingState)
+        if(Table.dealerState == DealerState.ShufflingState)
         {
             if (other.gameObject.tag == "PlayingCard")
             {
@@ -208,7 +208,7 @@ public class Card : InteractionSuperClass {
 
     void OnTriggerStay(Collider other)
     {
-        if (TableCards.dealerState == DealerState.ShufflingState)
+        if (Table.dealerState == DealerState.ShufflingState)
         {
             if (other.gameObject.tag == "Hand" && cardOnTable == true)
             {
@@ -219,7 +219,7 @@ public class Card : InteractionSuperClass {
 
     public override void OnTriggerEnterX(Collider other)
     {
-        if (TableCards.dealerState == DealerState.ShufflingState)
+        if (Table.dealerState == DealerState.ShufflingState)
         {
             if (other.gameObject.tag == "Hand" && cardOnTable == true)
             {
@@ -242,7 +242,7 @@ public class Card : InteractionSuperClass {
 
     public override void OnAttachedToHand(Hand attachedHand)
     {
-        if(TableCards.dealerState == DealerState.DealingState)
+        if(Table.dealerState == DealerState.DealingState)
         {
             if (cardFacingUp == false)
             {
@@ -267,7 +267,7 @@ public class Card : InteractionSuperClass {
 
     public override void OnDetachedFromHand(Hand hand)
     {
-        if(TableCards.dealerState == DealerState.DealingState)
+        if(Table.dealerState == DealerState.DealingState)
         {
             if (rb.transform.rotation.eulerAngles.x > 290 || rb.transform.rotation.eulerAngles.x < 250 && cardIsFlipped == false)
             {

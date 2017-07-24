@@ -29,76 +29,76 @@ public class LogObjects : MonoBehaviour
         {
             if (this.gameObject.name == "Player0")
             {
-                if(TableCards.dealerState == DealerState.DealingState)
+                if(Table.dealerState == DealerState.DealingState)
                 {
-                    if (TableCards.instance._player0.Contains(other.GetComponent<Card>().cardType))
+                    if (Table.instance._player0.Contains(other.GetComponent<Card>().cardType))
                     {
                         Debug.Log(other.gameObject.name + " is already in play");
                     }
-                    else if (TableCards.instance._player0.Count == 2)
+                    else if (Table.instance._player0.Count == 2)
                     {
                         Debug.Log(other.gameObject.name + "cannot be added to the board");
                     }
                     else
                     {
-                        TableCards.instance.AddCardTo(Destination.player0, other.GetComponent<Card>().cardType);
+                        Table.instance.AddCardTo(Destination.player0, other.GetComponent<Card>().cardType);
                         Debug.Log("Card went into " + this.gameObject.name);
                     }
                 }
             }
             else if (this.gameObject.name == "Player1")
             {
-                if(TableCards.dealerState == DealerState.DealingState)
+                if(Table.dealerState == DealerState.DealingState)
                 {
-                    if (TableCards.instance._player1.Contains(other.GetComponent<Card>().cardType))
+                    if (Table.instance._player1.Contains(other.GetComponent<Card>().cardType))
                     {
                         Debug.Log(other.gameObject.name + " is already in play");
                     }
-                    else if (TableCards.instance._player1.Count == 2)
+                    else if (Table.instance._player1.Count == 2)
                     {
                         Debug.Log(other.gameObject.name + "cannot be added to the board");
                     }
                     else
                     {
-                        TableCards.instance.AddCardTo(Destination.player1, other.GetComponent<Card>().cardType);
+                        Table.instance.AddCardTo(Destination.player1, other.GetComponent<Card>().cardType);
                         Debug.Log("Card went into " + this.gameObject.name);
                     }
                 }
             }
             else if (this.gameObject.name == "Player2")
             {
-                if(TableCards.dealerState == DealerState.DealingState)
+                if(Table.dealerState == DealerState.DealingState)
                 {
-                    if (TableCards.instance._player2.Contains(other.GetComponent<Card>().cardType))
+                    if (Table.instance._player2.Contains(other.GetComponent<Card>().cardType))
                     {
                         Debug.Log(other.gameObject.name + " is already in play");
                     }
-                    else if (TableCards.instance._player2.Count == 2)
+                    else if (Table.instance._player2.Count == 2)
                     {
                         Debug.Log(other.gameObject.name + "cannot be added to the board");
                     }
                     else
                     {
-                        TableCards.instance.AddCardTo(Destination.player2, other.GetComponent<Card>().cardType);
+                        Table.instance.AddCardTo(Destination.player2, other.GetComponent<Card>().cardType);
                         Debug.Log("Card went into " + this.gameObject.name);
                     }
                 }
             }
             else if (this.gameObject.name == "Player3")
             {
-                if(TableCards.dealerState == DealerState.DealingState)
+                if(Table.dealerState == DealerState.DealingState)
                 {
-                    if (TableCards.instance._player3.Contains(other.GetComponent<Card>().cardType))
+                    if (Table.instance._player3.Contains(other.GetComponent<Card>().cardType))
                     {
                         Debug.Log(other.gameObject.name + " is already in play");
                     }
-                    else if (TableCards.instance._player3.Count == 2)
+                    else if (Table.instance._player3.Count == 2)
                     {
                         Debug.Log(other.gameObject.name + "cannot be added to the board");
                     }
                     else
                     {
-                        TableCards.instance.AddCardTo(Destination.player3, other.GetComponent<Card>().cardType);
+                        Table.instance.AddCardTo(Destination.player3, other.GetComponent<Card>().cardType);
                         Debug.Log("Card went into " + this.gameObject.name);
                     }
                 }
@@ -106,19 +106,19 @@ public class LogObjects : MonoBehaviour
             }
             else if (this.gameObject.name == "Player4") 
                 {
-                if (TableCards.dealerState == DealerState.DealingState) 
+                if (Table.dealerState == DealerState.DealingState) 
                 {
-                    if (TableCards.instance._player4.Contains(other.GetComponent<Card>().cardType)) 
+                    if (Table.instance._player4.Contains(other.GetComponent<Card>().cardType)) 
                     {
                         Debug.Log(other.gameObject.name + " is already in play");
                     }
-                    else if (TableCards.instance._player4.Count == 2) 
+                    else if (Table.instance._player4.Count == 2) 
                     {
                         Debug.Log(other.gameObject.name + "cannot be added to the board");
                     }
                     else 
                     {
-                        TableCards.instance.AddCardTo(Destination.player4, other.GetComponent<Card>().cardType);
+                        Table.instance.AddCardTo(Destination.player4, other.GetComponent<Card>().cardType);
                         Debug.Log("Card went into " + this.gameObject.name);
                     }
                 }
@@ -126,19 +126,19 @@ public class LogObjects : MonoBehaviour
             }
             else if (this.gameObject.name == "TheBoard")
             {
-                if(TableCards.dealerState == DealerState.DealingState)
+                if(Table.dealerState == DealerState.DealingState)
                 {
-                    if (TableCards.instance._board.Contains(other.GetComponent<Card>().cardType))
+                    if (Table.instance._board.Contains(other.GetComponent<Card>().cardType))
                     {
                         Debug.Log(other.gameObject.name + " is already in play");
                     }
-                    else if(TableCards.instance._board.Count == 5)
+                    else if(Table.instance._board.Count == 5)
                     {
                         Debug.Log(other.gameObject.name + "cannot be added to the board");
                     }
                     else
                     {
-                        TableCards.instance.AddCardTo(Destination.board, other.GetComponent<Card>().cardType);
+                        Table.instance.AddCardTo(Destination.board, other.GetComponent<Card>().cardType);
                         Debug.Log("Card went into " + this.gameObject.name);
                     }
                 }
@@ -146,7 +146,7 @@ public class LogObjects : MonoBehaviour
             }
             else if (this.gameObject.name == "BurnCards")
             {
-                TableCards.instance.AddCardTo(Destination.burn, other.GetComponent<Card>().cardType);
+                Table.instance.AddCardTo(Destination.burn, other.GetComponent<Card>().cardType);
                 Debug.Log("Card went into " + this.gameObject.name);
             }
             else if(this.gameObject.name == "ShufflingArea")
@@ -158,7 +158,7 @@ public class LogObjects : MonoBehaviour
                     newCardDeck.GetComponent<CardDeckScript>().BuildDeckFromOneCard(newCardDeck);
                     madeNewDeck = true;
                 }
-                if (TableCards.dealerState == DealerState.ShufflingState && madeNewDeck == true)
+                if (Table.dealerState == DealerState.ShufflingState && madeNewDeck == true)
                 {
                     Destroy(other.gameObject);
                     Debug.Log("destroying cards");
@@ -171,7 +171,7 @@ public class LogObjects : MonoBehaviour
                         {
                             Destroy(card);
                         }
-                        TableCards.dealerState = DealerState.DealingState;
+                        Table.dealerState = DealerState.DealingState;
                     }
                 }
             }
@@ -185,13 +185,13 @@ public class LogObjects : MonoBehaviour
             {
                 if(other.GetComponent<Chip>().chipStack == null)
                 {
-                    TableCards.instance.AddChipTo(Destination.player0, other.GetComponent<Chip>());
+                    Table.instance.AddChipTo(Destination.player0, other.GetComponent<Chip>());
                 }
                 else if(other.GetComponent<Chip>().chipStack != null)
                 {
                     foreach(Chip chip in other.GetComponent<Chip>().chipStack.chips)
                     {
-                        TableCards.instance.AddChipTo(Destination.player0, chip);
+                        Table.instance.AddChipTo(Destination.player0, chip);
                     }
                 }
 
@@ -200,13 +200,13 @@ public class LogObjects : MonoBehaviour
             {
                 if (other.GetComponent<Chip>().chipStack == null)
                 {
-                    TableCards.instance.AddChipTo(Destination.player1, other.GetComponent<Chip>());
+                    Table.instance.AddChipTo(Destination.player1, other.GetComponent<Chip>());
                 }
                 else if (other.GetComponent<Chip>().chipStack != null)
                 {
                     foreach (Chip chip in other.GetComponent<Chip>().chipStack.chips)
                     {
-                        TableCards.instance.AddChipTo(Destination.player1, chip);
+                        Table.instance.AddChipTo(Destination.player1, chip);
                     }
                 }
 
@@ -215,13 +215,13 @@ public class LogObjects : MonoBehaviour
             {
                 if (other.GetComponent<Chip>().chipStack == null)
                 {
-                    TableCards.instance.AddChipTo(Destination.player2, other.GetComponent<Chip>());
+                    Table.instance.AddChipTo(Destination.player2, other.GetComponent<Chip>());
                 }
                 else if (other.GetComponent<Chip>().chipStack != null)
                 {
                     foreach (Chip chip in other.GetComponent<Chip>().chipStack.chips)
                     {
-                        TableCards.instance.AddChipTo(Destination.player2, chip);
+                        Table.instance.AddChipTo(Destination.player2, chip);
                     }
                 }
 
@@ -230,13 +230,13 @@ public class LogObjects : MonoBehaviour
             {
                 if (other.GetComponent<Chip>().chipStack == null)
                 {
-                    TableCards.instance.AddChipTo(Destination.player3, other.GetComponent<Chip>());
+                    Table.instance.AddChipTo(Destination.player3, other.GetComponent<Chip>());
                 }
                 else if (other.GetComponent<Chip>().chipStack != null)
                 {
                     foreach (Chip chip in other.GetComponent<Chip>().chipStack.chips)
                     {
-                        TableCards.instance.AddChipTo(Destination.player3, chip);
+                        Table.instance.AddChipTo(Destination.player3, chip);
                     }
                 }
 
@@ -245,13 +245,13 @@ public class LogObjects : MonoBehaviour
             {
                 if (other.GetComponent<Chip>().chipStack == null)
                 {
-                    TableCards.instance.AddChipTo(Destination.player4, other.GetComponent<Chip>());
+                    Table.instance.AddChipTo(Destination.player4, other.GetComponent<Chip>());
                 }
                 else if (other.GetComponent<Chip>().chipStack != null)
                 {
                     foreach (Chip chip in other.GetComponent<Chip>().chipStack.chips)
                     {
-                        TableCards.instance.AddChipTo(Destination.player4, chip);
+                        Table.instance.AddChipTo(Destination.player4, chip);
                     }
                 }
 

@@ -56,7 +56,7 @@ public class CardDeckScript : InteractionSuperClass {
 
     void OnCollisionEnter(Collision other)
     {
-        if(TableCards.dealerState == DealerState.ShufflingState)
+        if(Table.dealerState == DealerState.ShufflingState)
         {
             if(other.gameObject.tag == "PlayingCard")
             {
@@ -71,7 +71,7 @@ public class CardDeckScript : InteractionSuperClass {
                     Destroy(card);
                 }
                 RefillCardDeck();
-                TableCards.dealerState = DealerState.DealingState;
+                Table.dealerState = DealerState.DealingState;
             }
         }
     }
@@ -119,7 +119,7 @@ public class CardDeckScript : InteractionSuperClass {
                 hand.HoverUnlock(interactableObject);
                 Destroy(cardDeck);
                 Debug.Log("Destroyed Deck");
-                TableCards.dealerState = DealerState.ShufflingState;
+                Table.dealerState = DealerState.ShufflingState;
             }
         }
     }
@@ -167,7 +167,7 @@ public class CardDeckScript : InteractionSuperClass {
     public void RefillCardDeck()
     {
         cardsInDeck.Clear();
-        TableCards.instance.NewHand();
+        Table.instance.NewHand();
         SuitType[] suits = new SuitType[4]
         {
             SuitType.Spades,
@@ -203,7 +203,7 @@ public class CardDeckScript : InteractionSuperClass {
 
     public void PopulateCardDeck()
     {
-        TableCards.instance.NewHand();
+        Table.instance.NewHand();
         cardsInDeck = new List<CardType>();
         SuitType[] suits = new SuitType[4] 
         {
@@ -290,7 +290,7 @@ public class CardDeckScript : InteractionSuperClass {
     {
         yield return new WaitForSeconds(time);
         Destroy(cardDeck);
-        TableCards.dealerState = DealerState.ShufflingState;
+        Table.dealerState = DealerState.ShufflingState;
     }
 
 }

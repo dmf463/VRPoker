@@ -7,15 +7,15 @@ public enum Destination { player0, player1, player2, player3, player4, board, bu
 public enum DealerState { DealingState, ShufflingState };
 public enum GameState { PreFlop, Flop, Turn, River, ShowDown }
 
-public class TableCards {
+public class Table {
     
-    private static TableCards _instance;
-    public static TableCards instance
+    private static Table _instance;
+    public static Table instance
     {
         get
         {
             if (_instance == null)
-                _instance = new TableCards();
+                _instance = new Table();
             return _instance;
         }
     }

@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            TableCards.instance.DebugHands();
+            Table.instance.DebugHands();
         }
         if (Input.GetKeyDown(KeyCode.Q))
         {
