@@ -26,7 +26,7 @@ public class LogObjects : MonoBehaviour
         #region Logging the PlayingCard for each space
         if (other.gameObject.tag == "PlayingCard")
         {
-            if (this.gameObject.name == "TestSpace1")
+            if (this.gameObject.name == "Player0")
             {
                 if(TableCards.dealerState == DealerState.DealingState)
                 {
@@ -45,7 +45,7 @@ public class LogObjects : MonoBehaviour
                     }
                 }
             }
-            else if (this.gameObject.name == "TestSpace2")
+            else if (this.gameObject.name == "Player1")
             {
                 if(TableCards.dealerState == DealerState.DealingState)
                 {
@@ -64,7 +64,7 @@ public class LogObjects : MonoBehaviour
                     }
                 }
             }
-            else if (this.gameObject.name == "TestSpace3")
+            else if (this.gameObject.name == "Player2")
             {
                 if(TableCards.dealerState == DealerState.DealingState)
                 {
@@ -83,7 +83,7 @@ public class LogObjects : MonoBehaviour
                     }
                 }
             }
-            else if (this.gameObject.name == "TestSpace4")
+            else if (this.gameObject.name == "Player3")
             {
                 if(TableCards.dealerState == DealerState.DealingState)
                 {
@@ -98,6 +98,26 @@ public class LogObjects : MonoBehaviour
                     else
                     {
                         TableCards.instance.AddCardTo(Destination.player3, other.GetComponent<Card>().cardType);
+                        Debug.Log("Card went into " + this.gameObject.name);
+                    }
+                }
+
+            }
+            else if (this.gameObject.name == "Player4") 
+                {
+                if (TableCards.dealerState == DealerState.DealingState) 
+                {
+                    if (TableCards.instance._player4.Contains(other.GetComponent<Card>().cardType)) 
+                    {
+                        Debug.Log(other.gameObject.name + " is already in play");
+                    }
+                    else if (TableCards.instance._player4.Count == 2) 
+                    {
+                        Debug.Log(other.gameObject.name + "cannot be added to the board");
+                    }
+                    else 
+                    {
+                        TableCards.instance.AddCardTo(Destination.player4, other.GetComponent<Card>().cardType);
                         Debug.Log("Card went into " + this.gameObject.name);
                     }
                 }

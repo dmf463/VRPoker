@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     PokerPlayer player1;
     PokerPlayer player2;
     PokerPlayer player3;
+    PokerPlayer player4;
 
     void Awake()
     {
@@ -34,6 +35,7 @@ public class GameManager : MonoBehaviour
         players.Add(player1);
         players.Add(player2);
         players.Add(player3);
+        players.Add(player4);
 
         InitializePlayers();
 
@@ -158,6 +160,14 @@ public class GameManager : MonoBehaviour
                     {
                         PlayerRank[PlayerRank.Count - 1].Add(sortedPlayers[i]);
                     }
+                    else 
+                    {
+                        PlayerRank.Add(new List<PokerPlayer>() { sortedPlayers[i] });
+                    }
+                }
+                else 
+                {
+                    PlayerRank.Add(new List<PokerPlayer>() { sortedPlayers[i] });
                 }
                 
             }
