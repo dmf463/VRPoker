@@ -269,6 +269,8 @@ public class Card : InteractionSuperClass {
     {
         if(Table.dealerState == DealerState.DealingState)
         {
+            //BUG ALERT: THERE IS A BUG HERE, IF THE CARD IS DEALT/PULLED AT THE WRONG ANGLE, AND THEN 
+            //DETACHED IT FREEZES IN THE AIR
             if (rb.transform.rotation.eulerAngles.x > 290 || rb.transform.rotation.eulerAngles.x < 250 && cardIsFlipped == false)
             {
                 //Debug.Log(this.gameObject.name + " card is facing the wrong way");

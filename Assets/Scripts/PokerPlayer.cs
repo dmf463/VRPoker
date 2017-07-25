@@ -67,5 +67,10 @@ public class PokerPlayer {
         Debug.Log("player" + SeatPos + " has " + Hand.HandValues.PokerHand + " with a highCard of " + Hand.HandValues.HighCard + " and a handTotal of " + Hand.HandValues.Total + " a chipCount of " + ChipCount);
     }
 
+    public void FlipCards()
+    {
+
+    }
+
 }
 

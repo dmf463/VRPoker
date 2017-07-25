@@ -30,6 +30,8 @@ public class Chip : InteractionSuperClass {
     public bool canBeGrabbed;
     private bool regrabCoroutineActive;
     public ChipStack chipStack;
+    [HideInInspector]
+    public bool inAStack;
     const float MAGNITUDE_THRESHOLD = 1;
 
     // Use this for initialization
@@ -165,6 +167,7 @@ public class Chip : InteractionSuperClass {
         if(chipStack == null)
         {
             chipStack = new ChipStack(this);
+            inAStack = true;
         }
         base.OnAttachedToHand(attachedHand);
     }
@@ -188,6 +191,7 @@ public class Chip : InteractionSuperClass {
             {
                 chip.gameObject.AddComponent<Rigidbody>();
                 chip.gameObject.transform.parent = null;
+                chip.inAStack = false;
                 chip.gameObject.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity() * FORCE_MULTIPLIER, ForceMode.Impulse);
                 chip.gameObject.GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);
                 if (chip.chipStack != null)
