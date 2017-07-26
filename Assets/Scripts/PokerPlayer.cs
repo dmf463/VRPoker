@@ -75,7 +75,7 @@ public class PokerPlayer {
             if (cardsInHand[i].GetComponent<Card>().cardIsFlipped == false)
             {
                 Physics.IgnoreCollision(cardsInHand[0].gameObject.GetComponent<Collider>(), cardsInHand[1].gameObject.GetComponent<Collider>());
-                Services.GameManager.StartCoroutine(FlipTime(.5f, cardsInHand[i], (GameObject.Find("TheBoard").transform.position + cardsInHand[i].transform.position) / 2));
+                Services.GameManager.StartCoroutine(FlipTime(.5f, cardsInHand[i], (GameObject.Find("TheBoard").transform.position + cardsInHand[i].transform.position) / 2, SeatPos));
             }
             Services.GameManager.StartCoroutine(WaitForReposition(.5f, .5f, cardsInHand[0], cardsInHand[1], SeatPos));
         }
@@ -118,7 +118,7 @@ public class PokerPlayer {
                     while (timeElapsed < duration)
                     {
                         timeElapsed += Time.deltaTime;
-                        card1.transform.position = Vector3.Lerp(card1Pos, new Vector3(card2Pos.z, card2Pos.y, card2Pos.z + unitsToMove), timeElapsed / duration);
+                        card1.transform.position = Vector3.Lerp(card1Pos, new Vector3(card2Pos.x, card2Pos.y, card2Pos.z + unitsToMove), timeElapsed / duration);
                         yield return null;
                     }
                 }
@@ -142,7 +142,7 @@ public class PokerPlayer {
         Services.GameManager.StartCoroutine(RepositionCardsForReadability(duration, card1, card2, seatPos));
     }
 
-    IEnumerator FlipTime(float duration, GameObject card, Vector3 targetPos)
+    IEnumerator FlipTime(float duration, GameObject card, Vector3 targetPos, int seatPos)
     {
         float timeElapsed = 0;
         Vector3 initialPos = card.transform.position;
@@ -151,7 +151,7 @@ public class PokerPlayer {
         while (timeElapsed < duration)
         {
             timeElapsed += Time.deltaTime;
-            card.transform.rotation = Quaternion.Lerp(initialRot, Quaternion.Euler(90, targetYRot, initialRot.eulerAngles.z), timeElapsed / duration );
+            card.transform.rotation = Quaternion.Lerp(initialRot, Quaternion.Euler(90, targetYRot, initialRot.eulerAngles.z), timeElapsed / duration);
             card.transform.position = Vector3.Lerp(initialPos, targetPos, timeElapsed / duration);
             yield return null;
         }
