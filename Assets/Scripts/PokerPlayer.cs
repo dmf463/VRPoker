@@ -13,7 +13,7 @@ public enum PlayerState { Playing, NoHand, Winner, Loser}
  * AND ALSO
  * B) remove the chips equal to that value from the tableList
  * 
- * */
+ */
 
 public class PokerPlayer {
 
@@ -81,6 +81,27 @@ public class PokerPlayer {
         }
     }
 
+    IEnumerator FlipTime(float duration, GameObject card, Vector3 targetPos, int seatPos)
+    {
+        float timeElapsed = 0;
+        Vector3 initialPos = card.transform.position;
+        Quaternion initialRot = card.transform.rotation;
+        float targetYRot = Mathf.Atan2(targetPos.x - initialPos.x, targetPos.z - initialPos.z) * Mathf.Rad2Deg;
+        while (timeElapsed < duration)
+        {
+            timeElapsed += Time.deltaTime;
+            card.transform.rotation = Quaternion.Lerp(initialRot, Quaternion.Euler(90, targetYRot, initialRot.eulerAngles.z), timeElapsed / duration);
+            card.transform.position = Vector3.Lerp(initialPos, targetPos, timeElapsed / duration);
+            yield return null;
+        }
+    }
+
+    IEnumerator WaitForReposition(float time, float duration, GameObject card1, GameObject card2, int seatPos)
+    {
+        yield return new WaitForSeconds(time);
+        Services.GameManager.StartCoroutine(RepositionCardsForReadability(duration, card1, card2, seatPos));
+    }
+
     IEnumerator RepositionCardsForReadability(float duration, GameObject card1, GameObject card2, int seatPos)
     {
         float timeElapsed = 0;
@@ -134,27 +155,6 @@ public class PokerPlayer {
             }
         }
 
-    }
-
-    IEnumerator WaitForReposition(float time, float duration, GameObject card1, GameObject card2, int seatPos)
-    {
-        yield return new WaitForSeconds(time);
-        Services.GameManager.StartCoroutine(RepositionCardsForReadability(duration, card1, card2, seatPos));
-    }
-
-    IEnumerator FlipTime(float duration, GameObject card, Vector3 targetPos, int seatPos)
-    {
-        float timeElapsed = 0;
-        Vector3 initialPos = card.transform.position;
-        Quaternion initialRot = card.transform.rotation;
-        float targetYRot = Mathf.Atan2(targetPos.x - initialPos.x, targetPos.z - initialPos.z) * Mathf.Rad2Deg;
-        while (timeElapsed < duration)
-        {
-            timeElapsed += Time.deltaTime;
-            card.transform.rotation = Quaternion.Lerp(initialRot, Quaternion.Euler(90, targetYRot, initialRot.eulerAngles.z), timeElapsed / duration);
-            card.transform.position = Vector3.Lerp(initialPos, targetPos, timeElapsed / duration);
-            yield return null;
-        }
     }
 
 }

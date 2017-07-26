@@ -11,18 +11,15 @@ public class GameManager : MonoBehaviour
     public float cardsDealt;
     public List<PokerPlayer> players = new List<PokerPlayer>();
 
-    //keep track of where we are in the game
-    //private bool flopDealt = false;
-    //private bool turnDealt = false;
-    //private bool riverDealt = false;
-    //private bool readyToEvalute = false;
-    //private bool winnerDeclared = false;
     PokerPlayer player0;
     PokerPlayer player1;
     PokerPlayer player2;
     PokerPlayer player3;
     PokerPlayer player4;
 
+    private int numberOfWinners;
+    private int potAmountToGiveWinner;
+    private bool haveWinnersBeenPaid; 
     void Awake()
     {
         Services.PrefabDB = Resources.Load<PrefabDB>("Prefabs/PrefabDB");
@@ -46,6 +43,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        #region A bunch of keyboard commands assigned to QWERTY
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Table.instance.DebugHands();
@@ -86,6 +84,12 @@ public class GameManager : MonoBehaviour
         {
             ResetPlayerStatus();
         }
+        #endregion
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            Table.instance._potChips.Add(Services.PrefabDB.BlackChip100.GetComponent<Chip>());
+            Debug.Log("potSize = " + Table.instance.PotChips);
+        }
 
 
     }
@@ -102,6 +106,7 @@ public class GameManager : MonoBehaviour
 
     public void EvaluatePlayersOnShowdown()
     {
+        Table.gameState = GameState.ShowDown;
         List<PokerPlayer> sortedPlayers = new List<PokerPlayer>(players.OrderByDescending(bestHand => bestHand.Hand.HandValues.PokerHand).ThenByDescending(bestHand => bestHand.Hand.HandValues.Total).ThenByDescending(bestHand => bestHand.Hand.HandValues.HighCard));
         sortedPlayers[0].PlayerState = PlayerState.Winner;
         List<List<PokerPlayer>> PlayerRank = new List<List<PokerPlayer>>();
@@ -143,6 +148,8 @@ public class GameManager : MonoBehaviour
                 foreach (PokerPlayer player in PlayerRank[0])
                 {
                     player.PlayerState = PlayerState.Winner;
+                    player.ChipCount = Table.instance.GetChipStack(player.SeatPos);
+                    numberOfWinners++;
                 }
             }
             else
@@ -150,6 +157,7 @@ public class GameManager : MonoBehaviour
                 foreach (PokerPlayer player in PlayerRank[i])
                 {
                     player.PlayerState = PlayerState.Loser;
+                    player.ChipCount = Table.instance.GetChipStack(player.SeatPos);
                 }
             }
         }
@@ -161,7 +169,43 @@ public class GameManager : MonoBehaviour
         }
 
         sortedPlayers.Clear();
+        //StartCoroutine(WaitForWinnersToGetPaid());
     }
+
+    //IEnumerator WaitForWinnersToGetPaid()
+    //{
+    //    GivePlayersWinnings();
+    //    while (!haveWinnersBeenPaid)
+    //    {
+    //        yield return null;
+    //    }
+    //    if (haveWinnersBeenPaid)
+    //    {
+    //        Debug.Log("You gave the money to the right people! yay! let's play again!");
+    //    }
+
+    //}
+
+    //public void GivePlayersWinnings()
+    //{
+    //    int winnersPaid = 0;
+    //    potAmountToGiveWinner = Table.instance.PotChips / numberOfWinners;
+    //    foreach(PokerPlayer player in players)
+    //    {
+    //        int currentChipStack = Table.instance.GetChipStack(player.SeatPos);
+    //        if(player.PlayerState == PlayerState.Winner)
+    //        {
+    //            if ((player.ChipCount - currentChipStack) == potAmountToGiveWinner)
+    //            {
+    //                winnersPaid++;
+    //            }
+    //        }
+    //    }
+    //    if(winnersPaid == numberOfWinners)
+    //    {
+    //        haveWinnersBeenPaid = true;
+    //    }
+    //}
 
     public void ResetPlayerStatus()
     {

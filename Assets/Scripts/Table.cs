@@ -24,23 +24,56 @@ public class Table {
     public static DealerState dealerState;
 
     //Where the cards could possibly go
-    public List<Card> _board = new List<Card>();
-    public List<Card> _burn = new List<Card>();
-    public List<Card>[] playerCards = new List<Card>[5]
-    {
-        new List<Card>(), new List<Card>(), new List<Card>(), new List<Card>(), new List<Card>()
-    };
     public List<Destination> playerDestinations = new List<Destination>
     {
         Destination.player0, Destination.player1, Destination.player2, Destination.player3, Destination.player4
     };
-
+    public List<Card>[] playerCards = new List<Card>[5]
+    {
+        new List<Card>(), new List<Card>(), new List<Card>(), new List<Card>(), new List<Card>()
+    };
+    public List<Card> _board = new List<Card>();
+    public List<Card> _burn = new List<Card>();
+    //
     //where the chips could possibly go
     public List<Chip>[] playerChipStacks = new List<Chip>[5]
     {
         new List<Chip>(), new List<Chip>(), new List<Chip>(), new List<Chip>(), new List<Chip>()
     };
-    public List<Chip> _pot = new List<Chip>();
+    public List<Chip> _potChips = new List<Chip>();
+    public int PotChips { get { return potChips; } set { potChips = value; } }
+    private int potChips
+    {
+        get { return DeterminePotSize(); }
+        set { }
+    }
+
+
+
+    public void NewHand()
+    {
+        for (int i = 0; i < playerCards.Length; i++)
+        {
+            playerCards[i].Clear();
+        }
+        _board.Clear();
+        _burn.Clear();
+        Services.GameManager.ResetPlayerStatus();
+        gameState = GameState.PreFlop;
+    }
+
+    public int DeterminePotSize()
+    {
+        int potSize = 0;
+        for (int i = 0; i < _potChips.Count; i++)
+        {
+            potSize += _potChips[i].chipValue;
+        }
+        //For testing purposes, I'm currently setting the pot to always be 10
+        //since I don't actually have a pot.
+        //return potSize;
+        return 10;
+    }
 
     public int GetChipStack(int seatPos)
     {
@@ -96,17 +129,6 @@ public class Table {
         {
             _burn.Add(card);
         }
-    }
-
-    public void NewHand()
-    {
-        for (int i = 0; i < playerCards.Length; i++)
-        {
-            playerCards[i].Clear();
-        }
-        _board.Clear();
-        _burn.Clear();
-        gameState = GameState.PreFlop;
     }
 
     public List<CardType> EvaluatePlayerPreFlop(int seatPos)
