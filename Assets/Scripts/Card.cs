@@ -26,7 +26,7 @@ public class Card : InteractionSuperClass {
     Hand playerHand;
     GameObject newCardDeck;
     public bool cardThrownWrong;
-    bool cardIsFlipped;
+    public bool cardIsFlipped;
     GameObject cardDeck;
     CardDeckScript deckScript;
     bool cardFacingUp = false;

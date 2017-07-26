@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         Services.PrefabDB = Resources.Load<PrefabDB>("Prefabs/PrefabDB");
+        Services.GameManager = this;
     }
 
     // Use this for initialization
@@ -155,6 +156,7 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < players.Count; i++)
         {
+            players[i].FlipCards();
             Debug.Log("player" + players[i].SeatPos + "is the " + players[i].PlayerState + " with (a) " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
         }
 

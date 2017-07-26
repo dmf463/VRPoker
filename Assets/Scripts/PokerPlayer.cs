@@ -69,7 +69,29 @@ public class PokerPlayer {
 
     public void FlipCards()
     {
+        List<GameObject> cardsInHand = Table.instance.GetCardObjects(SeatPos);
+        for (int i = 0; i < cardsInHand.Count; i++)
+        {
+            if(cardsInHand[i].GetComponent<Card>().cardIsFlipped == false)
+            {
+                Services.GameManager.StartCoroutine(FlipTime(.5f, cardsInHand[i], (GameObject.Find("TheBoard").transform.position + cardsInHand[i].transform.position) / 2));
+            }
+        }
+    }
 
+    IEnumerator FlipTime(float duration, GameObject card, Vector3 targetPos)
+    {
+        float timeElapsed = 0;
+        Vector3 initialPos = card.transform.position;
+        Quaternion initialRot = card.transform.rotation;
+        float targetYRot = Mathf.Atan2(targetPos.x - initialPos.x, targetPos.z - initialPos.z) * Mathf.Rad2Deg;
+        while (timeElapsed < duration)
+        {
+            timeElapsed += Time.deltaTime;
+            card.transform.rotation = Quaternion.Lerp(initialRot, Quaternion.Euler(90, targetYRot, initialRot.eulerAngles.z), timeElapsed / duration );
+            card.transform.position = Vector3.Lerp(initialPos, targetPos, timeElapsed / duration);
+            yield return null;
+        }
     }
 
 }

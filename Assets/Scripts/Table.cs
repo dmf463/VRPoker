@@ -58,6 +58,16 @@ public class Table {
         return chipStack;
     }
 
+    public List<GameObject> GetCardObjects(int seatPos)
+    {
+        List<GameObject> cardsInHand = new List<GameObject>();
+        for (int i = 0; i < playerCards[i].Count; i++)
+        {
+            cardsInHand.Add(playerCards[seatPos][i].gameObject);
+        }
+        return cardsInHand;
+    }
+
     public void AddChipTo(Destination dest, Chip chip) 
     {
         for (int i = 0; i < playerDestinations.Count; i++)
