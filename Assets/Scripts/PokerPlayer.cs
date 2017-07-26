@@ -72,11 +72,74 @@ public class PokerPlayer {
         List<GameObject> cardsInHand = Table.instance.GetCardObjects(SeatPos);
         for (int i = 0; i < cardsInHand.Count; i++)
         {
-            if(cardsInHand[i].GetComponent<Card>().cardIsFlipped == false)
+            if (cardsInHand[i].GetComponent<Card>().cardIsFlipped == false)
             {
+                Physics.IgnoreCollision(cardsInHand[0].gameObject.GetComponent<Collider>(), cardsInHand[1].gameObject.GetComponent<Collider>());
                 Services.GameManager.StartCoroutine(FlipTime(.5f, cardsInHand[i], (GameObject.Find("TheBoard").transform.position + cardsInHand[i].transform.position) / 2));
             }
+            Services.GameManager.StartCoroutine(WaitForReposition(.5f, .5f, cardsInHand[0], cardsInHand[1], SeatPos));
         }
+    }
+
+    IEnumerator RepositionCardsForReadability(float duration, GameObject card1, GameObject card2, int seatPos)
+    {
+        float timeElapsed = 0;
+        float unitsToMove = 0.1f;
+        Vector3 card1Pos = card1.transform.position;
+        Vector3 card2Pos = card2.transform.position;
+        float distanceBetweenCards = Vector3.Distance(card1Pos, card2Pos);
+        if(distanceBetweenCards < 1)
+        {
+            if(seatPos != 2)
+            {
+                if (card1Pos.x - card2Pos.x > 0)
+                {
+                    while (timeElapsed < duration)
+                    {
+                        timeElapsed += Time.deltaTime;
+                        card1.transform.position = Vector3.Lerp(card1Pos, new Vector3(card2Pos.x + unitsToMove, card2Pos.y, card2Pos.z), timeElapsed / duration);
+                        yield return null;
+                    }
+                }
+                else if (card1Pos.x - card2Pos.x < 0)
+                {
+                    while (timeElapsed < duration)
+                    {
+                        timeElapsed += Time.deltaTime;
+                        card1.transform.position = Vector3.Lerp(card1Pos, new Vector3(card2Pos.x - unitsToMove, card2Pos.y, card2Pos.z), timeElapsed / duration);
+                        yield return null;
+                    }
+                }
+            }
+            else
+            {
+                if (card1Pos.z - card2Pos.z > 0)
+                {
+                    while (timeElapsed < duration)
+                    {
+                        timeElapsed += Time.deltaTime;
+                        card1.transform.position = Vector3.Lerp(card1Pos, new Vector3(card2Pos.z, card2Pos.y, card2Pos.z + unitsToMove), timeElapsed / duration);
+                        yield return null;
+                    }
+                }
+                else if (card1Pos.z - card2Pos.z < 0)
+                {
+                    while (timeElapsed < duration)
+                    {
+                        timeElapsed += Time.deltaTime;
+                        card1.transform.position = Vector3.Lerp(card1Pos, new Vector3(card2Pos.x, card2Pos.y, card2Pos.z - unitsToMove), timeElapsed / duration);
+                        yield return null;
+                    }
+                }
+            }
+        }
+
+    }
+
+    IEnumerator WaitForReposition(float time, float duration, GameObject card1, GameObject card2, int seatPos)
+    {
+        yield return new WaitForSeconds(time);
+        Services.GameManager.StartCoroutine(RepositionCardsForReadability(duration, card1, card2, seatPos));
     }
 
     IEnumerator FlipTime(float duration, GameObject card, Vector3 targetPos)
