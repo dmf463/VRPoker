@@ -70,7 +70,7 @@ public class Table {
             potSize += _potChips[i].chipValue;
         }
         //For testing purposes, I'm currently setting the pot to always be 10
-        //since I don't actually have a pot.
+        //since I don't actually have a live pot.
         //return potSize;
         return 10;
     }
@@ -78,15 +78,9 @@ public class Table {
     public int GetChipStack(int seatPos)
     {
         int chipStack = 0;
-        for (int i = 0; i < playerChipStacks.Length; i++)
+        for (int i = 0; i < playerChipStacks[seatPos].Count; i++)
         {
-            if(seatPos == i)
-            {
-                for (int j = 0; j < playerChipStacks[seatPos].Count; j++)
-                {
-                    chipStack += playerChipStacks[seatPos][j].chipValue;
-                }
-            }
+            chipStack += playerChipStacks[seatPos][i].chipValue;
         }
         return chipStack;
     }

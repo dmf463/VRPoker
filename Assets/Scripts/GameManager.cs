@@ -19,7 +19,9 @@ public class GameManager : MonoBehaviour
 
     private int numberOfWinners;
     private int potAmountToGiveWinner;
-    private bool haveWinnersBeenPaid; 
+    private bool winnersHaveBeenPaid;
+    [HideInInspector]
+    public int winnersPaid;
     void Awake()
     {
         Services.PrefabDB = Resources.Load<PrefabDB>("Prefabs/PrefabDB");
@@ -148,7 +150,6 @@ public class GameManager : MonoBehaviour
                 foreach (PokerPlayer player in PlayerRank[0])
                 {
                     player.PlayerState = PlayerState.Winner;
-                    player.ChipCount = Table.instance.GetChipStack(player.SeatPos);
                     numberOfWinners++;
                 }
             }
@@ -157,7 +158,6 @@ public class GameManager : MonoBehaviour
                 foreach (PokerPlayer player in PlayerRank[i])
                 {
                     player.PlayerState = PlayerState.Loser;
-                    player.ChipCount = Table.instance.GetChipStack(player.SeatPos);
                 }
             }
         }
@@ -169,49 +169,58 @@ public class GameManager : MonoBehaviour
         }
 
         sortedPlayers.Clear();
-        //StartCoroutine(WaitForWinnersToGetPaid());
+        StartCoroutine(WaitForWinnersToGetPaid());
     }
 
-    //IEnumerator WaitForWinnersToGetPaid()
-    //{
-    //    GivePlayersWinnings();
-    //    while (!haveWinnersBeenPaid)
-    //    {
-    //        yield return null;
-    //    }
-    //    if (haveWinnersBeenPaid)
-    //    {
-    //        Debug.Log("You gave the money to the right people! yay! let's play again!");
-    //    }
+    IEnumerator WaitForWinnersToGetPaid()
+    {
+        while (!winnersHaveBeenPaid)
+        {
+            GivePlayersWinnings();
+            Debug.Log("Winner is Waiting to be paid");
+            yield return null;
+        }
+        if (winnersHaveBeenPaid)
+        {
+            Debug.Log("You gave the money to the right people! yay! let's play again!");
+        }
 
-    //}
+    }
 
-    //public void GivePlayersWinnings()
-    //{
-    //    int winnersPaid = 0;
-    //    potAmountToGiveWinner = Table.instance.PotChips / numberOfWinners;
-    //    foreach(PokerPlayer player in players)
-    //    {
-    //        int currentChipStack = Table.instance.GetChipStack(player.SeatPos);
-    //        if(player.PlayerState == PlayerState.Winner)
-    //        {
-    //            if ((player.ChipCount - currentChipStack) == potAmountToGiveWinner)
-    //            {
-    //                winnersPaid++;
-    //            }
-    //        }
-    //    }
-    //    if(winnersPaid == numberOfWinners)
-    //    {
-    //        haveWinnersBeenPaid = true;
-    //    }
-    //}
+    public void GivePlayersWinnings()
+    {
+        potAmountToGiveWinner = Table.instance.PotChips / numberOfWinners;
+        int winnerChipStack = 0;    
+        foreach (PokerPlayer player in players)
+        {
+            if(player.PlayerState == PlayerState.Winner)
+            {
+                winnerChipStack = potAmountToGiveWinner;
+                Debug.Log("for player" + player.SeatPos + " the winnerChipStack = " + winnerChipStack + " and the Player has" + player.ChipCount);
+                if (player.ChipCount == winnerChipStack && player.HasBeenPaid == false)
+                {
+                    winnersPaid++;
+                    player.HasBeenPaid = true;
+                    Debug.Log("winnersPaid = " + winnersPaid);
+                    Debug.Log("player.HasBeenPaid = " + player.HasBeenPaid);
+                }
+            }
+        }
+        if (winnersPaid == numberOfWinners)
+        {
+            Debug.Log("winnersPaid == numberOfWinners");
+            winnersHaveBeenPaid = true;
+            winnersPaid = 0;
+            numberOfWinners = 0;
+        }
+    }
 
     public void ResetPlayerStatus()
     {
         for (int i = 0; i < players.Count; i++)
         {
             players[i].PlayerState = PlayerState.Playing;
+            players[i].HasBeenPaid = false;
         }
     }
 

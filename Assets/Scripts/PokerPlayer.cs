@@ -18,15 +18,19 @@ public enum PlayerState { Playing, NoHand, Winner, Loser}
 public class PokerPlayer {
 
     public int SeatPos { get; set; }
-    public int ChipCount { get; set; }
+    public int ChipCount { get { return chipCount; } set { value = chipCount; } }
+    private int chipCount
+    {
+        get { return Table.instance.GetChipStack(SeatPos); }
+        set { }
+    }
     public HandEvaluator Hand { get; set; }
     public PlayerState PlayerState { get; set; }
-
+    public bool HasBeenPaid;
 
     public void EvaluateHandPreFlop() 
     {
         Table.gameState = GameState.PreFlop;
-        ChipCount = Table.instance.GetChipStack(SeatPos);
         List<CardType> sortedCards = Table.instance.EvaluatePlayerPreFlop(SeatPos);
         HandEvaluator playerHand = new HandEvaluator(sortedCards);
         playerHand.EvaluateHandAtPreFlop();
@@ -37,7 +41,6 @@ public class PokerPlayer {
     public void EvaluateHandOnFlop() 
     {
         Table.gameState = GameState.Flop;
-        ChipCount = Table.instance.GetChipStack(SeatPos);
         List<CardType> sortedCards = Table.instance.EvaluatePlayerAtFlop(SeatPos);
         HandEvaluator playerHand = new HandEvaluator(sortedCards);
         playerHand.EvaluateHandAtFlop();
@@ -48,7 +51,6 @@ public class PokerPlayer {
     public void EvaluateHandOnTurn() 
     {
         Table.gameState = GameState.Turn;
-        ChipCount = Table.instance.GetChipStack(SeatPos);
         List<CardType> sortedCards = Table.instance.EvaluatePlayerAtTurn(SeatPos);
         HandEvaluator playerHand = new HandEvaluator(sortedCards);
         playerHand.EvaluateHandAtTurn();
@@ -59,7 +61,6 @@ public class PokerPlayer {
     public void EvaluateHandOnRiver() 
     {
         Table.gameState = GameState.River;
-        ChipCount = Table.instance.GetChipStack(SeatPos);
         List<CardType> sortedCards = Table.instance.EvaluatePlayerAtRiver(SeatPos);
         HandEvaluator playerHand = new HandEvaluator(sortedCards);
         playerHand.EvaluateHandAtRiver();
@@ -75,13 +76,13 @@ public class PokerPlayer {
             if (cardsInHand[i].GetComponent<Card>().cardIsFlipped == false)
             {
                 Physics.IgnoreCollision(cardsInHand[0].gameObject.GetComponent<Collider>(), cardsInHand[1].gameObject.GetComponent<Collider>());
-                Services.GameManager.StartCoroutine(FlipTime(.5f, cardsInHand[i], (GameObject.Find("TheBoard").transform.position + cardsInHand[i].transform.position) / 2, SeatPos));
+                Services.GameManager.StartCoroutine(FlipCardsAndMoveTowardsBoard(.5f, cardsInHand[i], (GameObject.Find("TheBoard").transform.position + cardsInHand[i].transform.position) / 2, SeatPos));
             }
             Services.GameManager.StartCoroutine(WaitForReposition(.5f, .5f, cardsInHand[0], cardsInHand[1], SeatPos));
         }
     }
 
-    IEnumerator FlipTime(float duration, GameObject card, Vector3 targetPos, int seatPos)
+    IEnumerator FlipCardsAndMoveTowardsBoard(float duration, GameObject card, Vector3 targetPos, int seatPos)
     {
         float timeElapsed = 0;
         Vector3 initialPos = card.transform.position;

@@ -148,6 +148,7 @@ public class Chip : InteractionSuperClass {
         if(chipStack != null && chipStack.chips.Count == 1)
         {
             chipStack = null;
+            inAStack = false;
         }
         if(chipStack != null)
         {
