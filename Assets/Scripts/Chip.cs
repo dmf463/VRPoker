@@ -193,7 +193,7 @@ public class Chip : InteractionSuperClass {
                 chip.gameObject.AddComponent<Rigidbody>();
                 chip.gameObject.transform.parent = null;
                 chip.inAStack = false;
-                chip.gameObject.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity() * FORCE_MULTIPLIER, ForceMode.Impulse);
+                chip.gameObject.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);
                 chip.gameObject.GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);
                 if (chip.chipStack != null)
                 {

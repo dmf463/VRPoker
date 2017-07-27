@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
+using Valve.VR;
+using Valve.VR.InteractionSystem;
 
 public class GameManager : MonoBehaviour
 {
 
     //holds all the cards where they need to be
-    public float cardsDealt;
     public List<PokerPlayer> players = new List<PokerPlayer>();
 
     PokerPlayer player0;
@@ -16,14 +17,22 @@ public class GameManager : MonoBehaviour
     PokerPlayer player2;
     PokerPlayer player3;
     PokerPlayer player4;
+    public GameObject MessageBoard;
+    TextMesh messageText;
+    public Hand hand1;
+    public Hand hand2;
+
 
     private int numberOfWinners;
     private int potAmountToGiveWinner;
     private bool winnersHaveBeenPaid;
+    private bool playersHaveBeenEvaluated;
     [HideInInspector]
     public int winnersPaid;
     void Awake()
     {
+        messageText = MessageBoard.GetComponent<TextMesh>();
+
         Services.PrefabDB = Resources.Load<PrefabDB>("Prefabs/PrefabDB");
         Services.GameManager = this;
     }
@@ -38,60 +47,91 @@ public class GameManager : MonoBehaviour
         players.Add(player4);
 
         InitializePlayers();
-
-        cardsDealt = 0;
+        Table.gameState = GameState.PreFlop;
     }
 
     // Update is called once per frame
     void Update()
     {
-        #region A bunch of keyboard commands assigned to QWERTY
+        if(Table.gameState != GameState.ShowDown)
+        {
+            switch (Table.instance._board.Count)
+            {
+                case 0:
+                    Table.gameState = GameState.PreFlop;
+                    messageText.text = "Shuffle Up and Deal!";
+                    break;
+                case 3:
+                    Table.gameState = GameState.Flop;
+                    messageText.text = "ready for the turn";
+                    break;
+                case 4:
+                    Table.gameState = GameState.Turn;
+                    messageText.text = "ready for the river";
+                    break;
+                case 5:
+                    Table.gameState = GameState.River;
+                    break;
+                default:
+                    break;
+            }
+        }
+        #region Players evaluate their hands based on the gamestate
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Table.instance.DebugHands();
+            Debug.Log(players[0].ChipCount);
         }
-        if (Input.GetKeyDown(KeyCode.Q))
+        
+        if(Table.gameState == GameState.PreFlop)
         {
-            foreach(PokerPlayer player in players) 
+            foreach(PokerPlayer player in players)
             {
-                player.EvaluateHandPreFlop();
+                if(player.Hand != null)
+                {
+                    if (player.Hand.Cards.Count == 2)
+                    {
+                        player.EvaluateHandPreFlop();
+                    }
+                }
             }
         }
-        if (Input.GetKeyDown(KeyCode.W))
+        if(Table.gameState == GameState.Flop)
         {
-            foreach (PokerPlayer player in players) 
+            foreach (PokerPlayer player in players)
             {
                 player.EvaluateHandOnFlop();
             }
         }
-        if (Input.GetKeyDown(KeyCode.E))
+        if(Table.gameState == GameState.Turn)
         {
-            foreach (PokerPlayer player in players) 
+            foreach(PokerPlayer player in players)
             {
                 player.EvaluateHandOnTurn();
             }
         }
-        if (Input.GetKeyDown(KeyCode.R))
+        if(Table.gameState == GameState.River)
         {
-            foreach (PokerPlayer player in players) 
+            foreach(PokerPlayer player in players)
             {
                 player.EvaluateHandOnRiver();
             }
+            messageText.text = "Click both trigger buttons to start the showdown";
+            if (hand1.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true && hand2.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true)
+            {
+                Table.gameState = GameState.ShowDown;
+            }
         }
-        if (Input.GetKeyDown(KeyCode.T))
+        if(Table.gameState == GameState.ShowDown)
         {
-            EvaluatePlayersOnShowdown();
-        }
-        if (Input.GetKeyDown(KeyCode.Y))
-        {
-            ResetPlayerStatus();
-        }
+            if (!playersHaveBeenEvaluated)
+            {
+                messageText.text = "Give the winner(s) their winnings (pot size is 100, that's a black chip)";
+                EvaluatePlayersOnShowdown();
+                playersHaveBeenEvaluated = true;
+            }
+        }  
         #endregion
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            Table.instance._potChips.Add(Services.PrefabDB.BlackChip100.GetComponent<Chip>());
-            Debug.Log("potSize = " + Table.instance.PotChips);
-        }
 
 
     }
@@ -177,12 +217,14 @@ public class GameManager : MonoBehaviour
         while (!winnersHaveBeenPaid)
         {
             GivePlayersWinnings();
-            Debug.Log("Winner is Waiting to be paid");
+            //Debug.Log("Winner is Waiting to be paid");
             yield return null;
         }
         if (winnersHaveBeenPaid)
         {
-            Debug.Log("You gave the money to the right people! yay! let's play again!");
+            messageText.text = "'Thanks dealer, here's a tip!' (you got a tip)";
+            ResetPlayerStatus();
+            //Debug.Log("You gave the money to the right people! yay! let's play again!");
         }
 
     }
@@ -196,19 +238,27 @@ public class GameManager : MonoBehaviour
             if(player.PlayerState == PlayerState.Winner)
             {
                 winnerChipStack = potAmountToGiveWinner;
-                Debug.Log("for player" + player.SeatPos + " the winnerChipStack = " + winnerChipStack + " and the Player has" + player.ChipCount);
+                //Debug.Log("for player" + player.SeatPos + " the winnerChipStack = " + winnerChipStack + " and the Player has" + player.ChipCount);
                 if (player.ChipCount == winnerChipStack && player.HasBeenPaid == false)
                 {
                     winnersPaid++;
                     player.HasBeenPaid = true;
-                    Debug.Log("winnersPaid = " + winnersPaid);
-                    Debug.Log("player.HasBeenPaid = " + player.HasBeenPaid);
+                    //Debug.Log("winnersPaid = " + winnersPaid);
+                   // Debug.Log("player.HasBeenPaid = " + player.HasBeenPaid);
+                }
+            }
+            if(player.PlayerState == PlayerState.Loser)
+            {
+                winnerChipStack = potAmountToGiveWinner;
+                if(player.ChipCount == winnerChipStack)
+                {
+                    messageText.text = "I think you messed up, I didn't win this money.";
                 }
             }
         }
         if (winnersPaid == numberOfWinners)
         {
-            Debug.Log("winnersPaid == numberOfWinners");
+            //Debug.Log("winnersPaid == numberOfWinners");
             winnersHaveBeenPaid = true;
             winnersPaid = 0;
             numberOfWinners = 0;
@@ -222,6 +272,7 @@ public class GameManager : MonoBehaviour
             players[i].PlayerState = PlayerState.Playing;
             players[i].HasBeenPaid = false;
         }
+        playersHaveBeenEvaluated = false;
     }
 
 }

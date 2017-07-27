@@ -154,4 +154,45 @@ public class LogObjects : MonoBehaviour
         #endregion
     }
 
+    public void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "Chip")
+        {
+
+            for (int i = 0; i < playerNames.Count; i++)
+            {
+                if (gameObject.name == playerNames[i])
+                {
+                    if (other.GetComponent<Chip>().inAStack == false)
+                    {
+                        if (Table.instance.playerChipStacks[i].Contains(other.GetComponent<Chip>()))
+                        {
+                            Debug.Log("removed this chip already");
+                        }
+                        else Table.instance.RemoveChipFrom(playerDestinations[i], other.GetComponent<Chip>());
+                    }
+                    else if (other.GetComponent<Chip>().inAStack == true)
+                    {
+                        ChipStack chipStack;
+                        if (other.GetComponent<Chip>().chipStack != null)
+                        {
+                            chipStack = other.GetComponent<Chip>().chipStack;
+                        }
+                        else
+                        {
+                            chipStack = other.transform.parent.gameObject.GetComponent<Chip>().chipStack;
+                        }
+                        foreach (Chip chip in chipStack.chips)
+                        {
+                            if (Table.instance.playerChipStacks[i].Contains(chip))
+                            {
+                                Debug.Log("this ship already left");
+                            }
+                            else Table.instance.RemoveChipFrom(playerDestinations[i], chip);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

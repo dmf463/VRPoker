@@ -56,6 +56,10 @@ public class Table {
         {
             playerCards[i].Clear();
         }
+        for (int i = 0; i < playerChipStacks.Length; i++)
+        {
+            playerChipStacks[i].Clear();
+        }
         _board.Clear();
         _burn.Clear();
         Services.GameManager.ResetPlayerStatus();
@@ -72,7 +76,7 @@ public class Table {
         //For testing purposes, I'm currently setting the pot to always be 10
         //since I don't actually have a live pot.
         //return potSize;
-        return 10;
+        return 100;
     }
 
     public int GetChipStack(int seatPos)
@@ -102,6 +106,17 @@ public class Table {
             if(dest == playerDestinations[i])
             {
                 playerChipStacks[i].Add(chip);
+            }
+        }
+    }
+
+    public void RemoveChipFrom(Destination dest, Chip chip)
+    {
+        for (int i = 0; i < playerDestinations.Count; i++)
+        {
+            if (dest == playerDestinations[i])
+            {
+                playerChipStacks[i].Remove(chip);
             }
         }
     }

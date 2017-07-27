@@ -30,42 +30,42 @@ public class PokerPlayer {
 
     public void EvaluateHandPreFlop() 
     {
-        Table.gameState = GameState.PreFlop;
+        //Table.gameState = GameState.PreFlop;
         List<CardType> sortedCards = Table.instance.EvaluatePlayerPreFlop(SeatPos);
         HandEvaluator playerHand = new HandEvaluator(sortedCards);
         playerHand.EvaluateHandAtPreFlop();
         Hand = playerHand;
-        Debug.Log("player" + SeatPos + " has " + Hand.HandValues.PokerHand + " with a highCard of " + Hand.HandValues.HighCard + " and a handTotal of " + Hand.HandValues.Total + " a chipCount of " + ChipCount);
+        //Debug.Log("player" + SeatPos + " has " + Hand.HandValues.PokerHand + " with a highCard of " + Hand.HandValues.HighCard + " and a handTotal of " + Hand.HandValues.Total + " a chipCount of " + ChipCount);
     }
 
     public void EvaluateHandOnFlop() 
     {
-        Table.gameState = GameState.Flop;
+        //Table.gameState = GameState.Flop;
         List<CardType> sortedCards = Table.instance.EvaluatePlayerAtFlop(SeatPos);
         HandEvaluator playerHand = new HandEvaluator(sortedCards);
         playerHand.EvaluateHandAtFlop();
         Hand = playerHand;
-        Debug.Log("player" + SeatPos + " has " + Hand.HandValues.PokerHand + " with a highCard of " + Hand.HandValues.HighCard + " and a handTotal of " + Hand.HandValues.Total + " a chipCount of " + ChipCount);
+        //Debug.Log("player" + SeatPos + " has " + Hand.HandValues.PokerHand + " with a highCard of " + Hand.HandValues.HighCard + " and a handTotal of " + Hand.HandValues.Total + " a chipCount of " + ChipCount);
     }
 
     public void EvaluateHandOnTurn() 
     {
-        Table.gameState = GameState.Turn;
+        //Table.gameState = GameState.Turn;
         List<CardType> sortedCards = Table.instance.EvaluatePlayerAtTurn(SeatPos);
         HandEvaluator playerHand = new HandEvaluator(sortedCards);
         playerHand.EvaluateHandAtTurn();
         Hand = playerHand;
-        Debug.Log("player" + SeatPos + " has " + Hand.HandValues.PokerHand + " with a highCard of " + Hand.HandValues.HighCard + " and a handTotal of " + Hand.HandValues.Total + " a chipCount of " + ChipCount);
+        //Debug.Log("player" + SeatPos + " has " + Hand.HandValues.PokerHand + " with a highCard of " + Hand.HandValues.HighCard + " and a handTotal of " + Hand.HandValues.Total + " a chipCount of " + ChipCount);
     }
 
     public void EvaluateHandOnRiver() 
     {
-        Table.gameState = GameState.River;
+        //Table.gameState = GameState.River;
         List<CardType> sortedCards = Table.instance.EvaluatePlayerAtRiver(SeatPos);
         HandEvaluator playerHand = new HandEvaluator(sortedCards);
         playerHand.EvaluateHandAtRiver();
         Hand = playerHand;
-        Debug.Log("player" + SeatPos + " has " + Hand.HandValues.PokerHand + " with a highCard of " + Hand.HandValues.HighCard + " and a handTotal of " + Hand.HandValues.Total + " a chipCount of " + ChipCount);
+        //Debug.Log("player" + SeatPos + " has " + Hand.HandValues.PokerHand + " with a highCard of " + Hand.HandValues.HighCard + " and a handTotal of " + Hand.HandValues.Total + " a chipCount of " + ChipCount);
     }
 
     public void FlipCards()
@@ -76,7 +76,7 @@ public class PokerPlayer {
             if (cardsInHand[i].GetComponent<Card>().cardIsFlipped == false)
             {
                 Physics.IgnoreCollision(cardsInHand[0].gameObject.GetComponent<Collider>(), cardsInHand[1].gameObject.GetComponent<Collider>());
-                Services.GameManager.StartCoroutine(FlipCardsAndMoveTowardsBoard(.5f, cardsInHand[i], (GameObject.Find("TheBoard").transform.position + cardsInHand[i].transform.position) / 2, SeatPos));
+                Services.GameManager.StartCoroutine(FlipCardsAndMoveTowardsBoard(.5f, cardsInHand[i], (GameObject.Find("TheBoard").GetComponent<Collider>().ClosestPointOnBounds(cardsInHand[i].transform.position) + cardsInHand[i].transform.position) / 2, SeatPos));
             }
             Services.GameManager.StartCoroutine(WaitForReposition(.5f, .5f, cardsInHand[0], cardsInHand[1], SeatPos));
         }
