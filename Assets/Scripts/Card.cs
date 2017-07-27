@@ -62,7 +62,14 @@ public class Card : InteractionSuperClass {
 
         if(throwingHand.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_Grip))
         {
-            Table.dealerState = DealerState.ShufflingState;
+            if(Table.dealerState == DealerState.DealingState)
+            {
+                Table.dealerState = DealerState.ShufflingState;
+            }
+            else if(Table.dealerState == DealerState.ShufflingState)
+            {
+                Table.dealerState = DealerState.DealingState;
+            }
         }
 
         if (transform.eulerAngles.x > 89 && transform.eulerAngles.x < 92) cardFacingUp = true;
