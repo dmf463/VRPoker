@@ -128,7 +128,6 @@ public class GameManager : MonoBehaviour
             {
                 messageText.text = "Give the winner(s) their winnings (pot size is 100, that's a black chip)";
                 EvaluatePlayersOnShowdown();
-                playersHaveBeenEvaluated = true;
             }
         }  
         #endregion
@@ -148,7 +147,6 @@ public class GameManager : MonoBehaviour
 
     public void EvaluatePlayersOnShowdown()
     {
-        Table.gameState = GameState.ShowDown;
         List<PokerPlayer> sortedPlayers = new List<PokerPlayer>(players.OrderByDescending(bestHand => bestHand.Hand.HandValues.PokerHand).ThenByDescending(bestHand => bestHand.Hand.HandValues.Total).ThenByDescending(bestHand => bestHand.Hand.HandValues.HighCard));
         sortedPlayers[0].PlayerState = PlayerState.Winner;
         List<List<PokerPlayer>> PlayerRank = new List<List<PokerPlayer>>();
@@ -190,6 +188,7 @@ public class GameManager : MonoBehaviour
                 foreach (PokerPlayer player in PlayerRank[0])
                 {
                     player.PlayerState = PlayerState.Winner;
+                    player.ChipCountToCheckWhenWinning = player.ChipCount;
                     numberOfWinners++;
                 }
             }
@@ -209,11 +208,13 @@ public class GameManager : MonoBehaviour
         }
 
         sortedPlayers.Clear();
+        playersHaveBeenEvaluated = true;
         StartCoroutine(WaitForWinnersToGetPaid());
     }
 
     IEnumerator WaitForWinnersToGetPaid()
     {
+        Debug.Log("how do IEnumerators actually work lol");
         while (!winnersHaveBeenPaid)
         {
             GivePlayersWinnings();
@@ -223,7 +224,6 @@ public class GameManager : MonoBehaviour
         if (winnersHaveBeenPaid)
         {
             messageText.text = "'Thanks dealer, here's a tip!' (you got a tip)";
-            ResetPlayerStatus();
             //Debug.Log("You gave the money to the right people! yay! let's play again!");
         }
 
@@ -237,8 +237,8 @@ public class GameManager : MonoBehaviour
         {
             if(player.PlayerState == PlayerState.Winner)
             {
-                winnerChipStack = potAmountToGiveWinner;
-                //Debug.Log("for player" + player.SeatPos + " the winnerChipStack = " + winnerChipStack + " and the Player has" + player.ChipCount);
+                winnerChipStack = player.ChipCountToCheckWhenWinning + potAmountToGiveWinner;
+                Debug.Log("for player" + player.SeatPos + " the winnerChipStack = " + winnerChipStack + " and the Player has" + player.ChipCount);
                 if (player.ChipCount == winnerChipStack && player.HasBeenPaid == false)
                 {
                     winnersPaid++;
@@ -247,12 +247,16 @@ public class GameManager : MonoBehaviour
                    // Debug.Log("player.HasBeenPaid = " + player.HasBeenPaid);
                 }
             }
-            if(player.PlayerState == PlayerState.Loser)
+            else if(player.PlayerState == PlayerState.Loser)
             {
-                winnerChipStack = potAmountToGiveWinner;
+                winnerChipStack = player.ChipCountToCheckWhenWinning + potAmountToGiveWinner;
                 if(player.ChipCount == winnerChipStack)
                 {
                     messageText.text = "I think you messed up, I didn't win this money.";
+                }
+                else
+                {
+                    messageText.text = "Give the winner(s) their winnings (pot size is 100, that's a black chip)";
                 }
             }
         }
@@ -273,6 +277,7 @@ public class GameManager : MonoBehaviour
             players[i].HasBeenPaid = false;
         }
         playersHaveBeenEvaluated = false;
+        winnersHaveBeenPaid = false;
     }
 
 }

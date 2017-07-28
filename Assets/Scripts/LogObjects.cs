@@ -165,11 +165,7 @@ public class LogObjects : MonoBehaviour
                 {
                     if (other.GetComponent<Chip>().inAStack == false)
                     {
-                        if (Table.instance.playerChipStacks[i].Contains(other.GetComponent<Chip>()))
-                        {
-                            Debug.Log("removed this chip already");
-                        }
-                        else Table.instance.RemoveChipFrom(playerDestinations[i], other.GetComponent<Chip>());
+                        Table.instance.RemoveChipFrom(playerDestinations[i], other.GetComponent<Chip>());
                     }
                     else if (other.GetComponent<Chip>().inAStack == true)
                     {
@@ -184,11 +180,7 @@ public class LogObjects : MonoBehaviour
                         }
                         foreach (Chip chip in chipStack.chips)
                         {
-                            if (Table.instance.playerChipStacks[i].Contains(chip))
-                            {
-                                Debug.Log("this ship already left");
-                            }
-                            else Table.instance.RemoveChipFrom(playerDestinations[i], chip);
+                            Table.instance.RemoveChipFrom(playerDestinations[i], chip);
                         }
                     }
                 }

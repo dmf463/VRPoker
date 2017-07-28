@@ -27,6 +27,7 @@ public class PokerPlayer {
     public HandEvaluator Hand { get; set; }
     public PlayerState PlayerState { get; set; }
     public bool HasBeenPaid;
+    public int ChipCountToCheckWhenWinning;
 
     public void EvaluateHandPreFlop() 
     {

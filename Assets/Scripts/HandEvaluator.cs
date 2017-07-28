@@ -321,7 +321,7 @@ public class HandEvaluator {
         //0, 1 with 4 high card
         if (incomingCards[0].rank == incomingCards[1].rank)
         {
-            handValue.Total = (int)incomingCards[0].rank * 2;
+            handValue.Total = ((int)incomingCards[0].rank * 2) + (int)incomingCards[2].rank + (int)incomingCards[3].rank + (int)incomingCards[4].rank;
             handValue.HighCard = (int)incomingCards[4].rank;
             handValue.PokerHand = PokerHand.OnePair;
             return true;
@@ -329,7 +329,7 @@ public class HandEvaluator {
         //1, 2 with 4 high card
         else if (incomingCards[1].rank == incomingCards[2].rank)
         {
-            handValue.Total = (int)incomingCards[1].rank * 2;
+            handValue.Total = ((int)incomingCards[1].rank * 2) + (int)incomingCards[0].rank + (int)incomingCards[3].rank + (int)incomingCards[4].rank;
             handValue.HighCard = (int)incomingCards[4].rank;
             handValue.PokerHand = PokerHand.OnePair;
             return true;
@@ -337,7 +337,7 @@ public class HandEvaluator {
         //2, 3 with 4 high card
         else if (incomingCards[2].rank == incomingCards[3].rank)
         {
-            handValue.Total = (int)incomingCards[2].rank * 2;
+            handValue.Total = ((int)incomingCards[2].rank * 2) + (int)incomingCards[0].rank + (int)incomingCards[1].rank + (int)incomingCards[4].rank;
             handValue.HighCard = (int)incomingCards[4].rank;
             handValue.PokerHand = PokerHand.OnePair;
             return true;
@@ -345,7 +345,7 @@ public class HandEvaluator {
         //3, 4 with 2 high card
         else if (incomingCards[3].rank == incomingCards[4].rank)
         {
-            handValue.Total = (int)incomingCards[3].rank * 2;
+            handValue.Total = ((int)incomingCards[4].rank * 2) + (int)incomingCards[0].rank + (int)incomingCards[1].rank + (int)incomingCards[2].rank;
             handValue.HighCard = (int)incomingCards[2].rank;
             handValue.PokerHand = PokerHand.OnePair;
             return true;
@@ -531,7 +531,7 @@ public class HandEvaluator {
         //0, 1 with 5 high card
         if (incomingCards[0].rank == incomingCards[1].rank)
         {
-            handValue.Total = (int)incomingCards[0].rank * 2;
+            handValue.Total = ((int)incomingCards[0].rank * 2) + (int)incomingCards[3].rank + (int)incomingCards[4].rank + (int)incomingCards[5].rank;
             handValue.HighCard = (int)incomingCards[5].rank;
             handValue.PokerHand = PokerHand.OnePair;
             return true;
@@ -539,7 +539,7 @@ public class HandEvaluator {
         //1, 2 with 5 high card
         else if (incomingCards[1].rank == incomingCards[2].rank)
         {
-            handValue.Total = (int)incomingCards[1].rank * 2;
+            handValue.Total = ((int)incomingCards[1].rank * 2) + (int)incomingCards[3].rank + (int)incomingCards[4].rank + (int)incomingCards[5].rank;
             handValue.HighCard = (int)incomingCards[5].rank;
             handValue.PokerHand = PokerHand.OnePair;
             return true;
@@ -547,7 +547,7 @@ public class HandEvaluator {
         //2, 3 with 5 high card
         else if (incomingCards[2].rank == incomingCards[3].rank)
         {
-            handValue.Total = (int)incomingCards[2].rank * 2;
+            handValue.Total = ((int)incomingCards[2].rank * 2) + (int)incomingCards[4].rank + (int)incomingCards[5].rank + (int)incomingCards[1].rank;
             handValue.HighCard = (int)incomingCards[5].rank;
             handValue.PokerHand = PokerHand.OnePair;
             return true;
@@ -555,7 +555,7 @@ public class HandEvaluator {
         //3, 4 with 5 high card
         else if (incomingCards[3].rank == incomingCards[4].rank)
         {
-            handValue.Total = (int)incomingCards[3].rank * 2;
+            handValue.Total = ((int)incomingCards[3].rank * 2) + (int)incomingCards[4].rank + (int)incomingCards[5].rank + (int)incomingCards[2].rank;
             handValue.HighCard = (int)incomingCards[5].rank;
             handValue.PokerHand = PokerHand.OnePair;
             return true;
@@ -563,7 +563,7 @@ public class HandEvaluator {
         //4, 5 with 3 high card
         else if (incomingCards[4].rank == incomingCards[5].rank)
         {
-            handValue.Total = (int)incomingCards[4].rank * 2;
+            handValue.Total = ((int)incomingCards[4].rank * 2) + (int)incomingCards[3].rank + (int)incomingCards[2].rank + (int)incomingCards[1].rank;
             handValue.HighCard = (int)incomingCards[3].rank;
             handValue.PokerHand = PokerHand.OnePair;
             return true;
@@ -733,42 +733,39 @@ public class HandEvaluator {
         //will be ordered with as (2..3..4..5..A) with two cards inserted at any other point, but the order would make the straigh count = 0
         //so need to run a check AFTER the straight count has been recalculated to see if it's THE WHEEL
 
-
-        if (straightCount == 0)
+        if(straightCount == 0)
         {
-            if (incomingCards[0].rank == RankType.Two && incomingCards[5].rank == RankType.Ace)
+            int countForTheWheel = 0;
+            foreach(CardType card in incomingCards)
             {
-                if (incomingCards[0].rank + 1 == incomingCards[1].rank)
+                switch (card.rank)
                 {
-                    straightCount++;
-                }
-                if (incomingCards[1].rank + 1 == incomingCards[2].rank)
-                {
-                    straightCount++;
-                }
-                if (incomingCards[2].rank + 1 == incomingCards[3].rank)
-                {
-                    straightCount++;
-                }
-                if (incomingCards[3].rank + 1 == incomingCards[4].rank)
-                {
-                    straightCount++;
-                }
-                if (incomingCards[4].rank + 1 == incomingCards[5].rank)
-                {
-                    straightCount++;
+                    case RankType.Two:
+                        countForTheWheel++;
+                        break;
+                    case RankType.Three:
+                        countForTheWheel++;
+                        break;
+                    case RankType.Four:
+                        countForTheWheel++;
+                        break;
+                    case RankType.Five:
+                        countForTheWheel++;
+                        break;
+                    case RankType.Ace:
+                        countForTheWheel++;
+                        break;
+                    default:
+                        break;
                 }
             }
-        }
-
-        if (incomingCards[0].rank == RankType.Two && incomingCards[5].rank == RankType.Ace)
-        {
-            if (straightCount == 3)
+            if(countForTheWheel == 5)
             {
                 handValue.Total = 5;
                 handValue.PokerHand = PokerHand.Straight;
                 return true;
             }
+            else return false;
         }
 
         if (straightCount >= 4)
@@ -993,7 +990,7 @@ public class HandEvaluator {
         //0, 1 with 6 high card
         if (incomingCards[0].rank == incomingCards[1].rank)
         {
-            handValue.Total = (int)incomingCards[0].rank * 2;
+            handValue.Total = ((int)incomingCards[0].rank * 2) + (int)incomingCards[6].rank + (int)incomingCards[5].rank + (int)incomingCards[4].rank;
             handValue.HighCard = (int)incomingCards[6].rank;
             handValue.PokerHand = PokerHand.OnePair;
             return true;
@@ -1001,7 +998,7 @@ public class HandEvaluator {
         //1, 2 with 6 high card
         else if (incomingCards[1].rank == incomingCards[2].rank)
         {
-            handValue.Total = (int)incomingCards[1].rank * 2;
+            handValue.Total = ((int)incomingCards[1].rank * 2) + (int)incomingCards[6].rank + (int)incomingCards[5].rank + (int)incomingCards[4].rank;
             handValue.HighCard = (int)incomingCards[6].rank;
             handValue.PokerHand = PokerHand.OnePair;
             return true;
@@ -1009,7 +1006,7 @@ public class HandEvaluator {
         //2, 3 with 6 high card
         else if (incomingCards[2].rank == incomingCards[3].rank)
         {
-            handValue.Total = (int)incomingCards[2].rank * 2;
+            handValue.Total = ((int)incomingCards[2].rank * 2) + (int)incomingCards[6].rank + (int)incomingCards[5].rank + (int)incomingCards[4].rank;
             handValue.HighCard = (int)incomingCards[6].rank;
             handValue.PokerHand = PokerHand.OnePair;
             return true;
@@ -1017,7 +1014,7 @@ public class HandEvaluator {
         //3, 4 with 6 high card
         else if (incomingCards[3].rank == incomingCards[4].rank)
         {
-            handValue.Total = (int)incomingCards[3].rank * 2;
+            handValue.Total = ((int)incomingCards[3].rank * 2) + (int)incomingCards[6].rank + (int)incomingCards[5].rank + (int)incomingCards[2].rank;
             handValue.HighCard = (int)incomingCards[6].rank;
             handValue.PokerHand = PokerHand.OnePair;
             return true;
@@ -1025,7 +1022,7 @@ public class HandEvaluator {
         //4, 5 with 6 high card
         else if (incomingCards[4].rank == incomingCards[5].rank)
         {
-            handValue.Total = (int)incomingCards[4].rank * 2;
+            handValue.Total = ((int)incomingCards[4].rank * 2) + (int)incomingCards[6].rank + (int)incomingCards[3].rank + (int)incomingCards[2].rank;
             handValue.HighCard = (int)incomingCards[6].rank;
             handValue.PokerHand = PokerHand.OnePair;
             return true;
@@ -1033,7 +1030,7 @@ public class HandEvaluator {
         //5, 6 with 4 high card
         else if (incomingCards[5].rank == incomingCards[6].rank)
         {
-            handValue.Total = (int)incomingCards[5].rank * 2;
+            handValue.Total = ((int)incomingCards[5].rank * 2) + (int)incomingCards[4].rank + (int)incomingCards[3].rank + (int)incomingCards[2].rank;
             handValue.HighCard = (int)incomingCards[4].rank;
             handValue.PokerHand = PokerHand.OnePair;
             return true;
@@ -1252,46 +1249,44 @@ public class HandEvaluator {
         }
         else straightCount = 0;
 
-//NEED TO MAKE A FRINGE CASE FOR CHECK FOR THE WHEEL (A, 2, 3, 4, 5)
-//will be ordered with as (2..3..4..5..A) with two cards inserted at any other point, but the order would make the straigh count = 0
-//so need to run a check AFTER the straight count has been recalculated to see if it's THE WHEEL
-    
+        //NEED TO MAKE A FRINGE CASE FOR CHECK FOR THE WHEEL (A, 2, 3, 4, 5)
+        //will be ordered with as (2..3..4..5..A) with two cards inserted at any other point, but the order would make the straigh count = 0
+        //so need to run a check AFTER the straight count has been recalculated to see if it's THE WHEEL
 
-        if(straightCount == 0)
+
+        if (straightCount == 0)
         {
-            if(incomingCards[0].rank == RankType.Two && incomingCards[6].rank == RankType.Ace)
+            int countForTheWheel = 0;
+            foreach (CardType card in incomingCards)
             {
-                if (incomingCards[0].rank + 1 == incomingCards[1].rank)
+                switch (card.rank)
                 {
-                    straightCount++;
-                }
-                if (incomingCards[1].rank + 1 == incomingCards[2].rank)
-                {
-                    straightCount++;
-                }
-                if (incomingCards[2].rank + 1 == incomingCards[3].rank)
-                {
-                    straightCount++;
-                }
-                if (incomingCards[3].rank + 1 == incomingCards[4].rank)
-                {
-                    straightCount++;
-                }
-                if (incomingCards[4].rank + 1 == incomingCards[5].rank)
-                {
-                    straightCount++;
+                    case RankType.Two:
+                        countForTheWheel++;
+                        break;
+                    case RankType.Three:
+                        countForTheWheel++;
+                        break;
+                    case RankType.Four:
+                        countForTheWheel++;
+                        break;
+                    case RankType.Five:
+                        countForTheWheel++;
+                        break;
+                    case RankType.Ace:
+                        countForTheWheel++;
+                        break;
+                    default:
+                        break;
                 }
             }
-        }
-
-        if(incomingCards[0].rank == RankType.Two && incomingCards[6].rank == RankType.Ace)
-        {
-            if(straightCount == 3)
+            if (countForTheWheel == 5)
             {
                 handValue.Total = 5;
                 handValue.PokerHand = PokerHand.Straight;
                 return true;
             }
+            else return false;
         }
 
         if (straightCount >= 4)

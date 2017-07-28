@@ -66,7 +66,7 @@ public class Card : InteractionSuperClass {
             {
                 Table.dealerState = DealerState.ShufflingState;
             }
-            else if(Table.dealerState == DealerState.ShufflingState)
+            else
             {
                 Table.dealerState = DealerState.DealingState;
             }
