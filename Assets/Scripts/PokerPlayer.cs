@@ -25,6 +25,7 @@ public class PokerPlayer {
         set { }
     }
     public HandEvaluator Hand { get; set; }
+    public float HandStrength;
     public PlayerState PlayerState { get; set; }
     public bool HasBeenPaid;
     public int ChipCountToCheckWhenWinning;
@@ -46,6 +47,8 @@ public class PokerPlayer {
         HandEvaluator playerHand = new HandEvaluator(sortedCards);
         playerHand.EvaluateHandAtFlop();
         Hand = playerHand;
+        DetermineHandStrength(Hand.Cards[0], Hand.Cards[1]);
+        Debug.Log("Player" + SeatPos + " has a HandStrength of " + HandStrength);
         //Debug.Log("player" + SeatPos + " has " + Hand.HandValues.PokerHand + " with a highCard of " + Hand.HandValues.HighCard + " and a handTotal of " + Hand.HandValues.Total + " a chipCount of " + ChipCount);
     }
 
@@ -157,6 +160,111 @@ public class PokerPlayer {
             }
         }
 
+    }
+
+    public void DetermineHandStrength(CardType myCard1, CardType myCard2)
+    {
+        int numberOfWins = 0;
+        for (int f = 0; f < 1000; f++)
+        {
+            List<CardType> testDeck = new List<CardType>();
+            List<PokerPlayer> testPlayers = new List<PokerPlayer>();
+            List<CardType> testBoard = new List<CardType>();
+            PokerPlayer fakeSelf = new PokerPlayer();
+            fakeSelf = this;
+            #region populatingTheDeck
+            SuitType[] suits = new SuitType[4]
+            {
+            SuitType.Spades,
+            SuitType.Hearts,
+            SuitType.Diamonds,
+            SuitType.Clubs
+            };
+            RankType[] ranks = new RankType[13]
+            {
+            RankType.Two,
+            RankType.Three,
+            RankType.Four,
+            RankType.Five,
+            RankType.Six,
+            RankType.Seven,
+            RankType.Eight,
+            RankType.Nine,
+            RankType.Ten,
+            RankType.Jack,
+            RankType.Queen,
+            RankType.King,
+            RankType.Ace
+            };
+
+            foreach (SuitType suit in suits)
+            {
+                foreach (RankType rank in ranks)
+                {
+                    testDeck.Add(new CardType(rank, suit));
+                }
+            }
+            #endregion
+            testDeck.Remove(myCard1);
+            testDeck.Remove(myCard2);
+            fakeSelf.Hand.Cards.Add(myCard1);
+            fakeSelf.Hand.Cards.Add(myCard2);
+            testPlayers.Add(fakeSelf);
+            foreach (Card boardCard in Table.instance._board)
+            {
+                testDeck.Remove(boardCard.cardType);
+                testBoard.Add(boardCard.cardType);
+            }
+            for (int i = 0; i < Services.GameManager.players.Count - 1; i++)
+            {
+                testPlayers.Add(new PokerPlayer());
+            }
+            for (int i = 1; i < testPlayers.Count; i++)
+            {
+                for (int j = 0; j < 2; j++)
+                {
+                    int cardPos = Random.Range(0, testDeck.Count);
+                    CardType cardType = testDeck[cardPos];
+                    testPlayers[i].Hand.Cards.Add(cardType);
+                    testDeck.Remove(cardType);
+                }
+            }
+            if (Table.instance._board.Count == 3)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    int cardPos = Random.Range(0, testDeck.Count);
+                    CardType cardType = testDeck[cardPos];
+                    testDeck.Remove(cardType);
+                    testBoard.Add(cardType);
+                }
+            }
+            else if (Table.instance._board.Count == 4)
+            {
+                int cardPos = Random.Range(0, testDeck.Count);
+                CardType cardType = testDeck[cardPos];
+                testDeck.Remove(cardType);
+                testBoard.Add(cardType);
+            }
+            foreach (PokerPlayer player in testPlayers)
+            {
+                player.Hand.Cards.AddRange(testBoard);
+            }
+            Services.GameManager.EvaluatePlayersOnShowdown(testPlayers);
+            if (testPlayers[0].PlayerState == PlayerState.Winner)
+            {
+                int numberOfTestWinners = 0;
+                foreach (PokerPlayer player in testPlayers)
+                {
+                    if (player.PlayerState == PlayerState.Winner)
+                    {
+                        numberOfTestWinners++;
+                    }
+                }
+                numberOfWins += 1 / numberOfTestWinners;
+            }
+        }
+        HandStrength = numberOfWins / 1000;
     }
 
 }

@@ -127,7 +127,7 @@ public class GameManager : MonoBehaviour
             if (!playersHaveBeenEvaluated)
             {
                 messageText.text = "Give the winner(s) their winnings (pot size is 100, that's a black chip)";
-                EvaluatePlayersOnShowdown();
+                EvaluatePlayersOnShowdown(players);
             }
         }  
         #endregion
@@ -145,9 +145,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void EvaluatePlayersOnShowdown()
+    public void EvaluatePlayersOnShowdown(List<PokerPlayer> playersToEvaluate)
     {
-        List<PokerPlayer> sortedPlayers = new List<PokerPlayer>(players.OrderByDescending(bestHand => bestHand.Hand.HandValues.PokerHand).ThenByDescending(bestHand => bestHand.Hand.HandValues.Total).ThenByDescending(bestHand => bestHand.Hand.HandValues.HighCard));
+        List<PokerPlayer> sortedPlayers = new List<PokerPlayer>(playersToEvaluate.OrderByDescending(bestHand => bestHand.Hand.HandValues.PokerHand).ThenByDescending(bestHand => bestHand.Hand.HandValues.Total).ThenByDescending(bestHand => bestHand.Hand.HandValues.HighCard));
         sortedPlayers[0].PlayerState = PlayerState.Winner;
         List<List<PokerPlayer>> PlayerRank = new List<List<PokerPlayer>>();
         for (int i = 0; i < sortedPlayers.Count; i++)
@@ -201,10 +201,10 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < players.Count; i++)
+        for (int i = 0; i < playersToEvaluate.Count; i++)
         {
-            players[i].FlipCards();
-            Debug.Log("player" + players[i].SeatPos + "is the " + players[i].PlayerState + " with (a) " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
+            playersToEvaluate[i].FlipCards();
+            //Debug.Log("player" + playersToEvaluate[i].SeatPos + "is the " + playersToEvaluate[i].PlayerState + " with (a) " + playersToEvaluate[i].Hand.HandValues.PokerHand + " with a highCard of " + playersToEvaluate[i].Hand.HandValues.HighCard + " and a handTotal of " + playersToEvaluate[i].Hand.HandValues.Total);
         }
 
         sortedPlayers.Clear();
