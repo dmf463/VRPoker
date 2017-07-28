@@ -203,18 +203,18 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < playersToEvaluate.Count; i++)
         {
-            playersToEvaluate[i].FlipCards();
+            //playersToEvaluate[i].FlipCards();
             //Debug.Log("player" + playersToEvaluate[i].SeatPos + "is the " + playersToEvaluate[i].PlayerState + " with (a) " + playersToEvaluate[i].Hand.HandValues.PokerHand + " with a highCard of " + playersToEvaluate[i].Hand.HandValues.HighCard + " and a handTotal of " + playersToEvaluate[i].Hand.HandValues.Total);
         }
 
-        sortedPlayers.Clear();
-        playersHaveBeenEvaluated = true;
-        StartCoroutine(WaitForWinnersToGetPaid());
+        //sortedPlayers.Clear();
+        //playersHaveBeenEvaluated = true;
+        //StartCoroutine(WaitForWinnersToGetPaid());
     }
 
     IEnumerator WaitForWinnersToGetPaid()
     {
-        Debug.Log("how do IEnumerators actually work lol");
+        //Debug.Log("how do IEnumerators actually work lol");
         while (!winnersHaveBeenPaid)
         {
             GivePlayersWinnings();

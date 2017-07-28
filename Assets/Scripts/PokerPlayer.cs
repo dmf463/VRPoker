@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public enum PlayerState { Playing, NoHand, Winner, Loser}
 
@@ -29,6 +30,7 @@ public class PokerPlayer {
     public PlayerState PlayerState { get; set; }
     public bool HasBeenPaid;
     public int ChipCountToCheckWhenWinning;
+    public bool checkedHandStrength;
 
     public void EvaluateHandPreFlop() 
     {
@@ -47,8 +49,12 @@ public class PokerPlayer {
         HandEvaluator playerHand = new HandEvaluator(sortedCards);
         playerHand.EvaluateHandAtFlop();
         Hand = playerHand;
-        DetermineHandStrength(Hand.Cards[0], Hand.Cards[1]);
-        Debug.Log("Player" + SeatPos + " has a HandStrength of " + HandStrength);
+        if (!checkedHandStrength)
+        {
+            DetermineHandStrength(Hand.Cards[0], Hand.Cards[1]);
+            Debug.Log("Player" + SeatPos + " has a HandStrength of " + HandStrength);
+            checkedHandStrength = true;
+        }
         //Debug.Log("player" + SeatPos + " has " + Hand.HandValues.PokerHand + " with a highCard of " + Hand.HandValues.HighCard + " and a handTotal of " + Hand.HandValues.Total + " a chipCount of " + ChipCount);
     }
 
@@ -164,14 +170,14 @@ public class PokerPlayer {
 
     public void DetermineHandStrength(CardType myCard1, CardType myCard2)
     {
-        int numberOfWins = 0;
-        for (int f = 0; f < 1000; f++)
+        float numberOfWins = 0;
+        for (int f = 0; f < 10; f++)
         {
             List<CardType> testDeck = new List<CardType>();
             List<PokerPlayer> testPlayers = new List<PokerPlayer>();
             List<CardType> testBoard = new List<CardType>();
             PokerPlayer fakeSelf = new PokerPlayer();
-            fakeSelf = this;
+            fakeSelf.SeatPos = SeatPos;
             #region populatingTheDeck
             SuitType[] suits = new SuitType[4]
             {
@@ -207,14 +213,18 @@ public class PokerPlayer {
             #endregion
             testDeck.Remove(myCard1);
             testDeck.Remove(myCard2);
-            fakeSelf.Hand.Cards.Add(myCard1);
-            fakeSelf.Hand.Cards.Add(myCard2);
             testPlayers.Add(fakeSelf);
             foreach (Card boardCard in Table.instance._board)
             {
                 testDeck.Remove(boardCard.cardType);
                 testBoard.Add(boardCard.cardType);
             }
+            List<List<CardType>> playerCards = new List<List<CardType>>()
+            {
+                new List<CardType>(), new List<CardType>(), new List<CardType>(), new List<CardType>(), new List<CardType>()
+            };
+            playerCards[0].Add(myCard1);
+            playerCards[0].Add(myCard2);
             for (int i = 0; i < Services.GameManager.players.Count - 1; i++)
             {
                 testPlayers.Add(new PokerPlayer());
@@ -225,9 +235,11 @@ public class PokerPlayer {
                 {
                     int cardPos = Random.Range(0, testDeck.Count);
                     CardType cardType = testDeck[cardPos];
-                    testPlayers[i].Hand.Cards.Add(cardType);
+                    playerCards[i].Add(cardType);
                     testDeck.Remove(cardType);
                 }
+                playerCards[i].Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
+                testPlayers[i].SeatPos = i;
             }
             if (Table.instance._board.Count == 3)
             {
@@ -238,6 +250,8 @@ public class PokerPlayer {
                     testDeck.Remove(cardType);
                     testBoard.Add(cardType);
                 }
+                //Debug.Log("PLAYER " + testPlayers[0].SeatPos + " MIGHT GET A " + testPlayers[0].Hand.HandValues.PokerHand);
+                //Debug.Log("PLAYER" + testPlayers[0].SeatPos + " ALSO HAS " + testPlayers[0].Hand.Cards.Count + " FUCKING CARDS!");
             }
             else if (Table.instance._board.Count == 4)
             {
@@ -245,27 +259,48 @@ public class PokerPlayer {
                 CardType cardType = testDeck[cardPos];
                 testDeck.Remove(cardType);
                 testBoard.Add(cardType);
+                //Debug.Log("PLAYER" + testPlayers[0].SeatPos + " MIGHT GET A " + testPlayers[0].Hand.HandValues.PokerHand);
+                //Debug.Log("PLAYER" + testPlayers[0].SeatPos + " ALSO HAS " + testPlayers[0].Hand.Cards.Count + " FUCKING CARDS!");
             }
-            foreach (PokerPlayer player in testPlayers)
+
+            for (int i = 0; i < playerCards.Count; i++)
             {
-                player.Hand.Cards.AddRange(testBoard);
+                playerCards[i].AddRange(testBoard);
+                playerCards[i].Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
+                HandEvaluator testHand = new HandEvaluator(playerCards[i]);
+                testHand.EvaluateHandAtRiver();
+                testPlayers[i].Hand = testHand;
+                //Debug.Log("testPlayer" + testPlayers[i].SeatPos + " has a " + testPlayers[i].Hand.HandValues.PokerHand);
+                //Debug.Log("testPlayer" + testPlayers[i].SeatPos + " ALSO HAS " + testPlayers[i].Hand.Cards.Count + " FUCKING CARDS!");
             }
             Services.GameManager.EvaluatePlayersOnShowdown(testPlayers);
+            //for (int i = 0; i < testPlayers.Count; i++)
+            //{
+            //    Debug.Log("testPlayer " + testPlayers[i].SeatPos + " is a " + testPlayers[i].PlayerState);
+            //}
             if (testPlayers[0].PlayerState == PlayerState.Winner)
             {
-                int numberOfTestWinners = 0;
+                Debug.Log("AND THE TEST WINNER IS PLAYER " + testPlayers[0].SeatPos + " WITH A " + testPlayers[0].Hand.HandValues.PokerHand);
+                float numberOfTestWinners = 0;
                 foreach (PokerPlayer player in testPlayers)
                 {
                     if (player.PlayerState == PlayerState.Winner)
                     {
                         numberOfTestWinners++;
                     }
+                    else
+                    {
+                        Debug.Log("losing player had a " + player.Hand.HandValues.PokerHand);
+                    }
                 }
-                numberOfWins += 1 / numberOfTestWinners;
+                numberOfWins += (1 / numberOfTestWinners);
+                //Debug.Log("numberOfWins = " + numberOfWins);
             }
         }
-        HandStrength = numberOfWins / 1000;
+        Debug.Log("number of wins = " + numberOfWins);
+        HandStrength = numberOfWins / 10;
+        Debug.Log("The real Player " + SeatPos + " is holding " + Hand.Cards.Count + "cards");
     }
-
+    
 }
 
