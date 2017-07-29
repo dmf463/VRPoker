@@ -38,6 +38,33 @@ public class HandEvaluator {
         Cards = sortedCards;
     }
 
+    //TEST SHIT
+    public HandEvaluator()
+    {
+        spadeSum = 0;
+        heartSum = 0;
+        diamondSum = 0;
+        clubSum = 0;
+        straightCount = 0;
+        straightFlushCount = 0;
+    }
+
+    public void SetHandEvalutor(List<CardType> sortedCards)
+    {
+        incomingCards = sortedCards;
+        Cards = sortedCards;
+    }
+    public void ResetHandEvaluator()
+    {
+        spadeSum = 0;
+        heartSum = 0;
+        diamondSum = 0;
+        clubSum = 0;
+        straightCount = 0;
+        straightFlushCount = 0;
+    }
+    //END TEST SHIT
+
     public HandValue HandValues
     {
         get { return handValue; }

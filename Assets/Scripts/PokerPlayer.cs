@@ -31,6 +31,7 @@ public class PokerPlayer {
     public bool HasBeenPaid;
     public int ChipCountToCheckWhenWinning;
     public bool checkedHandStrength;
+    public int HandRankOnShowDown;
 
     public void EvaluateHandPreFlop() 
     {
@@ -49,12 +50,12 @@ public class PokerPlayer {
         HandEvaluator playerHand = new HandEvaluator(sortedCards);
         playerHand.EvaluateHandAtFlop();
         Hand = playerHand;
-        if (!checkedHandStrength)
-        {
-            DetermineHandStrength(Hand.Cards[0], Hand.Cards[1]);
-            Debug.Log("Player" + SeatPos + " has a HandStrength of " + HandStrength);
-            checkedHandStrength = true;
-        }
+        //if (!checkedHandStrength)
+        //{
+        //    DetermineHandStrength(Hand.Cards[0], Hand.Cards[1]);
+        //    Debug.Log("Player" + SeatPos + " has a HandStrength of " + HandStrength);
+        //    checkedHandStrength = true;
+        //}
         //Debug.Log("player" + SeatPos + " has " + Hand.HandValues.PokerHand + " with a highCard of " + Hand.HandValues.HighCard + " and a handTotal of " + Hand.HandValues.Total + " a chipCount of " + ChipCount);
     }
 
@@ -172,33 +173,16 @@ public class PokerPlayer {
     {
         float numberOfWins = 0;
         List<CardType> testDeck = new List<CardType>();
-        List<PokerPlayer> testPlayers = new List<PokerPlayer>();
-        List<CardType> testBoard = new List<CardType>();
-        //PokerPlayer fakeSelf = new PokerPlayer();
-        List<List<CardType>> playerCards = new List<List<CardType>>()
-            {
-                new List<CardType>(), new List<CardType>(), new List<CardType>(), new List<CardType>(), new List<CardType>()
-            };
-        for (int f = 0; f < 1000; f++)
+        #region populatingTheDeck
+        SuitType[] suits = new SuitType[4]
         {
-            testDeck.Clear();
-            testPlayers.Clear();
-            testBoard.Clear();
-            foreach(List<CardType> cardList in playerCards)
-            {
-                cardList.Clear();
-            } 
-            //fakeSelf.SeatPos = SeatPos;
-            #region populatingTheDeck
-            SuitType[] suits = new SuitType[4]
-            {
             SuitType.Spades,
             SuitType.Hearts,
             SuitType.Diamonds,
             SuitType.Clubs
-            };
-            RankType[] ranks = new RankType[13]
-            {
+        };
+        RankType[] ranks = new RankType[13]
+        {
             RankType.Two,
             RankType.Three,
             RankType.Four,
@@ -212,27 +196,55 @@ public class PokerPlayer {
             RankType.Queen,
             RankType.King,
             RankType.Ace
-            };
+        };
 
-            foreach (SuitType suit in suits)
+        foreach (SuitType suit in suits)
+        {
+            foreach (RankType rank in ranks)
             {
-                foreach (RankType rank in ranks)
-                {
-                    testDeck.Add(new CardType(rank, suit));
-                }
+                testDeck.Add(new CardType(rank, suit));
             }
-            #endregion
+        }
+        #endregion
+        List<CardType> referenceDeck = new List<CardType>();
+        referenceDeck.AddRange(testDeck);
+
+        List<CardType> testBoard = new List<CardType>();
+        List<PokerPlayer> testPlayers = new List<PokerPlayer>()
+        {
+            new PokerPlayer(), new PokerPlayer(), new PokerPlayer(), new PokerPlayer(), new PokerPlayer(),
+        };
+        List<List<CardType>> playerCards = new List<List<CardType>>()
+        {
+            new List<CardType>(), new List<CardType>(), new List<CardType>(), new List<CardType>(), new List<CardType>()
+        };
+        List<HandEvaluator> testEvaluators = new List<HandEvaluator>()
+        {
+            new HandEvaluator(), new HandEvaluator(), new HandEvaluator(), new HandEvaluator(), new HandEvaluator()
+        };
+        for (int f = 0; f < 1000; f++)
+        {
+            foreach(PokerPlayer player in testPlayers)
+            {
+                player.Hand = null;
+            }
+            foreach(HandEvaluator eval in testEvaluators)
+            {
+                eval.ResetHandEvaluator();
+            }
+            testDeck.Clear();
+            testDeck.AddRange(referenceDeck);
+            testBoard.Clear();
+            foreach(List<CardType> cardList in playerCards)
+            {
+                cardList.Clear();
+            } 
             testDeck.Remove(myCard1);
             testDeck.Remove(myCard2);
-            //testPlayers.Add(fakeSelf);
             foreach (Card boardCard in Table.instance._board)
             {
                 testDeck.Remove(boardCard.cardType);
                 testBoard.Add(boardCard.cardType);
-            }
-            for (int i = 0; i < Services.GameManager.players.Count; i++)
-            {
-                testPlayers.Add(new PokerPlayer());
             }
             testPlayers[0].SeatPos = SeatPos;
             playerCards[0].Add(myCard1);
@@ -270,7 +282,8 @@ public class PokerPlayer {
             {
                 playerCards[i].AddRange(testBoard);
                 playerCards[i].Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
-                HandEvaluator testHand = new HandEvaluator(playerCards[i]);
+                HandEvaluator testHand = testEvaluators[i];
+                testHand.SetHandEvalutor(playerCards[i]);
                 testHand.EvaluateHandAtRiver();
                 testPlayers[i].Hand = testHand;
             }
@@ -286,16 +299,16 @@ public class PokerPlayer {
                     }
                     else
                     {
-                        Debug.Log("losing player had a " + player.Hand.HandValues.PokerHand);
+                        //Debug.Log("losing player had a " + player.Hand.HandValues.PokerHand);
                     }
                 }
                 numberOfWins += (1 / numberOfTestWinners);
             }
         }
-        Debug.Log("number of wins = " + numberOfWins);
+        //Debug.Log("number of wins = " + numberOfWins);
         HandStrength = numberOfWins / 1000;
-        Debug.Log("The real Player " + SeatPos + " is holding " + Hand.Cards.Count + "cards");
+        //Debug.Log("The real Player " + SeatPos + " is holding " + Hand.Cards.Count + "cards");
     }
-    
+
 }
 

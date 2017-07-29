@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     PokerPlayer player2;
     PokerPlayer player3;
     PokerPlayer player4;
+    private List<PokerPlayer> sortedPlayers = new List<PokerPlayer>();
     public GameObject MessageBoard;
     TextMesh messageText;
     public Hand hand1;
@@ -129,8 +130,28 @@ public class GameManager : MonoBehaviour
                 messageText.text = "Give the winner(s) their winnings (pot size is 100, that's a black chip)";
                 EvaluatePlayersOnShowdown(players);
             }
-        }  
+        }
         #endregion
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            players[0].DetermineHandStrength(players[0].Hand.Cards[0], players[0].Hand.Cards[1]);
+        }
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            players[1].DetermineHandStrength(players[1].Hand.Cards[0], players[0].Hand.Cards[1]);
+        }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            players[2].DetermineHandStrength(players[2].Hand.Cards[0], players[0].Hand.Cards[1]);
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            players[3].DetermineHandStrength(players[3].Hand.Cards[0], players[0].Hand.Cards[1]);
+        }
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            players[4].DetermineHandStrength(players[4].Hand.Cards[0], players[0].Hand.Cards[1]);
+        }
 
 
     }
@@ -147,65 +168,77 @@ public class GameManager : MonoBehaviour
 
     public void EvaluatePlayersOnShowdown(List<PokerPlayer> playersToEvaluate)
     {
-        List<PokerPlayer> sortedPlayers = new List<PokerPlayer>(playersToEvaluate.OrderByDescending(bestHand => bestHand.Hand.HandValues.PokerHand).ThenByDescending(bestHand => bestHand.Hand.HandValues.Total).ThenByDescending(bestHand => bestHand.Hand.HandValues.HighCard));
-        sortedPlayers[0].PlayerState = PlayerState.Winner;
-        List<List<PokerPlayer>> PlayerRank = new List<List<PokerPlayer>>();
+        sortedPlayers.Clear();
+        sortedPlayers = playersToEvaluate.OrderByDescending(bestHand => bestHand.Hand.HandValues.PokerHand).ThenByDescending(bestHand => bestHand.Hand.HandValues.Total).ThenByDescending(bestHand => bestHand.Hand.HandValues.HighCard).ToList();
+        //sortedPlayers[0].PlayerState = PlayerState.Winner;
+        //List<List<PokerPlayer>> PlayerRank = new List<List<PokerPlayer>>();
         for (int i = 0; i < sortedPlayers.Count; i++)
         {
-            if (PlayerRank.Count == 0)
+            //if (PlayerRank.Count == 0)
+            //{
+            //    PlayerRank.Add(new List<PokerPlayer>() { sortedPlayers[i] });
+            //}
+            if (sortedPlayers[i].Hand.HandValues.PokerHand == sortedPlayers[0].Hand.HandValues.PokerHand)
             {
-                PlayerRank.Add(new List<PokerPlayer>() { sortedPlayers[i] });
-            }
-            else if (sortedPlayers[i].Hand.HandValues.PokerHand == PlayerRank[PlayerRank.Count - 1][0].Hand.HandValues.PokerHand)
-            {
-                if(sortedPlayers[i].Hand.HandValues.Total == PlayerRank[PlayerRank.Count - 1][0].Hand.HandValues.Total)
+                if(sortedPlayers[i].Hand.HandValues.Total == sortedPlayers[0].Hand.HandValues.Total)
                 {
-                    if(sortedPlayers[i].Hand.HandValues.HighCard == PlayerRank[PlayerRank.Count - 1][0].Hand.HandValues.HighCard)
+                    if(sortedPlayers[i].Hand.HandValues.HighCard == sortedPlayers[0].Hand.HandValues.HighCard)
                     {
-                        PlayerRank[PlayerRank.Count - 1].Add(sortedPlayers[i]);
+                        //PlayerRank[PlayerRank.Count - 1].Add(sortedPlayers[i]);
+                        sortedPlayers[i].HandRankOnShowDown = 1;
                     }
                     else 
                     {
-                        PlayerRank.Add(new List<PokerPlayer>() { sortedPlayers[i] });
+                        sortedPlayers[i].HandRankOnShowDown = sortedPlayers[i - 1].HandRankOnShowDown + 1;
                     }
                 }
                 else 
                 {
-                    PlayerRank.Add(new List<PokerPlayer>() { sortedPlayers[i] });
+                    sortedPlayers[i].HandRankOnShowDown = sortedPlayers[i - 1].HandRankOnShowDown + 1;
                 }
                 
             }
             else
             {
-                PlayerRank.Add(new List<PokerPlayer>() { sortedPlayers[i] });
+                sortedPlayers[i].HandRankOnShowDown = sortedPlayers[i - 1].HandRankOnShowDown + 1;
             }
         }
 
-        for (int i = 0; i < PlayerRank.Count; i++)
+        for (int i = 0; i < sortedPlayers.Count; i++)
         {
-            if (i == 0)
+            if(sortedPlayers[i].HandRankOnShowDown == 1)
             {
-                foreach (PokerPlayer player in PlayerRank[0])
-                {
-                    player.PlayerState = PlayerState.Winner;
-                    player.ChipCountToCheckWhenWinning = player.ChipCount;
-                    numberOfWinners++;
-                }
+                sortedPlayers[i].PlayerState = PlayerState.Winner;
+                sortedPlayers[i].ChipCountToCheckWhenWinning = sortedPlayers[i].ChipCount;
+                numberOfWinners++;
             }
             else
             {
-                foreach (PokerPlayer player in PlayerRank[i])
-                {
-                    player.PlayerState = PlayerState.Loser;
-                }
+                sortedPlayers[i].PlayerState = PlayerState.Loser;
             }
+            //if (i == 0)
+            //{
+            //    foreach (PokerPlayer player in PlayerRank[0])
+            //    {
+            //        player.PlayerState = PlayerState.Winner;
+            //        player.ChipCountToCheckWhenWinning = player.ChipCount;
+            //        numberOfWinners++;
+            //    }
+            //}
+            //else
+            //{
+            //    foreach (PokerPlayer player in PlayerRank[i])
+            //    {
+            //        player.PlayerState = PlayerState.Loser;
+            //    }
+            //}
         }
 
-        for (int i = 0; i < playersToEvaluate.Count; i++)
-        {
-            //playersToEvaluate[i].FlipCards();
-            //Debug.Log("player" + playersToEvaluate[i].SeatPos + "is the " + playersToEvaluate[i].PlayerState + " with (a) " + playersToEvaluate[i].Hand.HandValues.PokerHand + " with a highCard of " + playersToEvaluate[i].Hand.HandValues.HighCard + " and a handTotal of " + playersToEvaluate[i].Hand.HandValues.Total);
-        }
+        //for (int i = 0; i < playersToEvaluate.Count; i++)
+        //{
+        //    playersToEvaluate[i].FlipCards();
+        //    Debug.Log("player" + playersToEvaluate[i].SeatPos + "is the " + playersToEvaluate[i].PlayerState + " with (a) " + playersToEvaluate[i].Hand.HandValues.PokerHand + " with a highCard of " + playersToEvaluate[i].Hand.HandValues.HighCard + " and a handTotal of " + playersToEvaluate[i].Hand.HandValues.Total);
+        //}
 
         //sortedPlayers.Clear();
         //playersHaveBeenEvaluated = true;
