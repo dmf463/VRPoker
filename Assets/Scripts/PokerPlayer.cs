@@ -50,12 +50,12 @@ public class PokerPlayer {
         HandEvaluator playerHand = new HandEvaluator(sortedCards);
         playerHand.EvaluateHandAtFlop();
         Hand = playerHand;
-        //if (!checkedHandStrength)
-        //{
-        //    DetermineHandStrength(Hand.Cards[0], Hand.Cards[1]);
-        //    Debug.Log("Player" + SeatPos + " has a HandStrength of " + HandStrength);
-        //    checkedHandStrength = true;
-        //}
+        if (!checkedHandStrength)
+        {
+            DetermineHandStrength(Hand.Cards[0], Hand.Cards[1]);
+            Debug.Log("Player" + SeatPos + " has a HandStrength of " + HandStrength);
+            checkedHandStrength = true;
+        }
         //Debug.Log("player" + SeatPos + " has " + Hand.HandValues.PokerHand + " with a highCard of " + Hand.HandValues.HighCard + " and a handTotal of " + Hand.HandValues.Total + " a chipCount of " + ChipCount);
     }
 
@@ -172,6 +172,7 @@ public class PokerPlayer {
     public void DetermineHandStrength(CardType myCard1, CardType myCard2)
     {
         float numberOfWins = 0;
+        //set up all my empty lists to use 
         List<CardType> testDeck = new List<CardType>();
         #region populatingTheDeck
         SuitType[] suits = new SuitType[4]
@@ -224,31 +225,44 @@ public class PokerPlayer {
         };
         for (int f = 0; f < 1000; f++)
         {
+            //clear everything
+            //clear each players hands
             foreach(PokerPlayer player in testPlayers)
             {
                 player.Hand = null;
             }
+            //clear each players handEvaluators
             foreach(HandEvaluator eval in testEvaluators)
             {
                 eval.ResetHandEvaluator();
             }
+            //clear the deck
             testDeck.Clear();
+            //add the deck
             testDeck.AddRange(referenceDeck);
+            //clear the board
             testBoard.Clear();
+            //clear each players cardList
             foreach(List<CardType> cardList in playerCards)
             {
                 cardList.Clear();
             } 
+            //Start simulating the game
+            //remove my cards from the deck
             testDeck.Remove(myCard1);
             testDeck.Remove(myCard2);
+            //remove the cards on the board from the deck and then add them to the fake board.
             foreach (Card boardCard in Table.instance._board)
             {
                 testDeck.Remove(boardCard.cardType);
                 testBoard.Add(boardCard.cardType);
             }
+            //set myself as test player0
             testPlayers[0].SeatPos = SeatPos;
             playerCards[0].Add(myCard1);
             playerCards[0].Add(myCard2);
+            //give two cards two each other testPlayer, and then remove those cards from the deck
+            //also give them a seat number
             for (int i = 1; i < testPlayers.Count; i++)
             {
                 for (int j = 0; j < 2; j++)
@@ -260,6 +274,8 @@ public class PokerPlayer {
                 }
                 testPlayers[i].SeatPos = i;
             }
+            //if we're on the flop, deal out two more card to the board
+            //and take those from the deck
             if (Table.instance._board.Count == 3)
             {
                 for (int i = 0; i < 2; i++)
@@ -270,6 +286,7 @@ public class PokerPlayer {
                     testBoard.Add(cardType);
                 }
             }
+            //if we're on the turn, only take out one more card from the deck to the board
             else if (Table.instance._board.Count == 4)
             {
                 int cardPos = Random.Range(0, testDeck.Count);
@@ -277,7 +294,12 @@ public class PokerPlayer {
                 testDeck.Remove(cardType);
                 testBoard.Add(cardType);
             }
-
+            //for each player, add the board cards
+            //sort the hands
+            //assign them an evaluator
+            //set the evaluator
+            //evaluate the hand
+            //set the hand = to the evaluator
             for (int i = 0; i < playerCards.Count; i++)
             {
                 playerCards[i].AddRange(testBoard);
@@ -287,7 +309,9 @@ public class PokerPlayer {
                 testHand.EvaluateHandAtRiver();
                 testPlayers[i].Hand = testHand;
             }
+            //compare all test players and find the winner
             Services.GameManager.EvaluatePlayersOnShowdown(testPlayers);
+            //if testPlayer[0] (this player) wins, we notch up the win score
             if (testPlayers[0].PlayerState == PlayerState.Winner)
             {
                 float numberOfTestWinners = 0;
@@ -305,7 +329,7 @@ public class PokerPlayer {
                 numberOfWins += (1 / numberOfTestWinners);
             }
         }
-        //Debug.Log("number of wins = " + numberOfWins);
+        //after 1000 loops, we know the hand strength
         HandStrength = numberOfWins / 1000;
         //Debug.Log("The real Player " + SeatPos + " is holding " + Hand.Cards.Count + "cards");
     }
