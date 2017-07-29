@@ -60,17 +60,17 @@ public class Card : InteractionSuperClass {
             InstantiateNewDeck();
         }
 
-        if(throwingHand.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_Grip))
-        {
-            if(Table.dealerState == DealerState.DealingState)
-            {
-                Table.dealerState = DealerState.ShufflingState;
-            }
-            else
-            {
-                Table.dealerState = DealerState.DealingState;
-            }
-        }
+        //if(throwingHand.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_Grip))
+        //{
+        //    if(Table.dealerState == DealerState.DealingState)
+        //    {
+        //        Table.dealerState = DealerState.ShufflingState;
+        //    }
+        //    else
+        //    {
+        //        Table.dealerState = DealerState.DealingState;
+        //    }
+        //}
 
         if (transform.eulerAngles.x > 89 && transform.eulerAngles.x < 92) cardFacingUp = true;
         else cardFacingUp = false;

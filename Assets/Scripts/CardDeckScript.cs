@@ -52,6 +52,14 @@ public class CardDeckScript : InteractionSuperClass {
     void Update()
     {
 
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            int cardPos = Random.Range(0, cardsInDeck.Count);
+            CardType cardType = cardsInDeck[cardPos];
+            Card card = CreateCard(cardType, GameObject.Find("ShufflingArea").transform.position, Quaternion.identity);
+            card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
+        }
+
     }
 
     void OnCollisionEnter(Collision other)

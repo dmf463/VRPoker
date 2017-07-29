@@ -171,13 +171,24 @@ public class PokerPlayer {
     public void DetermineHandStrength(CardType myCard1, CardType myCard2)
     {
         float numberOfWins = 0;
-        for (int f = 0; f < 10; f++)
+        List<CardType> testDeck = new List<CardType>();
+        List<PokerPlayer> testPlayers = new List<PokerPlayer>();
+        List<CardType> testBoard = new List<CardType>();
+        //PokerPlayer fakeSelf = new PokerPlayer();
+        List<List<CardType>> playerCards = new List<List<CardType>>()
+            {
+                new List<CardType>(), new List<CardType>(), new List<CardType>(), new List<CardType>(), new List<CardType>()
+            };
+        for (int f = 0; f < 1000; f++)
         {
-            List<CardType> testDeck = new List<CardType>();
-            List<PokerPlayer> testPlayers = new List<PokerPlayer>();
-            List<CardType> testBoard = new List<CardType>();
-            PokerPlayer fakeSelf = new PokerPlayer();
-            fakeSelf.SeatPos = SeatPos;
+            testDeck.Clear();
+            testPlayers.Clear();
+            testBoard.Clear();
+            foreach(List<CardType> cardList in playerCards)
+            {
+                cardList.Clear();
+            } 
+            //fakeSelf.SeatPos = SeatPos;
             #region populatingTheDeck
             SuitType[] suits = new SuitType[4]
             {
@@ -213,22 +224,19 @@ public class PokerPlayer {
             #endregion
             testDeck.Remove(myCard1);
             testDeck.Remove(myCard2);
-            testPlayers.Add(fakeSelf);
+            //testPlayers.Add(fakeSelf);
             foreach (Card boardCard in Table.instance._board)
             {
                 testDeck.Remove(boardCard.cardType);
                 testBoard.Add(boardCard.cardType);
             }
-            List<List<CardType>> playerCards = new List<List<CardType>>()
-            {
-                new List<CardType>(), new List<CardType>(), new List<CardType>(), new List<CardType>(), new List<CardType>()
-            };
-            playerCards[0].Add(myCard1);
-            playerCards[0].Add(myCard2);
-            for (int i = 0; i < Services.GameManager.players.Count - 1; i++)
+            for (int i = 0; i < Services.GameManager.players.Count; i++)
             {
                 testPlayers.Add(new PokerPlayer());
             }
+            testPlayers[0].SeatPos = SeatPos;
+            playerCards[0].Add(myCard1);
+            playerCards[0].Add(myCard2);
             for (int i = 1; i < testPlayers.Count; i++)
             {
                 for (int j = 0; j < 2; j++)
@@ -238,7 +246,6 @@ public class PokerPlayer {
                     playerCards[i].Add(cardType);
                     testDeck.Remove(cardType);
                 }
-                playerCards[i].Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
                 testPlayers[i].SeatPos = i;
             }
             if (Table.instance._board.Count == 3)
@@ -250,8 +257,6 @@ public class PokerPlayer {
                     testDeck.Remove(cardType);
                     testBoard.Add(cardType);
                 }
-                //Debug.Log("PLAYER " + testPlayers[0].SeatPos + " MIGHT GET A " + testPlayers[0].Hand.HandValues.PokerHand);
-                //Debug.Log("PLAYER" + testPlayers[0].SeatPos + " ALSO HAS " + testPlayers[0].Hand.Cards.Count + " FUCKING CARDS!");
             }
             else if (Table.instance._board.Count == 4)
             {
@@ -259,8 +264,6 @@ public class PokerPlayer {
                 CardType cardType = testDeck[cardPos];
                 testDeck.Remove(cardType);
                 testBoard.Add(cardType);
-                //Debug.Log("PLAYER" + testPlayers[0].SeatPos + " MIGHT GET A " + testPlayers[0].Hand.HandValues.PokerHand);
-                //Debug.Log("PLAYER" + testPlayers[0].SeatPos + " ALSO HAS " + testPlayers[0].Hand.Cards.Count + " FUCKING CARDS!");
             }
 
             for (int i = 0; i < playerCards.Count; i++)
@@ -270,17 +273,10 @@ public class PokerPlayer {
                 HandEvaluator testHand = new HandEvaluator(playerCards[i]);
                 testHand.EvaluateHandAtRiver();
                 testPlayers[i].Hand = testHand;
-                //Debug.Log("testPlayer" + testPlayers[i].SeatPos + " has a " + testPlayers[i].Hand.HandValues.PokerHand);
-                //Debug.Log("testPlayer" + testPlayers[i].SeatPos + " ALSO HAS " + testPlayers[i].Hand.Cards.Count + " FUCKING CARDS!");
             }
             Services.GameManager.EvaluatePlayersOnShowdown(testPlayers);
-            //for (int i = 0; i < testPlayers.Count; i++)
-            //{
-            //    Debug.Log("testPlayer " + testPlayers[i].SeatPos + " is a " + testPlayers[i].PlayerState);
-            //}
             if (testPlayers[0].PlayerState == PlayerState.Winner)
             {
-                Debug.Log("AND THE TEST WINNER IS PLAYER " + testPlayers[0].SeatPos + " WITH A " + testPlayers[0].Hand.HandValues.PokerHand);
                 float numberOfTestWinners = 0;
                 foreach (PokerPlayer player in testPlayers)
                 {
@@ -294,11 +290,10 @@ public class PokerPlayer {
                     }
                 }
                 numberOfWins += (1 / numberOfTestWinners);
-                //Debug.Log("numberOfWins = " + numberOfWins);
             }
         }
         Debug.Log("number of wins = " + numberOfWins);
-        HandStrength = numberOfWins / 10;
+        HandStrength = numberOfWins / 1000;
         Debug.Log("The real Player " + SeatPos + " is holding " + Hand.Cards.Count + "cards");
     }
     
