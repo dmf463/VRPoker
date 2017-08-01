@@ -157,56 +157,65 @@ public class GameManager : MonoBehaviour
 
     public void EvaluatePlayersOnShowdown(List<PokerPlayer> playersToEvaluate)
     {
-        sortedPlayers.Clear();
-        sortedPlayers = playersToEvaluate.
-            OrderByDescending(bestHand => bestHand.Hand.HandValues.PokerHand).
-            ThenByDescending(bestHand => bestHand.Hand.HandValues.Total).
-            ThenByDescending(bestHand => bestHand.Hand.HandValues.HighCard).ToList();
-        for (int i = 0; i < sortedPlayers.Count; i++)
-        {
-            Debug.Log("sortedPlayers list is ordered as player " + sortedPlayers[i].SeatPos + " with " + sortedPlayers[i].Hand.HandValues.PokerHand + " in list position " + i);
-        }
-        sortedPlayers[0].HandRankOnShowDown = 1;
-        for (int i = 1; i < sortedPlayers.Count; i++)
-        {
-            if (sortedPlayers[i].Hand.HandValues.PokerHand == sortedPlayers[i - 1].Hand.HandValues.PokerHand)
-            {
-                if(sortedPlayers[i].Hand.HandValues.Total == sortedPlayers[i - 1].Hand.HandValues.Total)
-                {
-                    if(sortedPlayers[i].Hand.HandValues.HighCard == sortedPlayers[i - 1].Hand.HandValues.HighCard)
-                    {
-                        sortedPlayers[i].HandRankOnShowDown = 1;
-                    }
-                    else 
-                    {
-                        sortedPlayers[i].HandRankOnShowDown = sortedPlayers[i - 1].HandRankOnShowDown + 1;
-                    }
-                }
-                else 
-                {
-                    sortedPlayers[i].HandRankOnShowDown = sortedPlayers[i - 1].HandRankOnShowDown + 1;
-                }
-                
-            }
-            else
-            {
-                sortedPlayers[i].HandRankOnShowDown = sortedPlayers[i - 1].HandRankOnShowDown + 1;
-            }
-        }
+        List<PokerPlayer> sortedPlayers = new List<PokerPlayer>(playersToEvaluate.OrderByDescending(bestHand => bestHand.Hand.HandValues.PokerHand).ThenByDescending(bestHand => bestHand.Hand.HandValues.Total).ThenByDescending(bestHand => bestHand.Hand.HandValues.HighCard));
+
+        sortedPlayers[0].PlayerState = PlayerState.Winner;
+
+        List<List<PokerPlayer>> PlayerRank = new List<List<PokerPlayer>>();
 
         for (int i = 0; i < sortedPlayers.Count; i++)
         {
-            if(sortedPlayers[i].HandRankOnShowDown == 1)
+            if (PlayerRank.Count == 0)
             {
+                PlayerRank.Add(new List<PokerPlayer>() { sortedPlayers[i] });
+            }
+            else if (sortedPlayers[i].Hand.HandValues.PokerHand == PlayerRank[PlayerRank.Count - 1][0].Hand.HandValues.PokerHand)
+            {
+                if (sortedPlayers[i].Hand.HandValues.Total == PlayerRank[PlayerRank.Count - 1][0].Hand.HandValues.Total)
+                {
+                    if (sortedPlayers[i].Hand.HandValues.HighCard == PlayerRank[PlayerRank.Count - 1][0].Hand.HandValues.HighCard)
+                    {
+                        PlayerRank[PlayerRank.Count - 1].Add(sortedPlayers[i]);
+                    }             
+                    else
+                    {
+                        PlayerRank.Add(new List<PokerPlayer>() { sortedPlayers[i] });
+                    }
+                }
+                else
+                {
+                    PlayerRank.Add(new List<PokerPlayer>() { sortedPlayers[i] });
+                }
+            }
+            else
+            {
+                PlayerRank.Add(new List<PokerPlayer>() { sortedPlayers[i] });
+            }
+        }
+        for (int i = 0; i < PlayerRank.Count; i++)
+        {
+            if (i == 0)
+            {
+                foreach (PokerPlayer player in PlayerRank[0])
+                {
+                    player.PlayerState = PlayerState.Winner;
+                    player.ChipCountToCheckWhenWinning = player.ChipCount;
+                    numberOfWinners++;
+                }
                 sortedPlayers[i].PlayerState = PlayerState.Winner;
                 sortedPlayers[i].ChipCountToCheckWhenWinning = sortedPlayers[i].ChipCount;
                 numberOfWinners++;
             }
             else
             {
+                foreach (PokerPlayer player in PlayerRank[i])
+                {
+                    player.PlayerState = PlayerState.Loser;
+                }
                 sortedPlayers[i].PlayerState = PlayerState.Loser;
             }
         }
+
 
         //for (int i = 0; i < playersToEvaluate.Count; i++)
         //{

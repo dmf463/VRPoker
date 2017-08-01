@@ -282,8 +282,6 @@ public class PokerPlayer {
                         }
                     }
                 }
-
-                Debug.Log(testDeck.Count);
                 Debug.Assert(testDeck.Count == 50);
                 //remove the cards on the board from the deck and then add them to the fake board.
                 foreach (Card boardCard in Table.instance._board)
