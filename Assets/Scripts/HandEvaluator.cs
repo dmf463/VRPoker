@@ -221,7 +221,6 @@ public class HandEvaluator {
         return PokerHand.HighCard;
     }
 
-
     public PokerHand EvaluateHandAtRiver()
     {
         //get number of suit in each hand
@@ -264,7 +263,6 @@ public class HandEvaluator {
         return PokerHand.HighCard;
 
     }
-
 
     private void getNumberOfSuit()
     {

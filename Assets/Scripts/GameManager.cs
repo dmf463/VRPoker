@@ -64,7 +64,11 @@ public class GameManager : MonoBehaviour
                     break;
                 case 3:
                     Table.gameState = GameState.Flop;
-                    messageText.text = "ready for the turn";
+                    messageText.text = "player0 handStrength is " + players[0].HandStrength +
+                                       "\n player1 handStrength is " + players[1].HandStrength +
+                                       "\n player2 handStrength is " + players[2].HandStrength +
+                                       "\n player3 handStrength is " + players[3].HandStrength +
+                                       "\n player4 handStrength is " + players[4].HandStrength;
                     break;
                 case 4:
                     Table.gameState = GameState.Turn;
@@ -132,26 +136,6 @@ public class GameManager : MonoBehaviour
             }
         }
         #endregion
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            players[0].DetermineHandStrength(players[0].Hand.Cards[0], players[0].Hand.Cards[1]);
-        }
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            players[1].DetermineHandStrength(players[1].Hand.Cards[0], players[0].Hand.Cards[1]);
-        }
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            players[2].DetermineHandStrength(players[2].Hand.Cards[0], players[0].Hand.Cards[1]);
-        }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            players[3].DetermineHandStrength(players[3].Hand.Cards[0], players[0].Hand.Cards[1]);
-        }
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            players[4].DetermineHandStrength(players[4].Hand.Cards[0], players[0].Hand.Cards[1]);
-        }
 
 
     }
