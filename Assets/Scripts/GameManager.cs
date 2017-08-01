@@ -49,6 +49,7 @@ public class GameManager : MonoBehaviour
 
         InitializePlayers();
         Table.gameState = GameState.PreFlop;
+        Table.dealerState = DealerState.DealingState;
     }
 
     // Update is called once per frame
@@ -136,6 +137,10 @@ public class GameManager : MonoBehaviour
             }
         }
         #endregion
+        //if (Input.GetKeyDown(KeyCode.L))
+        //{
+        //    players[0].DetermineHandStrength(Table.instance.playerCards[0][0].cardType, Table.instance.playerCards[0][1].cardType);
+        //}
 
 
     }
@@ -159,11 +164,16 @@ public class GameManager : MonoBehaviour
             ThenByDescending(bestHand => bestHand.Hand.HandValues.HighCard).ToList();
         for (int i = 0; i < sortedPlayers.Count; i++)
         {
-            if (sortedPlayers[i].Hand.HandValues.PokerHand == sortedPlayers[0].Hand.HandValues.PokerHand)
+            Debug.Log("sortedPlayers list is ordered as player " + sortedPlayers[i].SeatPos + " with " + sortedPlayers[i].Hand.HandValues.PokerHand + " in list position " + i);
+        }
+        sortedPlayers[0].HandRankOnShowDown = 1;
+        for (int i = 1; i < sortedPlayers.Count; i++)
+        {
+            if (sortedPlayers[i].Hand.HandValues.PokerHand == sortedPlayers[i - 1].Hand.HandValues.PokerHand)
             {
-                if(sortedPlayers[i].Hand.HandValues.Total == sortedPlayers[0].Hand.HandValues.Total)
+                if(sortedPlayers[i].Hand.HandValues.Total == sortedPlayers[i - 1].Hand.HandValues.Total)
                 {
-                    if(sortedPlayers[i].Hand.HandValues.HighCard == sortedPlayers[0].Hand.HandValues.HighCard)
+                    if(sortedPlayers[i].Hand.HandValues.HighCard == sortedPlayers[i - 1].Hand.HandValues.HighCard)
                     {
                         sortedPlayers[i].HandRankOnShowDown = 1;
                     }
