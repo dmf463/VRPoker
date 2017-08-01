@@ -31,9 +31,6 @@ public class PokerPlayer {
     public bool HasBeenPaid;
     public int ChipCountToCheckWhenWinning;
     public bool checkedHandStrength;
-    public int HandRankOnShowDown;
-    private float numberOfWins = 0;
-    private float handStrengthTestLoops = 0;
 
 
     public void EvaluateHandPreFlop() 
@@ -230,6 +227,8 @@ public class PokerPlayer {
         {
             new HandEvaluator(), new HandEvaluator(), new HandEvaluator(), new HandEvaluator(), new HandEvaluator()
         };
+        float numberOfWins = 0;
+        float handStrengthTestLoops = 0;
         while (handStrengthTestLoops < 100)
         {
             #region 10x For-Loop for Hand Strength

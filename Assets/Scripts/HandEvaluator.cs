@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 
 public enum PokerHand { Connectors, SuitedConnectors, HighCard, OnePair, TwoPair, ThreeOfKind, Straight, Flush, FullHouse, FourOfKind, StraightFlush }
@@ -696,26 +697,18 @@ public class HandEvaluator {
         //if the cards rank is equal to the following card + 1, then they are connectors and the "straight count" goes up
         //if the straight count reachs 4, that means there were at least 4 instances of connectors and there MUST be a straight
         //to check the high card, I do the same thing as the flush
-        //if 4, 5, and 6 are consecutive, 6 is the high card
-        //if 4 and 6 are consecutive, then 6 is the high card
-        // if 5 and 6 are consecutive, then 6 is the high card
-        //if 4 and 5 are consectuive, then 5 is the high card,
-        //if neither 4, 5, or 6 are consecutive then ONE of them MUST be consecutive to card 3, so I check that
         //EDGE CASE, THE WHEEL: A, 2, 3, 4, 5. A = 1 and RANK5 is the high card, because we don't know where the 5 is, but we know it's the highcard
 
         CardType highCard = null;
-        for (int i = 0; i < incomingCards.Count - 1; i++)
+        List<CardType> straightCards = incomingCards.Distinct().ToList();
+        for (int i = 0; i < straightCards.Count - 1; i++)
         {
-            RankType card1Rank = incomingCards[i].rank;
-            RankType card2Rank = incomingCards[i + 1].rank;
+            RankType card1Rank = straightCards[i].rank;
+            RankType card2Rank = straightCards[i + 1].rank;
             if (card1Rank + 1 == card2Rank)
             {
                 straightCount++;
                 highCard = incomingCards[i + 1];
-            }
-            else if (card1Rank == card2Rank)
-            {
-                straightCount += 0;
             }
             else straightCount = 0;
         }
@@ -772,13 +765,6 @@ public class HandEvaluator {
     public bool FlushAtTurn()
     {
         //if there are at least 5 of the same suited cards, then the player has a flush
-        //since they are ordered by rank, cards 4, 5, or 6 MUST be in the hand, but whether those cards are PART of the flush I need to check
-        //so if 4, 5, and 6 are all the same suit, then 6 is the high card
-        //if 4 and 5 are the same suit and 6 is not, then 5 is the high card
-        //if 5 and 6 are the same suit and 4 is not, then 6 is the high card
-        //if 4 and 6 are the same suit and 5 is not, then 6 is the high card
-        //if neither 4, 5, or 6 are the same suit, then ONE of them must be the high card
-        //therefore, if one of those three cards has a suit equal to card THREE, then that card is the high card.
         if (spadeSum >= 5 || heartSum >= 5 || diamondSum >= 5 || clubSum >= 5)
         {
             SuitType flushToCheck;
@@ -883,19 +869,10 @@ public class HandEvaluator {
 
     public bool StraightFlushAtTurn()
     {
-        //need to check the straight AND the flush, but I can't just check for a straight and a flush.
-        //instead, I'm taking the Straight() and just adding to check if the connecting cards are also suited.
-        //if the count reaches 4, then hey, you've got yourself a straight flush!
-
-        //need to check the straight, but because of the possibility of pairs in the middle of the straight I need to check each sequence
-        //if the cards rank is equal to the following card + 1, then they are connectors and the "straight count" goes up
-        //if the straight count reachs 4, that means there were at least 4 instances of connectors and there MUST be a straight
-        //to check the high card, I do the same thing as the flush
-        //if 4, 5, and 6 are consecutive, 6 is the high card
-        //if 4 and 6 are consecutive, then 6 is the high card
-        // if 5 and 6 are consecutive, then 6 is the high card
-        //if 4 and 5 are consectuive, then 5 is the high card,
-        //if neither 4, 5, or 6 are consecutive then ONE of them MUST be consecutive to card 3, so I check that
+        //if you have more than 5 of one suit
+        //check cards of that suit
+        //if they are consecutive
+        //grats, you have a straight flush
 
         if(spadeSum >= 5 || heartSum >= 5 || diamondSum >= 5 || clubSum >= 5)
         {
@@ -930,81 +907,6 @@ public class HandEvaluator {
             }
             else return false;
         }
-
-        //if (incomingCards[0].rank + 1 == incomingCards[1].rank && incomingCards[0].suit == incomingCards[1].suit)
-        //{
-        //    straightFlushCount++;
-        //}
-        //if (incomingCards[1].rank + 1 == incomingCards[2].rank && incomingCards[1].suit == incomingCards[2].suit)
-        //{
-        //    straightFlushCount++;
-        //}
-        //if (incomingCards[2].rank + 1 == incomingCards[3].rank && incomingCards[2].suit == incomingCards[3].suit)
-        //{
-        //    straightFlushCount++;
-        //}
-        //if (incomingCards[3].rank + 1 == incomingCards[4].rank && incomingCards[3].suit == incomingCards[4].suit)
-        //{
-        //    straightFlushCount++;
-        //}
-        //if (incomingCards[4].rank + 1 == incomingCards[5].rank && incomingCards[4].suit == incomingCards[5].suit)
-        //{
-        //    straightFlushCount++;
-        //}
-
-        ////FRINGE CASE FOR THE WHEEL
-        //if (straightFlushCount == 0)
-        //{
-        //    if (incomingCards[0].rank == RankType.Two && incomingCards[5].rank == RankType.Ace && incomingCards[0].suit == incomingCards[5].suit)
-        //    {
-        //        if (incomingCards[0].rank + 1 == incomingCards[1].rank && incomingCards[0].suit == incomingCards[1].suit)
-        //        {
-        //            straightFlushCount++;
-        //        }
-        //        if (incomingCards[1].rank + 1 == incomingCards[2].rank && incomingCards[1].suit == incomingCards[2].suit)
-        //        {
-        //            straightFlushCount++;
-        //        }
-        //        if (incomingCards[2].rank + 1 == incomingCards[3].rank && incomingCards[2].suit == incomingCards[3].suit)
-        //        {
-        //            straightFlushCount++;
-        //        }
-        //        if (incomingCards[3].rank + 1 == incomingCards[4].rank && incomingCards[3].suit == incomingCards[4].suit)
-        //        {
-        //            straightFlushCount++;
-        //        }
-        //        if (incomingCards[4].rank + 1 == incomingCards[5].rank && incomingCards[4].suit == incomingCards[5].suit)
-        //        {
-        //            straightFlushCount++;
-        //        }
-        //    }
-        //}
-
-        //if (incomingCards[0].rank == RankType.Two && incomingCards[5].rank == RankType.Ace && incomingCards[0].suit == incomingCards[5].suit)
-        //{
-        //    if (straightFlushCount == 3)
-        //    {
-        //        handValue.Total = 5;
-        //        handValue.PokerHand = PokerHand.StraightFlush;
-        //        return true;
-        //    }
-        //}
-
-        //if (straightFlushCount >= 4)
-        //{
-        //    if (incomingCards[4].rank + 1 == incomingCards[5].rank && incomingCards[4].suit == incomingCards[5].suit)
-        //    {
-        //        handValue.Total = (int)incomingCards[5].rank;
-        //        handValue.PokerHand = PokerHand.StraightFlush;
-        //        return true;
-        //    }
-        //    else
-        //    {
-        //        handValue.Total = (int)incomingCards[4].rank;
-        //        handValue.PokerHand = PokerHand.StraightFlush;
-        //        return true;
-        //    }
-        //}
         return false;
     }
 
@@ -1072,10 +974,6 @@ public class HandEvaluator {
     public bool TwoPairRiver()
     {
         //if there are two pairs of cards that are the same then it's two pair
-        //currently have an issue where the ordered hands can actually have THREE pairs
-        //for example, 4, 4, 9, 9, 10, Q, Q
-        //system evaluates it as the hand being 4's and 9's when it SHOULD be 9's and Q's
-        //solution: put the if else tree in the opposite order, so it finds the highest hand last
 
         //3, 4 && 5, 6
         if (incomingCards[3].rank == incomingCards[4].rank && incomingCards[5].rank == incomingCards[6].rank)
@@ -1208,30 +1106,17 @@ public class HandEvaluator {
 
     public bool StraightAtRiver()
     {
-        //need to check the straight, but because of the possibility of pairs in the middle of the straight I need to check each sequence
-        //if the cards rank is equal to the following card + 1, then they are connectors and the "straight count" goes up
-        //if the straight count reachs 4, that means there were at least 4 instances of connectors and there MUST be a straight
-        //to check the high card, I do the same thing as the flush
-        //if 4, 5, and 6 are consecutive, 6 is the high card
-        //if 4 and 6 are consecutive, then 6 is the high card
-        // if 5 and 6 are consecutive, then 6 is the high card
-        //if 4 and 5 are consectuive, then 5 is the high card,
-        //if neither 4, 5, or 6 are consecutive then ONE of them MUST be consecutive to card 3, so I check that
-        //EDGE CASE, THE WHEEL: A, 2, 3, 4, 5. A = 1 and RANK5 is the high card, because we don't know where the 5 is, but we know it's the highcard
-
         CardType highCard = null;
-        for (int i = 0; i < incomingCards.Count - 1; i++)
+        List<CardType> straightCards = incomingCards.Distinct().ToList();
+        Debug.Assert(straightCards.Count != 0);
+        for (int i = 0; i < straightCards.Count - 1; i++)
         {
-            RankType card1Rank = incomingCards[i].rank;
-            RankType card2Rank = incomingCards[i + 1].rank;
+            RankType card1Rank = straightCards[i].rank;
+            RankType card2Rank = straightCards[i + 1].rank;
             if (card1Rank + 1 == card2Rank)
             {
                 straightCount++;
                 highCard = incomingCards[i + 1];
-            }
-            else if (card1Rank == card2Rank)
-            {
-                straightCount += 0;
             }
             else straightCount = 0;
         }
@@ -1288,12 +1173,6 @@ public class HandEvaluator {
     public bool FlushAtRiver()
     {
         //if there are at least 5 of the same suited cards, then the player has a flush
-        //since they are ordered by rank, cards 4, 5, or 6 MUST be in the hand, but whether those cards are PART of the flush I need to check
-        //so if 4, 5, and 6 are all the same suit, then 6 is the high card
-        //if 4 and 5 are the same suit and 6 is not, then 5 is the high card
-        //if 5 and 6 are the same suit and 4 is not, then 6 is the high card
-        //if 4 and 6 are the same suit and 5 is not, then 6 is the high card
-        //if neither 4, 5, or 6 are the same suit, then ONE of them must be the high card
         //therefore, if one of those three cards has a suit equal to card THREE, then that card is the high card.
         if (spadeSum >= 5 || heartSum >= 5 || diamondSum >= 5 || clubSum >= 5)
         {
@@ -1455,20 +1334,6 @@ public class HandEvaluator {
 
     public bool StraightFlushAtRiver()
     {
-        //need to check the straight AND the flush, but I can't just check for a straight and a flush.
-        //instead, I'm taking the Straight() and just adding to check if the connecting cards are also suited.
-        //if the count reaches 4, then hey, you've got yourself a straight flush!
-
-        //need to check the straight, but because of the possibility of pairs in the middle of the straight I need to check each sequence
-        //if the cards rank is equal to the following card + 1, then they are connectors and the "straight count" goes up
-        //if the straight count reachs 4, that means there were at least 4 instances of connectors and there MUST be a straight
-        //to check the high card, I do the same thing as the flush
-        //if 4, 5, and 6 are consecutive, 6 is the high card
-        //if 4 and 6 are consecutive, then 6 is the high card
-        // if 5 and 6 are consecutive, then 6 is the high card
-        //if 4 and 5 are consectuive, then 5 is the high card,
-        //if neither 4, 5, or 6 are consecutive then ONE of them MUST be consecutive to card 3, so I check that
-
         if (spadeSum >= 5 || heartSum >= 5 || diamondSum >= 5 || clubSum >= 5)
         {
             CardType highCard = null;
@@ -1501,121 +1366,6 @@ public class HandEvaluator {
                 return true;
             }
         }
-        //if (incomingCards[0].rank + 1 == incomingCards[1].rank && incomingCards[0].suit == incomingCards[1].suit)
-        //{
-        //    straightFlushCount++;
-        //}
-        //if (incomingCards[1].rank + 1 == incomingCards[2].rank && incomingCards[1].suit == incomingCards[2].suit)
-        //{
-        //    straightFlushCount++;
-        //}
-        //if (incomingCards[2].rank + 1 == incomingCards[3].rank && incomingCards[2].suit == incomingCards[3].suit)
-        //{
-        //    straightFlushCount++;
-        //}
-        //if (incomingCards[3].rank + 1 == incomingCards[4].rank && incomingCards[3].suit == incomingCards[4].suit)
-        //{
-        //    straightFlushCount++;
-        //}
-        //if (incomingCards[4].rank + 1 == incomingCards[5].rank && incomingCards[4].suit == incomingCards[5].suit)
-        //{
-        //    straightFlushCount++;
-        //}
-        //if (incomingCards[5].rank + 1 == incomingCards[6].rank && incomingCards[5].suit == incomingCards[6].suit)
-        //{
-        //    straightFlushCount++;
-        //}
-
-        ////FRINGE CASE FOR THE WHEEL
-        //if (straightFlushCount == 0)
-        //{
-        //    if (incomingCards[0].rank == RankType.Two && incomingCards[6].rank == RankType.Ace && incomingCards[0].suit == incomingCards[6].suit)
-        //    {
-        //        if (incomingCards[0].rank + 1 == incomingCards[1].rank && incomingCards[0].suit == incomingCards[1].suit)
-        //        {
-        //            straightFlushCount++;
-        //        }
-        //        if (incomingCards[1].rank + 1 == incomingCards[2].rank && incomingCards[1].suit == incomingCards[2].suit)
-        //        {
-        //            straightFlushCount++;
-        //        }
-        //        if (incomingCards[2].rank + 1 == incomingCards[3].rank && incomingCards[2].suit == incomingCards[3].suit)
-        //        {
-        //            straightFlushCount++;
-        //        }
-        //        if (incomingCards[3].rank + 1 == incomingCards[4].rank && incomingCards[3].suit == incomingCards[4].suit)
-        //        {
-        //            straightFlushCount++;
-        //        }
-        //        if (incomingCards[4].rank + 1 == incomingCards[5].rank && incomingCards[4].suit == incomingCards[5].suit)
-        //        {
-        //            straightFlushCount++;
-        //        }
-        //    }
-        //}
-
-        //if (incomingCards[0].rank == RankType.Two && incomingCards[6].rank == RankType.Ace && incomingCards[0].suit == incomingCards[6].suit)
-        //{
-        //    if (straightFlushCount == 3)
-        //    {
-        //        handValue.Total = 5;
-        //        handValue.PokerHand = PokerHand.StraightFlush;
-        //        return true;
-        //    }
-        //}
-
-        //if (straightFlushCount >= 4)
-        //{
-        //    if (incomingCards[4].rank + 1 == incomingCards[5].rank && incomingCards[5].rank + 1 == incomingCards[6].rank 
-        //        && incomingCards[4].suit == incomingCards[5].suit && incomingCards[5].suit == incomingCards[6].suit)
-        //    {
-        //        handValue.Total = (int)incomingCards[6].rank;
-        //        handValue.PokerHand = PokerHand.StraightFlush;
-        //        return true;
-        //    }
-        //    else if (incomingCards[4].rank + 1 == incomingCards[5].rank && incomingCards[5].rank + 1 != incomingCards[6].rank
-        //        && incomingCards[4].suit == incomingCards[5].suit)
-        //    {
-        //        handValue.Total = (int)incomingCards[5].rank;
-        //        handValue.PokerHand = PokerHand.StraightFlush;
-        //        return true;
-        //    }
-        //    else if (incomingCards[4].rank + 1 != incomingCards[5].rank && incomingCards[5].rank + 1 == incomingCards[6].rank
-        //        && incomingCards[5].suit == incomingCards[6].suit)
-        //    {
-        //        handValue.Total = (int)incomingCards[6].rank;
-        //        handValue.PokerHand = PokerHand.StraightFlush;
-        //        return true;
-        //    }
-        //    else if (incomingCards[4].rank + 1 != incomingCards[5].rank && incomingCards[4].rank + 1 == incomingCards[6].rank
-        //        && incomingCards[4].suit == incomingCards[6].suit)
-        //    {
-        //        handValue.Total = (int)incomingCards[6].rank;
-        //        handValue.PokerHand = PokerHand.StraightFlush;
-        //        return true;
-        //    }
-        //    else if (incomingCards[4].rank + 1 != incomingCards[5].rank && incomingCards[5].rank + 1 != incomingCards[6].rank && incomingCards[4].rank + 1 != incomingCards[6].rank)
-        //    {
-        //        if (incomingCards[3].rank + 1 == incomingCards[4].rank && incomingCards[3].suit == incomingCards[4].suit)
-        //        {
-        //            handValue.Total = (int)incomingCards[4].rank;
-        //            handValue.PokerHand = PokerHand.StraightFlush;
-        //            return true;
-        //        }
-        //        else if (incomingCards[3].rank + 1 == incomingCards[5].rank && incomingCards[3].suit == incomingCards[5].suit)
-        //        {
-        //            handValue.Total = (int)incomingCards[5].rank;
-        //            handValue.PokerHand = PokerHand.StraightFlush;
-        //            return true;
-        //        }
-        //        else if (incomingCards[3].rank + 1 == incomingCards[6].rank && incomingCards[3].suit == incomingCards[6].suit)
-        //        {
-        //            handValue.Total = (int)incomingCards[6].rank;
-        //            handValue.PokerHand = PokerHand.StraightFlush;
-        //            return true;
-        //        }
-        //    }
-        //}
         return false;
     }
 

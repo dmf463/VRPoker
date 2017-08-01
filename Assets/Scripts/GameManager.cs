@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
     private int potAmountToGiveWinner;
     private bool winnersHaveBeenPaid;
     private bool playersHaveBeenEvaluated;
+    private bool readyToAwardPlayers;
     [HideInInspector]
     public int winnersPaid;
     void Awake()
@@ -135,12 +136,20 @@ public class GameManager : MonoBehaviour
                 messageText.text = "Give the winner(s) their winnings (pot size is 100, that's a black chip)";
                 EvaluatePlayersOnShowdown(players);
             }
+            if (!readyToAwardPlayers)
+            {
+                for (int i = 0; i < players.Count; i++)
+                {
+                    players[i].FlipCards();
+                    Debug.Log("player" + players[i].SeatPos + "is the " + players[i].PlayerState + " with (a) " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
+                }
+                sortedPlayers.Clear();
+                playersHaveBeenEvaluated = true;
+                StartCoroutine(WaitForWinnersToGetPaid());
+                readyToAwardPlayers = true;
+            }
         }
         #endregion
-        //if (Input.GetKeyDown(KeyCode.L))
-        //{
-        //    players[0].DetermineHandStrength(Table.instance.playerCards[0][0].cardType, Table.instance.playerCards[0][1].cardType);
-        //}
 
 
     }
@@ -215,32 +224,18 @@ public class GameManager : MonoBehaviour
                 sortedPlayers[i].PlayerState = PlayerState.Loser;
             }
         }
-
-
-        //for (int i = 0; i < playersToEvaluate.Count; i++)
-        //{
-        //    playersToEvaluate[i].FlipCards();
-        //    Debug.Log("player" + playersToEvaluate[i].SeatPos + "is the " + playersToEvaluate[i].PlayerState + " with (a) " + playersToEvaluate[i].Hand.HandValues.PokerHand + " with a highCard of " + playersToEvaluate[i].Hand.HandValues.HighCard + " and a handTotal of " + playersToEvaluate[i].Hand.HandValues.Total);
-        //}
-
-        //sortedPlayers.Clear();
-        //playersHaveBeenEvaluated = true;
-        //StartCoroutine(WaitForWinnersToGetPaid());
     }
 
     IEnumerator WaitForWinnersToGetPaid()
     {
-        //Debug.Log("how do IEnumerators actually work lol");
         while (!winnersHaveBeenPaid)
         {
             GivePlayersWinnings();
-            //Debug.Log("Winner is Waiting to be paid");
             yield return null;
         }
         if (winnersHaveBeenPaid)
         {
             messageText.text = "'Thanks dealer, here's a tip!' (you got a tip)";
-            //Debug.Log("You gave the money to the right people! yay! let's play again!");
         }
 
     }
@@ -291,9 +286,11 @@ public class GameManager : MonoBehaviour
         {
             players[i].PlayerState = PlayerState.Playing;
             players[i].HasBeenPaid = false;
+            players[i].checkedHandStrength = false;
         }
         playersHaveBeenEvaluated = false;
         winnersHaveBeenPaid = false;
+        readyToAwardPlayers = false;
     }
 
 }
