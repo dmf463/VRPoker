@@ -22,7 +22,7 @@ public class PokerPlayer {
     public int ChipCount { get { return chipCount; } set { value = chipCount; } }
     private int chipCount
     {
-        get { return Table.instance.GetChipStack(SeatPos); }
+        get { return Table.instance.GetChipStackTotal(SeatPos); }
         set { }
     }
     public HandEvaluator Hand { get; set; }
@@ -36,7 +36,7 @@ public class PokerPlayer {
     public void EvaluateHandPreFlop() 
     {
         //Table.gameState = GameState.PreFlop;
-        List<CardType> sortedCards = Table.instance.EvaluatePlayerPreFlop(SeatPos);
+        List<CardType> sortedCards = Table.instance.SortPlayerCardsPreFlop(SeatPos);
         HandEvaluator playerHand = new HandEvaluator(sortedCards);
         playerHand.EvaluateHandAtPreFlop();
         Hand = playerHand;
@@ -45,8 +45,7 @@ public class PokerPlayer {
 
     public void EvaluateHandOnFlop() 
     {
-        //Table.gameState = GameState.Flop;
-        List<CardType> sortedCards = Table.instance.EvaluatePlayerAtFlop(SeatPos);
+        List<CardType> sortedCards = Table.instance.SortPlayerCardsAtFlop(SeatPos);
         HandEvaluator playerHand = new HandEvaluator(sortedCards);
         playerHand.EvaluateHandAtFlop();
         Hand = playerHand;
@@ -60,8 +59,7 @@ public class PokerPlayer {
 
     public void EvaluateHandOnTurn() 
     {
-        //Table.gameState = GameState.Turn;
-        List<CardType> sortedCards = Table.instance.EvaluatePlayerAtTurn(SeatPos);
+        List<CardType> sortedCards = Table.instance.SortPlayerCardsAtTurn(SeatPos);
         HandEvaluator playerHand = new HandEvaluator(sortedCards);
         playerHand.EvaluateHandAtTurn();
         Hand = playerHand;
@@ -70,8 +68,7 @@ public class PokerPlayer {
 
     public void EvaluateHandOnRiver() 
     {
-        //Table.gameState = GameState.River;
-        List<CardType> sortedCards = Table.instance.EvaluatePlayerAtRiver(SeatPos);
+        List<CardType> sortedCards = Table.instance.SortPlayerCardsAtRiver(SeatPos);
         HandEvaluator playerHand = new HandEvaluator(sortedCards);
         playerHand.EvaluateHandAtRiver();
         Hand = playerHand;
@@ -80,7 +77,7 @@ public class PokerPlayer {
 
     public void FlipCards()
     {
-        List<GameObject> cardsInHand = Table.instance.GetCardObjects(SeatPos);
+        List<GameObject> cardsInHand = Table.instance.GetCardGameObjects(SeatPos);
         for (int i = 0; i < cardsInHand.Count; i++)
         {
             if (cardsInHand[i].GetComponent<Card>().cardIsFlipped == false)
@@ -400,6 +397,7 @@ public class PokerPlayer {
         Debug.Log("Player" + SeatPos + " has a HandStrength of " + HandStrength);
         yield break;
     }
+
 
 }
 

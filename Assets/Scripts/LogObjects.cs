@@ -120,13 +120,69 @@ public class LogObjects : MonoBehaviour
             {
                 if(gameObject.name == playerNames[i])
                 {
+                    //create a list of chips that are about to be added
+                    //  if its the first chip the player gets
+                    //      add that chip to the list
+                    //      destroy the chip
+                    //      instantiate it in the player space.
+                    //      add the list to the players chipstack
+                        //      IF there IS a chip in the space
+                        //          add the new chip to the list
+                        //          destroy the chip
+                        //          IF the chip is NOT a stack
+                        //              make the first chip in there a chipstack
+                        //          add the chip in the list to the chipstack
+                        //          add the list to the players chipstack list
+
+                    //      IF the chip IS in a stack
+                    //          add those chips to the chip list
+                    //          destroy those chips
+                    //          add the chips in the list to the chipstack
+                    //          add the chips in the list to the chiplist
+                    //  if it's the first chipStack in the player space
+                    //     destroy the chip stack
+                    //     instantiate the parent object as the first chip
+                    //     add each child object to the first chip
+                    //     add the chips in the space to the chiplist
+                    List<Chip> tempChipList = new List<Chip>();
                     if (other.GetComponent<Chip>().inAStack == false)
                     {
                         if (Table.instance.playerChipStacks[i].Contains(other.GetComponent<Chip>()))
                         {
                             Debug.Log("this chip is already in the stack");
                         }
-                        else Table.instance.AddChipTo(playerDestinations[i], other.GetComponent<Chip>());
+                        else
+                        {
+                            Debug.Log("got into the new part");
+                            if(Table.instance.playerChipStacks[i].Count == 0)
+                            {
+                                Table.instance.AddChipTo(playerDestinations[i], other.GetComponent<Chip>());
+                            }
+                            else
+                            {
+                                tempChipList.Add(other.GetComponent<Chip>());
+                                //for (int chipIndex = 0; chipIndex < Table.instance.playerChipStacks[i].Count; chipIndex++)
+                                //{
+                                    Debug.Log("got into the for loop");
+                                    //if (Table.instance.playerChipStacks[i][chipIndex].chipStack != null)
+                                    //{
+                                    //    Debug.Log("got into the first if statement");
+                                    //    tempChipList.Add(other.GetComponent<Chip>());
+                                    //    Table.instance.playerChipStacks[i][chipIndex].chipStack.AddToStack(tempChipList[0]);
+                                    //    break;
+                                    //}
+                                    //else
+                                    //{
+                                    //Debug.Log("got into the else statement");
+                                    //GameObject referenceChip = Table.instance.playerChipStacks[i][0].gameObject;
+                                    Table.instance.playerChipStacks[i][0].chipStack = new ChipStack(Table.instance.playerChipStacks[i][0]);
+                                    Table.instance.playerChipStacks[i][0].chipStack.AddToStack(tempChipList[0]);
+                                    Table.instance.AddChipTo(playerDestinations[i], tempChipList[0]);
+                                    break;
+                                    //}
+                                //}
+                            }
+                        }
                     }
                     else if (other.GetComponent<Chip>().inAStack == true)
                     {
@@ -187,5 +243,28 @@ public class LogObjects : MonoBehaviour
                 }
             }
         }
+    }
+
+    public GameObject FindChipPrefab(Chip chip)
+    {
+        GameObject chipPrefab = null;
+        switch (chip.chipValue)
+        {
+            case 5:
+                chipPrefab = Services.PrefabDB.RedChip5;
+                break;
+            case 25:
+                chipPrefab = Services.PrefabDB.BlueChip25;
+                break;
+            case 50:
+                chipPrefab = Services.PrefabDB.WhiteChip50;
+                break;
+            case 100:
+                chipPrefab = Services.PrefabDB.BlackChip100;
+                break;
+            default:
+                break;
+        }
+        return chipPrefab;
     }
 }

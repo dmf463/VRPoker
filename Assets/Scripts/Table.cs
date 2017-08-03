@@ -79,7 +79,7 @@ public class Table {
         return 100;
     }
 
-    public int GetChipStack(int seatPos)
+    public int GetChipStackTotal(int seatPos)
     {
         int chipStack = 0;
         for (int i = 0; i < playerChipStacks[seatPos].Count; i++)
@@ -89,7 +89,7 @@ public class Table {
         return chipStack;
     }
 
-    public List<GameObject> GetCardObjects(int seatPos)
+    public List<GameObject> GetCardGameObjects(int seatPos)
     {
         List<GameObject> cardsInHand = new List<GameObject>();
         for (int i = 0; i < playerCards[i].Count; i++)
@@ -97,6 +97,16 @@ public class Table {
             cardsInHand.Add(playerCards[seatPos][i].gameObject);
         }
         return cardsInHand;
+    }
+
+    public List<GameObject> GetChipGameObjects(int seatPos)
+    {
+        List<GameObject> chipsInStack = new List<GameObject>();
+        for (int i = 0; i < playerChipStacks[seatPos].Count; i++)
+        {
+            chipsInStack.Add(playerChipStacks[seatPos][i].gameObject);
+        }
+        return chipsInStack;
     }
 
     public void AddChipTo(Destination dest, Chip chip) 
@@ -140,7 +150,7 @@ public class Table {
         }
     }
 
-    public List<CardType> EvaluatePlayerPreFlop(int seatPos)
+    public List<CardType> SortPlayerCardsPreFlop(int seatPos)
     {
         List<CardType> EvaluatedHand = new List<CardType>();
         EvaluatedHand = GetCardTypes(seatPos);
@@ -149,7 +159,7 @@ public class Table {
 
     }
 
-    public List<CardType> EvaluatePlayerAtFlop(int seatPos)
+    public List<CardType> SortPlayerCardsAtFlop(int seatPos)
     {
         List<CardType> EvaluatedHand = new List<CardType>();
         EvaluatedHand = GetCardTypes(seatPos);
@@ -161,7 +171,7 @@ public class Table {
         return EvaluatedHand;
     }
 
-    public List<CardType> EvaluatePlayerAtTurn(int seatPos)
+    public List<CardType> SortPlayerCardsAtTurn(int seatPos)
     {
         List<CardType> EvaluatedHand = new List<CardType>();
         EvaluatedHand = GetCardTypes(seatPos);
@@ -174,7 +184,7 @@ public class Table {
         return EvaluatedHand;
     }
 
-    public List<CardType> EvaluatePlayerAtRiver(int seatPos)
+    public List<CardType> SortPlayerCardsAtRiver(int seatPos)
     {
         List<CardType> EvaluatedHand = new List<CardType>();
         EvaluatedHand = GetCardTypes(seatPos);
