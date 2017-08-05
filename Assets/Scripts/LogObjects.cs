@@ -157,28 +157,29 @@ public class LogObjects : MonoBehaviour
                             if(Table.instance.playerChipStacks[i].Count == 0)
                             {
                                 Table.instance.AddChipTo(playerDestinations[i], other.GetComponent<Chip>());
+                                Table.instance.playerChipStacks[i][0].chipStack = new ChipStack(Table.instance.playerChipStacks[i][0]);
                             }
                             else
                             {
-                                tempChipList.Add(other.GetComponent<Chip>());
+                                //tempChipList.Add(other.GetComponent<Chip>());
                                 //for (int chipIndex = 0; chipIndex < Table.instance.playerChipStacks[i].Count; chipIndex++)
                                 //{
-                                    Debug.Log("got into the for loop");
-                                    //if (Table.instance.playerChipStacks[i][chipIndex].chipStack != null)
-                                    //{
-                                    //    Debug.Log("got into the first if statement");
-                                    //    tempChipList.Add(other.GetComponent<Chip>());
-                                    //    Table.instance.playerChipStacks[i][chipIndex].chipStack.AddToStack(tempChipList[0]);
-                                    //    break;
-                                    //}
-                                    //else
-                                    //{
-                                    //Debug.Log("got into the else statement");
-                                    //GameObject referenceChip = Table.instance.playerChipStacks[i][0].gameObject;
-                                    Table.instance.playerChipStacks[i][0].chipStack = new ChipStack(Table.instance.playerChipStacks[i][0]);
-                                    Table.instance.playerChipStacks[i][0].chipStack.AddToStack(tempChipList[0]);
-                                    Table.instance.AddChipTo(playerDestinations[i], tempChipList[0]);
-                                    break;
+                                //Debug.Log("got into the for loop");
+                                //if (Table.instance.playerChipStacks[i][chipIndex].chipStack != null)
+                                //{
+                                //    Debug.Log("got into the first if statement");
+                                //    tempChipList.Add(other.GetComponent<Chip>());
+                                //    Table.instance.playerChipStacks[i][chipIndex].chipStack.AddToStack(tempChipList[0]);
+                                //    break;
+                                //}
+                                //else
+                                //{
+                                //Debug.Log("got into the else statement");
+                                tempChipList.Add(other.GetComponent<Chip>());
+                                Chip referenceChip = Table.instance.playerChipStacks[i][0];
+                                referenceChip.chipStack.AddToStackOnTable(tempChipList[0]);
+                                Table.instance.AddChipTo(playerDestinations[i], tempChipList[0]);
+                                break;
                                     //}
                                 //}
                             }

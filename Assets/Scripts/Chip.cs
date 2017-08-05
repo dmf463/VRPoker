@@ -120,14 +120,14 @@ public class Chip : InteractionSuperClass {
         if(isTouchingChip && incomingChip.canBeGrabbed)
         {
             //Debug.Log("adding " + incomingChip.gameObject.name);
-            chipStack.AddToStack(incomingChip);
+            chipStack.AddToStackInHand(incomingChip);
             isTouchingChip = false;
         }
         if(isTouchingStack)
         {
             foreach(Chip chip in incomingStack)
             {
-                chipStack.AddToStack(chip);
+                chipStack.AddToStackInHand(chip);
                 isTouchingStack = false;
             }
         }
