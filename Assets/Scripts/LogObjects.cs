@@ -161,27 +161,10 @@ public class LogObjects : MonoBehaviour
                             }
                             else
                             {
-                                //tempChipList.Add(other.GetComponent<Chip>());
-                                //for (int chipIndex = 0; chipIndex < Table.instance.playerChipStacks[i].Count; chipIndex++)
-                                //{
-                                //Debug.Log("got into the for loop");
-                                //if (Table.instance.playerChipStacks[i][chipIndex].chipStack != null)
-                                //{
-                                //    Debug.Log("got into the first if statement");
-                                //    tempChipList.Add(other.GetComponent<Chip>());
-                                //    Table.instance.playerChipStacks[i][chipIndex].chipStack.AddToStack(tempChipList[0]);
-                                //    break;
-                                //}
-                                //else
-                                //{
-                                //Debug.Log("got into the else statement");
                                 tempChipList.Add(other.GetComponent<Chip>());
                                 Chip referenceChip = Table.instance.playerChipStacks[i][0];
                                 referenceChip.chipStack.AddToStackOnTable(tempChipList[0]);
                                 Table.instance.AddChipTo(playerDestinations[i], tempChipList[0]);
-                                break;
-                                    //}
-                                //}
                             }
                         }
                     }
@@ -202,7 +185,19 @@ public class LogObjects : MonoBehaviour
                             {
                                 Debug.Log("this chip is already in the stack");
                             }
-                            else Table.instance.AddChipTo(playerDestinations[i], chip);
+                            else
+                            {
+                                if(Table.instance.playerChipStacks[i].Count == 0)
+                                {
+                                    Table.instance.AddChipTo(playerDestinations[i], chip);
+                                }
+                                else
+                                {
+                                    Chip referenceChip = Table.instance.playerChipStacks[i][0];
+                                    referenceChip.chipStack.AddToStackOnTable(chip);
+                                    Table.instance.AddChipTo(playerDestinations[i], chip);
+                                }
+                            }
                         }
                     }
                 }
