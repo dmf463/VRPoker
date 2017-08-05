@@ -35,7 +35,6 @@ public class PokerPlayer {
 
     public void EvaluateHandPreFlop() 
     {
-        //Table.gameState = GameState.PreFlop;
         List<CardType> sortedCards = Table.instance.SortPlayerCardsPreFlop(SeatPos);
         HandEvaluator playerHand = new HandEvaluator(sortedCards);
         playerHand.EvaluateHandAtPreFlop();

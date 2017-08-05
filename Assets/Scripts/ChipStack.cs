@@ -90,7 +90,7 @@ public class ChipStack {
 
     }
 
-    public void TakeFromStack()
+    public void TakeFromStackInHand()
     {
         chips[chips.Count - 1].transform.parent = null;
         chips[chips.Count - 1].gameObject.AddComponent<Rigidbody>();

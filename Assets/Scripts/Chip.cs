@@ -177,7 +177,7 @@ public class Chip : InteractionSuperClass {
     {
         if(chipStack != null)
         {
-            if (chipStack.chips.Count > 1) chipStack.TakeFromStack();
+            if (chipStack.chips.Count > 1) chipStack.TakeFromStackInHand();
         }
         base.OnPressBottom();
     }
