@@ -88,6 +88,10 @@ public class GameManager : MonoBehaviour
         {
             Table.instance.DebugHands();
             Debug.Log(players[0].ChipCount);
+            foreach(PokerPlayer player in players)
+            {
+                player.CreateAndOrganizeChipStacks();
+            }
         }
         
         if(Table.gameState == GameState.PreFlop)

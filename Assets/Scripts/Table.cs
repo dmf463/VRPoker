@@ -92,7 +92,7 @@ public class Table {
     public List<GameObject> GetCardGameObjects(int seatPos)
     {
         List<GameObject> cardsInHand = new List<GameObject>();
-        for (int i = 0; i < playerCards[i].Count; i++)
+        for (int i = 0; i < playerCards[seatPos].Count; i++)
         {
             cardsInHand.Add(playerCards[seatPos][i].gameObject);
         }

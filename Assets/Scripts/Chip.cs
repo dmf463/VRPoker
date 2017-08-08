@@ -22,7 +22,7 @@ public class Chip : InteractionSuperClass {
     public bool inAStack;
     const float MAGNITUDE_THRESHOLD = 1;
     const float MAX_CHIPSTACK = 20;
-    const float CHIP_FORCE_MODIFIER = 1.2f;
+    const float CHIP_FORCE_MODIFIER = 1.5f;
 
     // Use this for initialization
     void Start () {
@@ -116,6 +116,7 @@ public class Chip : InteractionSuperClass {
             {
                 //Debug.Log("adding " + incomingChip.gameObject.name);
                 chipStack.AddToStackInHand(incomingChip);
+                incomingChip = null;
                 isTouchingChip = false;
             }
             if (isTouchingStack)

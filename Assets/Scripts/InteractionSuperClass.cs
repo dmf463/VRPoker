@@ -97,7 +97,7 @@ public class InteractionSuperClass : MonoBehaviour {
     {
         Vector2 touch = hand.controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
         var device = hand.GetComponent<Hand>().controller;
-        if (device.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad) && device.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad).y < 0)
+        if (device.GetPressDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad) && device.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad).y < 0)
         {
             OnPressBottom();
         }

@@ -5,17 +5,6 @@ using System.Linq;
 
 public enum PlayerState { Playing, NoHand, Winner, Loser}
 
-/*
- * 
- * now that I have a way to log the chip count at the beginning of every round
- * I need to make it so that I can TAKE chips from there when the player bets
- * but that should be an instance of the player BETTING and then I would just need
- * A) take that value from thier chipCount 
- * AND ALSO
- * B) remove the chips equal to that value from the tableList
- * 
- */
-
 public class PokerPlayer {
 
     public int SeatPos { get; set; }
@@ -51,6 +40,7 @@ public class PokerPlayer {
         if (!checkedHandStrength)
         {
             DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
+            CreateAndOrganizeChipStacks();
             checkedHandStrength = true;
         }
         //Debug.Log("player" + SeatPos + " has " + Hand.HandValues.PokerHand + " with a highCard of " + Hand.HandValues.HighCard + " and a handTotal of " + Hand.HandValues.Total + " a chipCount of " + ChipCount);
@@ -395,6 +385,36 @@ public class PokerPlayer {
         HandStrength = numberOfWins / 1000;
         Debug.Log("Player" + SeatPos + " has a HandStrength of " + HandStrength);
         yield break;
+    }
+
+    public void CreateAndOrganizeChipStacks()
+    {
+        List<GameObject> chipsToOrganize = Table.instance.GetChipGameObjects(SeatPos);
+        GameObject parentChip = null;
+        float incrementStackBy = 0;
+        List<GameObject> playerPositions = new List<GameObject>
+        {
+            GameObject.Find("Player0"), GameObject.Find("Player1"), GameObject.Find("Player2"), GameObject.Find("Player3"), GameObject.Find("Player4")
+        };
+        for(int i = 0; i < chipsToOrganize.Count; i++)
+        {
+            //organize the chip into stacks
+            //these should be stacks in which the chips are on top of each other
+            //parented to the first chip, so that I grab a stack
+            //so first thing I need to do is assign a chip to make the parent. 
+            if(i == 0)
+            {
+                parentChip = chipsToOrganize[0];
+                incrementStackBy = parentChip.gameObject.GetComponent<Collider>().bounds.size.y;
+                parentChip.transform.position = playerPositions[SeatPos].transform.position;
+            }
+            else
+            {
+                chipsToOrganize[i].transform.parent = parentChip.transform;
+                chipsToOrganize[i].transform.position = new Vector3(parentChip.transform.position.x, parentChip.transform.position.y + incrementStackBy, parentChip.transform.position.z);
+                chipsToOrganize[i].transform.rotation = parentChip.transform.rotation;
+            }
+        }
     }
 
 
