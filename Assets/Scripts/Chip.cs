@@ -115,8 +115,10 @@ public class Chip : InteractionSuperClass {
             if (isTouchingChip && incomingChip.canBeGrabbed)
             {
                 //Debug.Log("adding " + incomingChip.gameObject.name);
-                chipStack.AddToStackInHand(incomingChip);
-                incomingChip = null;
+                if(incomingChip != null)
+                {
+                    chipStack.AddToStackInHand(incomingChip);
+                }
                 isTouchingChip = false;
             }
             if (isTouchingStack)

@@ -21,7 +21,6 @@ public class PokerPlayer {
     public int ChipCountToCheckWhenWinning;
     public bool checkedHandStrength;
 
-
     public void EvaluateHandPreFlop() 
     {
         List<CardType> sortedCards = Table.instance.SortPlayerCardsPreFlop(SeatPos);
@@ -387,36 +386,106 @@ public class PokerPlayer {
         yield break;
     }
 
-    public void CreateAndOrganizeChipStacks()
+    public List<List<GameObject>> OrganizeChipsIntoColorStacks()
     {
         List<GameObject> chipsToOrganize = Table.instance.GetChipGameObjects(SeatPos);
+        List<List<GameObject>> colorChips = new List<List<GameObject>>();
+        List<GameObject> redChips = new List<GameObject>();
+        List<GameObject> blueChips = new List<GameObject>();
+        List<GameObject> whiteChips = new List<GameObject>();
+        List<GameObject> blackChips = new List<GameObject>();
+        for (int chipIndex = 0; chipIndex < chipsToOrganize.Count; chipIndex++)
+        {
+            if(chipsToOrganize[chipIndex].GetComponent<Chip>().chipValue == 5)
+            {
+                redChips.Add(chipsToOrganize[chipIndex]);
+            }
+            else if(chipsToOrganize[chipIndex].GetComponent<Chip>().chipValue == 25)
+            {
+                blueChips.Add(chipsToOrganize[chipIndex]);
+            }
+            else if (chipsToOrganize[chipIndex].GetComponent<Chip>().chipValue == 50)
+            {
+                whiteChips.Add(chipsToOrganize[chipIndex]);
+            }
+            else if (chipsToOrganize[chipIndex].GetComponent<Chip>().chipValue == 100)
+            {
+                blackChips.Add(chipsToOrganize[chipIndex]);
+            }
+        }
+        colorChips.Add(redChips);
+        colorChips.Add(blueChips);
+        colorChips.Add(whiteChips);
+        colorChips.Add(blackChips);
+        return colorChips;
+    }
+
+    public void CreateAndOrganizeChipStacks()
+    {
+        List<List<GameObject>> chipsToOrganize = OrganizeChipsIntoColorStacks();
         GameObject parentChip = null;
         float incrementStackBy = 0;
         List<GameObject> playerPositions = new List<GameObject>
         {
             GameObject.Find("Player0"), GameObject.Find("Player1"), GameObject.Find("Player2"), GameObject.Find("Player3"), GameObject.Find("Player4")
         };
-        for(int i = 0; i < chipsToOrganize.Count; i++)
+        Vector3 offSet = Vector3.zero;
+        GameObject chipContainer = GameObject.Instantiate(new GameObject(), playerPositions[SeatPos].transform.position, playerPositions[SeatPos].transform.rotation);
+        chipContainer.transform.rotation = Quaternion.Euler(0, chipContainer.transform.rotation.eulerAngles.y + 90, 0);
+        Vector3 lastStackPos = Vector3.zero;
+        Vector3 firstStackPos = Vector3.zero;
+        for (int chipStacks = 0; chipStacks < chipsToOrganize.Count; chipStacks++)
         {
+            #region commments
             //organize the chip into stacks
             //these should be stacks in which the chips are on top of each other
             //parented to the first chip, so that I grab a stack
-            //so first thing I need to do is assign a chip to make the parent. 
-            if(i == 0)
+            //so first thing I need to do is assign a chip to make the parent.
+            //
+            //
+            //now that they chips stack...how about stacking them into colors...
+            /*
+             * first off, let's divide the chips into lists of their values
+             * then run the for loop for each list of chips.
+             * so, the final version should look like
+             * if it's the first chip in the stack
+             *      make that chip the parent chip
+             *      set the amount to increment the stack by
+             *      set the position of the object to the center of the playerspace
+             * else, add each chip on top of the parent chip
+             * if a parents child count > 20
+             * set the new parent to the next chip (unless it's null)
+             */
+            #endregion
+            if (chipsToOrganize[chipStacks].Count != 0)
             {
-                parentChip = chipsToOrganize[0];
-                incrementStackBy = parentChip.gameObject.GetComponent<Collider>().bounds.size.y;
-                parentChip.transform.position = playerPositions[SeatPos].transform.position;
-            }
-            else
-            {
-                chipsToOrganize[i].transform.parent = parentChip.transform;
-                chipsToOrganize[i].transform.position = new Vector3(parentChip.transform.position.x, parentChip.transform.position.y + incrementStackBy, parentChip.transform.position.z);
-                chipsToOrganize[i].transform.rotation = parentChip.transform.rotation;
+                for (int chipIndex = 0; chipIndex < chipsToOrganize[chipStacks].Count; chipIndex++)
+                {
+                    if (chipIndex == 0)
+                    {
+                        parentChip = chipsToOrganize[chipStacks][0];
+                        parentChip.transform.parent = chipContainer.transform;
+                        incrementStackBy = parentChip.gameObject.GetComponent<Collider>().bounds.size.y;
+                        parentChip.transform.localPosition = offSet;
+                        offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.x, 0, 0);
+                        if(firstStackPos == Vector3.zero)
+                        {
+                            firstStackPos = parentChip.transform.position;
+                        }
+                        lastStackPos = parentChip.transform.position;
+                    }
+                    else
+                    {
+                        chipsToOrganize[chipStacks][chipIndex].transform.parent = parentChip.transform;
+                        chipsToOrganize[chipStacks][chipIndex].transform.position = new Vector3(parentChip.transform.position.x, parentChip.transform.position.y + incrementStackBy, parentChip.transform.position.z);
+                        chipsToOrganize[chipStacks][chipIndex].transform.rotation = parentChip.transform.rotation;
+                    }
+                }
             }
         }
+        Vector3 trueOffset = firstStackPos - lastStackPos;
+        chipContainer.transform.position += trueOffset / 2;
     }
-
 
 }
 
