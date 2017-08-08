@@ -33,6 +33,7 @@ public class Chip : InteractionSuperClass {
     [HideInInspector]
     public bool inAStack;
     const float MAGNITUDE_THRESHOLD = 1;
+    const float MAX_CHIPSTACK = 20;
 
     // Use this for initialization
     void Start () {
@@ -96,8 +97,11 @@ public class Chip : InteractionSuperClass {
         }
         else if(other.gameObject.tag == "Chip" && other.gameObject.GetComponent<Chip>().chipStack != null)
         {
-            isTouchingStack = true;
-            incomingStack = other.gameObject.GetComponent<Chip>().chipStack.chips;
+            if (other.gameObject.GetComponent<Chip>().chipStack.chips.Count < MAX_CHIPSTACK)
+            {
+                isTouchingStack = true;
+                incomingStack = other.gameObject.GetComponent<Chip>().chipStack.chips;
+            }
         }
     }
 
@@ -117,18 +121,21 @@ public class Chip : InteractionSuperClass {
 
     public override void HandAttachedUpdate(Hand attachedHand)
     {
-        if(isTouchingChip && incomingChip.canBeGrabbed)
+        if(chipStack.chips.Count < MAX_CHIPSTACK)
         {
-            //Debug.Log("adding " + incomingChip.gameObject.name);
-            chipStack.AddToStackInHand(incomingChip);
-            isTouchingChip = false;
-        }
-        if(isTouchingStack)
-        {
-            foreach(Chip chip in incomingStack)
+            if (isTouchingChip && incomingChip.canBeGrabbed)
             {
-                chipStack.AddToStackInHand(chip);
-                isTouchingStack = false;
+                //Debug.Log("adding " + incomingChip.gameObject.name);
+                chipStack.AddToStackInHand(incomingChip);
+                isTouchingChip = false;
+            }
+            if (isTouchingStack)
+            {
+                foreach (Chip chip in incomingStack)
+                {
+                    chipStack.AddToStackInHand(chip);
+                    isTouchingStack = false;
+                }
             }
         }
         if (chipStack != null)
@@ -140,7 +147,27 @@ public class Chip : InteractionSuperClass {
 
     public override void HandHoverUpdate(Hand hand)
     {
-        base.HandHoverUpdate(hand);
+        if (gameObject.GetComponent<Rigidbody>() != null)
+        {
+            if (hand.GetStandardInteractionButtonDown() == true && gameObject.GetComponent<Rigidbody>().isKinematic == false) //on Vive controller, this is the trigger
+            {
+                hand.AttachObject(gameObject);
+                hand.HoverLock(interactableObject);
+            }
+        }
+        else
+        {
+            if (inAStack == true)
+            {
+                GameObject chipToGrab = gameObject.transform.parent.gameObject;
+                if (hand.GetStandardInteractionButtonDown() == true) //on Vive controller, this is the trigger
+                {
+                    hand.AttachObject(chipToGrab);
+                    hand.HoverLock(interactableObject);
+                }
+
+            }
+        }
     }
 
     public override void OnDetachedFromHand(Hand hand)

@@ -12,6 +12,7 @@ public class LogObjects : MonoBehaviour
     {
         "Player0", "Player1", "Player2", "Player3", "Player4"
     };
+    [HideInInspector]
     public List<Destination> playerDestinations = new List<Destination>
     {
         Destination.player0, Destination.player1, Destination.player2, Destination.player3, Destination.player4
