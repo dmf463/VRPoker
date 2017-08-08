@@ -60,13 +60,13 @@ public class LogObjects : MonoBehaviour
             }
             if (this.gameObject.name == "TheBoard")
             {
-                if(Table.dealerState == DealerState.DealingState)
+                if (Table.dealerState == DealerState.DealingState)
                 {
                     if (Table.instance._board.Contains(other.GetComponent<Card>()))
                     {
                         Debug.Log(other.gameObject.name + " is already in play");
                     }
-                    else if(Table.instance._board.Count == 5)
+                    else if (Table.instance._board.Count == 5)
                     {
                         Debug.Log(other.gameObject.name + "cannot be added to the board");
                     }
@@ -83,7 +83,7 @@ public class LogObjects : MonoBehaviour
                 Table.instance.AddCardTo(Destination.burn, other.GetComponent<Card>());
                 Debug.Log("Card went into " + this.gameObject.name);
             }
-            else if(this.gameObject.name == "ShufflingArea")
+            else if (this.gameObject.name == "ShufflingArea")
             {
                 if (GameObject.FindGameObjectWithTag("CardDeck") == null)
                 {
@@ -96,8 +96,8 @@ public class LogObjects : MonoBehaviour
                 {
                     Destroy(other.gameObject);
                     Debug.Log("destroying cards");
-                    newCardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();   
-                    if(newCardDeck.GetComponent<CardDeckScript>().currentCardDeckScale.y > newCardDeck.GetComponent<CardDeckScript>().newCardDeckScale.y)
+                    newCardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
+                    if (newCardDeck.GetComponent<CardDeckScript>().currentCardDeckScale.y > newCardDeck.GetComponent<CardDeckScript>().newCardDeckScale.y)
                     {
                         madeNewDeck = false;
                         GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
@@ -112,27 +112,28 @@ public class LogObjects : MonoBehaviour
 
         }
         #endregion
-        #region Logging the Chip for each Space
+        #region logging chips for each space
         if (other.gameObject.tag == "Chip")
         {
-            
+
             for (int i = 0; i < playerNames.Count; i++)
             {
-                if(gameObject.name == playerNames[i])
+                if (gameObject.name == playerNames[i])
                 {
+                    #region Logging the Chip for each Space and stacking at the same time currently disabled because I think I need to make those separate
                     //create a list of chips that are about to be added
                     //  if its the first chip the player gets
                     //      add that chip to the list
                     //      destroy the chip
                     //      instantiate it in the player space.
                     //      add the list to the players chipstack
-                        //      IF there IS a chip in the space
-                        //          add the new chip to the list
-                        //          destroy the chip
-                        //          IF the chip is NOT a stack
-                        //              make the first chip in there a chipstack
-                        //          add the chip in the list to the chipstack
-                        //          add the list to the players chipstack list
+                    //      IF there IS a chip in the space
+                    //          add the new chip to the list
+                    //          destroy the chip
+                    //          IF the chip is NOT a stack
+                    //              make the first chip in there a chipstack
+                    //          add the chip in the list to the chipstack
+                    //          add the list to the players chipstack list
 
                     //      IF the chip IS in a stack
                     //          add those chips to the chip list
@@ -144,7 +145,64 @@ public class LogObjects : MonoBehaviour
                     //     instantiate the parent object as the first chip
                     //     add each child object to the first chip
                     //     add the chips in the space to the chiplist
-                    List<Chip> tempChipList = new List<Chip>();
+                    //List<Chip> tempChipList = new List<Chip>();
+                    //if (other.GetComponent<Chip>().inAStack == false)
+                    //{
+                    //    if (Table.instance.playerChipStacks[i].Contains(other.GetComponent<Chip>()))
+                    //    {
+                    //        Debug.Log("this chip is already in the stack");
+                    //    }
+                    //    else
+                    //    {
+                    //        Debug.Log("got into the new part");
+                    //        if(Table.instance.playerChipStacks[i].Count == 0)
+                    //        {
+                    //            Table.instance.AddChipTo(playerDestinations[i], other.GetComponent<Chip>());
+                    //            Table.instance.playerChipStacks[i][0].chipStack = new ChipStack(Table.instance.playerChipStacks[i][0]);
+                    //        }
+                    //        else
+                    //        {
+                    //            tempChipList.Add(other.GetComponent<Chip>());
+                    //            Chip referenceChip = Table.instance.playerChipStacks[i][0];
+                    //            referenceChip.chipStack.AddToStackOnTable(tempChipList[0]);
+                    //            Table.instance.AddChipTo(playerDestinations[i], tempChipList[0]);
+                    //        }
+                    //    }
+                    //}
+                    //else if (other.GetComponent<Chip>().inAStack == true)
+                    //{
+                    //    ChipStack chipStack;
+                    //    if (other.GetComponent<Chip>().chipStack != null)
+                    //    {
+                    //        chipStack = other.GetComponent<Chip>().chipStack;
+                    //    }
+                    //    else
+                    //    {
+                    //        chipStack = other.transform.parent.gameObject.GetComponent<Chip>().chipStack;
+                    //    }
+                    //    foreach (Chip chip in chipStack.chips)
+                    //    {
+                    //        if (Table.instance.playerChipStacks[i].Contains(chip))
+                    //        {
+                    //            Debug.Log("this chip is already in the stack");
+                    //        }
+                    //        else
+                    //        {
+                    //            if(Table.instance.playerChipStacks[i].Count == 0)
+                    //            {
+                    //                Table.instance.AddChipTo(playerDestinations[i], chip);
+                    //            }
+                    //            else
+                    //            {
+                    //                Chip referenceChip = Table.instance.playerChipStacks[i][0];
+                    //                referenceChip.chipStack.AddToStackOnTable(chip);
+                    //                Table.instance.AddChipTo(playerDestinations[i], chip);
+                    //            }
+                    //        }
+                    //    }
+                    //}
+                    #endregion
+                    #region the original log chips code
                     if (other.GetComponent<Chip>().inAStack == false)
                     {
                         if (Table.instance.playerChipStacks[i].Contains(other.GetComponent<Chip>()))
@@ -153,19 +211,7 @@ public class LogObjects : MonoBehaviour
                         }
                         else
                         {
-                            Debug.Log("got into the new part");
-                            if(Table.instance.playerChipStacks[i].Count == 0)
-                            {
-                                Table.instance.AddChipTo(playerDestinations[i], other.GetComponent<Chip>());
-                                Table.instance.playerChipStacks[i][0].chipStack = new ChipStack(Table.instance.playerChipStacks[i][0]);
-                            }
-                            else
-                            {
-                                tempChipList.Add(other.GetComponent<Chip>());
-                                Chip referenceChip = Table.instance.playerChipStacks[i][0];
-                                referenceChip.chipStack.AddToStackOnTable(tempChipList[0]);
-                                Table.instance.AddChipTo(playerDestinations[i], tempChipList[0]);
-                            }
+                            Table.instance.AddChipTo(playerDestinations[i], other.GetComponent<Chip>());
                         }
                     }
                     else if (other.GetComponent<Chip>().inAStack == true)
@@ -187,19 +233,11 @@ public class LogObjects : MonoBehaviour
                             }
                             else
                             {
-                                if(Table.instance.playerChipStacks[i].Count == 0)
-                                {
-                                    Table.instance.AddChipTo(playerDestinations[i], chip);
-                                }
-                                else
-                                {
-                                    Chip referenceChip = Table.instance.playerChipStacks[i][0];
-                                    referenceChip.chipStack.AddToStackOnTable(chip);
-                                    Table.instance.AddChipTo(playerDestinations[i], chip);
-                                }
+                                Table.instance.AddChipTo(playerDestinations[i], chip);
                             }
                         }
                     }
+                    #endregion
                 }
             }
         }
