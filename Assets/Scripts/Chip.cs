@@ -4,18 +4,6 @@ using UnityEngine;
 using Valve.VR; //we need this for SteamVR
 using Valve.VR.InteractionSystem;
 
-/*
- * okay, so in terms of physics I want to be able to
- * a) stack chips (in acceptable heights, maybe like stacks of 20 max, or else they'll fall when I move them)
- *    - be able to move those stacks around (unless they're over 20) as a single unit
- *    - use a fixed joint maybe?
- * b) shovel chips around
- *    -so if they're NOT in a stack, I can push them towards the player
- *    -basically give the player the option, if they want to stack them, fine. if not, also fine.
- *    -could probably use the same basic logic for shoveling cards in shuffle mode
- * c) from a stack, be able to grab a single chip, so that I can make change, or take a tip.
- */
-
 public class Chip : InteractionSuperClass {
 
     [HideInInspector]
@@ -34,6 +22,7 @@ public class Chip : InteractionSuperClass {
     public bool inAStack;
     const float MAGNITUDE_THRESHOLD = 1;
     const float MAX_CHIPSTACK = 20;
+    const float CHIP_FORCE_MODIFIER = 1.2f;
 
     // Use this for initialization
     void Start () {
@@ -220,7 +209,7 @@ public class Chip : InteractionSuperClass {
                 chip.gameObject.AddComponent<Rigidbody>();
                 chip.gameObject.transform.parent = null;
                 chip.inAStack = false;
-                chip.gameObject.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);
+                chip.gameObject.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity() * CHIP_FORCE_MODIFIER, ForceMode.Impulse);
                 chip.gameObject.GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);
                 if (chip.chipStack != null)
                 {

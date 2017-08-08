@@ -21,7 +21,7 @@ public class InteractionSuperClass : MonoBehaviour {
     protected Vector2 endPosition;
     protected float swipeStartTime;
     // To recognize as swipe user should at lease swipe for this many pixels
-    protected const float MIN_SWIPE_DIST = .2f;
+    protected const float MIN_SWIPE_DIST = .1f;
     // To recognize as a swipe the velocity of the swipe
     // should be at least mMinVelocity
     // Reduce or increase to control the swipe speed
@@ -97,7 +97,7 @@ public class InteractionSuperClass : MonoBehaviour {
     {
         Vector2 touch = hand.controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
         var device = hand.GetComponent<Hand>().controller;
-        if (device.GetPressDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad) && device.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad).y < 0)
+        if (device.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad) && device.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad).y < 0)
         {
             OnPressBottom();
         }
