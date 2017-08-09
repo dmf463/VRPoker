@@ -62,7 +62,11 @@ public class GameManager : MonoBehaviour
             {
                 case 0:
                     Table.gameState = GameState.PreFlop;
-                    messageText.text = "Shuffle Up and Deal!";
+                    messageText.text = "player0 chipCount is " + players[0].ChipCount +
+                                       "\n player1 chipCount is " + players[1].ChipCount +
+                                       "\n player2 chipCount is " + players[2].ChipCount +
+                                       "\n player3 chipCount is " + players[3].ChipCount +
+                                       "\n player4 chipCount is " + players[4].ChipCount;
                     break;
                 case 3:
                     Table.gameState = GameState.Flop;

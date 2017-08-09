@@ -24,7 +24,7 @@ public class ChipStack {
 
     public void AddToStackInHand(Chip chip)
     {
-        Debug.Log("chipStack has " + chips.Count + "  and stackValue ==  " + stackValue + " and incrementStackBy =  " + incrementStackInHandBy);
+        //Debug.Log("chipStack has " + chips.Count + "  and stackValue ==  " + stackValue + " and incrementStackBy =  " + incrementStackInHandBy);
         //Debug.Log("trying to destroy " + chip.gameObject.name);
         int chipValue = chip.chipValue;
         GameObject.Destroy(chip.gameObject);

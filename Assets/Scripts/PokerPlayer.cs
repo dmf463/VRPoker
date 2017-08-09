@@ -20,6 +20,7 @@ public class PokerPlayer {
     public bool HasBeenPaid;
     public int ChipCountToCheckWhenWinning;
     public bool checkedHandStrength;
+    public bool organizingChips = false;
 
     public void EvaluateHandPreFlop() 
     {
@@ -394,6 +395,7 @@ public class PokerPlayer {
         List<GameObject> blueChips = new List<GameObject>();
         List<GameObject> whiteChips = new List<GameObject>();
         List<GameObject> blackChips = new List<GameObject>();
+
         for (int chipIndex = 0; chipIndex < chipsToOrganize.Count; chipIndex++)
         {
             if(chipsToOrganize[chipIndex].GetComponent<Chip>().chipValue == 5)
@@ -422,6 +424,7 @@ public class PokerPlayer {
 
     public void CreateAndOrganizeChipStacks()
     {
+        organizingChips = true;
         List<List<GameObject>> chipsToOrganize = OrganizeChipsIntoColorStacks();
         GameObject parentChip = null;
         float incrementStackBy = 0;
@@ -465,6 +468,10 @@ public class PokerPlayer {
                     {
                         parentChip = chipsToOrganize[chipStacks][0];
                         parentChip.transform.parent = chipContainer.transform;
+                        if(parentChip.GetComponent<Rigidbody>() == null)
+                        {
+                            parentChip.AddComponent<Rigidbody>();
+                        }
                         incrementStackBy = parentChip.gameObject.GetComponent<Collider>().bounds.size.y;
                         parentChip.transform.localPosition = offSet;
                         offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.x, 0, 0);
@@ -476,15 +483,35 @@ public class PokerPlayer {
                     }
                     else
                     {
+                        if(chipsToOrganize[chipStacks][chipIndex].GetComponent<Rigidbody>() != null)
+                        {
+                            GameObject.Destroy(chipsToOrganize[chipStacks][chipIndex].GetComponent<Rigidbody>());
+                        }
                         chipsToOrganize[chipStacks][chipIndex].transform.parent = parentChip.transform;
-                        chipsToOrganize[chipStacks][chipIndex].transform.position = new Vector3(parentChip.transform.position.x, parentChip.transform.position.y + incrementStackBy, parentChip.transform.position.z);
+                        chipsToOrganize[chipStacks][chipIndex].transform.position = new Vector3(parentChip.transform.position.x, parentChip.transform.position.y + (incrementStackBy * chipIndex), parentChip.transform.position.z);
                         chipsToOrganize[chipStacks][chipIndex].transform.rotation = parentChip.transform.rotation;
                     }
                 }
+                Debug.Log("last parentChip is at pos " + parentChip.transform.position + " after the loop ");
             }
+        }
+        if(parentChip != null)
+        {
+            Debug.Log("last parentChip is at pos " + parentChip.transform.position + " before the trueOffset move ");
         }
         Vector3 trueOffset = firstStackPos - lastStackPos;
         chipContainer.transform.position += trueOffset / 2;
+        if(parentChip != null)
+        {
+            Debug.Log("last parentChip is at pos " + parentChip.transform.position + " at the end of the function ");
+        }
+        Services.GameManager.StartCoroutine(ResetOrganizingChipsBool(2));
+    }
+
+    IEnumerator ResetOrganizingChipsBool(float time)
+    {
+        yield return new WaitForSeconds(time);
+        organizingChips = false;
     }
 
 }
