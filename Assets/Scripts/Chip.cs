@@ -164,6 +164,10 @@ public class Chip : InteractionSuperClass {
 
     public override void OnDetachedFromHand(Hand hand)
     {
+        if(GetComponent<Rigidbody>() == null)
+        {
+            gameObject.AddComponent<Rigidbody>();
+        }
         if(chipStack != null && chipStack.chips.Count == 1)
         {
             chipStack = null;

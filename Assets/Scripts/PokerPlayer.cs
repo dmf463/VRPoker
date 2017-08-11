@@ -22,6 +22,12 @@ public class PokerPlayer {
     public bool checkedHandStrength;
     public bool organizingChips = false;
 
+    public PokerPlayer(int seatPos)
+    {
+        SeatPos = seatPos;
+        PlayerState = PlayerState.Playing;
+    }
+
     public void EvaluateHandPreFlop() 
     {
         List<CardType> sortedCards = Table.instance.SortPlayerCardsPreFlop(SeatPos);
@@ -40,7 +46,7 @@ public class PokerPlayer {
         if (!checkedHandStrength)
         {
             DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
-            CreateAndOrganizeChipStacks();
+            CreateAndOrganizeChipStacks(Table.instance.GetChipGameObjects(SeatPos));
             checkedHandStrength = true;
         }
         //Debug.Log("player" + SeatPos + " has " + Hand.HandValues.PokerHand + " with a highCard of " + Hand.HandValues.HighCard + " and a handTotal of " + Hand.HandValues.Total + " a chipCount of " + ChipCount);
@@ -203,7 +209,7 @@ public class PokerPlayer {
         List<CardType> testBoard = new List<CardType>();
         List<PokerPlayer> testPlayers = new List<PokerPlayer>()
         {
-            new PokerPlayer(), new PokerPlayer(), new PokerPlayer(), new PokerPlayer(), new PokerPlayer(),
+            new PokerPlayer(0), new PokerPlayer(1), new PokerPlayer(2), new PokerPlayer(3), new PokerPlayer(4),
         };
         List<List<CardType>> playerCards = new List<List<CardType>>()
         {
@@ -307,7 +313,6 @@ public class PokerPlayer {
                 }
                 Debug.Assert(testDeck.Count == 47);
                 //set THIS as test player0
-                testPlayers[0].SeatPos = SeatPos;
                 playerCards[0].Add(myCard1);
                 playerCards[0].Add(myCard2);
                 //give two cards two each other testPlayer, and then remove those cards from the deck
@@ -321,7 +326,6 @@ public class PokerPlayer {
                         playerCards[i].Add(cardType);
                         testDeck.Remove(cardType);
                     }
-                    testPlayers[i].SeatPos = i;
                 }
                 //if we're on the flop, deal out two more card to the board
                 //and take those from the deck
@@ -387,9 +391,8 @@ public class PokerPlayer {
         yield break;
     }
 
-    public List<List<GameObject>> OrganizeChipsIntoColorStacks()
+    public List<List<GameObject>> OrganizeChipsIntoColorStacks(List<GameObject> chipsToOrganize)
     {
-        List<GameObject> chipsToOrganize = Table.instance.GetChipGameObjects(SeatPos);
         List<List<GameObject>> colorChips = new List<List<GameObject>>();
         List<GameObject> redChips = new List<GameObject>();
         List<GameObject> blueChips = new List<GameObject>();
@@ -422,10 +425,10 @@ public class PokerPlayer {
         return colorChips;
     }
 
-    public void CreateAndOrganizeChipStacks()
+    public void CreateAndOrganizeChipStacks(List<GameObject> chipsToOrganize )
     {
         organizingChips = true;
-        List<List<GameObject>> chipsToOrganize = OrganizeChipsIntoColorStacks();
+        List<List<GameObject>> organizedChips = OrganizeChipsIntoColorStacks(chipsToOrganize);
         GameObject parentChip = null;
         float incrementStackBy = 0;
         List<GameObject> playerPositions = new List<GameObject>
@@ -433,11 +436,12 @@ public class PokerPlayer {
             GameObject.Find("Player0"), GameObject.Find("Player1"), GameObject.Find("Player2"), GameObject.Find("Player3"), GameObject.Find("Player4")
         };
         Vector3 offSet = Vector3.zero;
-        GameObject chipContainer = GameObject.Instantiate(new GameObject(), playerPositions[SeatPos].transform.position, playerPositions[SeatPos].transform.rotation);
+        Vector3 containerOffset = Vector3.up * .05f;
+        GameObject chipContainer = GameObject.Instantiate(new GameObject(), playerPositions[SeatPos].transform.position + containerOffset, playerPositions[SeatPos].transform.rotation);
         chipContainer.transform.rotation = Quaternion.Euler(0, chipContainer.transform.rotation.eulerAngles.y + 90, 0);
         Vector3 lastStackPos = Vector3.zero;
         Vector3 firstStackPos = Vector3.zero;
-        for (int chipStacks = 0; chipStacks < chipsToOrganize.Count; chipStacks++)
+        for (int chipStacks = 0; chipStacks < organizedChips.Count; chipStacks++)
         {
             #region commments
             //organize the chip into stacks
@@ -460,21 +464,23 @@ public class PokerPlayer {
              * set the new parent to the next chip (unless it's null)
              */
             #endregion
-            if (chipsToOrganize[chipStacks].Count != 0)
+            if (organizedChips[chipStacks].Count != 0)
             {
-                for (int chipIndex = 0; chipIndex < chipsToOrganize[chipStacks].Count; chipIndex++)
+                for (int chipIndex = 0; chipIndex < organizedChips[chipStacks].Count; chipIndex++)
                 {
                     if (chipIndex == 0)
                     {
-                        parentChip = chipsToOrganize[chipStacks][0];
+                        parentChip = organizedChips[chipStacks][0];
                         parentChip.transform.parent = chipContainer.transform;
+                        parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
+                        parentChip.GetComponent<Chip>().chipStack = new ChipStack(parentChip.GetComponent<Chip>());
                         if(parentChip.GetComponent<Rigidbody>() == null)
                         {
                             parentChip.AddComponent<Rigidbody>();
                         }
                         incrementStackBy = parentChip.gameObject.GetComponent<Collider>().bounds.size.y;
                         parentChip.transform.localPosition = offSet;
-                        offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.x, 0, 0);
+                        offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.x + .01f, 0, 0);
                         if(firstStackPos == Vector3.zero)
                         {
                             firstStackPos = parentChip.transform.position;
@@ -483,28 +489,21 @@ public class PokerPlayer {
                     }
                     else
                     {
-                        if(chipsToOrganize[chipStacks][chipIndex].GetComponent<Rigidbody>() != null)
+                        if(organizedChips[chipStacks][chipIndex].GetComponent<Rigidbody>() != null)
                         {
-                            GameObject.Destroy(chipsToOrganize[chipStacks][chipIndex].GetComponent<Rigidbody>());
+                            GameObject.Destroy(organizedChips[chipStacks][chipIndex].GetComponent<Rigidbody>());
                         }
-                        chipsToOrganize[chipStacks][chipIndex].transform.parent = parentChip.transform;
-                        chipsToOrganize[chipStacks][chipIndex].transform.position = new Vector3(parentChip.transform.position.x, parentChip.transform.position.y + (incrementStackBy * chipIndex), parentChip.transform.position.z);
-                        chipsToOrganize[chipStacks][chipIndex].transform.rotation = parentChip.transform.rotation;
+                        organizedChips[chipStacks][chipIndex].transform.parent = parentChip.transform;
+                        organizedChips[chipStacks][chipIndex].transform.position = new Vector3(parentChip.transform.position.x, parentChip.transform.position.y - (incrementStackBy * chipIndex), parentChip.transform.position.z);
+                        organizedChips[chipStacks][chipIndex].transform.rotation = parentChip.transform.rotation;
+                        parentChip.GetComponent<Chip>().chipStack.chips.Add(organizedChips[chipStacks][chipIndex].GetComponent<Chip>());
                     }
                 }
-                Debug.Log("last parentChip is at pos " + parentChip.transform.position + " after the loop ");
             }
-        }
-        if(parentChip != null)
-        {
-            Debug.Log("last parentChip is at pos " + parentChip.transform.position + " before the trueOffset move ");
         }
         Vector3 trueOffset = firstStackPos - lastStackPos;
         chipContainer.transform.position += trueOffset / 2;
         if(parentChip != null)
-        {
-            Debug.Log("last parentChip is at pos " + parentChip.transform.position + " at the end of the function ");
-        }
         Services.GameManager.StartCoroutine(ResetOrganizingChipsBool(2));
     }
 
@@ -512,6 +511,84 @@ public class PokerPlayer {
     {
         yield return new WaitForSeconds(time);
         organizingChips = false;
+    }
+
+    public List<GameObject> SetChipStacks(int chipAmount)
+    {
+
+        List<GameObject> startingStack = new List<GameObject>();
+
+        List<GameObject> playerPositions = new List<GameObject>
+        {
+            GameObject.Find("Player0"), GameObject.Find("Player1"), GameObject.Find("Player2"), GameObject.Find("Player3"), GameObject.Find("Player4")
+        };
+
+        int valueRemaining = chipAmount;
+        int chipValue100Count = 0;
+        int chipValue50Count = 0;
+        int chipValue25Count = 0;
+        int chipValue5Count = 0;
+
+        int chipValue100CountMAX = 15;
+        int chipValue50CountMAX = 25;
+        int chipValue25CountMAX = 25;
+
+        chipValue100Count = Mathf.Min(chipValue100CountMAX, valueRemaining / 100);
+        valueRemaining -= chipValue100Count * 100;
+
+        chipValue50Count = Mathf.Min(chipValue50CountMAX, valueRemaining / 50);
+        valueRemaining -= chipValue50Count * 50;
+
+        chipValue25Count = Mathf.Min(chipValue25CountMAX, valueRemaining / 25);
+        valueRemaining -= chipValue25Count * 25;
+
+        chipValue5Count = valueRemaining / 5;
+
+        for (int i = 0; i < chipValue100Count; i++)
+        {
+            GameObject newChip = GameObject.Instantiate(FindChipPrefab(100), playerPositions[SeatPos].transform.position, Quaternion.Euler(-90, 0, 0));
+            startingStack.Add(newChip);
+        }
+        for (int i = 0; i < chipValue50Count; i++)
+        {
+            GameObject newChip = GameObject.Instantiate(FindChipPrefab(50), playerPositions[SeatPos].transform.position, Quaternion.Euler(-90, 0, 0));
+            startingStack.Add(newChip);
+        }
+        for (int i = 0; i < chipValue25Count; i++)
+        {
+            GameObject newChip = GameObject.Instantiate(FindChipPrefab(25), playerPositions[SeatPos].transform.position, Quaternion.Euler(-90, 0, 0));
+            startingStack.Add(newChip);
+        }
+        for (int i = 0; i < chipValue5Count; i++)
+        {
+            GameObject newChip = GameObject.Instantiate(FindChipPrefab(5), playerPositions[SeatPos].transform.position, Quaternion.Euler(-90, 0, 0));
+            startingStack.Add(newChip);
+        }
+
+        return startingStack;
+    }
+
+    public GameObject FindChipPrefab(int chipValue)
+    {
+        GameObject chipPrefab = null;
+        switch (chipValue)
+        {
+            case 5:
+                chipPrefab = Services.PrefabDB.RedChip5;
+                break;
+            case 25:
+                chipPrefab = Services.PrefabDB.BlueChip25;
+                break;
+            case 50:
+                chipPrefab = Services.PrefabDB.WhiteChip50;
+                break;
+            case 100:
+                chipPrefab = Services.PrefabDB.BlackChip100;
+                break;
+            default:
+                break;
+        }
+        return chipPrefab;
     }
 
 }

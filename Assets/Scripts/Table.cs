@@ -32,10 +32,14 @@ public class Table {
     {
         new List<Card>(), new List<Card>(), new List<Card>(), new List<Card>(), new List<Card>()
     };
+
+    List<GameObject> playerPositions = new List<GameObject>
+        {
+            GameObject.Find("Player0"), GameObject.Find("Player1"), GameObject.Find("Player2"), GameObject.Find("Player3"), GameObject.Find("Player4")
+        };
+
     public List<Card> _board = new List<Card>();
     public List<Card> _burn = new List<Card>();
-    //
-    //where the chips could possibly go
     public List<Chip>[] playerChipStacks = new List<Chip>[5]
     {
         new List<Chip>(), new List<Chip>(), new List<Chip>(), new List<Chip>(), new List<Chip>()

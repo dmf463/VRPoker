@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LogObjects : MonoBehaviour
+public class LogChips : MonoBehaviour
 {
+
     #region MonoBehaviour Stuff
-    public float cardCount;
-    private GameObject newCardDeck;
-    private bool madeNewDeck;
     private List<string> playerNames = new List<string>
     {
-        "Player0", "Player1", "Player2", "Player3", "Player4"
+        "P0Chips", "P1Chips", "P2Chips", "P3Chips", "P4Chips"
     };
     [HideInInspector]
     public List<Destination> playerDestinations = new List<Destination>
@@ -30,89 +28,9 @@ public class LogObjects : MonoBehaviour
 
     }
     #endregion
+
     public void OnTriggerEnter(Collider other)
     {
-        cardCount += 1;
-        #region Logging the PlayingCard for each space
-        if (other.gameObject.tag == "PlayingCard")
-        {
-            for (int i = 0; i < playerNames.Count; i++)
-            {
-                if (gameObject.name == playerNames[i])
-                {
-                    if (Table.dealerState == DealerState.DealingState)
-                    {
-                        if (Table.instance.playerCards[i].Contains(other.GetComponent<Card>()))
-                        {
-                            Debug.Log(other.gameObject.name + " is already in play.");
-                        }
-                        else if (Table.instance.playerCards[i].Count == 2)
-                        {
-                            Debug.Log(other.gameObject.name + " cannot be added to " + playerNames[i]);
-                        }
-                        else
-                        {
-                            Table.instance.AddCardTo(playerDestinations[i], other.GetComponent<Card>());
-                            Debug.Log("Card went into " + playerNames[i]);
-                        }
-                    }
-                }
-
-            }
-            if (this.gameObject.name == "TheBoard")
-            {
-                if (Table.dealerState == DealerState.DealingState)
-                {
-                    if (Table.instance._board.Contains(other.GetComponent<Card>()))
-                    {
-                        Debug.Log(other.gameObject.name + " is already in play");
-                    }
-                    else if (Table.instance._board.Count == 5)
-                    {
-                        Debug.Log(other.gameObject.name + "cannot be added to the board");
-                    }
-                    else
-                    {
-                        Table.instance.AddCardTo(Destination.board, other.GetComponent<Card>());
-                        Debug.Log("Card went into " + this.gameObject.name);
-                    }
-                }
-
-            }
-            else if (this.gameObject.name == "BurnCards")
-            {
-                Table.instance.AddCardTo(Destination.burn, other.GetComponent<Card>());
-                Debug.Log("Card went into " + this.gameObject.name);
-            }
-            else if (this.gameObject.name == "ShufflingArea")
-            {
-                if (GameObject.FindGameObjectWithTag("CardDeck") == null)
-                {
-                    Debug.Log("Could not find CardDeck, instantiating new one");
-                    newCardDeck = Instantiate(Services.PrefabDB.CardDeck, transform.position, Quaternion.identity) as GameObject;
-                    newCardDeck.GetComponent<CardDeckScript>().BuildDeckFromOneCard(newCardDeck);
-                    madeNewDeck = true;
-                }
-                if (Table.dealerState == DealerState.ShufflingState && madeNewDeck == true)
-                {
-                    Destroy(other.gameObject);
-                    Debug.Log("destroying cards");
-                    newCardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
-                    if (newCardDeck.GetComponent<CardDeckScript>().currentCardDeckScale.y > newCardDeck.GetComponent<CardDeckScript>().newCardDeckScale.y)
-                    {
-                        madeNewDeck = false;
-                        GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
-                        foreach (GameObject card in deadCards)
-                        {
-                            Destroy(card);
-                        }
-                        Table.dealerState = DealerState.DealingState;
-                    }
-                }
-            }
-
-        }
-        #endregion
         #region logging chips for each space
         if (other.gameObject.tag == "Chip")
         {
@@ -257,7 +175,7 @@ public class LogObjects : MonoBehaviour
             {
                 if (gameObject.name == playerNames[i])
                 {
-                    if(Services.GameManager.players[i].organizingChips == false)
+                    if (Services.GameManager.players[i].organizingChips == false)
                     {
                         if (other.GetComponent<Chip>().inAStack == false)
                         {
@@ -283,28 +201,5 @@ public class LogObjects : MonoBehaviour
                 }
             }
         }
-    }
-
-    public GameObject FindChipPrefab(Chip chip)
-    {
-        GameObject chipPrefab = null;
-        switch (chip.chipValue)
-        {
-            case 5:
-                chipPrefab = Services.PrefabDB.RedChip5;
-                break;
-            case 25:
-                chipPrefab = Services.PrefabDB.BlueChip25;
-                break;
-            case 50:
-                chipPrefab = Services.PrefabDB.WhiteChip50;
-                break;
-            case 100:
-                chipPrefab = Services.PrefabDB.BlackChip100;
-                break;
-            default:
-                break;
-        }
-        return chipPrefab;
     }
 }

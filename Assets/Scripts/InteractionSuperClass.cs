@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR; //we need this for SteamVR
-using Valve.VR.InteractionSystem;
+using Valve.VR.InteractionSystem; //we need this to interact with objects
 
 public class InteractionSuperClass : MonoBehaviour {
 

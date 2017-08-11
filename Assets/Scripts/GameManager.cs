@@ -6,22 +6,24 @@ using System;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
 
+
 public class GameManager : MonoBehaviour
 {
 
     //holds all the cards where they need to be
     public List<PokerPlayer> players = new List<PokerPlayer>();
+    public List<Destination> playerDestinations = new List<Destination>
+    {
+        Destination.player0, Destination.player1, Destination.player2, Destination.player3, Destination.player4
+    };
 
-    PokerPlayer player0;
-    PokerPlayer player1;
-    PokerPlayer player2;
-    PokerPlayer player3;
-    PokerPlayer player4;
     private List<PokerPlayer> sortedPlayers = new List<PokerPlayer>();
     public GameObject MessageBoard;
     TextMesh messageText;
     public Hand hand1;
     public Hand hand2;
+
+    const int PLAYER_COUNT = 5;
 
 
     private int numberOfWinners;
@@ -31,6 +33,7 @@ public class GameManager : MonoBehaviour
     private bool readyToAwardPlayers;
     [HideInInspector]
     public int winnersPaid;
+
     void Awake()
     {
         messageText = MessageBoard.GetComponent<TextMesh>();
@@ -42,13 +45,7 @@ public class GameManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        players.Add(player0);
-        players.Add(player1);
-        players.Add(player2);
-        players.Add(player3);
-        players.Add(player4);
-
-        InitializePlayers();
+        InitializePlayers(2500);
         Table.gameState = GameState.PreFlop;
         Table.dealerState = DealerState.DealingState;
     }
@@ -63,18 +60,18 @@ public class GameManager : MonoBehaviour
                 case 0:
                     Table.gameState = GameState.PreFlop;
                     messageText.text = "player0 chipCount is " + players[0].ChipCount +
-                                       "\n player1 chipCount is " + players[1].ChipCount +
-                                       "\n player2 chipCount is " + players[2].ChipCount +
-                                       "\n player3 chipCount is " + players[3].ChipCount +
-                                       "\n player4 chipCount is " + players[4].ChipCount;
+                                       "\nplayer1 chipCount is " + players[1].ChipCount +
+                                       "\nplayer2 chipCount is " + players[2].ChipCount +
+                                       "\nplayer3 chipCount is " + players[3].ChipCount +
+                                       "\nplayer4 chipCount is " + players[4].ChipCount;
                     break;
                 case 3:
                     Table.gameState = GameState.Flop;
                     messageText.text = "player0 handStrength is " + players[0].HandStrength +
-                                       "\n player1 handStrength is " + players[1].HandStrength +
-                                       "\n player2 handStrength is " + players[2].HandStrength +
-                                       "\n player3 handStrength is " + players[3].HandStrength +
-                                       "\n player4 handStrength is " + players[4].HandStrength;
+                                       "\nplayer1 handStrength is " + players[1].HandStrength +
+                                       "\nplayer2 handStrength is " + players[2].HandStrength +
+                                       "\nplayer3 handStrength is " + players[3].HandStrength +
+                                       "\nplayer4 handStrength is " + players[4].HandStrength;
                     break;
                 case 4:
                     Table.gameState = GameState.Turn;
@@ -94,7 +91,7 @@ public class GameManager : MonoBehaviour
             Debug.Log(players[0].ChipCount);
             foreach(PokerPlayer player in players)
             {
-                player.CreateAndOrganizeChipStacks();
+                player.CreateAndOrganizeChipStacks(Table.instance.GetChipGameObjects(player.SeatPos));
             }
         }
         
@@ -162,13 +159,17 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public void InitializePlayers()
+    public void InitializePlayers(int chipCount)
     {
-        for (int i = 0; i < players.Count; i++)
-        {  
-            players[i] = new PokerPlayer();
-            players[i].SeatPos = i;
-            players[i].PlayerState = PlayerState.Playing;
+        for (int i = 0; i < PLAYER_COUNT; i++)
+        {
+            players.Add(new PokerPlayer(i));
+            List<GameObject> startingStack  = players[i].SetChipStacks(3500);
+            foreach(GameObject chip in startingStack)
+            {
+                Table.instance.playerChipStacks[i].Add(chip.GetComponent<Chip>());
+            }
+            players[i].CreateAndOrganizeChipStacks(startingStack);
         }
     }
 
