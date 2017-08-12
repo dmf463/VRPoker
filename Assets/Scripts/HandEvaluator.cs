@@ -12,8 +12,6 @@ public struct HandValue
     public int Total { get;  set;}
     public int HighCard { get; set; }
     public PokerHand PokerHand { get; set; }
-    public static bool operator == (HandValue hv1, HandValue hv2) { return hv1.Equals(hv2); }
-    public static bool operator != (HandValue hv1, HandValue hv2) { return !hv1.Equals(hv2); }
 }
 
 public class HandEvaluator {

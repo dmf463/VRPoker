@@ -64,6 +64,23 @@ public class Chip : InteractionSuperClass {
                 StartCoroutine(ReadyToBeGrabbed(1.5f));
             }
         }
+        //TRYING TO IGNORE COLLISION TO MAKE UP FOR PHYSICS LAG
+        if(inAStack == true)
+        {
+            foreach(Chip chip in transform.parent.GetComponent<Chip>().chipStack.chips)
+            {
+                Physics.IgnoreCollision(GetComponent<Collider>(), chip.gameObject.GetComponent<Collider>(), true);
+            }
+        }
+        else
+        {
+            GameObject[] chipsToHit = GameObject.FindGameObjectsWithTag("Chip");
+            foreach (GameObject chip in chipsToHit)
+            {
+                Physics.IgnoreCollision(GetComponent<Collider>(), chip.GetComponent<Collider>(), false);
+            }
+        }
+        //END IGNORE COLLISION. TO BE DELETED IF IT'S BAD.
 
     }
 

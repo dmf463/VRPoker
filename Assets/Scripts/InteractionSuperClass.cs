@@ -95,7 +95,6 @@ public class InteractionSuperClass : MonoBehaviour {
 
     public virtual void CheckPressPosition(Hand hand)
     {
-        Vector2 touch = hand.controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
         var device = hand.GetComponent<Hand>().controller;
         if (device.GetPressDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad) && device.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad).y < 0)
         {
