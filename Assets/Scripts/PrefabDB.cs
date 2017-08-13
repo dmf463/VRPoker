@@ -14,20 +14,20 @@ public class PrefabDB : ScriptableObject {
     public GameObject Card { get { return card; } }
 
     [SerializeField]
-    private GameObject redChip5;
-    public GameObject RedChip5 { get { return redChip5; } }
+    private GameObject redChip;
+    public GameObject RedChip { get { return redChip; } }
 
     [SerializeField]
-    private GameObject blueChip25;
-    public GameObject BlueChip25 { get { return blueChip25; } }
+    private GameObject blueChip;
+    public GameObject BlueChip { get { return blueChip; } }
 
     [SerializeField]
-    private GameObject whiteChip50;
-    public GameObject WhiteChip50 { get { return whiteChip50; } }
+    private GameObject whiteChip;
+    public GameObject WhiteChip { get { return whiteChip; } }
 
     [SerializeField]
-    private GameObject blackChip100;
-    public GameObject BlackChip100 { get { return blackChip100; } }
+    private GameObject blackChip;
+    public GameObject BlackChip { get { return blackChip; } }
 
 
 }

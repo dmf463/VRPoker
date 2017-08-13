@@ -575,29 +575,29 @@ public class PokerPlayer {
             GameObject.Find("P0BetZone"), GameObject.Find("P1BetZone"), GameObject.Find("P2BetZone"), GameObject.Find("P3BetZone"), GameObject.Find("P4BetZone")
         };
         int valueRemaining = betAmount;
-        int chipValue100Count = 0;
-        int chipValue50Count = 0;
-        int chipValue25Count = 0;
-        int chipValue5Count = 0;
+        int blackChipCount = 0;
+        int whiteChipCount = 0;
+        int blueChipCount = 0;
+        int redChipCount = 0;
 
-        int chipValue100CountMAX = FindChipMax(ChipType.BLACK_CHIP_VALUE);
-        int chipValue50CountMAX = FindChipMax(ChipType.WHITE_CHIP_VALUE);
-        int chipValue25CountMAX = FindChipMax(ChipType.BLUE_CHIP_VALUE);
-        int chipValue5CountMAX = FindChipMax(ChipType.RED_CHIP_VALUE);
+        int blackChipCountMAX = FindChipMax(ChipType.BLACK_CHIP_VALUE);
+        int whiteChipCountMAX = FindChipMax(ChipType.WHITE_CHIP_VALUE);
+        int blueChipCountMAX = FindChipMax(ChipType.BLUE_CHIP_VALUE);
+        int redChipCountMAX = FindChipMax(ChipType.RED_CHIP_VALUE);
 
-        chipValue100Count = Mathf.Min(chipValue100CountMAX, valueRemaining / ChipType.BLACK_CHIP_VALUE);
-        valueRemaining -= chipValue100Count * ChipType.BLACK_CHIP_VALUE;
+        blackChipCount = Mathf.Min(blackChipCountMAX, valueRemaining / ChipType.BLACK_CHIP_VALUE);
+        valueRemaining -= blackChipCount * ChipType.BLACK_CHIP_VALUE;
 
-        chipValue50Count = Mathf.Min(chipValue50CountMAX, valueRemaining / ChipType.WHITE_CHIP_VALUE);
-        valueRemaining -= chipValue50Count * ChipType.WHITE_CHIP_VALUE;
+        whiteChipCount = Mathf.Min(whiteChipCountMAX, valueRemaining / ChipType.WHITE_CHIP_VALUE);
+        valueRemaining -= whiteChipCount * ChipType.WHITE_CHIP_VALUE;
 
-        chipValue25Count = Mathf.Min(chipValue25CountMAX, valueRemaining / ChipType.BLUE_CHIP_VALUE);
-        valueRemaining -= chipValue25Count * ChipType.BLUE_CHIP_VALUE;
+        blueChipCount = Mathf.Min(blueChipCountMAX, valueRemaining / ChipType.BLUE_CHIP_VALUE);
+        valueRemaining -= blueChipCount * ChipType.BLUE_CHIP_VALUE;
 
-        chipValue5Count = Mathf.Min(chipValue5CountMAX, valueRemaining / ChipType.RED_CHIP_VALUE);
-        valueRemaining -= chipValue5Count * ChipType.RED_CHIP_VALUE;
+        redChipCount = Mathf.Min(redChipCountMAX, valueRemaining / ChipType.RED_CHIP_VALUE);
+        valueRemaining -= redChipCount * ChipType.RED_CHIP_VALUE;
 
-        for (int i = 0; i < chipValue100Count; i++)
+        for (int i = 0; i < blackChipCount; i++)
         {
             Vector3 offSet = new Vector3(Random.Range(0, .05f), .05f, Random.Range(0, .05f));
             GameObject newChip = GameObject.Instantiate(FindChipPrefab(ChipType.BLACK_CHIP_VALUE), playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
@@ -613,7 +613,7 @@ public class PokerPlayer {
             }
             
         }
-        for (int i = 0; i < chipValue50Count; i++)
+        for (int i = 0; i < whiteChipCount; i++)
         {
             Vector3 offSet = new Vector3(Random.Range(0, .05f), .05f, Random.Range(0, .05f));
             GameObject newChip = GameObject.Instantiate(FindChipPrefab(ChipType.WHITE_CHIP_VALUE), playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
@@ -627,7 +627,7 @@ public class PokerPlayer {
                 }
             }
         }
-        for (int i = 0; i < chipValue25Count; i++)
+        for (int i = 0; i < blueChipCount; i++)
         {
             Vector3 offSet = new Vector3(Random.Range(0, .05f), .05f, Random.Range(0, .05f));
             GameObject newChip = GameObject.Instantiate(FindChipPrefab(ChipType.BLUE_CHIP_VALUE), playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
@@ -641,7 +641,7 @@ public class PokerPlayer {
                 }
             }
         }
-        for (int i = 0; i < chipValue5Count; i++)
+        for (int i = 0; i < redChipCount; i++)
         {
             Vector3 offSet = new Vector3(Random.Range(0, .05f), .05f, Random.Range(0, .05f));
             GameObject newChip = GameObject.Instantiate(FindChipPrefab(ChipType.RED_CHIP_VALUE), playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
@@ -680,16 +680,16 @@ public class PokerPlayer {
         switch (chipValue)
         {
             case ChipType.RED_CHIP_VALUE:
-                chipPrefab = Services.PrefabDB.RedChip5;
+                chipPrefab = Services.PrefabDB.RedChip;
                 break;
             case ChipType.BLUE_CHIP_VALUE:
-                chipPrefab = Services.PrefabDB.BlueChip25;
+                chipPrefab = Services.PrefabDB.BlueChip;
                 break;
             case ChipType.WHITE_CHIP_VALUE:
-                chipPrefab = Services.PrefabDB.WhiteChip50;
+                chipPrefab = Services.PrefabDB.WhiteChip;
                 break;
             case ChipType.BLACK_CHIP_VALUE:
-                chipPrefab = Services.PrefabDB.BlackChip100;
+                chipPrefab = Services.PrefabDB.BlackChip;
                 break;
             default:
                 break;

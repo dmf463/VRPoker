@@ -162,6 +162,46 @@ public class LogChips : MonoBehaviour
                     }
                 }
             }
+            if(gameObject.name == "ThePot")
+            {
+                #region the original log chips code
+                if (other.GetComponent<Chip>().inAStack == false)
+                {
+                    if (Table.instance._potChips.Contains(other.GetComponent<Chip>()))
+                    {
+                        Debug.Log("this chip is already in the pot");
+                    }
+                    else
+                    {
+                        Table.instance.AddChipTo(Destination.pot, other.GetComponent<Chip>());
+                    }
+                }
+                else if (other.GetComponent<Chip>().inAStack == true)
+                {
+                    ChipStack chipStack;
+                    if (other.GetComponent<Chip>().chipStack != null)
+                    {
+                        chipStack = other.GetComponent<Chip>().chipStack;
+                    }
+                    else
+                    {
+                        chipStack = other.transform.parent.gameObject.GetComponent<Chip>().chipStack;
+                    }
+                    foreach (Chip chip in chipStack.chips)
+                    {
+                        if (Table.instance._potChips.Contains(chip))
+                        {
+                            Debug.Log("this chip is already in the stack");
+                        }
+                        else
+                        {
+                            Table.instance.AddChipTo(Destination.pot, chip);
+                        }
+                    }
+                }
+                #endregion
+            }
+
         }
         #endregion
     }
@@ -197,6 +237,30 @@ public class LogChips : MonoBehaviour
                                 Table.instance.RemoveChipFrom(playerDestinations[i], chip);
                             }
                         }
+                    }
+                }
+            }
+
+            if(gameObject.name == "ThePot")
+            {
+                if (other.GetComponent<Chip>().inAStack == false)
+                {
+                    Table.instance.RemoveChipFrom(Destination.pot, other.GetComponent<Chip>());
+                }
+                else if (other.GetComponent<Chip>().inAStack == true)
+                {
+                    ChipStack chipStack;
+                    if (other.GetComponent<Chip>().chipStack != null)
+                    {
+                        chipStack = other.GetComponent<Chip>().chipStack;
+                    }
+                    else
+                    {
+                        chipStack = other.transform.parent.gameObject.GetComponent<Chip>().chipStack;
+                    }
+                    foreach (Chip chip in chipStack.chips)
+                    {
+                        Table.instance.RemoveChipFrom(Destination.pot, chip);
                     }
                 }
             }

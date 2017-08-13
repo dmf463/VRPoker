@@ -72,10 +72,10 @@ public class Table {
         {
             potSize += _potChips[i].chipValue;
         }
-        //For testing purposes, I'm currently setting the pot to always be 10
+        //For testing purposes, I'm currently setting the pot to always be 100
         //since I don't actually have a live pot.
-        //return potSize;
-        return 100;
+        return potSize;
+        //return 100;
     }
 
     public int GetChipStackTotal(int seatPos)
@@ -117,6 +117,10 @@ public class Table {
                 playerChipStacks[i].Add(chip);
             }
         }
+        if (dest == Destination.pot)
+        {
+            _potChips.Add(chip);
+        }
     }
 
     public void RemoveChipFrom(Destination dest, Chip chip)
@@ -127,6 +131,10 @@ public class Table {
             {
                 playerChipStacks[i].Remove(chip);
             }
+        }
+        if (dest == Destination.pot)
+        {
+            _potChips.Remove(chip);
         }
     }
 

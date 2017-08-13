@@ -63,7 +63,8 @@ public class GameManager : MonoBehaviour
                                        "\nplayer1 chipCount is " + players[1].ChipCount +
                                        "\nplayer2 chipCount is " + players[2].ChipCount +
                                        "\nplayer3 chipCount is " + players[3].ChipCount +
-                                       "\nplayer4 chipCount is " + players[4].ChipCount;
+                                       "\nplayer4 chipCount is " + players[4].ChipCount +
+                                       "\npotSize is at " + Table.instance.DeterminePotSize();
                     break;
                 case 3:
                     Table.gameState = GameState.Flop;

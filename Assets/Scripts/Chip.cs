@@ -33,19 +33,19 @@ public class Chip : InteractionSuperClass {
         {
             case "RedChip Instance":
                 ChipColor = ChipColor.Red;
-                chipValue = 5;
+                chipValue = ChipType.RED_CHIP_VALUE;
                 break;
             case "BlueChip Instance":
                 ChipColor = ChipColor.Blue;
-                chipValue = 25;
+                chipValue = ChipType.BLUE_CHIP_VALUE;
                 break;
             case "WhiteChip Instance":
                 ChipColor = ChipColor.White;
-                chipValue = 50;
+                chipValue = ChipType.WHITE_CHIP_VALUE;
                 break;
             case "BlackChip Instance":
                 ChipColor = ChipColor.Black;
-                chipValue = 100;
+                chipValue = ChipType.BLACK_CHIP_VALUE;
                 break;
             default:
                 break;
