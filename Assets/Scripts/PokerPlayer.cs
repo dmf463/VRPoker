@@ -568,6 +568,11 @@ public class PokerPlayer {
         return startingStack;
     }
 
+    public void Bet(int betAmount)
+    {
+
+    }
+
     public GameObject FindChipPrefab(int chipValue)
     {
         GameObject chipPrefab = null;
