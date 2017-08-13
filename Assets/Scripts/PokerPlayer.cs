@@ -580,16 +580,21 @@ public class PokerPlayer {
         int chipValue25Count = 0;
         int chipValue5Count = 0;
 
-        chipValue100Count = valueRemaining / 100;
+        int chipValue100CountMAX = FindChipMax(100);
+        int chipValue50CountMAX = FindChipMax(50);
+        int chipValue25CountMAX = FindChipMax(25);
+        int chipValue5CountMAX = FindChipMax(5);
+
+        chipValue100Count = Mathf.Min(chipValue100CountMAX, valueRemaining / 100);
         valueRemaining -= chipValue100Count * 100;
 
-        chipValue50Count = valueRemaining / 50;
+        chipValue50Count = Mathf.Min(chipValue50CountMAX, valueRemaining / 50);
         valueRemaining -= chipValue50Count * 50;
 
-        chipValue25Count = valueRemaining / 25;
+        chipValue25Count = Mathf.Min(chipValue25CountMAX, valueRemaining / 25);
         valueRemaining -= chipValue25Count * 25;
 
-        chipValue5Count = valueRemaining / 5;
+        chipValue5Count = Mathf.Min(chipValue5CountMAX, valueRemaining / 5);
         valueRemaining -= chipValue5Count * 5;
 
         for (int i = 0; i < chipValue100Count; i++)
@@ -652,6 +657,21 @@ public class PokerPlayer {
         }
 
         CreateAndOrganizeChipStacks(Table.instance.GetChipGameObjects(SeatPos));
+    }
+
+    public int FindChipMax(int chipValue)
+    {
+        int chipMax = 0;
+
+        for (int i = 0; i < Table.instance.playerChipStacks[SeatPos].Count; i++)
+        {
+            if(chipValue == Table.instance.playerChipStacks[SeatPos][i].chipValue)
+            {
+                chipMax++;
+            }
+        }
+
+        return chipMax;
     }
 
     public GameObject FindChipPrefab(int chipValue)

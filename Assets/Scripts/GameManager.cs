@@ -89,7 +89,7 @@ public class GameManager : MonoBehaviour
         {
             Table.instance.DebugHands();
             Debug.Log(players[0].ChipCount);
-            int betSizeTest = 845;
+            int betSizeTest = 895;
             if(betSizeTest % 5 == 0)
             {
                 foreach (PokerPlayer player in players)
