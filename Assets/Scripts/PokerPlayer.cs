@@ -570,7 +570,88 @@ public class PokerPlayer {
 
     public void Bet(int betAmount)
     {
+        List<GameObject> playerBetZones = new List<GameObject>
+        {
+            GameObject.Find("P0BetZone"), GameObject.Find("P1BetZone"), GameObject.Find("P2BetZone"), GameObject.Find("P3BetZone"), GameObject.Find("P4BetZone")
+        };
+        int valueRemaining = betAmount;
+        int chipValue100Count = 0;
+        int chipValue50Count = 0;
+        int chipValue25Count = 0;
+        int chipValue5Count = 0;
 
+        chipValue100Count = valueRemaining / 100;
+        valueRemaining -= chipValue100Count * 100;
+
+        chipValue50Count = valueRemaining / 50;
+        valueRemaining -= chipValue50Count * 50;
+
+        chipValue25Count = valueRemaining / 25;
+        valueRemaining -= chipValue25Count * 25;
+
+        chipValue5Count = valueRemaining / 5;
+        valueRemaining -= chipValue5Count * 5;
+
+        for (int i = 0; i < chipValue100Count; i++)
+        {
+            Vector3 offSet = new Vector3(Random.Range(0, .05f), .05f, Random.Range(0, .05f));
+            GameObject newChip = GameObject.Instantiate(FindChipPrefab(100), playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
+            for (int tableChipIndex = 0; tableChipIndex < Table.instance.playerChipStacks[SeatPos].Count; tableChipIndex++)
+            {
+                if(newChip.GetComponent<Chip>().chipValue == Table.instance.playerChipStacks[SeatPos][tableChipIndex].chipValue)
+                {
+                    GameObject chipToRemove = Table.instance.playerChipStacks[SeatPos][tableChipIndex].gameObject;
+                    Table.instance.playerChipStacks[SeatPos].Remove(chipToRemove.GetComponent<Chip>());
+                    GameObject.Destroy(chipToRemove);
+                    break;
+                }
+            }
+            
+        }
+        for (int i = 0; i < chipValue50Count; i++)
+        {
+            Vector3 offSet = new Vector3(Random.Range(0, .05f), .05f, Random.Range(0, .05f));
+            GameObject newChip = GameObject.Instantiate(FindChipPrefab(50), playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
+            for (int tableChipIndex = 0; tableChipIndex < Table.instance.playerChipStacks[SeatPos].Count; tableChipIndex++)
+            {
+                if (newChip.GetComponent<Chip>().chipValue == Table.instance.playerChipStacks[SeatPos][tableChipIndex].chipValue)
+                {
+                    GameObject chipToRemove = Table.instance.playerChipStacks[SeatPos][tableChipIndex].gameObject;
+                    Table.instance.playerChipStacks[SeatPos].Remove(chipToRemove.GetComponent<Chip>());
+                    GameObject.Destroy(chipToRemove); break;
+                }
+            }
+        }
+        for (int i = 0; i < chipValue25Count; i++)
+        {
+            Vector3 offSet = new Vector3(Random.Range(0, .05f), .05f, Random.Range(0, .05f));
+            GameObject newChip = GameObject.Instantiate(FindChipPrefab(25), playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
+            for (int tableChipIndex = 0; tableChipIndex < Table.instance.playerChipStacks[SeatPos].Count; tableChipIndex++)
+            {
+                if (newChip.GetComponent<Chip>().chipValue == Table.instance.playerChipStacks[SeatPos][tableChipIndex].chipValue)
+                {
+                    GameObject chipToRemove = Table.instance.playerChipStacks[SeatPos][tableChipIndex].gameObject;
+                    Table.instance.playerChipStacks[SeatPos].Remove(chipToRemove.GetComponent<Chip>());
+                    GameObject.Destroy(chipToRemove); break;
+                }
+            }
+        }
+        for (int i = 0; i < chipValue5Count; i++)
+        {
+            Vector3 offSet = new Vector3(Random.Range(0, .05f), .05f, Random.Range(0, .05f));
+            GameObject newChip = GameObject.Instantiate(FindChipPrefab(5), playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
+            for (int tableChipIndex = 0; tableChipIndex < Table.instance.playerChipStacks[SeatPos].Count; tableChipIndex++)
+            {
+                if (newChip.GetComponent<Chip>().chipValue == Table.instance.playerChipStacks[SeatPos][tableChipIndex].chipValue)
+                {
+                    GameObject chipToRemove = Table.instance.playerChipStacks[SeatPos][tableChipIndex].gameObject;
+                    Table.instance.playerChipStacks[SeatPos].Remove(chipToRemove.GetComponent<Chip>());
+                    GameObject.Destroy(chipToRemove); break;
+                }
+            }
+        }
+
+        CreateAndOrganizeChipStacks(Table.instance.GetChipGameObjects(SeatPos));
     }
 
     public GameObject FindChipPrefab(int chipValue)

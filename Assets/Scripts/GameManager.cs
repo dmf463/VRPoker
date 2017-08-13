@@ -89,9 +89,17 @@ public class GameManager : MonoBehaviour
         {
             Table.instance.DebugHands();
             Debug.Log(players[0].ChipCount);
-            foreach(PokerPlayer player in players)
+            int betSizeTest = 845;
+            if(betSizeTest % 5 == 0)
             {
-                player.CreateAndOrganizeChipStacks(Table.instance.GetChipGameObjects(player.SeatPos));
+                foreach (PokerPlayer player in players)
+                {
+                    player.Bet(betSizeTest);
+                }
+            }
+            else
+            {
+                Debug.Log("Warning: Invalid Bet Size");
             }
         }
         
