@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum ChipColor { Red, Blue, White, Black}
 
-public class ChipType {
+public class ChipConfig {
 
     public const int RED_CHIP_VALUE = 5;
     public const int BLUE_CHIP_VALUE = 25;

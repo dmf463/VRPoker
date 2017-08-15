@@ -89,8 +89,8 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Table.instance.DebugHands();
-            Debug.Log(players[0].ChipCount);
-            int betSizeTest = 895;
+            //Debug.Log(players[0].ChipCount);
+            int betSizeTest = 5;
             if(betSizeTest % 5 == 0)
             {
                 foreach (PokerPlayer player in players)
