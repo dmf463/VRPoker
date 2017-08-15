@@ -211,7 +211,6 @@ public class CardDeckScript : InteractionSuperClass {
 
     public void PopulateCardDeck()
     {
-        Table.instance.NewHand();
         cardsInDeck = new List<CardType>();
         SuitType[] suits = new SuitType[4] 
         {

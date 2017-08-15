@@ -46,8 +46,7 @@ public class Table {
         get { return DeterminePotSize(); }
         set { }
     }
-
-
+    public int DealerPosition;
 
     public void NewHand()
     {
@@ -55,14 +54,13 @@ public class Table {
         {
             playerCards[i].Clear();
         }
-        for (int i = 0; i < playerChipStacks.Length; i++)
-        {
-            playerChipStacks[i].Clear();
-        }
         _board.Clear();
         _burn.Clear();
-        Services.GameManager.ResetPlayerStatus();
+        Services.Dealer.ResetPlayerStatus();
         gameState = GameState.PreFlop;
+        DealerPosition = (DealerPosition + 1) % playerDestinations.Count;
+        Services.Dealer.players[DealerPosition + 1].Bet(Services.Dealer.SmallBlind);
+        Services.Dealer.players[DealerPosition + 2].Bet(Services.Dealer.BigBlind);
     }
 
     public int DeterminePotSize()

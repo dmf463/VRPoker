@@ -7,6 +7,6 @@ public static class Services {
 
     //UNIVERSAL UTITLITIES
     public static PrefabDB PrefabDB { get; set; }
-    public static GameManager GameManager { get; set; }
+    public static Dealer Dealer { get; set; }
 
 }

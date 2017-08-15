@@ -78,9 +78,9 @@ public class PokerPlayer {
             if (cardsInHand[i].GetComponent<Card>().cardIsFlipped == false)
             {
                 Physics.IgnoreCollision(cardsInHand[0].gameObject.GetComponent<Collider>(), cardsInHand[1].gameObject.GetComponent<Collider>());
-                Services.GameManager.StartCoroutine(FlipCardsAndMoveTowardsBoard(.5f, cardsInHand[i], (GameObject.Find("TheBoard").GetComponent<Collider>().ClosestPointOnBounds(cardsInHand[i].transform.position) + cardsInHand[i].transform.position) / 2, SeatPos));
+                Services.Dealer.StartCoroutine(FlipCardsAndMoveTowardsBoard(.5f, cardsInHand[i], (GameObject.Find("TheBoard").GetComponent<Collider>().ClosestPointOnBounds(cardsInHand[i].transform.position) + cardsInHand[i].transform.position) / 2, SeatPos));
             }
-            Services.GameManager.StartCoroutine(WaitForReposition(.5f, .5f, cardsInHand[0], cardsInHand[1], SeatPos));
+            Services.Dealer.StartCoroutine(WaitForReposition(.5f, .5f, cardsInHand[0], cardsInHand[1], SeatPos));
         }
     }
 
@@ -102,7 +102,7 @@ public class PokerPlayer {
     IEnumerator WaitForReposition(float time, float duration, GameObject card1, GameObject card2, int seatPos)
     {
         yield return new WaitForSeconds(time);
-        Services.GameManager.StartCoroutine(RepositionCardsForReadability(duration, card1, card2, seatPos));
+        Services.Dealer.StartCoroutine(RepositionCardsForReadability(duration, card1, card2, seatPos));
     }
 
     IEnumerator RepositionCardsForReadability(float duration, GameObject card1, GameObject card2, int seatPos)
@@ -162,7 +162,7 @@ public class PokerPlayer {
 
     public void DetermineHandStrength(CardType myCard1, CardType myCard2)
     {
-        Services.GameManager.StartCoroutine(RunHandStrengthLoop(myCard1, myCard2));
+        Services.Dealer.StartCoroutine(RunHandStrengthLoop(myCard1, myCard2));
     }
 
     IEnumerator RunHandStrengthLoop(CardType myCard1, CardType myCard2)
@@ -363,7 +363,7 @@ public class PokerPlayer {
                     testPlayers[i].Hand = testHand;
                 }
                 //compare all test players and find the winner
-                Services.GameManager.EvaluatePlayersOnShowdown(testPlayers);
+                Services.Dealer.EvaluatePlayersOnShowdown(testPlayers);
                 //if testPlayer[0] (this player) wins, we notch up the win score
                 if (testPlayers[0].PlayerState == PlayerState.Winner)
                 {
@@ -504,7 +504,7 @@ public class PokerPlayer {
         Vector3 trueOffset = firstStackPos - lastStackPos;
         chipContainer.transform.position += trueOffset / 2;
         if(parentChip != null)
-        Services.GameManager.StartCoroutine(ResetOrganizingChipsBool(2));
+        Services.Dealer.StartCoroutine(ResetOrganizingChipsBool(2));
     }
 
     IEnumerator ResetOrganizingChipsBool(float time)

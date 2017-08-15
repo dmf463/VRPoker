@@ -7,7 +7,7 @@ using Valve.VR;
 using Valve.VR.InteractionSystem;
 
 
-public class GameManager : MonoBehaviour
+public class Dealer : MonoBehaviour
 {
 
     //holds all the cards where they need to be
@@ -34,18 +34,21 @@ public class GameManager : MonoBehaviour
     [HideInInspector]
     public int winnersPaid;
 
+    public int SmallBlind = 5;
+    public int BigBlind = 10;
+
     void Awake()
     {
         messageText = MessageBoard.GetComponent<TextMesh>();
 
         Services.PrefabDB = Resources.Load<PrefabDB>("Prefabs/PrefabDB");
-        Services.GameManager = this;
+        Services.Dealer = this;
     }
 
     // Use this for initialization
     void Start()
     {
-        InitializePlayers(2500);
+        InitializePlayers(3500);
         Table.gameState = GameState.PreFlop;
         Table.dealerState = DealerState.DealingState;
     }
@@ -173,13 +176,16 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < PLAYER_COUNT; i++)
         {
             players.Add(new PokerPlayer(i));
-            List<GameObject> startingStack  = players[i].SetChipStacks(3500);
+            List<GameObject> startingStack  = players[i].SetChipStacks(chipCount);
             foreach(GameObject chip in startingStack)
             {
                 Table.instance.playerChipStacks[i].Add(chip.GetComponent<Chip>());
             }
             players[i].CreateAndOrganizeChipStacks(startingStack);
         }
+        Table.instance.DealerPosition = 0;
+        players[Table.instance.DealerPosition + 1].Bet(SmallBlind);
+        players[Table.instance.DealerPosition + 2].Bet(BigBlind);
     }
 
     public void EvaluatePlayersOnShowdown(List<PokerPlayer> playersToEvaluate)
@@ -227,11 +233,10 @@ public class GameManager : MonoBehaviour
                 {
                     player.PlayerState = PlayerState.Winner;
                     player.ChipCountToCheckWhenWinning = player.ChipCount;
-                    numberOfWinners++;
                 }
-                sortedPlayers[i].PlayerState = PlayerState.Winner;
-                sortedPlayers[i].ChipCountToCheckWhenWinning = sortedPlayers[i].ChipCount;
-                numberOfWinners++;
+                //sortedPlayers[i].PlayerState = PlayerState.Winner;
+                //sortedPlayers[i].ChipCountToCheckWhenWinning = sortedPlayers[i].ChipCount;
+                //numberOfWinners++;
             }
             else
             {
@@ -239,28 +244,29 @@ public class GameManager : MonoBehaviour
                 {
                     player.PlayerState = PlayerState.Loser;
                 }
-                sortedPlayers[i].PlayerState = PlayerState.Loser;
+                //sortedPlayers[i].PlayerState = PlayerState.Loser;
             }
         }
+        numberOfWinners = PlayerRank[0].Count;
     }
 
     IEnumerator WaitForWinnersToGetPaid()
     {
+        int potAmount = Table.instance.PotChips;
+        Debug.Log("number of Winners is " + numberOfWinners);
         while (!winnersHaveBeenPaid)
         {
-            GivePlayersWinnings();
+            GivePlayersWinnings(potAmount);
             yield return null;
         }
-        if (winnersHaveBeenPaid)
-        {
-            messageText.text = "'Thanks dealer, here's a tip!' (you got a tip)";
-        }
+        messageText.text = "'Thanks dealer, here's a tip!' (you got a tip)";
 
     }
 
-    public void GivePlayersWinnings()
+    public void GivePlayersWinnings(int winnings)
     {
-        potAmountToGiveWinner = Table.instance.PotChips / numberOfWinners;
+        Debug.Assert(numberOfWinners > 0);
+        potAmountToGiveWinner = winnings / numberOfWinners;
         int winnerChipStack = 0;    
         foreach (PokerPlayer player in players)
         {
@@ -285,7 +291,7 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
-                    messageText.text = "Give the winner(s) their winnings (pot size is 100, that's a black chip)";
+                    messageText.text = "Give the winner(s) their winnings (pot size is " + winnings + ", that's a black chip)";
                 }
             }
         }
