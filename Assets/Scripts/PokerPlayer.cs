@@ -56,6 +56,9 @@ public class PokerPlayer {
                 {
                     Services.Dealer.players[i].PlayerState = PlayerState.Winner;
                     Services.Dealer.numberOfWinners = 1;
+                    Services.Dealer.messageText.text = "I guess everyone folded, pay me";
+                    Services.Dealer.players[i].ChipCountToCheckWhenWinning = ChipCount;
+                    Services.Dealer.playersReady = true;
                     Services.Dealer.StartCoroutine(Services.Dealer.WaitForWinnersToGetPaid());
                 }
             }
@@ -80,14 +83,15 @@ public class PokerPlayer {
         Bet(betToRaise);
         currentBet = betToRaise + currentBet;
         Services.Dealer.LastBet = currentBet;
+        Debug.Log("player " + SeatPos + " raises " + betToRaise);
     }
 
     public float FindRateOfReturn()
     {
         //in this case, since we're going to do limit, the bet will always be the bigBlind;
         //else, we need to write another function that determines what the possible bet will be
-        int betAmount = Services.Dealer.BigBlind;
-        int potSize = Table.instance.PotChips;
+        float betAmount = Services.Dealer.BigBlind;
+        float potSize = Table.instance.PotChips;
         float potOdds = betAmount / (betAmount + potSize);
         float returnRate = HandStrength / potOdds;
         return returnRate;
@@ -95,21 +99,42 @@ public class PokerPlayer {
 
     public void FoldCallRaiseDecision(float returnRate)
     {
-        if(returnRate < 1)
+        if(Table.gameState == GameState.PreFlop)
         {
             Call();
+            turnComplete = true;
+            actedThisRound = true;
         }
-        else if(returnRate > 1 && returnRate < 1.3)
+        else
         {
-            Call();
+            if (returnRate < 0.8)
+            {
+                float randomNumber = Random.Range(0, 100);
+                if (randomNumber < 95) Fold();
+                else Raise();
+            }
+            else if (returnRate < 1)
+            {
+                float randomNumber = Random.Range(0, 100);
+                if (randomNumber < 80) Fold();
+                else if (randomNumber - 80 < 5) Call();
+                else Raise();
+            }
+            else if (returnRate > 1.3)
+            {
+                float randomNumber = Random.Range(0, 100);
+                if (randomNumber < 60) Call();
+                else Raise();
+            }
+            else if(returnRate >= 1.3)
+            {
+                float randomNumber = Random.Range(0, 100);
+                if (randomNumber < 70) Raise();
+                else Call();
+            }
+            turnComplete = true;
+            actedThisRound = true;
         }
-        else if(returnRate > 1.3)
-        {
-            //Raise();
-            Call();
-        }
-        turnComplete = true;
-        actedThisRound = true;
     }
 
     public void EvaluateHand() 
@@ -278,19 +303,19 @@ public class PokerPlayer {
         //public enum PokerHand { Connectors, SuitedConnectors, HighCard, OnePair, TwoPair, ThreeOfKind, Straight, Flush, FullHouse, FourOfKind, StraightFlush }
         if (Hand.HandValues.PokerHand == PokerHand.HighCard)
         {
-            HandStrength = Hand.HandValues.Total;
+            HandStrength = (Hand.HandValues.Total);
         }
         if(Hand.HandValues.PokerHand == PokerHand.Connectors)
         {
-            HandStrength = Hand.HandValues.Total + 10;
+            HandStrength = (Hand.HandValues.Total + 10);
         }
         if(Hand.HandValues.PokerHand == PokerHand.SuitedConnectors)
         {
-            HandStrength = Hand.HandValues.Total + 15;
+            HandStrength = (Hand.HandValues.Total + 15);
         }
         if(Hand.HandValues.PokerHand == PokerHand.OnePair)
         {
-            HandStrength = Hand.HandValues.Total + 15;
+            HandStrength = (Hand.HandValues.Total + 15);
         }
         rateOfReturn = FindRateOfReturn();
         FoldCallRaiseDecision(rateOfReturn);
@@ -411,7 +436,6 @@ public class PokerPlayer {
                     testDeck.Remove(boardCard.cardType);
                     testBoard.Add(boardCard.cardType);
                 }
-                Debug.Assert(testBoard.Count == 3);
                 for (int i = 0; i < testDeck.Count; i++)
                 {
                     if(testDeck[i].rank == Table.instance._board[0].cardType.rank)
@@ -442,7 +466,6 @@ public class PokerPlayer {
                         }
                     }
                 }
-                Debug.Assert(testDeck.Count == 47);
                 //set THIS as test player0
                 playerCards[0].Add(myCard1);
                 playerCards[0].Add(myCard2);

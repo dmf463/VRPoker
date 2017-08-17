@@ -19,7 +19,7 @@ public class Dealer : MonoBehaviour
 
     private List<PokerPlayer> sortedPlayers = new List<PokerPlayer>();
     public GameObject MessageBoard;
-    TextMesh messageText;
+    public TextMesh messageText;
     public Hand hand1;
     public Hand hand2;
 
@@ -40,6 +40,7 @@ public class Dealer : MonoBehaviour
     public bool roundStarted = false;
     public bool playersReady = true;
     public GameState lastGameState;
+    public List<Card> cardsDealt = new List<Card>();
 
     void Awake()
     {
@@ -72,6 +73,7 @@ public class Dealer : MonoBehaviour
                     cardCount++;
                 }
             }
+            Debug.Log("newRound cardCount = " + cardCount);
             if(cardCount == players.Count * 2)
             {
                 Table.gameState = GameState.PreFlop;
@@ -82,7 +84,6 @@ public class Dealer : MonoBehaviour
             switch (Table.instance._board.Count)
             {
                 case 0:
-                    //Table.gameState = GameState.PreFlop;
                     messageText.text = "player0 chipCount is " + players[0].ChipCount +
                                        "\nplayer1 chipCount is " + players[1].ChipCount +
                                        "\nplayer2 chipCount is " + players[2].ChipCount +
@@ -180,15 +181,26 @@ public class Dealer : MonoBehaviour
         {
             if (!playersHaveBeenEvaluated)
             {
-                messageText.text = "Give the winner(s) their winnings (pot size is 100, that's a black chip)";
-                EvaluatePlayersOnShowdown(players);
+                messageText.text = "Give the winner(s) their winnings (pot size is " + Table.instance.PotChips + " , that's a black chip)";
+                List<PokerPlayer> playersInHand = new List<PokerPlayer>();
+                for (int i = 0; i < players.Count; i++)
+                {
+                    if(players[i].PlayerState == PlayerState.Playing)
+                    {
+                        playersInHand.Add(players[i]);
+                    }
+                }
+                EvaluatePlayersOnShowdown(playersInHand);
             }
             if (!readyToAwardPlayers)
             {
                 for (int i = 0; i < players.Count; i++)
                 {
-                    players[i].FlipCards();
-                    Debug.Log("player" + players[i].SeatPos + "is the " + players[i].PlayerState + " with (a) " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
+                    if(players[i].PlayerState == PlayerState.Playing)
+                    {
+                        players[i].FlipCards();
+                        Debug.Log("player" + players[i].SeatPos + "is the " + players[i].PlayerState + " with (a) " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
+                    }
                 }
                 sortedPlayers.Clear();
                 playersHaveBeenEvaluated = true;
@@ -208,6 +220,7 @@ public class Dealer : MonoBehaviour
          * so the first person acts. 
          * when they finish, it proceeds to the next player.
          */
+        SetCurrentAndLastBet();
         PokerPlayer firstPlayerToAct;
         if (Table.gameState == GameState.PreFlop)
         {
@@ -215,9 +228,28 @@ public class Dealer : MonoBehaviour
         }
         else
         {
-            firstPlayerToAct = players[SeatsAwayFromDealer(1)];
+            firstPlayerToAct = FindFirstPlayerToAct();
         }
         StartCoroutine(playerAction(firstPlayerToAct));
+    }
+
+    public PokerPlayer FindFirstPlayerToAct()
+    {
+        PokerPlayer player;
+        player = players[SeatsAwayFromDealer(1)];
+        if(player.PlayerState == PlayerState.NotPlaying)
+        {
+            for (int i = 0; i < players.Count; i++)
+            {
+                PokerPlayer nextPlayer = players[(player.SeatPos + i) % players.Count];
+                if(nextPlayer.PlayerState == PlayerState.Playing)
+                {
+                    player = nextPlayer;
+                    break;
+                }
+            }
+        }
+        return player;
     }
 
     IEnumerator playerAction(PokerPlayer playerToAct)
@@ -227,7 +259,7 @@ public class Dealer : MonoBehaviour
         {
             yield return null;
         }
-
+        yield return new WaitForSeconds(1);
         playerToAct.turnComplete = false;
         int currentPlayerSeatPos = playerToAct.SeatPos;
         bool roundFinished = true;
@@ -260,15 +292,35 @@ public class Dealer : MonoBehaviour
                 Table.instance.playerChipStacks[i].Add(chip.GetComponent<Chip>());
             }
             players[i].CreateAndOrganizeChipStacks(startingStack);
-            players[i].currentBet = 0;
         }
         Table.instance.DealerPosition = 0;
         Table.instance.SetDealerButtonPos(Table.instance.DealerPosition);
-        players[Table.instance.DealerPosition + 1].Bet(SmallBlind);
-        players[Table.instance.DealerPosition + 1].currentBet = SmallBlind;
-        players[Table.instance.DealerPosition + 2].Bet(BigBlind);
-        players[Table.instance.DealerPosition + 2].currentBet = BigBlind;
-        LastBet = BigBlind;
+        players[SeatsAwayFromDealer(1)].Bet(SmallBlind);
+        players[SeatsAwayFromDealer(2)].Bet(BigBlind);
+    }
+
+    public void SetCurrentAndLastBet()
+    {
+        if(Table.gameState == GameState.PreFlop)
+        {
+            for (int i = 0; i < players.Count; i++)
+            {
+                players[i].currentBet = 0;
+                players[i].actedThisRound = false;
+            }
+            players[SeatsAwayFromDealer(1)].currentBet = SmallBlind;
+            players[SeatsAwayFromDealer(2)].currentBet = BigBlind;
+            LastBet = BigBlind;
+        }
+        else
+        {
+            for (int i = 0; i < players.Count; i++)
+            {
+                players[i].currentBet = 0;
+                players[i].actedThisRound = false;
+                LastBet = 0;
+            }
+        }
     }
 
     public void EvaluatePlayersOnShowdown(List<PokerPlayer> playersToEvaluate)

@@ -50,9 +50,14 @@ public class LogCards : MonoBehaviour
                         {
                             Debug.Log(other.gameObject.name + " cannot be added to " + playerNames[i]);
                         }
+                        else if (Services.Dealer.cardsDealt.Contains(other.GetComponent<Card>()))
+                        {
+                            Debug.Log("card is already in play");
+                        }
                         else
                         {
                             Table.instance.AddCardTo(playerDestinations[i], other.GetComponent<Card>());
+                            Services.Dealer.cardsDealt.Add(other.GetComponent<Card>());
                             Debug.Log("Card went into " + playerNames[i]);
                         }
                     }
@@ -71,9 +76,14 @@ public class LogCards : MonoBehaviour
                     {
                         Debug.Log(other.gameObject.name + "cannot be added to the board");
                     }
+                    else if (Services.Dealer.cardsDealt.Contains(other.GetComponent<Card>()))
+                    {
+                        Debug.Log("card is already in play");
+                    }
                     else
                     {
                         Table.instance.AddCardTo(Destination.board, other.GetComponent<Card>());
+                        Services.Dealer.cardsDealt.Add(other.GetComponent<Card>());
                         Debug.Log("Card went into " + this.gameObject.name);
                     }
                 }
