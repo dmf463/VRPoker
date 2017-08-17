@@ -60,7 +60,7 @@ public class Card : InteractionSuperClass {
             InstantiateNewDeck();
         }
 
-        if (throwingHand.controller.GetPress(EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPress(EVRButtonId.k_EButton_Grip))
+        if (throwingHand.controller.GetPressDown(EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPressDown(EVRButtonId.k_EButton_Grip))
         {
             if (Table.dealerState == DealerState.DealingState)
             {

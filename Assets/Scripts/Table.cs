@@ -5,7 +5,7 @@ using System.Linq;
 
 public enum Destination { player0, player1, player2, player3, player4, board, burn, pot}
 public enum DealerState { DealingState, ShufflingState };
-public enum GameState { PreFlop, Flop, Turn, River, ShowDown }
+public enum GameState { PreFlop, Flop, Turn, River, ShowDown, NewRound }
 
 public class Table {
     
@@ -28,6 +28,12 @@ public class Table {
     {
         Destination.player0, Destination.player1, Destination.player2, Destination.player3, Destination.player4
     };
+
+    public List<GameObject> playerBetZones = new List<GameObject>
+    {
+       GameObject.Find("P0BetZone"), GameObject.Find("P1BetZone"), GameObject.Find("P2BetZone"), GameObject.Find("P3BetZone"), GameObject.Find("P4BetZone")
+    };
+
     public List<Card>[] playerCards = new List<Card>[5]
     {
         new List<Card>(), new List<Card>(), new List<Card>(), new List<Card>(), new List<Card>()
@@ -48,6 +54,19 @@ public class Table {
     }
     public int DealerPosition;
 
+    public void SetDealerButtonPos(int dealerPos)
+    {
+        if(GameObject.FindGameObjectWithTag("DealerButton") == null)
+        {
+            GameObject dealerButton = GameObject.Instantiate(Services.PrefabDB.DealerButton, playerBetZones[dealerPos].transform.position, Quaternion.identity);
+        }
+        else
+        {
+            GameObject dealerButton = GameObject.FindGameObjectWithTag("DealerButton");
+            dealerButton.transform.position = playerBetZones[dealerPos].transform.position;
+        }
+    }
+
     public void NewHand()
     {
         for (int i = 0; i < playerCards.Length; i++)
@@ -56,11 +75,16 @@ public class Table {
         }
         _board.Clear();
         _burn.Clear();
+        _potChips.Clear();
         Services.Dealer.ResetPlayerStatus();
-        gameState = GameState.PreFlop;
+        gameState = GameState.NewRound;
         DealerPosition = (DealerPosition + 1) % playerDestinations.Count;
-        Services.Dealer.players[DealerPosition + 1].Bet(Services.Dealer.SmallBlind);
-        Services.Dealer.players[DealerPosition + 2].Bet(Services.Dealer.BigBlind);
+        SetDealerButtonPos(DealerPosition);
+        Services.Dealer.players[(DealerPosition + 1) % playerDestinations.Count].Bet(Services.Dealer.SmallBlind);
+        Services.Dealer.players[(DealerPosition + 1) % playerDestinations.Count].currentBet = Services.Dealer.SmallBlind;
+        Services.Dealer.players[(DealerPosition + 2) % playerDestinations.Count].Bet(Services.Dealer.BigBlind);
+        Services.Dealer.players[(DealerPosition + 2) % playerDestinations.Count].currentBet = Services.Dealer.BigBlind;
+        Services.Dealer.LastBet = Services.Dealer.BigBlind;
     }
 
     public int DeterminePotSize()

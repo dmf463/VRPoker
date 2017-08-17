@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public enum PlayerState { Playing, NoHand, Winner, Loser}
+public enum PlayerState { Playing, NotPlaying, Winner, Loser}
 
 public class PokerPlayer {
 
@@ -19,8 +19,12 @@ public class PokerPlayer {
     public PlayerState PlayerState { get; set; }
     public bool HasBeenPaid;
     public int ChipCountToCheckWhenWinning;
-    public bool checkedHandStrength;
+    //public bool checkedHandStrength;
     public bool organizingChips = false;
+    public int currentBet;
+    public float rateOfReturn;
+    public bool turnComplete;
+    public bool actedThisRound;
 
     public PokerPlayer(int seatPos)
     {
@@ -28,59 +32,156 @@ public class PokerPlayer {
         PlayerState = PlayerState.Playing;
     }
 
-    public void EvaluateHandPreFlop() 
+    public void Fold()
     {
-        List<CardType> sortedCards = Table.instance.SortPlayerCardsPreFlop(SeatPos);
-        HandEvaluator playerHand = new HandEvaluator(sortedCards);
-        playerHand.EvaluateHandAtPreFlop();
-        Hand = playerHand;
-        //Debug.Log("player" + SeatPos + " has " + Hand.HandValues.PokerHand + " with a highCard of " + Hand.HandValues.HighCard + " and a handTotal of " + Hand.HandValues.Total + " a chipCount of " + ChipCount);
-    }
-
-    public void EvaluateHandOnFlop() 
-    {
-        List<CardType> sortedCards = Table.instance.SortPlayerCardsAtFlop(SeatPos);
-        HandEvaluator playerHand = new HandEvaluator(sortedCards);
-        playerHand.EvaluateHandAtFlop();
-        Hand = playerHand;
-        if (!checkedHandStrength)
+        foreach(Card card in Table.instance.playerCards[SeatPos])
         {
-            DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
-            CreateAndOrganizeChipStacks(Table.instance.GetChipGameObjects(SeatPos));
-            checkedHandStrength = true;
+            card.transform.position = Table.instance.playerBetZones[SeatPos].transform.position;
         }
-        //Debug.Log("player" + SeatPos + " has " + Hand.HandValues.PokerHand + " with a highCard of " + Hand.HandValues.HighCard + " and a handTotal of " + Hand.HandValues.Total + " a chipCount of " + ChipCount);
+        PlayerState = PlayerState.NotPlaying;
+        Hand = null;
+        int activePlayerNum = 0;
+        for (int i = 0; i < Services.Dealer.players.Count; i++)
+        {
+            if(Services.Dealer.players[i].PlayerState == PlayerState.Playing)
+            {
+                activePlayerNum++;
+            }
+        }
+        if(activePlayerNum == 1)
+        {
+            for (int i = 0; i < Services.Dealer.players.Count; i++)
+            {
+                if(Services.Dealer.players[i].PlayerState == PlayerState.Playing)
+                {
+                    Services.Dealer.players[i].PlayerState = PlayerState.Winner;
+                    Services.Dealer.numberOfWinners = 1;
+                    Services.Dealer.StartCoroutine(Services.Dealer.WaitForWinnersToGetPaid());
+                }
+            }
+        }
     }
 
-    public void EvaluateHandOnTurn() 
+    public void Call()
     {
-        List<CardType> sortedCards = Table.instance.SortPlayerCardsAtTurn(SeatPos);
-        HandEvaluator playerHand = new HandEvaluator(sortedCards);
-        playerHand.EvaluateHandAtTurn();
-        Hand = playerHand;
-        //Debug.Log("player" + SeatPos + " has " + Hand.HandValues.PokerHand + " with a highCard of " + Hand.HandValues.HighCard + " and a handTotal of " + Hand.HandValues.Total + " a chipCount of " + ChipCount);
+        Debug.Log("currentBet = " + currentBet);
+        int betToCall = Services.Dealer.LastBet - currentBet;
+        Debug.Log("betToCall = " + betToCall);
+        Bet(betToCall);
+        currentBet = betToCall + currentBet;
+        Services.Dealer.LastBet = currentBet;
     }
 
-    public void EvaluateHandOnRiver() 
+    public void Raise()
     {
-        List<CardType> sortedCards = Table.instance.SortPlayerCardsAtRiver(SeatPos);
-        HandEvaluator playerHand = new HandEvaluator(sortedCards);
-        playerHand.EvaluateHandAtRiver();
-        Hand = playerHand;
-        //Debug.Log("player" + SeatPos + " has " + Hand.HandValues.PokerHand + " with a highCard of " + Hand.HandValues.HighCard + " and a handTotal of " + Hand.HandValues.Total + " a chipCount of " + ChipCount);
+        //for purposes of testing, we're gonna make this a limit game.
+        int raiseAmount = Services.Dealer.BigBlind;
+        int betToRaise = Services.Dealer.LastBet + (raiseAmount - currentBet);
+        Bet(betToRaise);
+        currentBet = betToRaise + currentBet;
+        Services.Dealer.LastBet = currentBet;
+    }
+
+    public float FindRateOfReturn()
+    {
+        //in this case, since we're going to do limit, the bet will always be the bigBlind;
+        //else, we need to write another function that determines what the possible bet will be
+        int betAmount = Services.Dealer.BigBlind;
+        int potSize = Table.instance.PotChips;
+        float potOdds = betAmount / (betAmount + potSize);
+        float returnRate = HandStrength / potOdds;
+        return returnRate;
+    }
+
+    public void FoldCallRaiseDecision(float returnRate)
+    {
+        if(returnRate < 1)
+        {
+            Call();
+        }
+        else if(returnRate > 1 && returnRate < 1.3)
+        {
+            Call();
+        }
+        else if(returnRate > 1.3)
+        {
+            //Raise();
+            Call();
+        }
+        turnComplete = true;
+        actedThisRound = true;
+    }
+
+    public void EvaluateHand() 
+    {
+        if(PlayerState == PlayerState.Playing)
+        {
+            if (Table.gameState == GameState.PreFlop)
+            {
+                List<CardType> sortedCards = Table.instance.SortPlayerCardsPreFlop(SeatPos);
+                HandEvaluator playerHand = new HandEvaluator(sortedCards);
+                playerHand.EvaluateHandAtPreFlop();
+                Hand = playerHand;
+                DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
+                //CreateAndOrganizeChipStacks(Table.instance.GetChipGameObjects(SeatPos));
+                //checkedHandStrength = true;
+            }
+            else if (Table.gameState == GameState.Flop)
+            {
+                List<CardType> sortedCards = Table.instance.SortPlayerCardsAtFlop(SeatPos);
+                HandEvaluator playerHand = new HandEvaluator(sortedCards);
+                playerHand.EvaluateHandAtFlop();
+                Hand = playerHand;
+                //if (!checkedHandStrength)
+                //{
+                DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
+                //CreateAndOrganizeChipStacks(Table.instance.GetChipGameObjects(SeatPos));
+                //checkedHandStrength = true;
+                //}
+            }
+            else if (Table.gameState == GameState.Turn)
+            {
+                List<CardType> sortedCards = Table.instance.SortPlayerCardsAtTurn(SeatPos);
+                HandEvaluator playerHand = new HandEvaluator(sortedCards);
+                playerHand.EvaluateHandAtTurn();
+                Hand = playerHand;
+                //if (!checkedHandStrength)
+                //{
+                DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
+               // CreateAndOrganizeChipStacks(Table.instance.GetChipGameObjects(SeatPos));
+                //checkedHandStrength = true;
+                //}
+            }
+            else if (Table.gameState == GameState.River)
+            {
+                List<CardType> sortedCards = Table.instance.SortPlayerCardsAtRiver(SeatPos);
+                HandEvaluator playerHand = new HandEvaluator(sortedCards);
+                playerHand.EvaluateHandAtRiver();
+                Hand = playerHand;
+                //if (!checkedHandStrength)
+                //{
+                DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
+                //CreateAndOrganizeChipStacks(Table.instance.GetChipGameObjects(SeatPos));
+                //    checkedHandStrength = true;
+                //}
+            }
+        }
     }
 
     public void FlipCards()
     {
-        List<GameObject> cardsInHand = Table.instance.GetCardGameObjects(SeatPos);
-        for (int i = 0; i < cardsInHand.Count; i++)
+        if(PlayerState == PlayerState.Playing)
         {
-            if (cardsInHand[i].GetComponent<Card>().cardIsFlipped == false)
+            List<GameObject> cardsInHand = Table.instance.GetCardGameObjects(SeatPos);
+            for (int i = 0; i < cardsInHand.Count; i++)
             {
-                Physics.IgnoreCollision(cardsInHand[0].gameObject.GetComponent<Collider>(), cardsInHand[1].gameObject.GetComponent<Collider>());
-                Services.Dealer.StartCoroutine(FlipCardsAndMoveTowardsBoard(.5f, cardsInHand[i], (GameObject.Find("TheBoard").GetComponent<Collider>().ClosestPointOnBounds(cardsInHand[i].transform.position) + cardsInHand[i].transform.position) / 2, SeatPos));
+                if (cardsInHand[i].GetComponent<Card>().cardIsFlipped == false)
+                {
+                    Physics.IgnoreCollision(cardsInHand[0].gameObject.GetComponent<Collider>(), cardsInHand[1].gameObject.GetComponent<Collider>());
+                    Services.Dealer.StartCoroutine(FlipCardsAndMoveTowardsBoard(.5f, cardsInHand[i], (GameObject.Find("TheBoard").GetComponent<Collider>().ClosestPointOnBounds(cardsInHand[i].transform.position) + cardsInHand[i].transform.position) / 2, SeatPos));
+                }
+                Services.Dealer.StartCoroutine(WaitForReposition(.5f, .5f, cardsInHand[0], cardsInHand[1], SeatPos));
             }
-            Services.Dealer.StartCoroutine(WaitForReposition(.5f, .5f, cardsInHand[0], cardsInHand[1], SeatPos));
         }
     }
 
@@ -162,10 +263,40 @@ public class PokerPlayer {
 
     public void DetermineHandStrength(CardType myCard1, CardType myCard2)
     {
-        Services.Dealer.StartCoroutine(RunHandStrengthLoop(myCard1, myCard2));
+        if(Table.gameState == GameState.PreFlop)
+        {
+            DeterminePreFlopHandStrength(myCard1, myCard2);
+        }
+        else
+        {
+            Services.Dealer.StartCoroutine(RunHandStrengthLoopAfterFlop(myCard1, myCard2));
+        }
     }
 
-    IEnumerator RunHandStrengthLoop(CardType myCard1, CardType myCard2)
+    public void DeterminePreFlopHandStrength(CardType myCard1, CardType myCard2)
+    {
+        //public enum PokerHand { Connectors, SuitedConnectors, HighCard, OnePair, TwoPair, ThreeOfKind, Straight, Flush, FullHouse, FourOfKind, StraightFlush }
+        if (Hand.HandValues.PokerHand == PokerHand.HighCard)
+        {
+            HandStrength = Hand.HandValues.Total;
+        }
+        if(Hand.HandValues.PokerHand == PokerHand.Connectors)
+        {
+            HandStrength = Hand.HandValues.Total + 10;
+        }
+        if(Hand.HandValues.PokerHand == PokerHand.SuitedConnectors)
+        {
+            HandStrength = Hand.HandValues.Total + 15;
+        }
+        if(Hand.HandValues.PokerHand == PokerHand.OnePair)
+        {
+            HandStrength = Hand.HandValues.Total + 15;
+        }
+        rateOfReturn = FindRateOfReturn();
+        FoldCallRaiseDecision(rateOfReturn);
+    }
+
+    IEnumerator RunHandStrengthLoopAfterFlop(CardType myCard1, CardType myCard2)
     {
 
         //set up all my empty lists to use 
@@ -388,6 +519,8 @@ public class PokerPlayer {
         }
         HandStrength = numberOfWins / 1000;
         Debug.Log("Player" + SeatPos + " has a HandStrength of " + HandStrength);
+        rateOfReturn = FindRateOfReturn();
+        FoldCallRaiseDecision(rateOfReturn);
         yield break;
     }
 
@@ -575,12 +708,10 @@ public class PokerPlayer {
         {
             GameObject.Find("P0BetZone"), GameObject.Find("P1BetZone"), GameObject.Find("P2BetZone"), GameObject.Find("P3BetZone"), GameObject.Find("P4BetZone")
         };
-        //int blackChipCount = 0;
-        //int whiteChipCount = 0;
-        //int blueChipCount = 0;
-        //int redChipCount = 0;
+
         List<int> colorChipCount = new List<int>()
         {
+            //blackChipCount, whiteChipCount, blueChipCount, redChipCount
             0, 0, 0, 0
         };
 
@@ -649,6 +780,7 @@ public class PokerPlayer {
                         GameObject chipToRemove = Table.instance.playerChipStacks[SeatPos][tableChipIndex].gameObject;
                         Debug.Log("ChipRemoved was a " + chipToRemove.GetComponent<Chip>().chipValue + " chip");
                         Table.instance.playerChipStacks[SeatPos].Remove(chipToRemove.GetComponent<Chip>());
+                        Table.instance._potChips.Add(chipToRemove.GetComponent<Chip>());
                         GameObject.Destroy(chipToRemove);
                         break;
                     }

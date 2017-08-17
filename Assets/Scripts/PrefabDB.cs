@@ -29,5 +29,9 @@ public class PrefabDB : ScriptableObject {
     private GameObject blackChip;
     public GameObject BlackChip { get { return blackChip; } }
 
+    [SerializeField]
+    private GameObject dealerButton;
+    public GameObject DealerButton { get { return dealerButton; } }
+
 
 }

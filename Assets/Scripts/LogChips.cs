@@ -69,35 +69,35 @@ public class LogChips : MonoBehaviour
                     }
                 }
             }
-            if(gameObject.name == "ThePot")
-            {
-                if (other.GetComponent<Chip>().inAStack == false)
-                {
-                    if (!Table.instance._potChips.Contains(other.GetComponent<Chip>()))
-                    {
-                        Table.instance.AddChipTo(Destination.pot, other.GetComponent<Chip>());
-                    }
-                }
-                else if (other.GetComponent<Chip>().inAStack == true)
-                {
-                    ChipStack chipStack;
-                    if (other.GetComponent<Chip>().chipStack != null)
-                    {
-                        chipStack = other.GetComponent<Chip>().chipStack;
-                    }
-                    else
-                    {
-                        chipStack = other.transform.parent.gameObject.GetComponent<Chip>().chipStack;
-                    }
-                    foreach (Chip chip in chipStack.chips)
-                    {
-                        if (!Table.instance._potChips.Contains(chip))
-                        {
-                            Table.instance.AddChipTo(Destination.pot, chip);
-                        }
-                    }
-                }
-            }
+            //if(gameObject.name == "ThePot")
+            //{
+            //    if (other.GetComponent<Chip>().inAStack == false)
+            //    {
+            //        if (!Table.instance._potChips.Contains(other.GetComponent<Chip>()))
+            //        {
+            //            Table.instance.AddChipTo(Destination.pot, other.GetComponent<Chip>());
+            //        }
+            //    }
+            //    else if (other.GetComponent<Chip>().inAStack == true)
+            //    {
+            //        ChipStack chipStack;
+            //        if (other.GetComponent<Chip>().chipStack != null)
+            //        {
+            //            chipStack = other.GetComponent<Chip>().chipStack;
+            //        }
+            //        else
+            //        {
+            //            chipStack = other.transform.parent.gameObject.GetComponent<Chip>().chipStack;
+            //        }
+            //        foreach (Chip chip in chipStack.chips)
+            //        {
+            //            if (!Table.instance._potChips.Contains(chip))
+            //            {
+            //                Table.instance.AddChipTo(Destination.pot, chip);
+            //            }
+            //        }
+            //    }
+            //}
 
         }
     }
