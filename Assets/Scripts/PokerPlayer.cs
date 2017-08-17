@@ -40,6 +40,7 @@ public class PokerPlayer {
         }
         PlayerState = PlayerState.NotPlaying;
         Hand = null;
+        Debug.Log("Player " + SeatPos + " folded!");
         int activePlayerNum = 0;
         for (int i = 0; i < Services.Dealer.players.Count; i++)
         {
@@ -73,6 +74,8 @@ public class PokerPlayer {
         Bet(betToCall);
         currentBet = betToCall + currentBet;
         Services.Dealer.LastBet = currentBet;
+        Debug.Log("Player " + SeatPos + " called!");
+        Debug.Log("and the pot is now at " + Table.instance.PotChips);
     }
 
     public void Raise()
@@ -84,6 +87,8 @@ public class PokerPlayer {
         currentBet = betToRaise + currentBet;
         Services.Dealer.LastBet = currentBet;
         Debug.Log("player " + SeatPos + " raises " + betToRaise);
+        Debug.Log("Player " + SeatPos + " raised!");
+        Debug.Log("and the pot is now at " + Table.instance.PotChips);
     }
 
     public float FindRateOfReturn()
@@ -110,17 +115,25 @@ public class PokerPlayer {
             if (returnRate < 0.8)
             {
                 float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 95) Fold();
+                if (randomNumber < 95)
+                {
+                    if (Services.Dealer.LastBet > 0) Fold();
+                    else Call();
+                }
                 else Raise();
             }
             else if (returnRate < 1)
             {
                 float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 80) Fold();
+                if (randomNumber < 80)
+                {
+                    if (Services.Dealer.LastBet > 0) Fold();
+                    else Call();
+                }
                 else if (randomNumber - 80 < 5) Call();
                 else Raise();
             }
-            else if (returnRate > 1.3)
+            else if (returnRate < 1.3)
             {
                 float randomNumber = Random.Range(0, 100);
                 if (randomNumber < 60) Call();
@@ -810,6 +823,7 @@ public class PokerPlayer {
                 }
             }    
         }
+        //I THINK THIS IS THE PROBLEM AREA FOR WHY MY POTS AND STACKS ARE OFF
         if (valueRemaining > 0)
         {
             int newChipStackValue = oldChipStackValue - betAmount;

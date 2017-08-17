@@ -113,21 +113,7 @@ public class Dealer : MonoBehaviour
         #region Players evaluate their hands based on the gamestate
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            //Table.instance.DebugHands();
-            ////Debug.Log(players[0].ChipCount);
-            //int betSizeTest = 5;
-            //if (betSizeTest % 5 == 0)
-            //{
-            //    foreach (PokerPlayer player in players)
-            //    {
-            //        player.Bet(betSizeTest);
-            //    }
-            //}
-            //else
-            //{
-            //    Debug.Log("Warning: Invalid Bet Size");
-            //}
-            //StartRound();
+            Debug.Log("You clicked the space button!");
         }
 
         if (playersReady && Table.gameState != lastGameState)
@@ -259,7 +245,7 @@ public class Dealer : MonoBehaviour
         {
             yield return null;
         }
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(.5f);
         playerToAct.turnComplete = false;
         int currentPlayerSeatPos = playerToAct.SeatPos;
         bool roundFinished = true;
