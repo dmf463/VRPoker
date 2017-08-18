@@ -79,7 +79,11 @@ public class Dealer : MonoBehaviour
                 Table.gameState = GameState.PreFlop;
             }
         }
-        if(Table.gameState != GameState.ShowDown)
+        if(Table.gameState == GameState.CleanUp)
+        {
+            messageText.text = "I guess everyone folded, woohoo!";
+        }
+        if(Table.gameState != GameState.ShowDown || Table.gameState != GameState.CleanUp)
         {
             switch (Table.instance._board.Count)
             {
@@ -101,7 +105,6 @@ public class Dealer : MonoBehaviour
                     break;
                 case 4:
                     Table.gameState = GameState.Turn;
-                    messageText.text = "ready for the river";
                     break;
                 case 5:
                     Table.gameState = GameState.River;
@@ -113,7 +116,7 @@ public class Dealer : MonoBehaviour
         #region Players evaluate their hands based on the gamestate
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Debug.Log("You clicked the space button!");
+            Table.instance.DebugHandsAndChips();
         }
 
         if (playersReady && Table.gameState != lastGameState)
@@ -157,7 +160,7 @@ public class Dealer : MonoBehaviour
                 StartRound();
                 roundStarted = true;
             }
-            messageText.text = "Click both trigger buttons to start the showdown";
+            //messageText.text = "Click both trigger buttons to start the showdown";
             if (hand1.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true && hand2.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true)
             {
                 Table.gameState = GameState.ShowDown;
@@ -182,11 +185,8 @@ public class Dealer : MonoBehaviour
             {
                 for (int i = 0; i < players.Count; i++)
                 {
-                    if(players[i].PlayerState == PlayerState.Playing)
-                    {
-                        players[i].FlipCards();
-                        Debug.Log("player" + players[i].SeatPos + "is the " + players[i].PlayerState + " with (a) " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
-                    }
+                    players[i].FlipCards();
+                    Debug.Log("player" + players[i].SeatPos + "is the " + players[i].PlayerState + " with (a) " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
                 }
                 sortedPlayers.Clear();
                 playersHaveBeenEvaluated = true;
@@ -253,9 +253,10 @@ public class Dealer : MonoBehaviour
         for (int i = 1; i < players.Count; i++)
         {
             nextPlayer = players[(currentPlayerSeatPos + i) % players.Count];
-            if ((!nextPlayer.actedThisRound || nextPlayer.currentBet < LastBet) && nextPlayer.PlayerState == PlayerState.Playing)
+            if ((!nextPlayer.actedThisRound || nextPlayer.currentBet < LastBet || nextPlayer.ChipCount == 0) && nextPlayer.PlayerState == PlayerState.Playing)
             {
                 roundFinished = false;
+                Debug.Log("nextPlayer to act is player " + nextPlayer.SeatPos);
                 break;
             }
         }
@@ -282,7 +283,9 @@ public class Dealer : MonoBehaviour
         Table.instance.DealerPosition = 0;
         Table.instance.SetDealerButtonPos(Table.instance.DealerPosition);
         players[SeatsAwayFromDealer(1)].Bet(SmallBlind);
+        Debug.Log(players[SeatsAwayFromDealer(1)].ChipCount);
         players[SeatsAwayFromDealer(2)].Bet(BigBlind);
+        Debug.Log(players[SeatsAwayFromDealer(2)].ChipCount);
     }
 
     public void SetCurrentAndLastBet()
@@ -393,6 +396,7 @@ public class Dealer : MonoBehaviour
         {
             if(player.PlayerState == PlayerState.Winner)
             {
+                //Debug.Log("chipCountToCheckWhenWinning = " + player.ChipCountToCheckWhenWinning + " and potAmountToGiveWinner = " + potAmountToGiveWinner);
                 winnerChipStack = player.ChipCountToCheckWhenWinning + potAmountToGiveWinner;
                 Debug.Log("for player" + player.SeatPos + " the winnerChipStack = " + winnerChipStack + " and the Player has" + player.ChipCount);
                 if (player.ChipCount == winnerChipStack && player.HasBeenPaid == false)
@@ -433,6 +437,7 @@ public class Dealer : MonoBehaviour
             players[i].HasBeenPaid = false;
             //players[i].checkedHandStrength = false;
         }
+        Table.gameState = GameState.NewRound;
         playersHaveBeenEvaluated = false;
         winnersHaveBeenPaid = false;
         readyToAwardPlayers = false;

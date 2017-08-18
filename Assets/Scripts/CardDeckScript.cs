@@ -174,6 +174,7 @@ public class CardDeckScript : InteractionSuperClass {
 
     public void RefillCardDeck()
     {
+        Debug.Log("Refilling CardDeck");
         cardsInDeck.Clear();
         Table.instance.NewHand();
         SuitType[] suits = new SuitType[4]

@@ -5,7 +5,7 @@ using System.Linq;
 
 public enum Destination { player0, player1, player2, player3, player4, board, burn, pot}
 public enum DealerState { DealingState, ShufflingState };
-public enum GameState { PreFlop, Flop, Turn, River, ShowDown, NewRound }
+public enum GameState { PreFlop, Flop, Turn, River, ShowDown, CleanUp, NewRound }
 
 public class Table {
     
@@ -94,10 +94,7 @@ public class Table {
         {
             potSize += _potChips[i].chipValue;
         }
-        //For testing purposes, I'm currently setting the pot to always be 100
-        //since I don't actually have a live pot.
         return potSize;
-        //return 100;
     }
 
     public int GetChipStackTotal(int seatPos)
@@ -125,6 +122,10 @@ public class Table {
         List<GameObject> chipsInStack = new List<GameObject>();
         for (int i = 0; i < playerChipStacks[seatPos].Count; i++)
         {
+            if (playerChipStacks[seatPos][i] == null)
+            {
+                Debug.Log("in the for loop, i = " + i + " and the playerChipStack[" + seatPos + "].count = " + playerChipStacks[seatPos].Count + " and time is " + Time.time);
+            }
             chipsInStack.Add(playerChipStacks[seatPos][i].gameObject);
         }
         return chipsInStack;
@@ -139,10 +140,6 @@ public class Table {
                 playerChipStacks[i].Add(chip);
             }
         }
-        if (dest == Destination.pot)
-        {
-            _potChips.Add(chip);
-        }
     }
 
     public void RemoveChipFrom(Destination dest, Chip chip)
@@ -153,10 +150,6 @@ public class Table {
             {
                 playerChipStacks[i].Remove(chip);
             }
-        }
-        if (dest == Destination.pot)
-        {
-            _potChips.Remove(chip);
         }
     }
 
@@ -237,19 +230,25 @@ public class Table {
         return cardTypes;
     }
 
-    public void DebugHands()
+    public void DebugHandsAndChips()
     {
-        for (int i = 0; i < playerCards.Length; i++)
-        {
-            for (int j = 0; j < playerCards[i].Count; j++)
-            {
-                Debug.Log("Player" + i + " Card " + j + " is " + playerCards[i][j].cardType.rank + " of " + playerCards[i][j].cardType.suit);
-            }
+        //for (int i = 0; i < playerCards.Length; i++)
+        //{
+        //    for (int j = 0; j < playerCards[i].Count; j++)
+        //    {
+        //        Debug.Log("Player" + i + " Card " + j + " is " + playerCards[i][j].cardType.rank + " of " + playerCards[i][j].cardType.suit);
+        //    }
             
-        }
-        for (int i = 0; i < _board.Count; i++)
+        //}
+        //for (int i = 0; i < _board.Count; i++)
+        //{
+        //    Debug.Log("Board Card " + i + " is " + _board[i].cardType.rank + " of " + _board[i].cardType.rank);
+        //}
+
+        for (int i = 0; i < playerChipStacks.Length; i++)
         {
-            Debug.Log("Board Card " + i + " is " + _board[i].cardType.rank + " of " + _board[i].cardType.rank);
+            Debug.Log("Player " + i + " has a chipStack of " + GetChipStackTotal(i));
         }
+        Debug.Log("the pot is at" + PotChips);
     }
 }

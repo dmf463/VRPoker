@@ -21,8 +21,9 @@ public class Chip : InteractionSuperClass {
     [HideInInspector]
     public bool inAStack;
     const float MAGNITUDE_THRESHOLD = 1;
-    const float MAX_CHIPSTACK = 20;
+    const float MAX_CHIPSTACK = 30;
     const float CHIP_FORCE_MODIFIER = 1.5f;
+    public bool markedForDestruction = false;
 
     // Use this for initialization
     void Start () {
@@ -64,6 +65,12 @@ public class Chip : InteractionSuperClass {
                 StartCoroutine(ReadyToBeGrabbed(1.5f));
             }
         }
+    }
+
+    public void DestroyChip()
+    {
+        markedForDestruction = true;
+        Destroy(gameObject);
     }
 
     IEnumerator ReadyToBeGrabbed(float time)
@@ -117,6 +124,7 @@ public class Chip : InteractionSuperClass {
                 if(incomingChip != null)
                 {
                     chipStack.AddToStackInHand(incomingChip);
+                    incomingChip = null;
                 }
                 isTouchingChip = false;
             }
@@ -127,6 +135,7 @@ public class Chip : InteractionSuperClass {
                     chipStack.AddToStackInHand(chip);
                     isTouchingStack = false;
                 }
+                incomingStack = null;
             }
         }
         if (chipStack != null)

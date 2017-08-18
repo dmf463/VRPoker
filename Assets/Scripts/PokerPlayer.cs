@@ -19,8 +19,6 @@ public class PokerPlayer {
     public PlayerState PlayerState { get; set; }
     public bool HasBeenPaid;
     public int ChipCountToCheckWhenWinning;
-    //public bool checkedHandStrength;
-    public bool organizingChips = false;
     public int currentBet;
     public float rateOfReturn;
     public bool turnComplete;
@@ -51,14 +49,16 @@ public class PokerPlayer {
         }
         if(activePlayerNum == 1)
         {
+            Table.gameState = GameState.CleanUp;
             for (int i = 0; i < Services.Dealer.players.Count; i++)
             {
                 if(Services.Dealer.players[i].PlayerState == PlayerState.Playing)
                 {
                     Services.Dealer.players[i].PlayerState = PlayerState.Winner;
                     Services.Dealer.numberOfWinners = 1;
-                    Services.Dealer.messageText.text = "I guess everyone folded, pay me";
-                    Services.Dealer.players[i].ChipCountToCheckWhenWinning = ChipCount;
+                    Debug.Log("current chip stack is at " + ChipCount);
+                    Services.Dealer.players[i].ChipCountToCheckWhenWinning = Services.Dealer.players[i].ChipCount;
+                    Debug.Log("We are getting into the fold and the chipCountToCheckWhenWinning = " + ChipCountToCheckWhenWinning);
                     Services.Dealer.playersReady = true;
                     Services.Dealer.StartCoroutine(Services.Dealer.WaitForWinnersToGetPaid());
                 }
@@ -68,34 +68,63 @@ public class PokerPlayer {
 
     public void Call()
     {
-        Debug.Log("currentBet = " + currentBet);
-        int betToCall = Services.Dealer.LastBet - currentBet;
-        Debug.Log("betToCall = " + betToCall);
-        Bet(betToCall);
-        currentBet = betToCall + currentBet;
-        Services.Dealer.LastBet = currentBet;
-        Debug.Log("Player " + SeatPos + " called!");
-        Debug.Log("and the pot is now at " + Table.instance.PotChips);
+        if(chipCount > 0)
+        {
+            Debug.Log("currentBet = " + currentBet);
+            int betToCall = Services.Dealer.LastBet - currentBet;
+            if(ChipCount - betToCall <= 0)
+            {
+                Bet(ChipCount);
+                Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
+            }
+            else
+            {
+                Debug.Log("betToCall = " + betToCall);
+                Bet(betToCall);
+                currentBet = betToCall + currentBet;
+                Services.Dealer.LastBet = currentBet;
+                Debug.Log("Player " + SeatPos + " called " + betToCall);
+                Debug.Log("and the pot is now at " + Table.instance.PotChips);
+            }
+        }
     }
 
     public void Raise()
     {
-        //for purposes of testing, we're gonna make this a limit game.
-        int raiseAmount = Services.Dealer.BigBlind;
-        int betToRaise = Services.Dealer.LastBet + (raiseAmount - currentBet);
-        Bet(betToRaise);
-        currentBet = betToRaise + currentBet;
-        Services.Dealer.LastBet = currentBet;
-        Debug.Log("player " + SeatPos + " raises " + betToRaise);
-        Debug.Log("Player " + SeatPos + " raised!");
-        Debug.Log("and the pot is now at " + Table.instance.PotChips);
+        if(ChipCount > 0)
+        {
+            //for purposes of testing, we're gonna make this a limit game.
+            int raiseAmount = 500; //Services.Dealer.BigBlind;
+            int betToRaise = Services.Dealer.LastBet + (raiseAmount - currentBet);
+            if (ChipCount - betToRaise <= 0)
+            {
+                Bet(ChipCount);
+                Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
+                currentBet = betToRaise + currentBet;
+                Services.Dealer.LastBet = currentBet;
+                Debug.Log("player " + SeatPos + " raises " + betToRaise);
+                Debug.Log("Player " + SeatPos + " raised!");
+                Debug.Log("and the pot is now at " + Table.instance.PotChips);
+                Debug.Log("and player " + SeatPos + " is now at " + ChipCount);
+            }
+            else
+            {
+                Bet(betToRaise);
+                currentBet = betToRaise + currentBet;
+                Services.Dealer.LastBet = currentBet;
+                Debug.Log("player " + SeatPos + " raises " + betToRaise);
+                Debug.Log("Player " + SeatPos + " raised!");
+                Debug.Log("and the pot is now at " + Table.instance.PotChips);
+                Debug.Log("and player " + SeatPos + " is now at " + ChipCount);
+            }
+        }
     }
 
     public float FindRateOfReturn()
     {
         //in this case, since we're going to do limit, the bet will always be the bigBlind;
         //else, we need to write another function that determines what the possible bet will be
-        float betAmount = Services.Dealer.BigBlind;
+        float betAmount = 500;
         float potSize = Table.instance.PotChips;
         float potOdds = betAmount / (betAmount + potSize);
         float returnRate = HandStrength / potOdds;
@@ -112,7 +141,8 @@ public class PokerPlayer {
         }
         else
         {
-            if (returnRate < 0.8)
+            if ((ChipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && HandStrength < 0.5) Fold();
+            else if (returnRate < 0.8)
             {
                 float randomNumber = Random.Range(0, 100);
                 if (randomNumber < 95)
@@ -139,7 +169,7 @@ public class PokerPlayer {
                 if (randomNumber < 60) Call();
                 else Raise();
             }
-            else if(returnRate >= 1.3)
+            else if (returnRate >= 1.3)
             {
                 float randomNumber = Random.Range(0, 100);
                 if (randomNumber < 70) Raise();
@@ -161,8 +191,6 @@ public class PokerPlayer {
                 playerHand.EvaluateHandAtPreFlop();
                 Hand = playerHand;
                 DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
-                //CreateAndOrganizeChipStacks(Table.instance.GetChipGameObjects(SeatPos));
-                //checkedHandStrength = true;
             }
             else if (Table.gameState == GameState.Flop)
             {
@@ -170,12 +198,7 @@ public class PokerPlayer {
                 HandEvaluator playerHand = new HandEvaluator(sortedCards);
                 playerHand.EvaluateHandAtFlop();
                 Hand = playerHand;
-                //if (!checkedHandStrength)
-                //{
                 DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
-                //CreateAndOrganizeChipStacks(Table.instance.GetChipGameObjects(SeatPos));
-                //checkedHandStrength = true;
-                //}
             }
             else if (Table.gameState == GameState.Turn)
             {
@@ -183,12 +206,7 @@ public class PokerPlayer {
                 HandEvaluator playerHand = new HandEvaluator(sortedCards);
                 playerHand.EvaluateHandAtTurn();
                 Hand = playerHand;
-                //if (!checkedHandStrength)
-                //{
                 DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
-               // CreateAndOrganizeChipStacks(Table.instance.GetChipGameObjects(SeatPos));
-                //checkedHandStrength = true;
-                //}
             }
             else if (Table.gameState == GameState.River)
             {
@@ -196,20 +214,14 @@ public class PokerPlayer {
                 HandEvaluator playerHand = new HandEvaluator(sortedCards);
                 playerHand.EvaluateHandAtRiver();
                 Hand = playerHand;
-                //if (!checkedHandStrength)
-                //{
                 DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
-                //CreateAndOrganizeChipStacks(Table.instance.GetChipGameObjects(SeatPos));
-                //    checkedHandStrength = true;
-                //}
             }
         }
     }
 
+    #region These are all the functions that deal with just flipping the cards
     public void FlipCards()
     {
-        if(PlayerState == PlayerState.Playing)
-        {
             List<GameObject> cardsInHand = Table.instance.GetCardGameObjects(SeatPos);
             for (int i = 0; i < cardsInHand.Count; i++)
             {
@@ -219,7 +231,6 @@ public class PokerPlayer {
                     Services.Dealer.StartCoroutine(FlipCardsAndMoveTowardsBoard(.5f, cardsInHand[i], (GameObject.Find("TheBoard").GetComponent<Collider>().ClosestPointOnBounds(cardsInHand[i].transform.position) + cardsInHand[i].transform.position) / 2, SeatPos));
                 }
                 Services.Dealer.StartCoroutine(WaitForReposition(.5f, .5f, cardsInHand[0], cardsInHand[1], SeatPos));
-            }
         }
     }
 
@@ -298,6 +309,8 @@ public class PokerPlayer {
         }
 
     }
+
+    #endregion
 
     public void DetermineHandStrength(CardType myCard1, CardType myCard2)
     {
@@ -596,7 +609,6 @@ public class PokerPlayer {
 
     public void CreateAndOrganizeChipStacks(List<GameObject> chipsToOrganize )
     {
-        organizingChips = true;
         List<List<GameObject>> organizedChips = OrganizeChipsIntoColorStacks(chipsToOrganize);
         GameObject parentChip = null;
         float incrementStackBy = 0;
@@ -666,20 +678,13 @@ public class PokerPlayer {
                         organizedChips[chipStacks][chipIndex].transform.position = new Vector3(parentChip.transform.position.x, parentChip.transform.position.y - (incrementStackBy * chipIndex), parentChip.transform.position.z);
                         organizedChips[chipStacks][chipIndex].transform.rotation = parentChip.transform.rotation;
                         parentChip.GetComponent<Chip>().chipStack.chips.Add(organizedChips[chipStacks][chipIndex].GetComponent<Chip>());
+                        parentChip.GetComponent<Chip>().chipStack.stackValue += organizedChips[chipStacks][chipIndex].GetComponent<Chip>().chipValue;
                     }
                 }
             }
         }
         Vector3 trueOffset = firstStackPos - lastStackPos;
         chipContainer.transform.position += trueOffset / 2;
-        if(parentChip != null)
-        Services.Dealer.StartCoroutine(ResetOrganizingChipsBool(2));
-    }
-
-    IEnumerator ResetOrganizingChipsBool(float time)
-    {
-        yield return new WaitForSeconds(time);
-        organizingChips = false;
     }
 
     public List<GameObject> SetChipStacks(int chipAmount)
@@ -798,7 +803,8 @@ public class PokerPlayer {
             }
             foreach(GameObject chip in chipChange)
             {
-                GameObject.Destroy(chip);
+                Table.instance.playerChipStacks[SeatPos].Remove(chip.GetComponent<Chip>());
+                chip.GetComponent<Chip>().DestroyChip();
             }
 
         }
@@ -809,6 +815,7 @@ public class PokerPlayer {
             {
                 Vector3 offSet = new Vector3(Random.Range(0, .03f), .1f, Random.Range(0, .03f));
                 GameObject newChip = GameObject.Instantiate(FindChipPrefab(chipPrefab[colorListIndex]), playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
+                Table.instance._potChips.Add(newChip.GetComponent<Chip>());
                 for (int tableChipIndex = 0; tableChipIndex < Table.instance.playerChipStacks[SeatPos].Count; tableChipIndex++)
                 {
                     if (newChip.GetComponent<Chip>().chipValue == Table.instance.playerChipStacks[SeatPos][tableChipIndex].chipValue && valueRemaining == 0)
@@ -816,14 +823,12 @@ public class PokerPlayer {
                         GameObject chipToRemove = Table.instance.playerChipStacks[SeatPos][tableChipIndex].gameObject;
                         Debug.Log("ChipRemoved was a " + chipToRemove.GetComponent<Chip>().chipValue + " chip");
                         Table.instance.playerChipStacks[SeatPos].Remove(chipToRemove.GetComponent<Chip>());
-                        Table.instance._potChips.Add(chipToRemove.GetComponent<Chip>());
-                        GameObject.Destroy(chipToRemove);
+                        chipToRemove.GetComponent<Chip>().DestroyChip();
                         break;
                     }
                 }
             }    
         }
-        //I THINK THIS IS THE PROBLEM AREA FOR WHY MY POTS AND STACKS ARE OFF
         if (valueRemaining > 0)
         {
             int newChipStackValue = oldChipStackValue - betAmount;
@@ -831,7 +836,7 @@ public class PokerPlayer {
             {
                 GameObject chip = Table.instance.playerChipStacks[SeatPos][i].gameObject;
                 Table.instance.playerChipStacks[SeatPos].Remove(chip.GetComponent<Chip>());
-                GameObject.Destroy(chip);
+                chip.GetComponent<Chip>().DestroyChip();
             }
             List<GameObject> newChipStack = SetChipStacks(newChipStackValue);
             foreach(GameObject chip in newChipStack)
@@ -849,7 +854,6 @@ public class PokerPlayer {
     public int FindChipMax(int chipValue)
     {
         int chipMax = 0;
-
         for (int i = 0; i < Table.instance.playerChipStacks[SeatPos].Count; i++)
         {
             if(chipValue == Table.instance.playerChipStacks[SeatPos][i].chipValue)
@@ -857,7 +861,6 @@ public class PokerPlayer {
                 chipMax++;
             }
         }
-
         return chipMax;
     }
 
