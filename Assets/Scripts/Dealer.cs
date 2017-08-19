@@ -66,6 +66,7 @@ public class Dealer : MonoBehaviour
         if (Table.gameState == GameState.NewRound)
         {
             int cardCount = 0;
+            messageText.text = "Deal two cards to each player!";
             for (int playerCardIndex = 0; playerCardIndex < Table.instance.playerCards.Length; playerCardIndex++)
             {
                 for (int cardTotal = 0; cardTotal < Table.instance.playerCards[playerCardIndex].Count; cardTotal++)
@@ -79,11 +80,15 @@ public class Dealer : MonoBehaviour
                 Table.gameState = GameState.PreFlop;
             }
         }
-        if(Table.gameState == GameState.CleanUp)
+        else if(Table.gameState == GameState.CleanUp)
         {
             messageText.text = "I guess everyone folded, woohoo!";
         }
-        if(Table.gameState != GameState.ShowDown || Table.gameState != GameState.CleanUp)
+        else if(Table.gameState == GameState.PostHand)
+        {
+            messageText.text = "'Thanks dealer, here's a tip!' (you got a tip)";
+        }
+        else if(Table.gameState != GameState.ShowDown)
         {
             switch (Table.instance._board.Count)
             {
@@ -127,10 +132,6 @@ public class Dealer : MonoBehaviour
 
         if (Table.gameState == GameState.PreFlop)
         {
-            /*
-             * at the start of the round, find the first position player and start the round with that person
-             * that person acts until they finish, and then they end their turn
-             */
             if (!roundStarted)
             {
                 StartRound();
@@ -383,8 +384,7 @@ public class Dealer : MonoBehaviour
             GivePlayersWinnings(potAmount);
             yield return null;
         }
-        messageText.text = "'Thanks dealer, here's a tip!' (you got a tip)";
-
+        Table.gameState = GameState.PostHand;
     }
 
     public void GivePlayersWinnings(int winnings)

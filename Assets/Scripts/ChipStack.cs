@@ -13,6 +13,7 @@ public class ChipStack {
     public ChipStack(Chip chip)
     {
         chips.Add(chip);
+        chip.inAStack = true;
         stackValue = chips[0].chipValue;
         incrementStackBy = ((chips[0].gameObject.GetComponent<Collider>().bounds.size.z / 88) * -1);
     }

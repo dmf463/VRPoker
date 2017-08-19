@@ -343,6 +343,11 @@ public class HandEvaluator {
     {
         //if there are two cards that are the same, it's a pair
         //0, 1 with 4 high card
+        //HighCard represents = after the main pair, the rest of the cards in this formula =
+        //if 5 cards, (a x 16^5) + (b x 16^4) + (c x 16^3) + (d x 16^2) + (9 x 16^1);
+        //if we're in a pair then we subtract the pair, take the remaining 3 highest cards
+        //(a x 16^5) + (b x 16^4) + (c x 16^3) = highCard
+        //possibly convert to hexidecimal
         if (incomingCards[0].rank == incomingCards[1].rank)
         {
             handValue.Total = ((int)incomingCards[0].rank * 2) + (int)incomingCards[2].rank + (int)incomingCards[3].rank + (int)incomingCards[4].rank;
@@ -412,6 +417,8 @@ public class HandEvaluator {
     {
         //if 3 cards are the same then it's a three of a kind
         //0, 1, 2
+        //need to do the ranked list of highCards here as well
+        //except I go down 2 down the list (because 5 card hand).
         if (incomingCards[0].rank == incomingCards[1].rank && incomingCards[0].rank == incomingCards[2].rank)
         {
             handValue.Total = (int)incomingCards[0].rank * 3;
@@ -465,6 +472,7 @@ public class HandEvaluator {
 
     public bool FlushAtFlop()
     {
+        //Total should be highCard, and need to compare down list of all 5 cards. 
         if (spadeSum == 5 || heartSum == 5 || diamondSum == 5 || clubSum == 5)
         {
             handValue.Total = (int)incomingCards[4].rank;

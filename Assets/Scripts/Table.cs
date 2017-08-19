@@ -5,7 +5,7 @@ using System.Linq;
 
 public enum Destination { player0, player1, player2, player3, player4, board, burn, pot}
 public enum DealerState { DealingState, ShufflingState };
-public enum GameState { PreFlop, Flop, Turn, River, ShowDown, CleanUp, NewRound }
+public enum GameState { PreFlop, Flop, Turn, River, ShowDown, CleanUp, PostHand, NewRound }
 
 public class Table {
     
