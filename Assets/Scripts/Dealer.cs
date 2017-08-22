@@ -362,9 +362,6 @@ public class Dealer : MonoBehaviour
                     player.PlayerState = PlayerState.Winner;
                     player.ChipCountToCheckWhenWinning = player.ChipCount;
                 }
-                //sortedPlayers[i].PlayerState = PlayerState.Winner;
-                //sortedPlayers[i].ChipCountToCheckWhenWinning = sortedPlayers[i].ChipCount;
-                //numberOfWinners++;
             }
             else
             {
@@ -372,7 +369,6 @@ public class Dealer : MonoBehaviour
                 {
                     player.PlayerState = PlayerState.Loser;
                 }
-                //sortedPlayers[i].PlayerState = PlayerState.Loser;
             }
         }
         numberOfWinners = PlayerRank[0].Count;
@@ -380,34 +376,61 @@ public class Dealer : MonoBehaviour
 
     public IEnumerator WaitForWinnersToGetPaid()
     {
+        //need to figure out how much to give each player, and assign that value to them BEFORE I go into the while loop
+        //need to be able to find whether or not I need to award the odd chip
+        //it could be that the player next to the dealer gets an extra 5,
+        //or that the TWO players next to the dealer get an extra 5, in a three way split.
+        //so first I need to add the winning players to a list
+        //once I have the list I need to take the pot and divide it by the number of winners
+        //then for the first winner I find the remainder, subract that from the divided pot, and add the lowest chip denominator, that becomes the amount I give them
+        //I then do this for each subsequent winner (if there are more than one). 
+        //these values become how much they are supposed to be paid.
+        Debug.Assert(numberOfWinners > 0);
+        List<PokerPlayer> winningPlayers = new List<PokerPlayer>();
         int potAmount = Table.instance.PotChips;
+        for (int i = 0; i < players.Count; i++)
+        {
+            PokerPlayer playerToCheck = players[SeatsAwayFromDealer(i + 1)];
+            if(playerToCheck.PlayerState == PlayerState.Winner)
+            {
+                winningPlayers.Add(playerToCheck);
+            }
+        }
+        int potRemaining = potAmount;
+        for (int i = 0; i < winningPlayers.Count; i++)
+        {
+            potAmountToGiveWinner = potRemaining / (numberOfWinners - i);
+            int remainder = potAmountToGiveWinner % ChipConfig.RED_CHIP_VALUE;
+            if (remainder > 0)
+            {
+                winningPlayers[i].chipsWon = (potAmountToGiveWinner - remainder) + ChipConfig.RED_CHIP_VALUE;
+            }
+            else winningPlayers[i].chipsWon = potAmountToGiveWinner;
+            potRemaining -= winningPlayers[i].chipsWon;
+        }
         Debug.Log("number of Winners is " + numberOfWinners);
         while (!winnersHaveBeenPaid)
         {
-            GivePlayersWinnings(potAmount);
+            GivePlayersWinnings();
             yield return null;
         }
         Table.gameState = GameState.PostHand;
     }
 
-    public void GivePlayersWinnings(int winnings)
+    public void GivePlayersWinnings()
     {
-        Debug.Assert(numberOfWinners > 0);
-        potAmountToGiveWinner = winnings / numberOfWinners;
         int winnerChipStack = 0;    
         foreach (PokerPlayer player in players)
         {
             if(player.PlayerState == PlayerState.Winner)
             {
                 //Debug.Log("chipCountToCheckWhenWinning = " + player.ChipCountToCheckWhenWinning + " and potAmountToGiveWinner = " + potAmountToGiveWinner);
-                winnerChipStack = player.ChipCountToCheckWhenWinning + potAmountToGiveWinner;
+                winnerChipStack = player.ChipCountToCheckWhenWinning + player.chipsWon;
                 Debug.Log("for player" + player.SeatPos + " the winnerChipStack = " + winnerChipStack + " and the Player has" + player.ChipCount);
                 if (player.ChipCount == winnerChipStack && player.HasBeenPaid == false)
                 {
                     winnersPaid++;
                     player.HasBeenPaid = true;
-                    //Debug.Log("winnersPaid = " + winnersPaid);
-                   // Debug.Log("player.HasBeenPaid = " + player.HasBeenPaid);
                 }
             }
             else if(player.PlayerState == PlayerState.Loser)
@@ -419,7 +442,7 @@ public class Dealer : MonoBehaviour
                 }
                 else
                 {
-                    messageText.text = "Give the winner(s) their winnings (pot size is " + winnings + ", that's a black chip)";
+                    messageText.text = "Give the winner(s) their winnings. the pot size is " + Table.instance.PotChips + " and there is/are " + numberOfWinners + " winner(s)";
                 }
             }
         }

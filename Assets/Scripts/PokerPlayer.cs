@@ -19,6 +19,7 @@ public class PokerPlayer {
     public PlayerState PlayerState { get; set; }
     public bool HasBeenPaid;
     public int ChipCountToCheckWhenWinning;
+    public int chipsWon;
     public int currentBet;
     public float rateOfReturn;
     public bool turnComplete;
