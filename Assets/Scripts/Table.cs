@@ -178,7 +178,6 @@ public class Table {
         EvaluatedHand = GetCardTypes(seatPos);
         EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
         return EvaluatedHand;
-
     }
 
     public List<CardType> SortPlayerCardsAtFlop(int seatPos)
@@ -232,18 +231,18 @@ public class Table {
 
     public void DebugHandsAndChips()
     {
-        //for (int i = 0; i < playerCards.Length; i++)
-        //{
-        //    for (int j = 0; j < playerCards[i].Count; j++)
-        //    {
-        //        Debug.Log("Player" + i + " Card " + j + " is " + playerCards[i][j].cardType.rank + " of " + playerCards[i][j].cardType.suit);
-        //    }
-            
-        //}
-        //for (int i = 0; i < _board.Count; i++)
-        //{
-        //    Debug.Log("Board Card " + i + " is " + _board[i].cardType.rank + " of " + _board[i].cardType.rank);
-        //}
+        for (int i = 0; i < playerCards.Length; i++)
+        {
+            for (int j = 0; j < playerCards[i].Count; j++)
+            {
+                Debug.Log("Player" + i + " Card " + j + " is " + playerCards[i][j].cardType.rank + " of " + playerCards[i][j].cardType.suit);
+            }
+
+        }
+        for (int i = 0; i < _board.Count; i++)
+        {
+            Debug.Log("Board Card " + i + " is " + _board[i].cardType.rank + " of " + _board[i].cardType.rank);
+        }
 
         for (int i = 0; i < playerChipStacks.Length; i++)
         {

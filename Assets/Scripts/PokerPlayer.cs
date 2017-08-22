@@ -133,51 +133,51 @@ public class PokerPlayer {
 
     public void FoldCallRaiseDecision(float returnRate)
     {
-        if(Table.gameState == GameState.PreFlop)
-        {
+        //if(Table.gameState == GameState.PreFlop)
+        //{
             Call();
             turnComplete = true;
             actedThisRound = true;
-        }
-        else
-        {
-            if ((ChipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && HandStrength < 0.5) Fold();
-            else if (returnRate < 0.8)
-            {
-                float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 95)
-                {
-                    if (Services.Dealer.LastBet > 0) Fold();
-                    else Call();
-                }
-                else Raise();
-            }
-            else if (returnRate < 1)
-            {
-                float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 80)
-                {
-                    if (Services.Dealer.LastBet > 0) Fold();
-                    else Call();
-                }
-                else if (randomNumber - 80 < 5) Call();
-                else Raise();
-            }
-            else if (returnRate < 1.3)
-            {
-                float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 60) Call();
-                else Raise();
-            }
-            else if (returnRate >= 1.3)
-            {
-                float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 70) Raise();
-                else Call();
-            }
-            turnComplete = true;
-            actedThisRound = true;
-        }
+        //}
+        //else
+        //{
+        //    if ((ChipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && HandStrength < 0.5) Fold();
+        //    else if (returnRate < 0.8)
+        //    {
+        //        float randomNumber = Random.Range(0, 100);
+        //        if (randomNumber < 95)
+        //        {
+        //            if (Services.Dealer.LastBet > 0) Fold();
+        //            else Call();
+        //        }
+        //        else Raise();
+        //    }
+        //    else if (returnRate < 1)
+        //    {
+        //        float randomNumber = Random.Range(0, 100);
+        //        if (randomNumber < 80)
+        //        {
+        //            if (Services.Dealer.LastBet > 0) Fold();
+        //            else Call();
+        //        }
+        //        else if (randomNumber - 80 < 5) Call();
+        //        else Raise();
+        //    }
+        //    else if (returnRate < 1.3)
+        //    {
+        //        float randomNumber = Random.Range(0, 100);
+        //        if (randomNumber < 60) Call();
+        //        else Raise();
+        //    }
+        //    else if (returnRate >= 1.3)
+        //    {
+        //        float randomNumber = Random.Range(0, 100);
+        //        if (randomNumber < 70) Raise();
+        //        else Call();
+        //    }
+        //    turnComplete = true;
+        //    actedThisRound = true;
+        //}
     }
 
     public void EvaluateHand() 

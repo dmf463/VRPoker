@@ -66,7 +66,7 @@ public class Dealer : MonoBehaviour
         if (Table.gameState == GameState.NewRound)
         {
             int cardCount = 0;
-            messageText.text = "Deal two cards to each player!";
+            messageText.text = "Deal two cards to each player!\n32\nQJ\nJ5\nJ9\n78\n6.10.9.k.Q";
             for (int playerCardIndex = 0; playerCardIndex < Table.instance.playerCards.Length; playerCardIndex++)
             {
                 for (int cardTotal = 0; cardTotal < Table.instance.playerCards[playerCardIndex].Count; cardTotal++)
@@ -75,20 +75,20 @@ public class Dealer : MonoBehaviour
                 }
             }
             Debug.Log("newRound cardCount = " + cardCount);
-            if(cardCount == players.Count * 2)
+            if (cardCount == players.Count * 2)
             {
                 Table.gameState = GameState.PreFlop;
             }
         }
-        else if(Table.gameState == GameState.CleanUp)
+        else if (Table.gameState == GameState.CleanUp)
         {
             messageText.text = "I guess everyone folded, woohoo!";
         }
-        else if(Table.gameState == GameState.PostHand)
+        else if (Table.gameState == GameState.PostHand)
         {
             messageText.text = "'Thanks dealer, here's a tip!' (you got a tip)";
         }
-        else if(Table.gameState != GameState.ShowDown)
+        else if (Table.gameState != GameState.ShowDown)
         {
             switch (Table.instance._board.Count)
             {
@@ -186,8 +186,11 @@ public class Dealer : MonoBehaviour
             {
                 for (int i = 0; i < players.Count; i++)
                 {
-                    players[i].FlipCards();
-                    Debug.Log("player" + players[i].SeatPos + "is the " + players[i].PlayerState + " with (a) " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
+                    if (players[i].Hand != null)
+                    {
+                        players[i].FlipCards();
+                        Debug.Log("player" + players[i].SeatPos + "is the " + players[i].PlayerState + " with (a) " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
+                    }
                 }
                 sortedPlayers.Clear();
                 playersHaveBeenEvaluated = true;
