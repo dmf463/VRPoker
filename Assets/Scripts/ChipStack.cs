@@ -23,15 +23,18 @@ public class ChipStack {
     {
         //Debug.Log("chipStack has " + chips.Count + "  and stackValue ==  " + stackValue + " and incrementStackBy =  " + incrementStackInHandBy);
         //Debug.Log("trying to destroy " + chip.gameObject.name);
-        GameObject incomingChip = chip.gameObject;
-        GameObject.Destroy(incomingChip.GetComponent<Rigidbody>());
-        incomingChip.transform.parent = chips[0].transform;
-        incomingChip.transform.localPosition = new Vector3(chips[0].transform.localPosition.x, chips[0].transform.localPosition.y, (chips[chips.Count - 1].transform.localPosition.z + incrementStackBy));
-        incomingChip.transform.rotation = chips[0].transform.rotation;
-        incomingChip.GetComponent<Chip>().inAStack = true;
-        stackValue += incomingChip.GetComponent<Chip>().chipValue;
-        chips.Add(incomingChip.GetComponent<Chip>());
-        //Debug.Log("chipStack is worth " + stackValue);
+        if (chip.gameObject != null)
+        {
+            GameObject incomingChip = chip.gameObject;
+            GameObject.Destroy(incomingChip.GetComponent<Rigidbody>());
+            incomingChip.transform.parent = chips[0].transform;
+            incomingChip.transform.localPosition = new Vector3(chips[0].transform.localPosition.x, chips[0].transform.localPosition.y, (chips[chips.Count - 1].transform.localPosition.z + incrementStackBy));
+            incomingChip.transform.rotation = chips[0].transform.rotation;
+            incomingChip.GetComponent<Chip>().inAStack = true;
+            stackValue += incomingChip.GetComponent<Chip>().chipValue;
+            chips.Add(incomingChip.GetComponent<Chip>());
+            //Debug.Log("chipStack is worth " + stackValue);   
+        }
 
     }
 

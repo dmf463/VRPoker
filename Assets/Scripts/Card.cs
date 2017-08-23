@@ -31,6 +31,7 @@ public class Card : InteractionSuperClass {
     CardDeckScript deckScript;
     bool cardFacingUp = false;
     static float cardsInHand;
+    bool layingCardsDown;
    
 
     // Use this for initialization
@@ -234,11 +235,13 @@ public class Card : InteractionSuperClass {
                 //Debug.Log("cardsInHand = " + cardsInHand);
             }
         }
+        if (other.gameObject.tag == "Board") layingCardsDown = true;
         base.OnTriggerEnterX(other);
     }
 
     public override void OnTriggerExitX(Collider other)
     {
+        if (other.gameObject.tag == "Board") layingCardsDown = false;
         base.OnTriggerExitX(other);
     }
 
@@ -270,6 +273,10 @@ public class Card : InteractionSuperClass {
     public override void HandAttachedUpdate(Hand attachedHand)
     {
         base.HandAttachedUpdate(attachedHand);
+        if (layingCardsDown)
+        {
+            attachedHand.DetachObject(gameObject);
+        }
     }
 
     public override void OnDetachedFromHand(Hand hand)
@@ -278,6 +285,11 @@ public class Card : InteractionSuperClass {
         {
             //BUG ALERT: THERE IS A BUG HERE, IF THE CARD IS DEALT/PULLED AT THE WRONG ANGLE, AND THEN 
             //DETACHED IT FREEZES IN THE AIR
+            //MAYBE FIXED IT WITH THE if (rb == null)
+            if(rb == null)
+            {
+                rb = GetComponent<Rigidbody>();
+            }
             if (rb.transform.rotation.eulerAngles.x > 290 || rb.transform.rotation.eulerAngles.x < 250 && cardIsFlipped == false)
             {
                 //Debug.Log(this.gameObject.name + " card is facing the wrong way");

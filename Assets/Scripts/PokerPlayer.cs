@@ -615,7 +615,7 @@ public class PokerPlayer {
         float incrementStackBy = 0;
         List<GameObject> playerPositions = new List<GameObject>
         {
-            GameObject.Find("Player0"), GameObject.Find("Player1"), GameObject.Find("Player2"), GameObject.Find("Player3"), GameObject.Find("Player4")
+            GameObject.Find("P0Cards"), GameObject.Find("P1Cards"), GameObject.Find("P2Cards"), GameObject.Find("P3Cards"), GameObject.Find("P4Cards")
         };
         Vector3 offSet = Vector3.zero;
         Vector3 containerOffset = Vector3.up * .05f;
@@ -696,7 +696,7 @@ public class PokerPlayer {
 
         List<GameObject> playerPositions = new List<GameObject>
         {
-            GameObject.Find("Player0"), GameObject.Find("Player1"), GameObject.Find("Player2"), GameObject.Find("Player3"), GameObject.Find("Player4")
+            GameObject.Find("P0Cards"), GameObject.Find("P1Cards"), GameObject.Find("P2Cards"), GameObject.Find("P3Cards"), GameObject.Find("P4Cards")
         };
 
         int valueRemaining = chipAmount;

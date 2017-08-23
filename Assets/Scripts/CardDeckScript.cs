@@ -27,6 +27,9 @@ public class CardDeckScript : InteractionSuperClass {
     public bool deckIsBeingThrown = false;
     public bool deckWasThrown;
     public float badThrowVelocity;
+    private bool readyForAnotherCard = false;
+    private bool grabbingHighCard;
+    private bool grabbingLowCard;
 
     void Start()
     {
@@ -51,7 +54,10 @@ public class CardDeckScript : InteractionSuperClass {
 
     void Update()
     {
-
+        if(throwingHand != null)
+        {
+            CheckPressPosition(throwingHand);
+        }
         if (Input.GetKeyDown(KeyCode.Z))
         {
             int cardPos = Random.Range(0, cardsInDeck.Count);
@@ -91,6 +97,7 @@ public class CardDeckScript : InteractionSuperClass {
             if(other.gameObject.GetComponent<Hand>() == throwingHand)
             {
                 handTouchingDeck = true;
+                readyForAnotherCard = true;
             }
         }
     }
@@ -102,6 +109,7 @@ public class CardDeckScript : InteractionSuperClass {
             if(other.GetComponent<Hand>() == throwingHand)
             {
                 handTouchingDeck = false;
+                readyForAnotherCard = false;
             }
         }
     }
@@ -114,20 +122,60 @@ public class CardDeckScript : InteractionSuperClass {
             handTouchingDeck == true && 
             cardsInDeck.Count != 0)
         {
-            handIsHoldingCard = true;
-            handTouchingDeck = false;
-            int cardPos = Random.Range(0, cardsInDeck.Count);
-            CardType cardType = cardsInDeck[cardPos];
-            Card card = CreateCard(cardType, interactableObject.transform.position, Quaternion.identity);
-            card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
-            hand.otherHand.AttachObject(card.gameObject);
-            MakeDeckSmaller();
-            if (cardsInDeck.Count == 0)
+            if (grabbingHighCard)
             {
-                hand.HoverUnlock(interactableObject);
-                Destroy(cardDeck);
-                Debug.Log("Destroyed Deck");
-                Table.dealerState = DealerState.ShufflingState;
+
+            }
+            else if (grabbingLowCard)
+            {
+                handIsHoldingCard = true;
+                handTouchingDeck = false;
+                grabbingLowCard = false;
+                CardType cardType = null;
+                while (cardType == null)
+                {
+                    int cardToGrab = 2;
+                    for (int i = 0; i < cardsInDeck.Count; i++)
+                    {
+                        if((int)cardsInDeck[i].rank == cardToGrab)
+                        {
+                            cardType = cardsInDeck[i];
+                        }
+                    }
+                    if(cardType == null)
+                    {
+                        cardToGrab++;
+                    }
+                }
+                Card card = CreateCard(cardType, interactableObject.transform.position, Quaternion.identity);
+                card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
+                hand.otherHand.AttachObject(card.gameObject);
+                MakeDeckSmaller();
+                if (cardsInDeck.Count == 0)
+                {
+                    hand.HoverUnlock(interactableObject);
+                    Destroy(cardDeck);
+                    Debug.Log("Destroyed Deck");
+                    Table.dealerState = DealerState.ShufflingState;
+                }
+            }
+            else
+            {
+                handIsHoldingCard = true;
+                handTouchingDeck = false;
+                int cardPos = Random.Range(0, cardsInDeck.Count);
+                CardType cardType = cardsInDeck[cardPos];
+                Card card = CreateCard(cardType, interactableObject.transform.position, Quaternion.identity);
+                card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
+                hand.otherHand.AttachObject(card.gameObject);
+                MakeDeckSmaller();
+                if (cardsInDeck.Count == 0)
+                {
+                    hand.HoverUnlock(interactableObject);
+                    Destroy(cardDeck);
+                    Debug.Log("Destroyed Deck");
+                    Table.dealerState = DealerState.ShufflingState;
+                }
             }
         }
     }
@@ -301,4 +349,41 @@ public class CardDeckScript : InteractionSuperClass {
         Table.dealerState = DealerState.ShufflingState;
     }
 
+    public override void OnSwipeBottom()
+    {
+        if (handTouchingDeck) grabbingLowCard = true;
+        base.OnSwipeBottom();
+    }
+
+    public override void OnSwipeTop()
+    {
+        if (handTouchingDeck) grabbingHighCard = true;
+        base.OnSwipeTop();
+    }
+
+    public override void OnPressBottom()
+    {
+        if (readyForAnotherCard && handIsHoldingCard == true)
+        {
+            GameObject firstCard = throwingHand.currentAttachedObject.gameObject;
+            Vector3 offset = new Vector3(-0.01f, -0.01f, 0) * throwingHand.AttachedObjects.Count;
+            int cardPos = Random.Range(0, cardsInDeck.Count);
+            CardType cardType = cardsInDeck[cardPos];
+            Card card = CreateCard(cardType, throwingHand.transform.position, Quaternion.identity);
+            card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
+            if(throwingHand.AttachedObjects.Count < 3)
+            {
+                throwingHand.AttachObject(card.gameObject, Hand.AttachmentFlags.ParentToHand);
+                card.gameObject.transform.localPosition = new Vector3(firstCard.transform.localPosition.x + offset.x, firstCard.transform.localPosition.y + offset.y, firstCard.transform.localPosition.z);
+            }
+            MakeDeckSmaller();
+            if (cardsInDeck.Count == 0)
+            {
+                deckHand.HoverUnlock(interactableObject);
+                Destroy(cardDeck);
+                Debug.Log("Destroyed Deck");
+                Table.dealerState = DealerState.ShufflingState;
+            }
+        }
+    }
 }

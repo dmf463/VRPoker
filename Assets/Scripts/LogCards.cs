@@ -10,7 +10,7 @@ public class LogCards : MonoBehaviour
     private bool madeNewDeck;
     private List<string> playerNames = new List<string>
     {
-        "Player0", "Player1", "Player2", "Player3", "Player4"
+        "P0Cards", "P1Cards", "P2Cards", "P3Cards", "P4Cards"
     };
     [HideInInspector]
     public List<Destination> playerDestinations = new List<Destination>

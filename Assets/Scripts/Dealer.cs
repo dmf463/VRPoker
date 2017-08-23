@@ -66,7 +66,7 @@ public class Dealer : MonoBehaviour
         if (Table.gameState == GameState.NewRound)
         {
             int cardCount = 0;
-            messageText.text = "Deal two cards to each player!\n32\nQJ\nJ5\nJ9\n78\n6.10.9.k.Q";
+            messageText.text = "Deal two cards to each player!";
             for (int playerCardIndex = 0; playerCardIndex < Table.instance.playerCards.Length; playerCardIndex++)
             {
                 for (int cardTotal = 0; cardTotal < Table.instance.playerCards[playerCardIndex].Count; cardTotal++)
@@ -74,7 +74,7 @@ public class Dealer : MonoBehaviour
                     cardCount++;
                 }
             }
-            Debug.Log("newRound cardCount = " + cardCount);
+            //Debug.Log("newRound cardCount = " + cardCount);
             if (cardCount == players.Count * 2)
             {
                 Table.gameState = GameState.PreFlop;
