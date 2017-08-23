@@ -125,6 +125,7 @@ public class Chip : InteractionSuperClass {
                 {
                     chipStack.AddToStackInHand(incomingChip);
                     incomingChip = null;
+                    isTouchingChip = false;
                 }
                 isTouchingChip = false;
             }

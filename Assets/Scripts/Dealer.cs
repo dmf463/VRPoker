@@ -287,9 +287,7 @@ public class Dealer : MonoBehaviour
         Table.instance.DealerPosition = 0;
         Table.instance.SetDealerButtonPos(Table.instance.DealerPosition);
         players[SeatsAwayFromDealer(1)].Bet(SmallBlind);
-        Debug.Log(players[SeatsAwayFromDealer(1)].ChipCount);
         players[SeatsAwayFromDealer(2)].Bet(BigBlind);
-        Debug.Log(players[SeatsAwayFromDealer(2)].ChipCount);
     }
 
     public void SetCurrentAndLastBet()

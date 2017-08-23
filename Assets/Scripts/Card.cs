@@ -31,7 +31,7 @@ public class Card : InteractionSuperClass {
     CardDeckScript deckScript;
     bool cardFacingUp = false;
     static float cardsInHand;
-    bool layingCardsDown;
+    public bool layingCardsDown;
    
 
     // Use this for initialization
@@ -61,17 +61,11 @@ public class Card : InteractionSuperClass {
             InstantiateNewDeck();
         }
 
-        if (throwingHand.controller.GetPressDown(EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPressDown(EVRButtonId.k_EButton_Grip))
+        if (throwingHand.controller.GetPress(EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPress(EVRButtonId.k_EButton_Grip))
         {
-            if (Table.dealerState == DealerState.DealingState)
-            {
-                Table.dealerState = DealerState.ShufflingState;
-            }
-            else if (Table.dealerState == DealerState.ShufflingState)
-            {
-                Table.dealerState = DealerState.DealingState;
-            }
+            Table.dealerState = DealerState.ShufflingState;
         }
+        else Table.dealerState = DealerState.DealingState;
 
         if (transform.eulerAngles.x > 89 && transform.eulerAngles.x < 92) cardFacingUp = true;
         else cardFacingUp = false;

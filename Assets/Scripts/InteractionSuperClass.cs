@@ -21,7 +21,7 @@ public class InteractionSuperClass : MonoBehaviour {
     protected Vector2 endPosition;
     protected float swipeStartTime;
     // To recognize as swipe user should at lease swipe for this many pixels
-    protected const float MIN_SWIPE_DIST = .1f;
+    protected const float MIN_SWIPE_DIST = .03f;
     // To recognize as a swipe the velocity of the swipe
     // should be at least mMinVelocity
     // Reduce or increase to control the swipe speed
@@ -69,7 +69,10 @@ public class InteractionSuperClass : MonoBehaviour {
     //this happens whenever an object is attached to this hand, for whatever reason
     public virtual void OnAttachedToHand(Hand attachedHand)
     {
-        GetComponent<Rigidbody>().isKinematic = true; //turn off the physics, we we can hold it
+        if(GetComponent<Rigidbody>() != null)
+        {
+            GetComponent<Rigidbody>().isKinematic = true; //turn off the physics, we we can hold it
+        }
     }
 
     //this is like update, as long as we're holding something

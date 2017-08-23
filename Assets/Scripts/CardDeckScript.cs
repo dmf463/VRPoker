@@ -30,6 +30,7 @@ public class CardDeckScript : InteractionSuperClass {
     private bool readyForAnotherCard = false;
     private bool grabbingHighCard;
     private bool grabbingLowCard;
+    private bool grabbedACard = false;
 
     void Start()
     {
@@ -57,6 +58,7 @@ public class CardDeckScript : InteractionSuperClass {
         if(throwingHand != null)
         {
             CheckPressPosition(throwingHand);
+            CheckSwipeDirection();
         }
         if (Input.GetKeyDown(KeyCode.Z))
         {
@@ -117,67 +119,65 @@ public class CardDeckScript : InteractionSuperClass {
     public override void HandHoverUpdate(Hand hand)
     {
         base.HandHoverUpdate(hand);
-        if(hand.otherHand.GetStandardInteractionButtonDown() == true && 
+        if (hand.otherHand.GetStandardInteractionButtonDown() == true && 
             handIsHoldingCard == false && 
             handTouchingDeck == true && 
             cardsInDeck.Count != 0)
         {
-            if (grabbingHighCard)
+            handIsHoldingCard = true;
+            handTouchingDeck = false;
+            Card card = CreateCard(GrabACard(), interactableObject.transform.position, Quaternion.identity);
+            card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
+            hand.otherHand.AttachObject(card.gameObject);
+            MakeDeckSmaller();
+            if (cardsInDeck.Count == 0)
             {
+                hand.HoverUnlock(interactableObject);
+                Destroy(cardDeck);
+                Debug.Log("Destroyed Deck");
+                Table.dealerState = DealerState.ShufflingState;
+            }
+        }
+    }
 
-            }
-            else if (grabbingLowCard)
+    public CardType GrabACard()
+    {
+        CardType cardToGrab = null;
+        if (grabbingLowCard == true)
+        {
+            Debug.Log("Grabbing lowest card");
+            grabbingLowCard = false;
+            cardToGrab = cardsInDeck[0];
+            for (int i = 0; i < cardsInDeck.Count; i++)
             {
-                handIsHoldingCard = true;
-                handTouchingDeck = false;
-                grabbingLowCard = false;
-                CardType cardType = null;
-                while (cardType == null)
+                CardType currentCard = cardsInDeck[i];
+                if((int)currentCard.rank < (int)cardToGrab.rank)
                 {
-                    int cardToGrab = 2;
-                    for (int i = 0; i < cardsInDeck.Count; i++)
-                    {
-                        if((int)cardsInDeck[i].rank == cardToGrab)
-                        {
-                            cardType = cardsInDeck[i];
-                        }
-                    }
-                    if(cardType == null)
-                    {
-                        cardToGrab++;
-                    }
-                }
-                Card card = CreateCard(cardType, interactableObject.transform.position, Quaternion.identity);
-                card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
-                hand.otherHand.AttachObject(card.gameObject);
-                MakeDeckSmaller();
-                if (cardsInDeck.Count == 0)
-                {
-                    hand.HoverUnlock(interactableObject);
-                    Destroy(cardDeck);
-                    Debug.Log("Destroyed Deck");
-                    Table.dealerState = DealerState.ShufflingState;
-                }
-            }
-            else
-            {
-                handIsHoldingCard = true;
-                handTouchingDeck = false;
-                int cardPos = Random.Range(0, cardsInDeck.Count);
-                CardType cardType = cardsInDeck[cardPos];
-                Card card = CreateCard(cardType, interactableObject.transform.position, Quaternion.identity);
-                card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
-                hand.otherHand.AttachObject(card.gameObject);
-                MakeDeckSmaller();
-                if (cardsInDeck.Count == 0)
-                {
-                    hand.HoverUnlock(interactableObject);
-                    Destroy(cardDeck);
-                    Debug.Log("Destroyed Deck");
-                    Table.dealerState = DealerState.ShufflingState;
+                    cardToGrab = currentCard;
                 }
             }
         }
+        else if (grabbingHighCard == true)
+        {
+            Debug.Log("Grabbing high card");
+            grabbingHighCard = false;
+            cardToGrab = cardsInDeck[0];
+            for (int i = 0; i < cardsInDeck.Count; i++)
+            {
+                CardType currentCard = cardsInDeck[i];
+                if ((int)currentCard.rank > (int)cardToGrab.rank)
+                {
+                    cardToGrab = currentCard;
+                }
+            }
+        }
+        else
+        {
+            Debug.Log("grabbing random card");
+            int cardPos = Random.Range(0, cardsInDeck.Count);
+            cardToGrab = cardsInDeck[cardPos];
+        }
+        return cardToGrab;
     }
 
     public override void OnAttachedToHand(Hand attachedHand)
