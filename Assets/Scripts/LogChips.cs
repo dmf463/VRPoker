@@ -33,7 +33,7 @@ public class LogChips : MonoBehaviour
     {
         if (other.gameObject.tag == "Chip")
         {
-            if (!other.GetComponent<Chip>().markedForDestruction)
+            if (!other.GetComponent<Chip>().markedForDestruction || other.GetComponent<Chip>().chipForBet == true)
             {
                 for (int i = 0; i < playerNames.Count; i++)
                 {
@@ -80,28 +80,31 @@ public class LogChips : MonoBehaviour
     {
         if (other.gameObject.tag == "Chip")
         {
-            for (int i = 0; i < playerNames.Count; i++)
+            if (!other.GetComponent<Chip>().markedForDestruction)
             {
-                if (gameObject.name == playerNames[i])
+                for (int i = 0; i < playerNames.Count; i++)
                 {
-                    if (other.GetComponent<Chip>().inAStack == false)
+                    if (gameObject.name == playerNames[i])
                     {
-                        Table.instance.RemoveChipFrom(playerDestinations[i], other.GetComponent<Chip>());
-                    }
-                    else if (other.GetComponent<Chip>().inAStack == true)
-                    {
-                        ChipStack chipStack;
-                        if (other.GetComponent<Chip>().chipStack != null)
+                        if (other.GetComponent<Chip>().inAStack == false)
                         {
-                            chipStack = other.GetComponent<Chip>().chipStack;
+                            Table.instance.RemoveChipFrom(playerDestinations[i], other.GetComponent<Chip>());
                         }
-                        else
+                        else if (other.GetComponent<Chip>().inAStack == true)
                         {
-                            chipStack = other.transform.parent.gameObject.GetComponent<Chip>().chipStack;
-                        }
-                        foreach (Chip chip in chipStack.chips)
-                        {
-                            Table.instance.RemoveChipFrom(playerDestinations[i], chip);
+                            ChipStack chipStack;
+                            if (other.GetComponent<Chip>().chipStack != null)
+                            {
+                                chipStack = other.GetComponent<Chip>().chipStack;
+                            }
+                            else
+                            {
+                                chipStack = other.transform.parent.gameObject.GetComponent<Chip>().chipStack;
+                            }
+                            foreach (Chip chip in chipStack.chips)
+                            {
+                                Table.instance.RemoveChipFrom(playerDestinations[i], chip);
+                            }
                         }
                     }
                 }

@@ -80,11 +80,21 @@ public class Table {
         gameState = GameState.NewRound;
         DealerPosition = (DealerPosition + 1) % playerDestinations.Count;
         SetDealerButtonPos(DealerPosition);
-        Services.Dealer.players[(DealerPosition + 1) % playerDestinations.Count].Bet(Services.Dealer.SmallBlind);
-        Services.Dealer.players[(DealerPosition + 1) % playerDestinations.Count].currentBet = Services.Dealer.SmallBlind;
-        Services.Dealer.players[(DealerPosition + 2) % playerDestinations.Count].Bet(Services.Dealer.BigBlind);
-        Services.Dealer.players[(DealerPosition + 2) % playerDestinations.Count].currentBet = Services.Dealer.BigBlind;
-        Services.Dealer.LastBet = Services.Dealer.BigBlind;
+        if(Services.Dealer.players[(DealerPosition + 1) % playerDestinations.Count].PlayerState == PlayerState.Eliminated)
+        {
+            Services.Dealer.players[(DealerPosition + 2) % playerDestinations.Count].Bet(Services.Dealer.SmallBlind);
+            Services.Dealer.players[(DealerPosition + 2) % playerDestinations.Count].currentBet = Services.Dealer.SmallBlind;
+            Services.Dealer.players[(DealerPosition + 3) % playerDestinations.Count].Bet(Services.Dealer.BigBlind);
+            Services.Dealer.players[(DealerPosition + 3) % playerDestinations.Count].currentBet = Services.Dealer.BigBlind;
+        }
+        else
+        {
+            Services.Dealer.players[(DealerPosition + 1) % playerDestinations.Count].Bet(Services.Dealer.SmallBlind);
+            Services.Dealer.players[(DealerPosition + 1) % playerDestinations.Count].currentBet = Services.Dealer.SmallBlind;
+            Services.Dealer.players[(DealerPosition + 2) % playerDestinations.Count].Bet(Services.Dealer.BigBlind);
+            Services.Dealer.players[(DealerPosition + 2) % playerDestinations.Count].currentBet = Services.Dealer.BigBlind;
+            Services.Dealer.LastBet = Services.Dealer.BigBlind;
+        }
     }
 
     public int DeterminePotSize()
@@ -124,6 +134,8 @@ public class Table {
         {
             if (playerChipStacks[seatPos][i] == null)
             {
+                Debug.Log("ChipCount from GetChipGameObjects() for player " + seatPos + " is equal to " + GetChipStackTotal(seatPos));
+                Debug.Log("ChipCount from ChipCount for player " + seatPos + " is equal to " + Services.Dealer.players[seatPos].ChipCount);
                 Debug.Log("in the for loop, i = " + i + " and the playerChipStack[" + seatPos + "].count = " + playerChipStacks[seatPos].Count + " and time is " + Time.time);
             }
             chipsInStack.Add(playerChipStacks[seatPos][i].gameObject);
@@ -137,7 +149,9 @@ public class Table {
         {
             if(dest == playerDestinations[i])
             {
+                List<GameObject> testList = Table.instance.GetChipGameObjects(i);
                 playerChipStacks[i].Add(chip);
+                List<GameObject> nextTestList = Table.instance.GetChipGameObjects(i);
             }
         }
     }
@@ -148,7 +162,9 @@ public class Table {
         {
             if (dest == playerDestinations[i])
             {
+                List<GameObject> testList = Table.instance.GetChipGameObjects(i);
                 playerChipStacks[i].Remove(chip);
+                List<GameObject> nextTestList = Table.instance.GetChipGameObjects(i);
             }
         }
     }

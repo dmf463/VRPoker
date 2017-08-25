@@ -19,11 +19,12 @@ public class Chip : InteractionSuperClass {
     private bool regrabCoroutineActive;
     public ChipStack chipStack;
     [HideInInspector]
-    public bool inAStack;
+    public bool inAStack = false;
     const float MAGNITUDE_THRESHOLD = 1;
     const float MAX_CHIPSTACK = 30;
     const float CHIP_FORCE_MODIFIER = 1.5f;
     public bool markedForDestruction = false;
+    public bool chipForBet;
 
     // Use this for initialization
     void Start () {
@@ -70,6 +71,17 @@ public class Chip : InteractionSuperClass {
     public void DestroyChip()
     {
         markedForDestruction = true;
+        if (inAStack)
+        {
+            Chip[] groupedChips = GetComponentsInParent<Chip>();
+            for (int i = 0; i < groupedChips.Length; i++)
+            {
+                if(groupedChips[i] != this)
+                {
+                    groupedChips[i].chipStack.chips.Remove(this);
+                }
+            }
+        }
         Destroy(gameObject);
     }
 

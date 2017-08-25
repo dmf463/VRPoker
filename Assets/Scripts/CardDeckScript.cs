@@ -30,7 +30,6 @@ public class CardDeckScript : InteractionSuperClass {
     private bool readyForAnotherCard = false;
     private bool grabbingHighCard;
     private bool grabbingLowCard;
-    private bool grabbedACard = false;
 
     void Start()
     {

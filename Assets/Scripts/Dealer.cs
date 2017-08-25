@@ -75,7 +75,7 @@ public class Dealer : MonoBehaviour
                 }
             }
             //Debug.Log("newRound cardCount = " + cardCount);
-            if (cardCount == players.Count * 2)
+            if (cardCount == GetActivePlayerCount() * 2)
             {
                 Table.gameState = GameState.PreFlop;
             }
@@ -202,6 +202,20 @@ public class Dealer : MonoBehaviour
         lastGameState = Table.gameState;
     }
 
+    public int GetActivePlayerCount()
+    {
+        int activePlayers = 0;
+        for (int i = 0; i < players.Count; i++)
+        {
+            if (players[i].PlayerState == PlayerState.Playing)
+            {
+                activePlayers++;
+            }
+        }
+        return activePlayers;
+    }
+
+
     public void StartRound()
     {
         /*
@@ -280,7 +294,7 @@ public class Dealer : MonoBehaviour
             List<GameObject> startingStack  = players[i].SetChipStacks(chipCount);
             foreach(GameObject chip in startingStack)
             {
-                Table.instance.playerChipStacks[i].Add(chip.GetComponent<Chip>());
+                Table.instance.AddChipTo(playerDestinations[i], chip.GetComponent<Chip>());
             }
             players[i].CreateAndOrganizeChipStacks(startingStack);
         }
@@ -457,7 +471,11 @@ public class Dealer : MonoBehaviour
     {
         for (int i = 0; i < players.Count; i++)
         {
-            players[i].PlayerState = PlayerState.Playing;
+            if (players[i].ChipCount == 0) players[i].PlayerState = PlayerState.Eliminated;
+            if (players[i].PlayerState != PlayerState.Eliminated)
+            {
+                players[i].PlayerState = PlayerState.Playing;
+            }
             players[i].HasBeenPaid = false;
             //players[i].checkedHandStrength = false;
         }

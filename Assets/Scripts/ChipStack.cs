@@ -25,12 +25,14 @@ public class ChipStack {
         //Debug.Log("trying to destroy " + chip.gameObject.name);
         if (chip.gameObject != null)
         {
+            Debug.Log("incomingChip is a " + chip.chipValue + " dollar chip");
             GameObject incomingChip = chip.gameObject;
             GameObject.Destroy(incomingChip.GetComponent<Rigidbody>());
             incomingChip.transform.parent = chips[0].transform;
             incomingChip.transform.localPosition = new Vector3(chips[0].transform.localPosition.x, chips[0].transform.localPosition.y, (chips[chips.Count - 1].transform.localPosition.z + incrementStackBy));
             incomingChip.transform.rotation = chips[0].transform.rotation;
             incomingChip.GetComponent<Chip>().inAStack = true;
+            incomingChip.GetComponent<Chip>().chipForBet = false;
             stackValue += incomingChip.GetComponent<Chip>().chipValue;
             chips.Add(incomingChip.GetComponent<Chip>());
             //Debug.Log("chipStack is worth " + stackValue);   
