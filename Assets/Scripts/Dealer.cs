@@ -30,7 +30,8 @@ public class Dealer : MonoBehaviour
     private int potAmountToGiveWinner;
     private bool winnersHaveBeenPaid;
     private bool playersHaveBeenEvaluated;
-    private bool readyToAwardPlayers;
+    [HideInInspector]
+    public bool readyToAwardPlayers = false;
     [HideInInspector]
     public int winnersPaid;
 
@@ -66,7 +67,12 @@ public class Dealer : MonoBehaviour
         if (Table.gameState == GameState.NewRound)
         {
             int cardCount = 0;
-            messageText.text = "Deal two cards to each player!";
+            messageText.text = "player0 chipCount is " + players[0].ChipCount +
+                   "\nplayer1 chipCount is " + players[1].ChipCount +
+                   "\nplayer2 chipCount is " + players[2].ChipCount +
+                   "\nplayer3 chipCount is " + players[3].ChipCount +
+                   "\nplayer4 chipCount is " + players[4].ChipCount +
+                   "\npotSize is at " + Table.instance.DeterminePotSize();
             for (int playerCardIndex = 0; playerCardIndex < Table.instance.playerCards.Length; playerCardIndex++)
             {
                 for (int cardTotal = 0; cardTotal < Table.instance.playerCards[playerCardIndex].Count; cardTotal++)
@@ -102,17 +108,30 @@ public class Dealer : MonoBehaviour
                     break;
                 case 3:
                     Table.gameState = GameState.Flop;
-                    messageText.text = "player0 handStrength is " + players[0].HandStrength +
-                                       "\nplayer1 handStrength is " + players[1].HandStrength +
-                                       "\nplayer2 handStrength is " + players[2].HandStrength +
-                                       "\nplayer3 handStrength is " + players[3].HandStrength +
-                                       "\nplayer4 handStrength is " + players[4].HandStrength;
+                    messageText.text = "player0 chipCount is " + players[0].ChipCount +
+                                       "\nplayer1 chipCount is " + players[1].ChipCount +
+                                       "\nplayer2 chipCount is " + players[2].ChipCount +
+                                       "\nplayer3 chipCount is " + players[3].ChipCount +
+                                       "\nplayer4 chipCount is " + players[4].ChipCount +
+                                       "\npotSize is at " + Table.instance.DeterminePotSize();
                     break;
                 case 4:
                     Table.gameState = GameState.Turn;
+                    messageText.text = "player0 chipCount is " + players[0].ChipCount +
+                   "\nplayer1 chipCount is " + players[1].ChipCount +
+                   "\nplayer2 chipCount is " + players[2].ChipCount +
+                   "\nplayer3 chipCount is " + players[3].ChipCount +
+                   "\nplayer4 chipCount is " + players[4].ChipCount +
+                   "\npotSize is at " + Table.instance.DeterminePotSize();
                     break;
                 case 5:
                     Table.gameState = GameState.River;
+                    messageText.text = "player0 chipCount is " + players[0].ChipCount +
+                   "\nplayer1 chipCount is " + players[1].ChipCount +
+                   "\nplayer2 chipCount is " + players[2].ChipCount +
+                   "\nplayer3 chipCount is " + players[3].ChipCount +
+                   "\nplayer4 chipCount is " + players[4].ChipCount +
+                   "\npotSize is at " + Table.instance.DeterminePotSize();
                     break;
                 default:
                     break;

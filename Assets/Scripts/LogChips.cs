@@ -33,7 +33,8 @@ public class LogChips : MonoBehaviour
     {
         if (other.gameObject.tag == "Chip")
         {
-            if (!other.GetComponent<Chip>().markedForDestruction || other.GetComponent<Chip>().chipForBet == true)
+            //if (!other.GetComponent<Chip>().markedForDestruction || other.GetComponent<Chip>().chipForBet == true)
+            if(Services.Dealer.readyToAwardPlayers)
             {
                 for (int i = 0; i < playerNames.Count; i++)
                 {
@@ -80,7 +81,7 @@ public class LogChips : MonoBehaviour
     {
         if (other.gameObject.tag == "Chip")
         {
-            if (!other.GetComponent<Chip>().markedForDestruction)
+            if (Services.Dealer.readyToAwardPlayers)
             {
                 for (int i = 0; i < playerNames.Count; i++)
                 {

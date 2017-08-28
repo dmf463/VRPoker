@@ -72,7 +72,7 @@ public class PokerPlayer {
             int betToCall = Services.Dealer.LastBet - currentBet;
             if(ChipCount - betToCall <= 0)
             {
-                Bet(ChipCount);
+                AllIn();
                 Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
             }
             else
@@ -96,7 +96,7 @@ public class PokerPlayer {
             int betToRaise = Services.Dealer.LastBet + (raiseAmount - currentBet);
             if (ChipCount - betToRaise <= 0)
             {
-                Bet(ChipCount);
+                AllIn();
                 Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
                 currentBet = betToRaise + currentBet;
                 Services.Dealer.LastBet = currentBet;
@@ -117,6 +117,38 @@ public class PokerPlayer {
             }
         }
     }
+
+    public void AllIn()
+    {
+        Debug.Log("getting ready to go all in");
+        List<GameObject> allInChips = Table.instance.GetChipGameObjects(SeatPos);
+        GameObject chipStackContainer = null;
+        for (int i = 0; i < allInChips.Count; i++)
+        {
+            if (allInChips[i].GetComponent<Chip>().chipStack != null)
+            {
+                chipStackContainer = allInChips[i].transform.parent.gameObject;
+            }
+            Table.instance._potChips.Add(allInChips[i].GetComponent<Chip>());
+            Table.instance.RemoveChipFrom(playerDestinations[SeatPos], allInChips[i].GetComponent<Chip>());
+        }
+        Services.Dealer.StartCoroutine(PushChipsIn(1, chipStackContainer, Table.instance.playerBetZones[SeatPos].transform.position));
+    }
+
+   IEnumerator PushChipsIn(float duration, GameObject chipStack, Vector3 targetPos)
+   {
+        Debug.Log("extending my hand to push all in");
+        float timeElapsed = 0;
+        Vector3 initialPos = chipStack.gameObject.transform.position;
+        Vector3 finalPos = new Vector3(targetPos.x, initialPos.y, targetPos.z);
+        while(timeElapsed < duration)
+        {
+            Debug.Log("pushing all in");
+            timeElapsed += Time.deltaTime;
+            chipStack.transform.position = Vector3.Lerp(initialPos, finalPos, timeElapsed / duration);
+            yield return null;
+        }
+   }
 
     public float FindRateOfReturn()
     {
@@ -937,27 +969,34 @@ public class PokerPlayer {
             }
 
         }
+        Debug.Log("blackChipCount = " + colorChipCount[0]);
+        Debug.Log("whiteChipCount = " + colorChipCount[1]);
+        Debug.Log("blueChipCount = " + colorChipCount[2]);
+        Debug.Log("redChipCount = " + colorChipCount[3]);
 
         for (int colorListIndex = 0; colorListIndex < colorChipCount.Count; colorListIndex++)
         {
-            for (int colorCount = 0; colorCount < colorChipCount[colorListIndex]; colorCount++)
+            if (colorChipCount[colorListIndex] > 0)
             {
-                Vector3 offSet = new Vector3(Random.Range(0, .03f), .1f, Random.Range(0, .03f));
-                GameObject newChip = GameObject.Instantiate(FindChipPrefab(chipPrefab[colorListIndex]), playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
-                newChip.GetComponent<Chip>().chipForBet = true;
-                Table.instance._potChips.Add(newChip.GetComponent<Chip>());
-                for (int tableChipIndex = 0; tableChipIndex < Table.instance.playerChipStacks[SeatPos].Count; tableChipIndex++)
+                for (int colorCount = 0; colorCount < colorChipCount[colorListIndex]; colorCount++)
                 {
-                    if (newChip.GetComponent<Chip>().chipValue == Table.instance.playerChipStacks[SeatPos][tableChipIndex].chipValue && valueRemaining == 0)
+                    Vector3 offSet = new Vector3(Random.Range(0, .03f), .1f, Random.Range(0, .03f));
+                    GameObject newChip = GameObject.Instantiate(FindChipPrefab(chipPrefab[colorListIndex]), playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
+                    newChip.GetComponent<Chip>().chipForBet = true;
+                    Table.instance._potChips.Add(newChip.GetComponent<Chip>());
+                    for (int tableChipIndex = 0; tableChipIndex < Table.instance.playerChipStacks[SeatPos].Count; tableChipIndex++)
                     {
-                        Chip chipToRemove = Table.instance.playerChipStacks[SeatPos][tableChipIndex];
-                        Debug.Log("ChipRemoved was a " + chipToRemove.GetComponent<Chip>().chipValue + " chip");
-                        Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chipToRemove);
-                        chipToRemove.DestroyChip();
-                        break;
+                        if (newChip.GetComponent<Chip>().chipValue == Table.instance.playerChipStacks[SeatPos][tableChipIndex].chipValue && valueRemaining == 0)
+                        {
+                            Chip chipToRemove = Table.instance.playerChipStacks[SeatPos][tableChipIndex];
+                            Debug.Log("ChipRemoved was a " + chipToRemove.GetComponent<Chip>().chipValue + " chip");
+                            Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chipToRemove);
+                            chipToRemove.DestroyChip();
+                            break;
+                        }
                     }
                 }
-            }    
+            }  
         }
         if (valueRemaining > 0)
         {
@@ -966,6 +1005,7 @@ public class PokerPlayer {
             {
                 Chip chip = Table.instance.playerChipStacks[SeatPos][i];
                 Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chip);
+                Debug.Log("Removing a " + chip.chipValue + " chip");
                 chip.DestroyChip();
             }
             Debug.Assert(Table.instance.playerChipStacks[SeatPos].Count == 0);
@@ -973,6 +1013,7 @@ public class PokerPlayer {
             foreach(GameObject chip in newChipStack)
             {
                 Table.instance.AddChipTo(playerDestinations[SeatPos], chip.GetComponent<Chip>());
+                Debug.Log("adding a " + chip.GetComponent<Chip>().chipValue + " chip");
             }
             Debug.Assert(Table.instance.playerChipStacks[SeatPos].Count == newChipStackValue);
             CreateAndOrganizeChipStacks(newChipStack);

@@ -23,6 +23,7 @@ public class ChipStack {
     {
         //Debug.Log("chipStack has " + chips.Count + "  and stackValue ==  " + stackValue + " and incrementStackBy =  " + incrementStackInHandBy);
         //Debug.Log("trying to destroy " + chip.gameObject.name);
+        Debug.Log("adding a " + chip.chipValue + " chip back to the stack");
         if (chip.gameObject != null)
         {
             Debug.Log("incomingChip is a " + chip.chipValue + " dollar chip");

@@ -117,11 +117,13 @@ public class Chip : InteractionSuperClass {
         if (other.gameObject.tag == "Chip" && other.gameObject.GetComponent<Chip>().chipStack == null)
         {
             isTouchingChip = false;
+            incomingChip = null;
         }
         else if (other.gameObject.tag == "Chip" && other.gameObject.GetComponent<Chip>().chipStack != null)
         {
             isTouchingStack = false;
             isTouchingChip = false;
+            incomingChip = null;
         }
     }
 
