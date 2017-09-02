@@ -48,6 +48,7 @@ public class Dealer : MonoBehaviour
         messageText = MessageBoard.GetComponent<TextMesh>();
 
         Services.PrefabDB = Resources.Load<PrefabDB>("Prefabs/PrefabDB");
+        Services.SoundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
         Services.Dealer = this;
     }
 
@@ -140,7 +141,8 @@ public class Dealer : MonoBehaviour
         #region Players evaluate their hands based on the gamestate
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Table.instance.DebugHandsAndChips();
+            Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.call);
+            //Table.instance.DebugHandsAndChips();
         }
 
         if (playersReady && Table.gameState != lastGameState)
