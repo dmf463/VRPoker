@@ -33,5 +33,9 @@ public class PrefabDB : ScriptableObject {
     private GameObject dealerButton;
     public GameObject DealerButton { get { return dealerButton; } }
 
+    [SerializeField]
+    private GameObject genericAudioSource;
+    public GameObject GenericAudioSource { get { return genericAudioSource; } }
+
 
 }

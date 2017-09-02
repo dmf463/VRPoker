@@ -38,6 +38,7 @@ public class PokerPlayer {
 
     public void Fold()
     {
+        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.fold);
         foreach(Card card in Table.instance.playerCards[SeatPos])
         {
             card.transform.position = Table.instance.playerBetZones[SeatPos].transform.position;
@@ -78,6 +79,8 @@ public class PokerPlayer {
             else
             {
                 Debug.Log("betToCall = " + betToCall);
+                if(betToCall == 0) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.check);
+                else Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.call);
                 Bet(betToCall);
                 currentBet = betToCall + currentBet;
                 Services.Dealer.LastBet = currentBet;
@@ -89,7 +92,7 @@ public class PokerPlayer {
 
     public void Raise()
     {
-        if(ChipCount > 0)
+        if (ChipCount > 0)
         {
             //for purposes of testing, we're gonna make this a limit game.
             int raiseAmount = amountToRaise; //Services.Dealer.BigBlind;
@@ -107,6 +110,7 @@ public class PokerPlayer {
             }
             else
             {
+                Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.raise);
                 Bet(betToRaise);
                 currentBet = betToRaise + currentBet;
                 Services.Dealer.LastBet = currentBet;
@@ -120,6 +124,7 @@ public class PokerPlayer {
 
     public void AllIn()
     {
+        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.allIn);
         Debug.Log("getting ready to go all in");
         List<GameObject> allInChips = Table.instance.GetChipGameObjects(SeatPos);
         GameObject chipStackContainer = null;
