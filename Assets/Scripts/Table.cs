@@ -78,21 +78,21 @@ public class Table {
         _potChips.Clear();
         Services.Dealer.ResetPlayerStatus();
         gameState = GameState.NewRound;
-        DealerPosition = (DealerPosition + 1) % playerDestinations.Count;
+        DealerPosition = (DealerPosition + 1) % Services.Dealer.playerCount;
         SetDealerButtonPos(DealerPosition);
-        if(Services.Dealer.players[(DealerPosition + 1) % playerDestinations.Count].PlayerState == PlayerState.Eliminated)
+        if(Services.Dealer.players[(DealerPosition + 1) % Services.Dealer.playerCount].PlayerState == PlayerState.Eliminated)
         {
-            Services.Dealer.players[(DealerPosition + 2) % playerDestinations.Count].Bet(Services.Dealer.SmallBlind);
-            Services.Dealer.players[(DealerPosition + 2) % playerDestinations.Count].currentBet = Services.Dealer.SmallBlind;
-            Services.Dealer.players[(DealerPosition + 3) % playerDestinations.Count].Bet(Services.Dealer.BigBlind);
-            Services.Dealer.players[(DealerPosition + 3) % playerDestinations.Count].currentBet = Services.Dealer.BigBlind;
+            Services.Dealer.players[(DealerPosition + 2) % Services.Dealer.playerCount].Bet(Services.Dealer.SmallBlind);
+            Services.Dealer.players[(DealerPosition + 2) % Services.Dealer.playerCount].currentBet = Services.Dealer.SmallBlind;
+            Services.Dealer.players[(DealerPosition + 3) % Services.Dealer.playerCount].Bet(Services.Dealer.BigBlind);
+            Services.Dealer.players[(DealerPosition + 3) % Services.Dealer.playerCount].currentBet = Services.Dealer.BigBlind;
         }
         else
         {
-            Services.Dealer.players[(DealerPosition + 1) % playerDestinations.Count].Bet(Services.Dealer.SmallBlind);
-            Services.Dealer.players[(DealerPosition + 1) % playerDestinations.Count].currentBet = Services.Dealer.SmallBlind;
-            Services.Dealer.players[(DealerPosition + 2) % playerDestinations.Count].Bet(Services.Dealer.BigBlind);
-            Services.Dealer.players[(DealerPosition + 2) % playerDestinations.Count].currentBet = Services.Dealer.BigBlind;
+            Services.Dealer.players[(DealerPosition + 1) % Services.Dealer.playerCount].Bet(Services.Dealer.SmallBlind);
+            Services.Dealer.players[(DealerPosition + 1) % Services.Dealer.playerCount].currentBet = Services.Dealer.SmallBlind;
+            Services.Dealer.players[(DealerPosition + 2) % Services.Dealer.playerCount].Bet(Services.Dealer.BigBlind);
+            Services.Dealer.players[(DealerPosition + 2) % Services.Dealer.playerCount].currentBet = Services.Dealer.BigBlind;
             Services.Dealer.LastBet = Services.Dealer.BigBlind;
         }
     }
