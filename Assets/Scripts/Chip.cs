@@ -21,7 +21,7 @@ public class Chip : InteractionSuperClass {
     [HideInInspector]
     public bool inAStack = false;
     const float MAGNITUDE_THRESHOLD = 1;
-    const float MAX_CHIPSTACK = 30;
+    const float MAX_CHIPSTACK = 20;
     const float CHIP_FORCE_MODIFIER = 1.5f;
     public bool markedForDestruction = false;
     public bool chipForBet;

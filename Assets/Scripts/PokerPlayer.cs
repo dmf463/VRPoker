@@ -209,27 +209,27 @@ public class PokerPlayer {
     
     public void BadBeat()
     {
-
+        Debug.Log("Damn I lost");
     }
 
     public void GenericLoss()
     {
-
+        Debug.Log("Damn I lost generically");
     }
 
     public void IncredulousReaction()
     {
-
+        Debug.Log("omfg you idiot");
     }
 
     public void RespectfulReaction()
     {
-
+        Debug.Log("you gotta know when to hold em");
     }
 
     public void GoodReaction()
     {
-
+        Debug.Log("Good hand");
     }
 
     //end audio cue functions

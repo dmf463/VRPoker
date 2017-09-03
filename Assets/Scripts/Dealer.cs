@@ -29,7 +29,7 @@ public class Dealer : MonoBehaviour
     public int numberOfWinners;
     private int potAmountToGiveWinner;
     private bool winnersHaveBeenPaid;
-    private bool playersHaveBeenEvaluated;
+    public bool playersHaveBeenEvaluated;
     [HideInInspector]
     public bool readyToAwardPlayers = false;
     [HideInInspector]
@@ -42,6 +42,8 @@ public class Dealer : MonoBehaviour
     public bool playersReady = true;
     public GameState lastGameState;
     public List<Card> cardsDealt = new List<Card>();
+
+    private bool readyForShowdown = false;
 
     void Awake()
     {
@@ -181,9 +183,14 @@ public class Dealer : MonoBehaviour
             {
                 StartRound();
                 roundStarted = true;
+                if (hand1.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true && hand2.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true)
+                {
+                    readyForShowdown = false;
+                }
+                else readyForShowdown = true;
             }
             //messageText.text = "Click both trigger buttons to start the showdown";
-            if (hand1.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true && hand2.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true)
+            if (readyForShowdown == true)
             {
                 Table.gameState = GameState.ShowDown;
             }
@@ -448,20 +455,16 @@ public class Dealer : MonoBehaviour
         }
         else
         {
-            PokerPlayer winningPlayer = null;
-            PokerPlayer losingPlayer = null;
             for (int i = 0; i < players.Count; i++)
             {
                 if(players[i].PlayerState == PlayerState.Winner)
                 {
-                    winningPlayer = players[i];
+                    players[i].WinnerReactions();
                 }
                 if(players[i].PlayerState == PlayerState.Loser)
                 {
-                    losingPlayer = players[i];
+                    players[i].LoserReactions();
                 }
-                winningPlayer.WinnerReactions();
-                losingPlayer.LoserReactions();
             }
         }
 
