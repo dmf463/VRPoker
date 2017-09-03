@@ -1165,6 +1165,7 @@ public class PokerPlayer {
 
     public void Bet(int betAmount)
     {
+        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.chips);
         int oldChipStackValue = ChipCount;
         List<GameObject> playerBetZones = new List<GameObject>
         {

@@ -29,6 +29,10 @@ public class SoundManager : MonoBehaviour
     public List<AudioClip> respectP2 = new List<AudioClip>();
     public List<AudioClip> goodResponseP2 = new List<AudioClip>();
 
+    [Header("SoundEffects")]
+    public AudioClip chips;
+    public AudioClip cards;
+
     void Start()
     {
     }
