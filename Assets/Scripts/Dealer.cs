@@ -442,6 +442,29 @@ public class Dealer : MonoBehaviour
             potRemaining -= winningPlayers[i].chipsWon;
         }
         Debug.Log("number of Winners is " + numberOfWinners);
+        if(winningPlayers.Count == 2)
+        {
+            Debug.Log("DONT SAY A FUCKING WORD");
+        }
+        else
+        {
+            PokerPlayer winningPlayer = null;
+            PokerPlayer losingPlayer = null;
+            for (int i = 0; i < players.Count; i++)
+            {
+                if(players[i].PlayerState == PlayerState.Winner)
+                {
+                    winningPlayer = players[i];
+                }
+                if(players[i].PlayerState == PlayerState.Loser)
+                {
+                    losingPlayer = players[i];
+                }
+                winningPlayer.WinnerReactions();
+                losingPlayer.LoserReactions();
+            }
+        }
+
         while (!winnersHaveBeenPaid)
         {
             GivePlayersWinnings();

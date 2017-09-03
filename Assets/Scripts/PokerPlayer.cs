@@ -187,6 +187,53 @@ public class PokerPlayer {
         else if(SeatPos == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.allInP1);
     }
 
+    public void WinnerReactions()
+    {
+        for (int i = 0; i < Services.Dealer.players.Count; i++)
+        {
+            if(Services.Dealer.players[i].PlayerState == PlayerState.Loser)
+            {
+                PokerPlayer losingPlayer = Services.Dealer.players[i];
+                if (losingPlayer.HandStrength < 0.25) IncredulousReaction();
+                else if (losingPlayer.HandStrength < 0.5) RespectfulReaction();
+                else GoodReaction();
+            }
+        }
+    }
+
+    public void LoserReactions()
+    {
+        if (HandStrength < 0.75) BadBeat();
+        else GenericLoss();
+    }
+    
+    public void BadBeat()
+    {
+
+    }
+
+    public void GenericLoss()
+    {
+
+    }
+
+    public void IncredulousReaction()
+    {
+
+    }
+
+    public void RespectfulReaction()
+    {
+
+    }
+
+    public void GoodReaction()
+    {
+
+    }
+
+    //end audio cue functions
+
     public float FindRateOfReturn()
     {
         //in this case, since we're going to do limit, the bet will always be the bigBlind;
