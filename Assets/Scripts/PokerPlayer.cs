@@ -38,7 +38,7 @@ public class PokerPlayer {
 
     public void Fold()
     {
-        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.fold);
+        SayFold();
         foreach(Card card in Table.instance.playerCards[SeatPos])
         {
             card.transform.position = Table.instance.playerBetZones[SeatPos].transform.position;
@@ -79,8 +79,8 @@ public class PokerPlayer {
             else
             {
                 Debug.Log("betToCall = " + betToCall);
-                if(betToCall == 0) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.check);
-                else Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.call);
+                if(betToCall == 0) SayCheck();
+                else SayCall();
                 Bet(betToCall);
                 currentBet = betToCall + currentBet;
                 Services.Dealer.LastBet = currentBet;
@@ -110,7 +110,7 @@ public class PokerPlayer {
             }
             else
             {
-                Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.raise);
+                SayRaise();
                 Bet(betToRaise);
                 currentBet = betToRaise + currentBet;
                 Services.Dealer.LastBet = currentBet;
@@ -124,7 +124,7 @@ public class PokerPlayer {
 
     public void AllIn()
     {
-        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.allIn);
+        SayAllIn();
         Debug.Log("getting ready to go all in");
         List<GameObject> allInChips = Table.instance.GetChipGameObjects(SeatPos);
         GameObject chipStackContainer = null;
@@ -154,6 +154,38 @@ public class PokerPlayer {
             yield return null;
         }
    }
+
+
+    //audio cue functuions
+    public void SayCheck()
+    {
+        if (SeatPos == 0) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.checkP1);
+        else if (SeatPos == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.checkP2);
+    }
+
+    public void SayFold()
+    {
+        if (SeatPos == 0) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.foldP1);
+        else if (SeatPos == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.foldP2);
+    }
+    
+    public void SayRaise()
+    {
+        if (SeatPos == 0) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.raiseP1);
+        else if (SeatPos == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.raiseP2);
+    }
+
+    public void SayCall()
+    {
+        if(SeatPos == 0 ) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.callP1);
+        else if(SeatPos == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.callP2);
+    }
+
+    public void SayAllIn()
+    {
+        if(SeatPos == 0) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.allInP1);
+        else if(SeatPos == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.allInP1);
+    }
 
     public float FindRateOfReturn()
     {
@@ -304,47 +336,107 @@ public class PokerPlayer {
         }
         else
         {
-            if ((ChipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && HandStrength < 0.5) Fold();
-            else if (returnRate < 0.8)
+            if(SeatPos == 0)
             {
-                //95% chance fold, 5% bluff (raise)
-                float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 95)
+                #region Conservative Player decisions
+                if ((ChipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && HandStrength < 0.5) Fold();
+                else if (returnRate < 0.8)
                 {
-                    //if there's not bet, don't fold, just call for free.
-                    if (Services.Dealer.LastBet > 0) Fold();
+                    //95% chance fold, 5% bluff (raise)
+                    //conservative player change 99% fold, 1% bluff
+                    float randomNumber = Random.Range(0, 100);
+                    if (randomNumber < 99)
+                    {
+                        //if there's not bet, don't fold, just call for free.
+                        if (Services.Dealer.LastBet > 0) Fold();
+                        else Call();
+                    }
+                    else Raise();
+                }
+                else if (returnRate < 1)
+                {
+                    //80% chance fold, 5% call, 15% bluff(raise)
+                    //conservative player change: 90% fold, 5% call, 5% bluff
+                    float randomNumber = Random.Range(0, 100);
+                    if (randomNumber < 85)
+                    {
+                        if (Services.Dealer.LastBet > 0) Fold();
+                        else Call();
+                    }
+                    else if (randomNumber - 80 < 5) Call();
+                    else Raise();
+                }
+                else if (returnRate < 1.3)
+                {
+                    //60% chance call, 40% raise
+                    //conservative player change 90% call, 10% raise
+                    float randomNumber = Random.Range(0, 100);
+                    if (randomNumber < 90) Call();
+                    else Raise();
+                }
+                else if (returnRate >= 1.3)
+                {
+                    //70% chance raise, 30% call
+                    //conservative player 50% raise 50% call
+                    float randomNumber = Random.Range(0, 100);
+                    if (randomNumber < 50) Raise();
                     else Call();
                 }
-                else Raise();
+                turnComplete = true;
+                actedThisRound = true;
+                #endregion
             }
-            else if (returnRate < 1)
+            else if(SeatPos == 1)
             {
-                //80% chance fold, 5% call, 15% bluff(raise)
-                float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 80)
+                #region Aggressive Player decisions
+                if ((ChipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && HandStrength < 0.5) Fold();
+                else if (returnRate < 0.8)
                 {
-                    if (Services.Dealer.LastBet > 0) Fold();
+                    //95% chance fold, 5% bluff (raise)
+                    //aggressive player 60% fold, 30% call, 10% bluff
+                    float randomNumber = Random.Range(0, 100);
+                    if (randomNumber < 60)
+                    {
+                        //if there's not bet, don't fold, just call for free.
+                        if (Services.Dealer.LastBet > 0) Fold();
+                        else Call();
+                    }
+                    else if (randomNumber - 60 < 30) Call();
+                    else Raise();
+                }
+                else if (returnRate < 1)
+                {
+                    //80% chance fold, 5% call, 15% bluff(raise)
+                    //aggressive player 50% fold, 30% call, 20%bluff(raise)
+                    float randomNumber = Random.Range(0, 100);
+                    if (randomNumber < 50)
+                    {
+                        if (Services.Dealer.LastBet > 0) Fold();
+                        else Call();
+                    }
+                    else if (randomNumber - 80 < 30) Call();
+                    else Raise();
+                }
+                else if (returnRate < 1.3)
+                {
+                    //60% chance call, 40% raise
+                    //aggressive player change 60% raise 40%call
+                    float randomNumber = Random.Range(0, 100);
+                    if (randomNumber < 40) Call();
+                    else Raise();
+                }
+                else if (returnRate >= 1.3)
+                {
+                    //70% chance raise, 30% call
+                    //aggressive player change 90% raise 10% call
+                    float randomNumber = Random.Range(0, 100);
+                    if (randomNumber < 90) Raise();
                     else Call();
                 }
-                else if (randomNumber - 80 < 5) Call();
-                else Raise();
+                turnComplete = true;
+                actedThisRound = true;
+                #endregion
             }
-            else if (returnRate < 1.3)
-            {
-                //60% chance call, 40% raise
-                float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 60) Call();
-                else Raise();
-            }
-            else if (returnRate >= 1.3)
-            {
-                //70% chance raise, 30% call
-                float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 70) Raise();
-                else Call();
-            }
-            turnComplete = true;
-            actedThisRound = true;
         }
     }
 

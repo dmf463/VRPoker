@@ -5,11 +5,17 @@ using UnityEngine;
 public class SoundManager : MonoBehaviour
 {
 
-    public AudioClip check;
-    public AudioClip call;
-    public AudioClip raise;
-    public AudioClip fold;
-    public AudioClip allIn;
+    public AudioClip checkP1;
+    public AudioClip callP1;
+    public AudioClip raiseP1;
+    public AudioClip foldP1;
+    public AudioClip allInP1;
+
+    public AudioClip checkP2;
+    public AudioClip callP2;
+    public AudioClip raiseP2;
+    public AudioClip foldP2;
+    public AudioClip allInP2;
 
     void Start()
     {

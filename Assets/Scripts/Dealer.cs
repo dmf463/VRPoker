@@ -141,7 +141,7 @@ public class Dealer : MonoBehaviour
         #region Players evaluate their hands based on the gamestate
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.call);
+            Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.callP1);
             //Table.instance.DebugHandsAndChips();
         }
 
