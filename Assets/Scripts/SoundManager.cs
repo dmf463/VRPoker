@@ -5,17 +5,29 @@ using UnityEngine;
 public class SoundManager : MonoBehaviour
 {
 
+    [Header("Floyd Lines")]
     public AudioClip checkP1;
     public AudioClip callP1;
     public AudioClip raiseP1;
     public AudioClip foldP1;
     public AudioClip allInP1;
+    public List<AudioClip> genericBadP1 = new List<AudioClip>();
+    public List<AudioClip> badBeatP1 = new List<AudioClip>();
+    public List<AudioClip> incredulousP1 = new List<AudioClip>();
+    public List<AudioClip> respectP1 = new List<AudioClip>();
+    public List<AudioClip> goodResponseP1 = new List<AudioClip>();
 
+    [Header("Willy Lines")]
     public AudioClip checkP2;
     public AudioClip callP2;
     public AudioClip raiseP2;
     public AudioClip foldP2;
     public AudioClip allInP2;
+    public List<AudioClip> genericBadP2 = new List<AudioClip>();
+    public List<AudioClip> badBeatP2 = new List<AudioClip>();
+    public List<AudioClip> incredulousP2 = new List<AudioClip>();
+    public List<AudioClip> respectP2 = new List<AudioClip>();
+    public List<AudioClip> goodResponseP2 = new List<AudioClip>();
 
     void Start()
     {

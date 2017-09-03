@@ -209,27 +209,142 @@ public class PokerPlayer {
     
     public void BadBeat()
     {
-        Debug.Log("Damn I lost");
+        if(SeatPos == 0)
+        {
+            if(Services.SoundManager.badBeatP1.Count != 0)
+            {
+                float randomNumber = Random.Range(0, 100);
+                if(randomNumber < 40)
+                {
+                    Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.badBeatP1[0]);
+                    Services.SoundManager.badBeatP1.Remove(Services.SoundManager.badBeatP1[0]);
+                }
+            }
+        }
+        else if(SeatPos == 1)
+        {
+            if (Services.SoundManager.badBeatP2.Count != 0)
+            {
+                float randomNumber = Random.Range(0, 100);
+                if (randomNumber < 40)
+                {
+                    Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.badBeatP2[0]);
+                    Services.SoundManager.badBeatP2.Remove(Services.SoundManager.badBeatP2[0]);
+                }
+            }
+        }
     }
 
     public void GenericLoss()
     {
-        Debug.Log("Damn I lost generically");
+        if (SeatPos == 0)
+        {
+            if (Services.SoundManager.genericBadP1.Count != 0)
+            {
+                float randomNumber = Random.Range(0, 100);
+                if (randomNumber < 40)
+                {
+                    Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.genericBadP1[0]);
+                    Services.SoundManager.genericBadP1.Remove(Services.SoundManager.badBeatP1[0]);
+                }
+            }
+        }
+        else if (SeatPos == 1)
+        {
+            if (Services.SoundManager.genericBadP2.Count != 0)
+            {
+                float randomNumber = Random.Range(0, 100);
+                if (randomNumber < 40)
+                {
+                    Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.genericBadP2[0]);
+                    Services.SoundManager.genericBadP2.Remove(Services.SoundManager.genericBadP2[0]);
+                }
+            }
+        }
     }
 
     public void IncredulousReaction()
     {
-        Debug.Log("omfg you idiot");
+        if (SeatPos == 0)
+        {
+            if (Services.SoundManager.incredulousP1.Count != 0)
+            {
+                float randomNumber = Random.Range(0, 100);
+                if (randomNumber < 40)
+                {
+                    Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.incredulousP1[0]);
+                    Services.SoundManager.incredulousP1.Remove(Services.SoundManager.incredulousP1[0]);
+                }
+            }
+        }
+        else if (SeatPos == 1)
+        {
+            if (Services.SoundManager.incredulousP2.Count != 0)
+            {
+                float randomNumber = Random.Range(0, 100);
+                if (randomNumber < 40)
+                {
+                    Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.incredulousP2[0]);
+                    Services.SoundManager.incredulousP2.Remove(Services.SoundManager.incredulousP2[0]);
+                }
+            }
+        }
     }
 
     public void RespectfulReaction()
     {
-        Debug.Log("you gotta know when to hold em");
+        if (SeatPos == 0)
+        {
+            if (Services.SoundManager.respectP1.Count != 0)
+            {
+                float randomNumber = Random.Range(0, 100);
+                if (randomNumber < 40)
+                {
+                    Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.respectP1[0]);
+                    Services.SoundManager.respectP1.Remove(Services.SoundManager.respectP1[0]);
+                }
+            }
+        }
+        else if (SeatPos == 1)
+        {
+            if (Services.SoundManager.respectP2.Count != 0)
+            {
+                float randomNumber = Random.Range(0, 100);
+                if (randomNumber < 40)
+                {
+                    Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.respectP2[0]);
+                    Services.SoundManager.respectP2.Remove(Services.SoundManager.respectP2[0]);
+                }
+            }
+        }
     }
 
     public void GoodReaction()
     {
-        Debug.Log("Good hand");
+        if (SeatPos == 0)
+        {
+            if (Services.SoundManager.goodResponseP1.Count != 0)
+            {
+                float randomNumber = Random.Range(0, 100);
+                if (randomNumber < 40)
+                {
+                    Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.goodResponseP1[0]);
+                    Services.SoundManager.goodResponseP1.Remove(Services.SoundManager.goodResponseP1[0]);
+                }
+            }
+        }
+        else if (SeatPos == 1)
+        {
+            if (Services.SoundManager.goodResponseP2.Count != 0)
+            {
+                float randomNumber = Random.Range(0, 100);
+                if (randomNumber < 40)
+                {
+                    Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.goodResponseP2[0]);
+                    Services.SoundManager.goodResponseP2.Remove(Services.SoundManager.goodResponseP2[0]);
+                }
+            }
+        }
     }
 
     //end audio cue functions

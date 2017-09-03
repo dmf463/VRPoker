@@ -455,15 +455,25 @@ public class Dealer : MonoBehaviour
         }
         else
         {
-            for (int i = 0; i < players.Count; i++)
+            float randomNum = UnityEngine.Random.Range(0, 100);
+            if(randomNum < 50)
             {
-                if(players[i].PlayerState == PlayerState.Winner)
+                for (int i = 0; i < players.Count; i++)
                 {
-                    players[i].WinnerReactions();
+                    if(players[i].PlayerState == PlayerState.Winner)
+                    {
+                        players[i].WinnerReactions();
+                    }
                 }
-                if(players[i].PlayerState == PlayerState.Loser)
+            }
+            else
+            {
+                for (int i = 0; i < players.Count; i++)
                 {
-                    players[i].LoserReactions();
+                    if (players[i].PlayerState == PlayerState.Loser)
+                    {
+                        players[i].LoserReactions();
+                    }
                 }
             }
         }
