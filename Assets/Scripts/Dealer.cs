@@ -183,16 +183,16 @@ public class Dealer : MonoBehaviour
             {
                 StartRound();
                 roundStarted = true;
-                if (hand1.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true && hand2.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true)
-                {
-                    readyForShowdown = false;
-                }
-                else readyForShowdown = true;
+                readyForShowdown = false;
+                StartCoroutine(WaitForShowDown(3));
             }
             //messageText.text = "Click both trigger buttons to start the showdown";
-            if (readyForShowdown == true)
+            if(readyForShowdown == true)
             {
-                Table.gameState = GameState.ShowDown;
+                if (hand1.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true && hand2.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true)
+                {
+                    Table.gameState = GameState.ShowDown;
+                }
             }
         }
         if (Table.gameState == GameState.ShowDown)
@@ -282,6 +282,12 @@ public class Dealer : MonoBehaviour
             }
         }
         return player;
+    }
+
+    IEnumerator WaitForShowDown(float time)
+    {
+        yield return new WaitForSeconds(time);
+        readyForShowdown = true;
     }
 
     IEnumerator playerAction(PokerPlayer playerToAct)
@@ -462,7 +468,7 @@ public class Dealer : MonoBehaviour
                 {
                     if(players[i].PlayerState == PlayerState.Winner)
                     {
-                        players[i].WinnerReactions();
+                        StartCoroutine(WaitForWinner(2, players[i]));
                     }
                 }
             }
@@ -472,7 +478,7 @@ public class Dealer : MonoBehaviour
                 {
                     if (players[i].PlayerState == PlayerState.Loser)
                     {
-                        players[i].LoserReactions();
+                        StartCoroutine(WaitForLoser(2, players[i]));
                     }
                 }
             }
@@ -484,6 +490,18 @@ public class Dealer : MonoBehaviour
             yield return null;
         }
         Table.gameState = GameState.PostHand;
+    }
+
+    IEnumerator WaitForWinner(float time, PokerPlayer player)
+    {
+        yield return new WaitForSeconds(time);
+        player.WinnerReactions();
+    }
+
+    IEnumerator WaitForLoser(float time, PokerPlayer player)
+    {
+        yield return new WaitForSeconds(time);
+        player.LoserReactions();
     }
 
     public void GivePlayersWinnings()

@@ -184,7 +184,7 @@ public class PokerPlayer {
     public void SayAllIn()
     {
         if(SeatPos == 0) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.allInP1);
-        else if(SeatPos == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.allInP1);
+        else if(SeatPos == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.allInP2);
     }
 
     public void WinnerReactions()
@@ -214,7 +214,7 @@ public class PokerPlayer {
             if(Services.SoundManager.badBeatP1.Count != 0)
             {
                 float randomNumber = Random.Range(0, 100);
-                if(randomNumber < 40)
+                if(randomNumber < 100)
                 {
                     Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.badBeatP1[0]);
                     Services.SoundManager.badBeatP1.Remove(Services.SoundManager.badBeatP1[0]);
@@ -226,7 +226,7 @@ public class PokerPlayer {
             if (Services.SoundManager.badBeatP2.Count != 0)
             {
                 float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 40)
+                if (randomNumber < 100)
                 {
                     Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.badBeatP2[0]);
                     Services.SoundManager.badBeatP2.Remove(Services.SoundManager.badBeatP2[0]);
@@ -242,7 +242,7 @@ public class PokerPlayer {
             if (Services.SoundManager.genericBadP1.Count != 0)
             {
                 float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 40)
+                if (randomNumber < 100)
                 {
                     Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.genericBadP1[0]);
                     Services.SoundManager.genericBadP1.Remove(Services.SoundManager.badBeatP1[0]);
@@ -254,7 +254,7 @@ public class PokerPlayer {
             if (Services.SoundManager.genericBadP2.Count != 0)
             {
                 float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 40)
+                if (randomNumber < 100)
                 {
                     Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.genericBadP2[0]);
                     Services.SoundManager.genericBadP2.Remove(Services.SoundManager.genericBadP2[0]);
@@ -270,7 +270,7 @@ public class PokerPlayer {
             if (Services.SoundManager.incredulousP1.Count != 0)
             {
                 float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 40)
+                if (randomNumber < 100)
                 {
                     Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.incredulousP1[0]);
                     Services.SoundManager.incredulousP1.Remove(Services.SoundManager.incredulousP1[0]);
@@ -282,7 +282,7 @@ public class PokerPlayer {
             if (Services.SoundManager.incredulousP2.Count != 0)
             {
                 float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 40)
+                if (randomNumber < 100)
                 {
                     Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.incredulousP2[0]);
                     Services.SoundManager.incredulousP2.Remove(Services.SoundManager.incredulousP2[0]);
@@ -298,7 +298,7 @@ public class PokerPlayer {
             if (Services.SoundManager.respectP1.Count != 0)
             {
                 float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 40)
+                if (randomNumber < 100)
                 {
                     Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.respectP1[0]);
                     Services.SoundManager.respectP1.Remove(Services.SoundManager.respectP1[0]);
@@ -310,7 +310,7 @@ public class PokerPlayer {
             if (Services.SoundManager.respectP2.Count != 0)
             {
                 float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 40)
+                if (randomNumber < 100)
                 {
                     Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.respectP2[0]);
                     Services.SoundManager.respectP2.Remove(Services.SoundManager.respectP2[0]);
@@ -326,7 +326,7 @@ public class PokerPlayer {
             if (Services.SoundManager.goodResponseP1.Count != 0)
             {
                 float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 40)
+                if (randomNumber < 100)
                 {
                     Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.goodResponseP1[0]);
                     Services.SoundManager.goodResponseP1.Remove(Services.SoundManager.goodResponseP1[0]);
@@ -338,7 +338,7 @@ public class PokerPlayer {
             if (Services.SoundManager.goodResponseP2.Count != 0)
             {
                 float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 40)
+                if (randomNumber < 100)
                 {
                     Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.goodResponseP2[0]);
                     Services.SoundManager.goodResponseP2.Remove(Services.SoundManager.goodResponseP2[0]);
@@ -474,7 +474,7 @@ public class PokerPlayer {
             {
                 if (Services.Dealer.LastBet == 0)
                 {
-                    raise = raise = Services.Dealer.BigBlind * 3;
+                    raise = Services.Dealer.BigBlind * 3;
                 }
                 else raise = Services.Dealer.LastBet;
             }
@@ -485,6 +485,7 @@ public class PokerPlayer {
             Debug.Log("Invalid Raise Amount");
             return 0;
         }
+        if(raise == 0) raise = Services.Dealer.BigBlind * 3;
         return raise;
     }
 
