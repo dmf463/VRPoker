@@ -3,39 +3,91 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
+//this is the individual state of each player and controls how the game can flow
+//I've had to add some states here and there as they pop up
+//the most important one is "Playing" because if they aren't marked as playing, then they'll be skipped
 public enum PlayerState { Playing, NotPlaying, Winner, Loser, Eliminated}
 
 public class PokerPlayer {
 
+    //what position they are at the table, this is set in Dealer and is massively important
+    //this is the current means by which we differentiate between which instance of PokerPlayer we're currently working with
     public int SeatPos { get; set; }
+
+    //this lets me keep track of the players chip count, but only when I call ChipCount, so it may be less reliable than it can be
     public int ChipCount { get { return chipCount; } set { value = chipCount; } }
     private int chipCount
     {
         get { return Table.instance.GetChipStackTotal(SeatPos); }
         set { }
     }
+
+    //this is the Hand of the player and holds ALL the information about thier hand
+    //it has the hand Total, the HighCard, the PokerHand enum, and all relevant hand info
     public HandEvaluator Hand { get; set; }
+
+    //this is the float that determines their handStrength, it's a number from 0-1.
     public float HandStrength;
+
+    //the player's current state
     public PlayerState PlayerState { get; set; }
+    
+    //the following variables are kind of hopshod and are used in a variety of functions to keep the flow
+
+    //when players are being paid, this keeps track of whether a player has been paid or not
     public bool HasBeenPaid;
+
+    //when awarding players, we have to know what their chipstack is BEFORE they have the money they won
+    //this is used to log that.
     public int ChipCountToCheckWhenWinning;
+
+    //this is the amount the player has won in a given pot.
+    //typically it's equal to the pot, but sometimes it's divided by 2 or 3 or maybe even more
     public int chipsWon;
+    
+    //this is the the last amount of money that the player has bet.
+    //not to be confused with "lastBet" on Dealer, this keeps track of ONLY what the player's last best was
+    //as opposed to LastBest, in dealer, which keeps track of the last bet any player has made. 
     public int currentBet;
+
+    //this is actually super important and is the crux of figuring out whether a player will make the FCR (Fold/Call/Raise) decision. 
     public float rateOfReturn;
+
+    //this let's me know if a player's turn has been completed
+    //if they have met the last, or folded, they are marked as completing their turn
+    //if someone acts after in a way that would require the player to act again, turnComplete is set to false
     public bool turnComplete;
+
+    //this is similar to turnComplete, but is only set once, once the player has acted at all. 
+    //this is a means by which we can check if all players have acted before we can move onto the next round
     public bool actedThisRound;
+
+    //this is the int we use in order to determine how much a player will raise in a given situation
+    //the function that uses this needs to be reexamined I think
     private int amountToRaise;
+
+    //this is here so that I can run for-loops and access the functions from Table that use the playerDest enum
     private List<Destination> playerDestinations = new List<Destination>
     {
         Destination.player0, Destination.player1, Destination.player2, Destination.player3, Destination.player4
     };
 
+    //this is a public PokerPlayer used in initialization, but also to create fake players for determining handstrength
     public PokerPlayer(int seatPos)
     {
         SeatPos = seatPos;
         PlayerState = PlayerState.Playing;
     }
 
+    //This causes the player to Fold
+    //first the player says fold
+    //then it grabs each card in the players hand and places it where the player would normally bet
+    //this visually indicates that the player folded
+    //we set the players playerstate to "Not Playing"
+    //set their hands to null, since they no longer have a hand.
+    //after that, we check whether that was the LAST player to fold
+    //if the player folded, and there is only one player left, that player becomes the winner
+    //so we set the game to CleanUp and run the function used to award players their winnings
     public void Fold()
     {
         SayFold();
@@ -65,6 +117,15 @@ public class PokerPlayer {
         }
     }
 
+    //the player Calls
+    //a player can only call if they have chips to bet with
+    //the "betToCall" is the int we use to determine how much we'll pass to the Bet function
+    //we take the last bet, minus the current bet, and that's it.
+    //if the bet would make the player go All In, then we call AllIn();
+    //if not we check if the bet is 0, and we say Check
+    //else we say Call
+    //then we call Bet with betToCall. If it's a check, the player is betting 0.
+    //since there is money being added to the table, we make the current bet = lastBet
     public void Call()
     {
         if(chipCount > 0)
@@ -90,12 +151,16 @@ public class PokerPlayer {
         }
     }
 
+
+    //the player Raises
+    //this works essentially the same as Call() except the betToRaise is equal the last best + the raise amount minus the current bet
+    //amountToRaise is determined before Raise is ever called because we need the raise amount to determined the Rate of Return
+    //again, the amount to raise probably needs more refiguring and balancing
     public void Raise()
     {
         if (ChipCount > 0)
         {
-            //for purposes of testing, we're gonna make this a limit game.
-            int raiseAmount = amountToRaise; //Services.Dealer.BigBlind;
+            int raiseAmount = amountToRaise; 
             int betToRaise = Services.Dealer.LastBet + (raiseAmount - currentBet);
             if (ChipCount - betToRaise <= 0)
             {
@@ -122,6 +187,12 @@ public class PokerPlayer {
         }
     }
 
+    //the player goes All In
+    //the player says "All in"
+    //then we grab all the chip gameObjects and we run through them until we find the ChipContainer
+    //then we remove all the chips from the proper list, and add those to the pot
+    //then we call the coroutine that pushes the container, which holds all the chips, to their proper location
+    //this visually signals the all in 
     public void AllIn()
     {
         SayAllIn();
@@ -140,6 +211,9 @@ public class PokerPlayer {
         Services.Dealer.StartCoroutine(PushChipsIn(1, chipStackContainer, Table.instance.playerBetZones[SeatPos].transform.position));
     }
 
+    //this is the coroutine for pushing in chips
+    //we take a duration, the chipStack (container), and the target pos
+    //then we lerp it
    IEnumerator PushChipsIn(float duration, GameObject chipStack, Vector3 targetPos)
    {
         Debug.Log("extending my hand to push all in");
@@ -155,8 +229,7 @@ public class PokerPlayer {
         }
    }
 
-
-    //audio cue functuions
+    //audio cue functuions for each decision
     public void SayCheck()
     {
         if (SeatPos == 0) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.checkP1);
