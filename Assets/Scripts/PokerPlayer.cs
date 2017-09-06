@@ -230,6 +230,7 @@ public class PokerPlayer {
    }
 
     //audio cue functuions for each decision
+    //def gonna need to refactor
     public void SayCheck()
     {
         if (SeatPos == 0) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.checkP1);
@@ -260,6 +261,7 @@ public class PokerPlayer {
         else if(SeatPos == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.allInP2);
     }
 
+    //determines which reaction to have
     public void WinnerReactions()
     {
         for (int i = 0; i < Services.Dealer.players.Count; i++)
@@ -274,12 +276,14 @@ public class PokerPlayer {
         }
     }
 
+    //determines which loser reaction there is
     public void LoserReactions()
     {
         if (HandStrength < 0.75) BadBeat();
         else GenericLoss();
     }
     
+    //these are all the different reactions
     public void BadBeat()
     {
         if(SeatPos == 0)
@@ -420,8 +424,10 @@ public class PokerPlayer {
         }
     }
 
-    //end audio cue functions
 
+    //this finds the rate of return
+    //first we find the amount to raise by calling the DetermineRaiseAmount function
+    //then we find each necessary variable, and do the equations
     public float FindRateOfReturn()
     {
         //in this case, since we're going to do limit, the bet will always be the bigBlind;
@@ -433,6 +439,8 @@ public class PokerPlayer {
         return returnRate;
     }
 
+    //basically this is a KEY function. right now it's using primarily handStrength to determine how much to raise
+    //but as we continue I'll need to actually add in a TON of factors when considering how much to raise
     public int DetermineRaiseAmount()
     {
         int raise = 0;
@@ -562,6 +570,8 @@ public class PokerPlayer {
         return raise;
     }
 
+    //this is the FCR decision and this is where we can adjust player types
+    //we should go back to the generic one and make percentage variables that we can adjust in individual players
     public void FoldCallRaiseDecision(float returnRate)
     {
         if (Table.gameState == GameState.PreFlop)
@@ -676,6 +686,15 @@ public class PokerPlayer {
         }
     }
 
+    //so this is the function that calls all the organization functions, evaluation functions, and handStrength
+    //basically this is what happens on each players turn no matter what if they are playing
+    //first we check if they are playing
+    //then we check what gamestate we're in, so we can call the right functions (this might be a good place for delegates)
+    //we get the sorted cards from the Table
+    //we make a new handEvaluator with those sorted cards
+    //then we evaluate that hand
+    //and set the evaluater as the player's hand.
+    //then we Determine the hand strength of the player, which decides whether they Fold Call or Raise
     public void EvaluateHand() 
     {
         if(PlayerState == PlayerState.Playing)
@@ -716,6 +735,14 @@ public class PokerPlayer {
     }
 
     #region These are all the functions that deal with just flipping the cards
+
+    //this is the initial call for flipping the cards
+    //it gets a list of the cards as gameobjects, so that we can manipulate them
+    //then we go through the cards, and if the card is not flipped (which is a bool on each card that indicates it's direction), we can flip it
+    //we ignore the collision between the cards so they don't flip out
+    //and then we call the coroutine that actually lerps the flip
+    //once the cards are flipped, we call another coroutine that repositions them for readability
+    //the flipping works fine, but we need to fine tune the WaitForReposition coroutine
     public void FlipCards()
     {
             List<GameObject> cardsInHand = Table.instance.GetCardGameObjects(SeatPos);
@@ -730,6 +757,13 @@ public class PokerPlayer {
         }
     }
 
+    //does what the name says. we pass the parameters which are unique to each players
+    //we want to make sure the cards all flip TOWARDS the board, so we have to math
+    //we get the initial position of the cards, and the initial rotation
+    //then we get the target rotation of the cards using trig.
+    //I kinda don't know exactly how that works, and it doesn't even work super right. 
+    //but it's necessary because we want the cards to flip properly for each player
+    //then we just lerp that shit
     IEnumerator FlipCardsAndMoveTowardsBoard(float duration, GameObject card, Vector3 targetPos, int seatPos)
     {
         float timeElapsed = 0;
@@ -745,11 +779,24 @@ public class PokerPlayer {
         }
     }
 
+    //this calls the proper coroutine, which allows the cards to be spread apart so that they aren't overlapping
+    //we want to have a WaitForSeconds because we need the cards to be flipped before we can reposition them
     IEnumerator WaitForReposition(float time, float duration, GameObject card1, GameObject card2, int seatPos)
     {
         yield return new WaitForSeconds(time);
         Services.Dealer.StartCoroutine(RepositionCardsForReadability(duration, card1, card2, seatPos));
     }
+
+    //okay, so this is a little clunky
+    //basically we want to move the cards the proper distance away from each other.
+    //but because of the way circles work, that means that sometimes that requires us to change the x position, and sometimes the z position
+    //so we have a unitsToMove float which determines exactly how much the card should move.
+    //we get the cardPos for each card and then calculate the distance between the two
+    //then we get lots of if statements that are hard coded AF.
+    //seat pos 2 is special in that it requires us to use the z axis.
+    //so if it's not seat 2, then we know we're working on the x, then basically we check the distance and move one card the correct units
+    //if it is seat 2, we do the same thing, but along the z axis
+    //it's stupid and we should definitely rethink how we're flipping cards and repositioning them
 
     IEnumerator RepositionCardsForReadability(float duration, GameObject card1, GameObject card2, int seatPos)
     {
@@ -808,6 +855,8 @@ public class PokerPlayer {
 
     #endregion
 
+    //this is where we call the handstrength coroutine. first we check the gamestate
+    //we then use the appropriate handstrenth function for the gamestate
     public void DetermineHandStrength(CardType myCard1, CardType myCard2)
     {
         if(Table.gameState == GameState.PreFlop)
@@ -820,6 +869,10 @@ public class PokerPlayer {
         }
     }
 
+    //this is actually not far from the truth of how to determine preflop hands
+    //but I don't have the FCR decision set up to accomodate these handStrengths
+    //shouldn't be too hard
+    //this is essentially why they're always calling preflop
     public void DeterminePreFlopHandStrength(CardType myCard1, CardType myCard2)
     {
         //public enum PokerHand { Connectors, SuitedConnectors, HighCard, OnePair, TwoPair, ThreeOfKind, Straight, Flush, FullHouse, FourOfKind, StraightFlush }
@@ -842,7 +895,10 @@ public class PokerPlayer {
         rateOfReturn = FindRateOfReturn();
         FoldCallRaiseDecision(rateOfReturn);
     }
-    
+
+    //we determine the handStrength
+    //this is pretty well documented in the function
+    //basically it runs a fake game 1000x with the cards available and sees how many times you win
     IEnumerator RunHandStrengthLoopAfterFlop(CardType myCard1, CardType myCard2, int activePlayers)
     {
 
@@ -1065,6 +1121,10 @@ public class PokerPlayer {
         yield break;
     }
 
+    //okay so we essentially use this function in order to organize whatever list of chips we're passing it into lists by color
+    //we can use this function then to create chip stacks and make bets
+    //basically we go through the chips that were passed, look at the value, and add them to the proper list
+
     public List<List<GameObject>> OrganizeChipsIntoColorStacks(List<GameObject> chipsToOrganize)
     {
         List<List<GameObject>> colorChips = new List<List<GameObject>>();
@@ -1099,6 +1159,28 @@ public class PokerPlayer {
         return colorChips;
     }
 
+    //so here we're actually instantiating the chips that we passed in the last function. 
+    //this function makes it so that we can have nicely organized chipstacks at any given moment
+    //so first we pass the organized chipstacks
+    //we set a parentChip to null in order to use it late
+    //we have an amount we're going to increment the stack by, because when we organize a chip, we want to put it in the right place
+    //then we have a list of the playerPositions, so we know where to put the chips, and an offset that we set to zero.
+    //as well, for ease of use, we are going to create an empty container class so that all the chips have the same parent
+    //so we make an offset for that in order to have them instantiate above the table and in not IN it.
+    //then we make the chipContainer, which will hold all subsequent chips
+    //we set the lastStackPos and firstStackPos to zero, so that we can revalue them later. 
+    //we'll use these two values to make sure each chipStack is centered in their proper area
+    //then we run the for-loop that makes the chips
+    //for each list of coloredStacks we grab the first chip and make that the parent
+    //we make that chip a chipStack (which is a class on Chips) and call all the appropriate functions and set the appropriate bools
+    //then we set the increment size by the bounds of that chip and set the offset by those bounds as well, so that each chips instantiates
+    //on top of the other
+    //for every subsequent chip, we destory the rigidBody so that there are no collisions
+    //then set all the necessary parent information and bools
+    //we also add it to the list that the parent chip is holding
+    //we do this for EACH stack of colored chips, which are then instantiated next to each other according to the offset
+    //then in order to move them ALL to the center, we take the firstStackPos and the lastStackPos and find the average
+    //and move the container there
     public void CreateAndOrganizeChipStacks(List<GameObject> chipsToOrganize )
     {
         List<List<GameObject>> organizedChips = OrganizeChipsIntoColorStacks(chipsToOrganize);
@@ -1116,27 +1198,6 @@ public class PokerPlayer {
         Vector3 firstStackPos = Vector3.zero;
         for (int chipStacks = 0; chipStacks < organizedChips.Count; chipStacks++)
         {
-            #region commments
-            //organize the chip into stacks
-            //these should be stacks in which the chips are on top of each other
-            //parented to the first chip, so that I grab a stack
-            //so first thing I need to do is assign a chip to make the parent.
-            //
-            //
-            //now that they chips stack...how about stacking them into colors...
-            /*
-             * first off, let's divide the chips into lists of their values
-             * then run the for loop for each list of chips.
-             * so, the final version should look like
-             * if it's the first chip in the stack
-             *      make that chip the parent chip
-             *      set the amount to increment the stack by
-             *      set the position of the object to the center of the playerspace
-             * else, add each chip on top of the parent chip
-             * if a parents child count > 20
-             * set the new parent to the next chip (unless it's null)
-             */
-            #endregion
             if (organizedChips[chipStacks].Count != 0)
             {
                 for (int chipIndex = 0; chipIndex < organizedChips[chipStacks].Count; chipIndex++)
@@ -1181,6 +1242,7 @@ public class PokerPlayer {
         chipContainer.transform.position += trueOffset / 2;
     }
 
+    //this is LIKE create and organize chipStacks, except is used only during intialization
     public List<GameObject> SetChipStacks(int chipAmount)
     {
 
@@ -1236,6 +1298,21 @@ public class PokerPlayer {
         return startingStack;
     }
 
+    //so this controls all betting
+    //but it also controls refiguring the player's chipstack AFTER a bet
+    //it also controls making change in the event that a player doesn't have the proper chips to make a bet
+    //that MIGHT end up being the dealer's job? but that can be later. for now the player makes their own change
+    //so we create a count of all the chips by color
+    //the problem with this code is that if any of the code falls outside the order of the list, EVERYTHING is wrong
+    //so first, we find the max amount of each color chips the player has
+    //then we set the valueRemaining to the betAmount
+    //this lets us check if we have to make change
+    //if by the end of the check, valueRemaining = 0, then we can go straight to instantating, if it isn't then we need to make change
+    //if we make change, we add that amount to the colorChipCounts
+    //all instantiating is based on the the int values in colorChipCount
+    //then we go through each int and instantiate the proper chip in the bet zone
+    //at the end of all of this, we recreate the chipstack to represent the new value
+    //it's not super sleek, but it works
     public void Bet(int betAmount)
     {
         Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.chips);
@@ -1358,6 +1435,7 @@ public class PokerPlayer {
         }
     }
 
+    //this basically goes through a given chipValue and finds each instance of that chipValue in the playerChipStack
     public int FindChipMax(int chipValue)
     {
         int chipMax = 0;
@@ -1371,6 +1449,7 @@ public class PokerPlayer {
         return chipMax;
     }
 
+    //this is just me ease-of-life function for findining the correct prefab
     public GameObject FindChipPrefab(int chipValue)
     {
         GameObject chipPrefab = null;
