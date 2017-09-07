@@ -6,49 +6,101 @@ using System;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
 
-
+//this entire script is essentially what the dealer does
+//the three most important scripts are Dealer, Table, and PokerPlayer
+//Dealer handles anything a dealer would do at a table
+//Table pretty much holds all the cards and any object. if it's at the table, it's in Table
+//PokerPlayer handles all the functions and info that a poker player would need to play
 public class Dealer : MonoBehaviour
 {
 
-    //holds all the cards where they need to be
+    //this is the players List, this is essentially the current list that handles ALL the players at the poker table
+    //you'll notice that EVERY function dealing with the poker players is using the players list. 
+    //while this is useful for this version of the prototype, it will need to be changed in order to accomodate for 
+    //specific character-players that derive from the PokerPlayer class
+    //we'll need to discuss how that might look
     public List<PokerPlayer> players = new List<PokerPlayer>();
+
+    //the list of destinations, so that I could make for-loops where the seatNum corresponds to the destination num in the list
     public List<Destination> playerDestinations = new List<Destination>
     {
         Destination.player0, Destination.player1, Destination.player2, Destination.player3, Destination.player4
     };
 
+    //this is the list used during evaluation to sort players from best hand to worst
     private List<PokerPlayer> sortedPlayers = new List<PokerPlayer>();
+
+    //the board and the text are pretty much placeholders to give messages to the player via text
     public GameObject MessageBoard;
     public TextMesh messageText;
+
+    //these are references to the two players hands
+    //we need these in order to know which hand is which
+    //but that should also probably change, because right now, it's a little awkward the way we're referencing hands
     public Hand hand1;
     public Hand hand2;
 
+    //this is the number of players in the game currently
+    //we can change this to add more or less players, max 5
     public int playerCount = 2;
 
-
+    //this int tells us how many winners there are in a given hand
+    //more often than not it's 1, but it can technically be as many people that are in the hand
     public int numberOfWinners;
+
+    //this is the amount each player is supposed to recieve
+    //basically it's the pot amount divides by the number of winners
     private int potAmountToGiveWinner;
+
+    //this is our pool to check whether every person who was supposed to be paid DID get paid
+    //this is in place to end the while loop in the coroutine
     private bool winnersHaveBeenPaid;
+
+    //this is true when player's have been evaluated and is in place in order to make sure the function is called only once
     public bool playersHaveBeenEvaluated;
+
+    //this is another way to ensure that we are ready to award the players and make sure everything is in flow
+    //I feel like I have so many bools
     [HideInInspector]
     public bool readyToAwardPlayers = false;
+
+    //this is how many people have been paid
+    //if winners paid is equal to the number of winners, then you've paid everyone
     [HideInInspector]
     public int winnersPaid;
 
+    //this is where we control our small and big blind
+    //right now the blinds don't raise, but we'll have to make a function that does that
     public int SmallBlind = 5;
     public int BigBlind = 10;
+
+    //this is the value of the last bet that was put on the table
     public int LastBet;
+
+    //this lets us know when a round has started, so that each function for the round is only called once
     public bool roundStarted = false;
+
+    //this is basically our insurance that no round can start unless all players have acted and are ready
     public bool playersReady = true;
+
+    //this keeps track of what the lastGameState
+    //this is what resets the previous bools, it indicates that a new round is in session
+    //basically, if the lastGameState is not equal to the current game state, then we know we're in a new round
     public GameState lastGameState;
+
+    //this keeps track of ALL the cards that have been dealt in a given hand
+    //this way we won't use the same card twice for multiple things
     public List<Card> cardsDealt = new List<Card>();
 
+    //this is the bool that ensures all the functions involved with the showdown only happen once
     private bool readyForShowdown = false;
 
     void Awake()
     {
+        //just the message board stuff
         messageText = MessageBoard.GetComponent<TextMesh>();
 
+        //this is where we intialize all our services stuff
         Services.PrefabDB = Resources.Load<PrefabDB>("Prefabs/PrefabDB");
         Services.SoundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
         Services.Dealer = this;
@@ -57,6 +109,10 @@ public class Dealer : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        //in start we're just setting up the game. 
+        //this will technically be different for any "scene" we're in 
+        //so we may have to make this more modular and allowed to be accessed through the inspector
+        //for easy scene creation
         InitializePlayers(3500);
         Table.gameState = GameState.NewRound;
         Table.dealerState = DealerState.DealingState;
@@ -66,7 +122,10 @@ public class Dealer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        //in update we're essentially controlling the gamestates
+        //the game states are determined by how many cards are on "the board"
+        //right now this is a little weird, because if a card accidentally hits the board before it goes into a space it counts towards
+        //the board and the gameState
         if (Table.gameState == GameState.NewRound)
         {
             int cardCount = 0;
@@ -147,12 +206,15 @@ public class Dealer : MonoBehaviour
             //Table.instance.DebugHandsAndChips();
         }
 
+        //this resets bools necessary to start new rounds
+        //once both of these are true, then the next round will start
         if (playersReady && Table.gameState != lastGameState)
         {
             roundStarted = false;
             playersReady = false;
         }
 
+        //starts the round for pre-flop
         if (Table.gameState == GameState.PreFlop)
         {
             if (!roundStarted)
@@ -161,6 +223,8 @@ public class Dealer : MonoBehaviour
                 roundStarted = true;
             }
         }
+        
+        //starts next round
         if (Table.gameState == GameState.Flop)
         {
             if (!roundStarted)
@@ -169,6 +233,8 @@ public class Dealer : MonoBehaviour
                 roundStarted = true;
             }
         }
+
+        //starts next round
         if (Table.gameState == GameState.Turn)
         {
             if (!roundStarted)
@@ -177,6 +243,10 @@ public class Dealer : MonoBehaviour
                 roundStarted = true;
             }
         }
+        
+        //starts the river
+        //we put a coroutine here to make it so that you couldn't trigger the showdown accidentally
+        //when the three seconds end, readyForShowdown sets to true and the player can trigger it
         if (Table.gameState == GameState.River)
         {
             if (!roundStarted)
@@ -195,6 +265,13 @@ public class Dealer : MonoBehaviour
                 }
             }
         }
+
+        //so here, if's the showdown, and the players have not already been evaluated
+        //we add all the players in the hand to a new list and then pass that list to the proper evaluate function
+        //once that's done, we get readyToAwardPlayers and each player flips their cards
+        //we then clear the sortedPlayer list, because reasons?
+        //and we start the coroutine that puts the players in idle while they await their winnings
+        //finally, once that's done, we set the lastGameState to the current table state
         if (Table.gameState == GameState.ShowDown)
         {
             if (!playersHaveBeenEvaluated)
@@ -230,6 +307,8 @@ public class Dealer : MonoBehaviour
         lastGameState = Table.gameState;
     }
 
+
+    //this is an ease of life function for finding the amount of active players in a round
     public int GetActivePlayerCount()
     {
         int activePlayers = 0;
@@ -243,15 +322,13 @@ public class Dealer : MonoBehaviour
         return activePlayers;
     }
 
-
+    //we call this to start a new round
+    //this sets which player should be the first to act
+    //if it's preflop, it's always the player after the big blind (3 seats away from the dealer button)
+    //if not, we call the function to find the first player
+    //then we start the coroutine to make player's actually act on that first player
     public void StartRound()
     {
-        /*
-         * at the start of the round, find the first position player and start the round with that person
-         * that person acts until they finish, and then they end their turn
-         * so the first person acts. 
-         * when they finish, it proceeds to the next player.
-         */
         SetCurrentAndLastBet();
         PokerPlayer firstPlayerToAct;
         if (Table.gameState == GameState.PreFlop)
@@ -265,6 +342,10 @@ public class Dealer : MonoBehaviour
         StartCoroutine(playerAction(firstPlayerToAct));
     }
 
+    //this finds the player who is supposed to act first
+    //we find the person after the dealer button
+    //if that player is NotPlaying, then we find the next possible person to act
+    //in either case, we return the PokerPlayer
     public PokerPlayer FindFirstPlayerToAct()
     {
         PokerPlayer player;
@@ -284,12 +365,25 @@ public class Dealer : MonoBehaviour
         return player;
     }
 
+
+    //this is just a way to give the player a little buffer time so they don't accidentally trigger the showdown
     IEnumerator WaitForShowDown(float time)
     {
         yield return new WaitForSeconds(time);
         readyForShowdown = true;
     }
 
+    //this is actually a pretty simple function
+    //so we pass it either the firstPlayerToAct or nextPlayer
+    //we have that player evaluate their hand, and until their turn is complete, the coroutine pretty much pauses
+    //we wait for .5 seconds for shits and giggles
+    //we then set that players turnComplete to false, in case they need to act again
+    //we keep track of who the current player is and set round finished to true, in case the round is ACTUALLY finished
+    //then we figure out the next player
+    //the if statement is essentially a way to check, whether the round ends or not
+    //if everyone has acted, all the people that are playing are still playing
+    //and all the bets have been met, then we end the round
+    //if not, then someone else needs to act, to we call this function and pass the nextPlayer
     IEnumerator playerAction(PokerPlayer playerToAct)
     {
         playerToAct.EvaluateHand();
@@ -315,11 +409,19 @@ public class Dealer : MonoBehaviour
         if (!roundFinished) StartCoroutine(playerAction(nextPlayer));
         else playersReady = true;
         yield break;
-        //check if all players have acted && all players have met last bet
-        //      if yes, move to next round
-        //      else, move to next player
     }
 
+
+    //this sets all the players by adding them to the player list
+    //setting their starting stack
+    //adding their chips to the proper list
+    //setting the dealer position
+        //WHICH NOTE
+            //this will have to change. 
+            //when we choose who has the dealer button, we do it by flipping cards, and the player with the highest card is the dealer
+            //this should be mirrored in the game
+            //so we'll probably have to run a coroutine here in order to determine who the dealer is, accounting for player action
+    //and then have the big and small blinds bet their chips
     public void InitializePlayers(int chipCount)
     {
         for (int i = 0; i < playerCount; i++)
@@ -338,6 +440,7 @@ public class Dealer : MonoBehaviour
         players[SeatsAwayFromDealer(2)].Bet(BigBlind);
     }
 
+    //we call this at the beginning of each round in order to set the blinds as the current and last bet
     public void SetCurrentAndLastBet()
     {
         if(Table.gameState == GameState.PreFlop)
@@ -362,6 +465,14 @@ public class Dealer : MonoBehaviour
         }
     }
 
+    //okay, so here we evaluate the players on the showdown
+    //we organize all the players into a sorted list, ranked by hand rank
+    //but then we need to see if anyone has the same hand, cause this is important for split pots and side pots
+    //so we check the person ranked highest, who is always going to be first
+    //and we compare the second.
+    //if they're the same cards, they get added to the same list in a list of player ranks
+    //therefore the first list in the playerRank list is ALWAYS the list of winners
+    //then we just move down and add players to subsequent lists as they have worse and worse hands
     public void EvaluatePlayersOnShowdown(List<PokerPlayer> playersToEvaluate)
     {
         List<PokerPlayer> sortedPlayers = new List<PokerPlayer>(playersToEvaluate.OrderByDescending(bestHand => bestHand.Hand.HandValues.PokerHand).ThenByDescending(bestHand => bestHand.Hand.HandValues.Total).ThenByDescending(bestHand => bestHand.Hand.HandValues.HighCard));
@@ -420,17 +531,14 @@ public class Dealer : MonoBehaviour
         numberOfWinners = PlayerRank[0].Count;
     }
 
+    //this is the coroutine where we check how much each player is supposed to get paid
+    //whether they get paid
+    //and waits for us to pay them
+    //basically I need to know how much the winner has BEFORE they get paid, and the coroutine is constantly checking
+    //whether THAT number, plus whatever winnings they were supposed to receive is equal to their current pot value
+    //when it IS then we know that player has been paid
     public IEnumerator WaitForWinnersToGetPaid()
     {
-        //need to figure out how much to give each player, and assign that value to them BEFORE I go into the while loop
-        //need to be able to find whether or not I need to award the odd chip
-        //it could be that the player next to the dealer gets an extra 5,
-        //or that the TWO players next to the dealer get an extra 5, in a three way split.
-        //so first I need to add the winning players to a list
-        //once I have the list I need to take the pot and divide it by the number of winners
-        //then for the first winner I find the remainder, subract that from the divided pot, and add the lowest chip denominator, that becomes the amount I give them
-        //I then do this for each subsequent winner (if there are more than one). 
-        //these values become how much they are supposed to be paid.
         Debug.Assert(numberOfWinners > 0);
         List<PokerPlayer> winningPlayers = new List<PokerPlayer>();
         int potAmount = Table.instance.PotChips;
@@ -492,18 +600,22 @@ public class Dealer : MonoBehaviour
         Table.gameState = GameState.PostHand;
     }
 
+    //this is out current method for calling the reaction audio for winners
     IEnumerator WaitForWinner(float time, PokerPlayer player)
     {
         yield return new WaitForSeconds(time);
         player.WinnerReactions();
     }
 
+    //this is out current method for calling the reaction audio for losers
     IEnumerator WaitForLoser(float time, PokerPlayer player)
     {
         yield return new WaitForSeconds(time);
         player.LoserReactions();
     }
 
+    //this is the function that actually runs to check whether the winners have gotten paid
+    //this gets called like a million times
     public void GivePlayersWinnings()
     {
         int winnerChipStack = 0;    
@@ -542,6 +654,8 @@ public class Dealer : MonoBehaviour
         }
     }
 
+    //this resets all the player states and gamestates and resets bools
+    //so that the player is ready for each round
     public void ResetPlayerStatus()
     {
         for (int i = 0; i < players.Count; i++)
@@ -560,6 +674,7 @@ public class Dealer : MonoBehaviour
         readyToAwardPlayers = false;
     }
 
+    //this is an ease of life function to find how far away from the dealer button a given player is
     public int SeatsAwayFromDealer(int distance)
     {
         int seatPos;
