@@ -4,33 +4,69 @@ using UnityEngine;
 using Valve.VR; //we need this for SteamVR
 using Valve.VR.InteractionSystem;
 
+//this is the script that holds all the cards in the deck
+//as well it controls all the physics for the card deck
+//the biggest problem are here is how we use the scale to decrement and increment the deck
+//basically because the size of the deck is a float, keeping it a constant size has been an in issue
+//mostly cause we're messing with the size
 public class CardDeckScript : InteractionSuperClass {
 
+    //this is the actual list of cards in the deck still
     List<CardType> cardsInDeck;
+    
+    //this is the deck...idk why I have a reference to the deck on the deck..
+    //oh...apparently I have it for readability
     GameObject cardDeck;
+
+    //this is the offset used when playing 52 Card Pickup, so that all the cards don't spawn in the same place
+    //this probably doesn't need to be global
+    //note: we should pretty much always reduce the amount of global variables
     public float cardSpawnOffset;
+
+    //this is the threshold to check whether the deck was thrown or not. 
+    //this is akward because it doesn't hold up to realism
+    //cause if you drop the deck, it just stays as a solid object
+    //this has been something that's bothered me since the beginning
     public float velocityThreshold;
 
+    //this is the list of meshes that hold the actual faces of the cards
     List<Mesh>[] cardMeshes;
+
+    //we added these in manually in the inspector
+    //it's just so we can have a single card prefab and then change the mesh
+    //though we should probably mess around with the card faces to make them more readable
+    //idk, cause then we lose some realism 
     public List<Mesh> spadeMeshes;
     public List<Mesh> heartMeshes;
     public List<Mesh> diamondMeshes;
     public List<Mesh> clubMeshes;
 
+    //these are the the scales of the deck. I don't like this
+    //it leads to random instances where the card deck thinks it's full before it actually is
+    //we should avoid messing with the scale TOO much, though we pretty much need to in order to make the illusion of pulling cards
     [HideInInspector]
     public Vector3 newCardDeckScale;
     [HideInInspector]
     public Vector3 currentCardDeckScale;
     [HideInInspector]
     public Vector3 oneCardScale;
+
+    //these are the bools for throwing the deck
+    //which I don't like the way we're currently throwing the deck
+    //so like. yeah.
     [HideInInspector]
     public bool deckIsBeingThrown = false;
     public bool deckWasThrown;
     public float badThrowVelocity;
+
+    //so this is the bool that prevents us from instantiating more than one card at a time 
     private bool readyForAnotherCard = false;
+
+    //these are the bools that get set to allow us to cheat >=)
     private bool grabbingHighCard;
     private bool grabbingLowCard;
 
+    //lalalalalala, setting stuff, lalalalalalalala
     void Start()
     {
         cardDeck = this.gameObject;
@@ -54,11 +90,16 @@ public class CardDeckScript : InteractionSuperClass {
 
     void Update()
     {
+
+        //so if we have a throwing hand, want to make sure we're always checking 
+        //whether it was swiped, or pressed
         if(throwingHand != null)
         {
             CheckPressPosition(throwingHand);
             CheckSwipeDirection();
         }
+
+        //this is so if we're doing something outside of VR we can pull a card
         if (Input.GetKeyDown(KeyCode.Z))
         {
             int cardPos = Random.Range(0, cardsInDeck.Count);
@@ -69,6 +110,12 @@ public class CardDeckScript : InteractionSuperClass {
 
     }
 
+    //so if we're in shuffling state
+    //and a card hits the existing deck
+    //we destroy the deck and make the deck larger
+    //this is where we have issues, because TECHNICALLY, the card deck is full
+    //we've refilled it already
+    //but we're just messing with scale in order to achieve the illusion that we're pulling cards and stuff
     void OnCollisionEnter(Collision other)
     {
         if(Table.dealerState == DealerState.ShufflingState)
@@ -78,6 +125,9 @@ public class CardDeckScript : InteractionSuperClass {
                 Destroy(other.gameObject);
                 MakeDeckLarger();
             }
+            //this is the problem, because like, whenever we decrement and increment the card deck
+            //we permanently change the scale
+            //which makes this trigger early sometimes
             if (currentCardDeckScale.y >= newCardDeckScale.y)
             {
                 GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
@@ -91,6 +141,7 @@ public class CardDeckScript : InteractionSuperClass {
         }
     }
 
+    //so this is how we know whether the hand is touching the deck or not
     public override void OnTriggerEnterX(Collider other)
     {
         if(other.gameObject.tag == "Hand")
@@ -103,6 +154,7 @@ public class CardDeckScript : InteractionSuperClass {
         }
     }
 
+    //this is how we know that the hand is no longer touching the deck
     public override void OnTriggerExitX(Collider other)
     {
         if(other.gameObject.tag == "Hand")
@@ -115,6 +167,7 @@ public class CardDeckScript : InteractionSuperClass {
         }
     }
 
+    //part of the interaction class this derives from.
     public override void HandHoverUpdate(Hand hand)
     {
         base.HandHoverUpdate(hand);
