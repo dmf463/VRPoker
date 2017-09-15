@@ -42,7 +42,7 @@ public class Dealer : MonoBehaviour
 
     //this is the number of players in the game currently
     //we can change this to add more or less players, max 5
-    public int playerCount = 2;
+    public int playerCount = 5;
 
     //this int tells us how many winners there are in a given hand
     //more often than not it's 1, but it can technically be as many people that are in the hand

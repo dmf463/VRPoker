@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//controls all the sounds
 public class SoundManager : MonoBehaviour
 {
 
@@ -43,7 +44,11 @@ public class SoundManager : MonoBehaviour
 
     }
 
-
+    //so basically when we want to play a sound we generate a prefab object with an audiosource
+    //play the clip
+    //then destroy the object after the clip is over
+    //this works for sound effects and random things
+    //but will not be ideal for the final version
     public void GenerateSourceAndPlay(AudioClip clip)
     {
         GameObject specialAudioSource = Instantiate(Services.PrefabDB.GenericAudioSource);

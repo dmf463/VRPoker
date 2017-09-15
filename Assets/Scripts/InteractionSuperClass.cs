@@ -6,12 +6,25 @@ using Valve.VR.InteractionSystem; //we need this to interact with objects
 
 public class InteractionSuperClass : MonoBehaviour {
 
-    public Interactable interactableObject; //insert cardDeck, or other interactable that you need hoverlocked in inspector
+    //insert cardDeck, or other interactable that you need hoverlocked in inspector
+    //the interactable class allows the object to have certain functions called on it
+    //we need the cardDeck as an interactable in order to make sure that we can't grab it more than once
+    public Interactable interactableObject;
+    
+    //this is true if we're holding a card 
     protected bool handIsHoldingCard;
+
+    //this is true if we're touching the deck, WHILE holding the deck
     protected bool handTouchingDeck = false;
+    
+    //this is the multiplier we use for when we're throwing things
     protected const float FORCE_MULTIPLIER = 1.80f;
+
+    //these are variables we set so we know which hand is holding the card and which is holding the deck
     protected static Hand deckHand;
     protected static Hand throwingHand;
+
+    //this is only true if the deck has been destroyed or if there are no cards in the deck
     protected static bool deckIsEmpty = false;
 
     //VARIABLE FOR CHECKING SWIPE
@@ -31,6 +44,12 @@ public class InteractionSuperClass : MonoBehaviour {
     // The angle range for detecting swipe
     protected const float angleRange = 30;
 
+
+    //see? these are stupid
+    //a lot of these are dumb and useless imo
+    //but I AM using them
+    //basically the only way to make collision somethat that can be extended is to have the normal version
+    //and then have the X version, which is what is actually extended, and then sent to the real OnTrigger or OnCollision
     public void OnTriggerEnter(Collider other)
     {
         OnTriggerEnterX(other);
@@ -52,12 +71,18 @@ public class InteractionSuperClass : MonoBehaviour {
     }
 
     //this happens whenever a hand is near this object
+    //this is literally an update function
+    //it runs EVERY fram that the hand is hovering over something
     public virtual void HandHoverUpdate(Hand hand) //this applies to either controller
     {
         //Debug.Log("Hand is holding " + hand.AttachedObjects.Count + " objects.");
         if(gameObject.GetComponent<Rigidbody>() != null)
         {
-            if (hand.GetStandardInteractionButtonDown() == true && gameObject.GetComponent<Rigidbody>().isKinematic == false) //on Vive controller, this is the trigger
+            //on Vive controller, "StandardInteractionButton" is the trigger
+            //so when we're hovering and we click the trigger, we attach the gameObject
+            //and we hoverlock the interactable object
+            //which is only ever the cardDeck
+            if (hand.GetStandardInteractionButtonDown() == true && gameObject.GetComponent<Rigidbody>().isKinematic == false) 
             {
                 hand.AttachObject(gameObject);
                 hand.HoverLock(interactableObject);
@@ -67,6 +92,8 @@ public class InteractionSuperClass : MonoBehaviour {
     }
 
     //this happens whenever an object is attached to this hand, for whatever reason
+    //at the moment of attachment, this gets called
+    //so basically, when we attach something to our hand we want to make it kinematic so that it moves as if it's in our hand
     public virtual void OnAttachedToHand(Hand attachedHand)
     {
         if(GetComponent<Rigidbody>() != null)
@@ -76,6 +103,8 @@ public class InteractionSuperClass : MonoBehaviour {
     }
 
     //this is like update, as long as we're holding something
+    //so if we are holding something and we release the trigger
+    //it detaches from our hand
     public virtual void HandAttachedUpdate(Hand attachedHand)
     {
         if (attachedHand.GetStandardInteractionButton() == false)
@@ -85,6 +114,9 @@ public class InteractionSuperClass : MonoBehaviour {
     }
 
     //this happens whent he object is detached from the hand for whatever reason
+    //and when we detatch the object, we aren't touching the deck
+    //the object is kinematic again
+    //and we add whatever force to it as we had when we released it
     public virtual void OnDetachedFromHand(Hand hand)
     {
         handTouchingDeck = false;
@@ -96,6 +128,7 @@ public class InteractionSuperClass : MonoBehaviour {
         GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);
     }
 
+    //this checks the position of the finger when pressed, allowing us to know whether it was pressed left, right, up, or down
     public virtual void CheckPressPosition(Hand hand)
     {
         var device = hand.GetComponent<Hand>().controller;
@@ -105,6 +138,9 @@ public class InteractionSuperClass : MonoBehaviour {
         }
     }
 
+    //same as above but with checking swiping
+    //I got this off the internet
+    //so I don't understand all the trigonometry in it
     public virtual void CheckSwipeDirection()
     {
         Vector2 touch = throwingHand.controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
@@ -172,6 +208,8 @@ public class InteractionSuperClass : MonoBehaviour {
         }
     }
 
+
+    //the functions below are basically what we can call when we swipe or press in a certain direction
     public virtual void OnSwipeLeft()
     {
         Debug.Log("Swipe Left");
