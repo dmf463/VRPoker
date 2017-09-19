@@ -28,7 +28,7 @@ public class Dealer : MonoBehaviour
     };
 
     //this is the list used during evaluation to sort players from best hand to worst
-    private List<PokerPlayer> sortedPlayers = new List<PokerPlayer>();
+    //private List<PokerPlayer> sortedPlayers = new List<PokerPlayer>();
 
     //the board and the text are pretty much placeholders to give messages to the player via text
     public GameObject MessageBoard;
@@ -42,6 +42,7 @@ public class Dealer : MonoBehaviour
 
     //this is the number of players in the game currently
     //we can change this to add more or less players, max 5
+    //this won't be necessary when we make PokerPlayer abstract
     public int playerCount = 5;
 
     //this int tells us how many winners there are in a given hand
@@ -52,7 +53,7 @@ public class Dealer : MonoBehaviour
     //basically it's the pot amount divides by the number of winners
     private int potAmountToGiveWinner;
 
-    //this is our pool to check whether every person who was supposed to be paid DID get paid
+    //this is our bool to check whether every person who was supposed to be paid DID get paid
     //this is in place to end the while loop in the coroutine
     private bool winnersHaveBeenPaid;
 
@@ -202,7 +203,7 @@ public class Dealer : MonoBehaviour
         #region Players evaluate their hands based on the gamestate
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.callP1);
+            //Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.callP1);
             //Table.instance.DebugHandsAndChips();
         }
 
@@ -297,7 +298,7 @@ public class Dealer : MonoBehaviour
                         Debug.Log("player" + players[i].SeatPos + "is the " + players[i].PlayerState + " with (a) " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
                     }
                 }
-                sortedPlayers.Clear();
+                //sortedPlayers.Clear();
                 playersHaveBeenEvaluated = true;
                 StartCoroutine(WaitForWinnersToGetPaid());
                 readyToAwardPlayers = true;
@@ -563,6 +564,7 @@ public class Dealer : MonoBehaviour
             potRemaining -= winningPlayers[i].chipsWon;
         }
         Debug.Log("number of Winners is " + numberOfWinners);
+        //added this in because of voiceActing, and not wanting two clips playing at the same time
         if(winningPlayers.Count == 2)
         {
             Debug.Log("DONT SAY A FUCKING WORD");
