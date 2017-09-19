@@ -29,6 +29,9 @@ public class LogChips : MonoBehaviour
     }
     #endregion
 
+    //exactly the same as log cards
+    //except this is divided into "putting chips in" and "taking chips out"
+    //there might also be a bug here, because it doesn't seem like these are always logging
     public void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Chip")

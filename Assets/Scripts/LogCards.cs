@@ -32,28 +32,38 @@ public class LogCards : MonoBehaviour
     #endregion
     public void OnTriggerEnter(Collider other)
     {
+        //increase the cardCount to see how many cards have hit the table
         cardCount += 1;
         #region Logging the PlayingCard for each space
+        //so if it's a card
         if (other.gameObject.tag == "PlayingCard")
         {
+            //we go through all the player names
             for (int i = 0; i < playerNames.Count; i++)
             {
+                //when we get to the match, we know which place to put this into
                 if (gameObject.name == playerNames[i])
                 {
+                    //if we're dealing
                     if (Table.dealerState == DealerState.DealingState)
                     {
+                        //and the card has not already been logged
                         if (Table.instance.playerCards[i].Contains(other.GetComponent<Card>()))
                         {
                             Debug.Log(other.gameObject.name + " is already in play.");
                         }
+                        //and the player does not have 2 cards already
                         else if (Table.instance.playerCards[i].Count == 2)
                         {
                             Debug.Log(other.gameObject.name + " cannot be added to " + playerNames[i]);
                         }
+                        //and the card has not already been dealt to somewhere else
                         else if (Services.Dealer.cardsDealt.Contains(other.GetComponent<Card>()))
                         {
                             Debug.Log("card is already in play");
                         }
+                        //add the card to the right players
+                        //add it to the cardsDealt to keep track
                         else
                         {
                             Table.instance.AddCardTo(playerDestinations[i], other.GetComponent<Card>());
@@ -64,8 +74,10 @@ public class LogCards : MonoBehaviour
                 }
 
             }
+            //if the card is going into TheBoard
             if (this.gameObject.name == "TheBoard")
             {
+                //same thing as above
                 if (Table.dealerState == DealerState.DealingState)
                 {
                     if (Table.instance._board.Contains(other.GetComponent<Card>()))
