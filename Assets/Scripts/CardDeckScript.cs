@@ -24,7 +24,7 @@ public class CardDeckScript : InteractionSuperClass {
     public float cardSpawnOffset;
 
     //this is the threshold to check whether the deck was thrown or not. 
-    //this is akward because it doesn't hold up to realism
+    //this is awkward because it doesn't hold up to realism
     //cause if you drop the deck, it just stays as a solid object
     //this has been something that's bothered me since the beginning
     public float velocityThreshold;
@@ -128,6 +128,10 @@ public class CardDeckScript : InteractionSuperClass {
             //this is the problem, because like, whenever we decrement and increment the card deck
             //we permanently change the scale
             //which makes this trigger early sometimes
+            //I should do
+            //have a variable that knows how many cards are on the table
+            //once I've destroyed that many cards
+            //refill the deck, and set the decks scale to the original deck scale
             if (currentCardDeckScale.y >= newCardDeckScale.y)
             {
                 GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");

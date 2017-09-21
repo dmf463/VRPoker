@@ -177,7 +177,7 @@ public class Chip : InteractionSuperClass {
     //so when the chip is in your hand, literally as soon as you pickup a chip, it becomes a chipstack of 1
     //first, we don't want to do ANYTHING to the chip in your hand if you're holding the max chipstack size
     //if we're not then we're basically saying:
-        //if we're touching a chip, and the chip can be gravved
+        //if we're touching a chip, and the chip can be grabbed
         //and that chip has been set as an incoming chip
         //then we add that chip to the chipstack in your hand
         //if we're touching a stack with the stack in hand, we add those chips to your stack
@@ -196,6 +196,7 @@ public class Chip : InteractionSuperClass {
                     incomingChip = null;
                     isTouchingChip = false;
                 }
+                //we might not need this. what's it for?
                 isTouchingChip = false;
             }
             if (isTouchingStack)

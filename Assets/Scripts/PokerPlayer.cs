@@ -1259,6 +1259,7 @@ public class PokerPlayer {
         int blueChipCount = 0;
         int redChipCount = 0;
 
+        //change these hard coded variables to a function that finds the proper amount of chips based on a percent of the chipAmount
         int blackChipCountMAX = 15;
         int whiteChipCountMAX = 25;
         int blueChipCountMAX = 25;
@@ -1471,7 +1472,7 @@ public class PokerPlayer {
                 break;
         }
         return chipPrefab;
-    }
+    } 
 
 }
 

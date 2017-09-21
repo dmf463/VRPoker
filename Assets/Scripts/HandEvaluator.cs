@@ -38,7 +38,6 @@ public class HandEvaluator {
         Cards = sortedCards;
     }
 
-    //TEST SHIT
     public HandEvaluator()
     {
         spadeSum = 0;
@@ -63,7 +62,6 @@ public class HandEvaluator {
         straightCount = 0;
         straightFlushCount = 0;
     }
-    //END TEST SHIT
 
     public HandValue HandValues
     {

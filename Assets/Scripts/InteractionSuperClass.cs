@@ -72,7 +72,7 @@ public class InteractionSuperClass : MonoBehaviour {
 
     //this happens whenever a hand is near this object
     //this is literally an update function
-    //it runs EVERY fram that the hand is hovering over something
+    //it runs EVERY frame that the hand is hovering over something
     public virtual void HandHoverUpdate(Hand hand) //this applies to either controller
     {
         //Debug.Log("Hand is holding " + hand.AttachedObjects.Count + " objects.");
