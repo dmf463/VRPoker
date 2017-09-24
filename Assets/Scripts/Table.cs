@@ -9,7 +9,7 @@ using System.Linq;
 //Gamestate is super important and controls the flow of the game. 
 public enum Destination { player0, player1, player2, player3, player4, board, burn, pot}
 public enum DealerState { DealingState, ShufflingState };
-public enum GameState { PreFlop, Flop, Turn, River, ShowDown, CleanUp, PostHand, NewRound }
+public enum GameState {NewRound, PreFlop, Flop, Turn, River, ShowDown, CleanUp, PostHand}
 
 public class Table {
     
@@ -24,6 +24,8 @@ public class Table {
             return _instance;
         }
     }
+
+
 
     //the pubic functions for controlling the enums
     public static GameState gameState;
@@ -100,21 +102,21 @@ public class Table {
         _potChips.Clear();
         Services.Dealer.ResetPlayerStatus();
         gameState = GameState.NewRound;
-        DealerPosition = (DealerPosition + 1) % Services.Dealer.playerCount;
+        DealerPosition = (DealerPosition + 1) % Services.Dealer.players.Count;
         SetDealerButtonPos(DealerPosition);
-        if(Services.Dealer.players[(DealerPosition + 1) % Services.Dealer.playerCount].PlayerState == PlayerState.Eliminated)
+        if(Services.Dealer.players[(DealerPosition + 1) % Services.Dealer.players.Count].PlayerState == PlayerState.Eliminated)
         {
-            Services.Dealer.players[(DealerPosition + 2) % Services.Dealer.playerCount].Bet(Services.Dealer.SmallBlind);
-            Services.Dealer.players[(DealerPosition + 2) % Services.Dealer.playerCount].currentBet = Services.Dealer.SmallBlind;
-            Services.Dealer.players[(DealerPosition + 3) % Services.Dealer.playerCount].Bet(Services.Dealer.BigBlind);
-            Services.Dealer.players[(DealerPosition + 3) % Services.Dealer.playerCount].currentBet = Services.Dealer.BigBlind;
+            Services.Dealer.players[(DealerPosition + 2) % Services.Dealer.players.Count].Bet(Services.Dealer.SmallBlind);
+            Services.Dealer.players[(DealerPosition + 2) % Services.Dealer.players.Count].currentBet = Services.Dealer.SmallBlind;
+            Services.Dealer.players[(DealerPosition + 3) % Services.Dealer.players.Count].Bet(Services.Dealer.BigBlind);
+            Services.Dealer.players[(DealerPosition + 3) % Services.Dealer.players.Count].currentBet = Services.Dealer.BigBlind;
         }
         else
         {
-            Services.Dealer.players[(DealerPosition + 1) % Services.Dealer.playerCount].Bet(Services.Dealer.SmallBlind);
-            Services.Dealer.players[(DealerPosition + 1) % Services.Dealer.playerCount].currentBet = Services.Dealer.SmallBlind;
-            Services.Dealer.players[(DealerPosition + 2) % Services.Dealer.playerCount].Bet(Services.Dealer.BigBlind);
-            Services.Dealer.players[(DealerPosition + 2) % Services.Dealer.playerCount].currentBet = Services.Dealer.BigBlind;
+            Services.Dealer.players[(DealerPosition + 1) % Services.Dealer.players.Count].Bet(Services.Dealer.SmallBlind);
+            Services.Dealer.players[(DealerPosition + 1) % Services.Dealer.players.Count].currentBet = Services.Dealer.SmallBlind;
+            Services.Dealer.players[(DealerPosition + 2) % Services.Dealer.players.Count].Bet(Services.Dealer.BigBlind);
+            Services.Dealer.players[(DealerPosition + 2) % Services.Dealer.players.Count].currentBet = Services.Dealer.BigBlind;
             Services.Dealer.LastBet = Services.Dealer.BigBlind;
         }
     }

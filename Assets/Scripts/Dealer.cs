@@ -7,19 +7,19 @@ using Valve.VR;
 using Valve.VR.InteractionSystem;
 
 //this entire script is essentially what the dealer does
-//the three most important scripts are Dealer, Table, and PokerPlayer
+//the three most important scripts are Dealer, Table, and PokerPlayerRedux
 //Dealer handles anything a dealer would do at a table
 //Table pretty much holds all the cards and any object. if it's at the table, it's in Table
-//PokerPlayer handles all the functions and info that a poker player would need to play
+//PokerPlayerRedux handles all the functions and info that a poker player would need to play
 public class Dealer : MonoBehaviour
 {
 
     //this is the players List, this is essentially the current list that handles ALL the players at the poker table
     //you'll notice that EVERY function dealing with the poker players is using the players list. 
     //while this is useful for this version of the prototype, it will need to be changed in order to accomodate for 
-    //specific character-players that derive from the PokerPlayer class
+    //specific character-players that derive from the PokerPlayerRedux class
     //we'll need to discuss how that might look
-    public List<PokerPlayer> players = new List<PokerPlayer>();
+	public List<PokerPlayerRedux> players = new List<PokerPlayerRedux>();
 
     //the list of destinations, so that I could make for-loops where the seatNum corresponds to the destination num in the list
     public List<Destination> playerDestinations = new List<Destination>
@@ -28,7 +28,7 @@ public class Dealer : MonoBehaviour
     };
 
     //this is the list used during evaluation to sort players from best hand to worst
-    //private List<PokerPlayer> sortedPlayers = new List<PokerPlayer>();
+    //private List<PokerPlayerRedux> sortedPlayers = new List<PokerPlayerRedux>();
 
     //the board and the text are pretty much placeholders to give messages to the player via text
     public GameObject MessageBoard;
@@ -42,8 +42,8 @@ public class Dealer : MonoBehaviour
 
     //this is the number of players in the game currently
     //we can change this to add more or less players, max 5
-    //this won't be necessary when we make PokerPlayer abstract
-    public int playerCount = 5;
+    //this won't be necessary when we make PokerPlayerRedux abstract
+    //public int playerCount = 5;
 
     //this int tells us how many winners there are in a given hand
     //more often than not it's 1, but it can technically be as many people that are in the hand
@@ -87,6 +87,7 @@ public class Dealer : MonoBehaviour
     //this keeps track of what the lastGameState
     //this is what resets the previous bools, it indicates that a new round is in session
     //basically, if the lastGameState is not equal to the current game state, then we know we're in a new round
+	[HideInInspector]
     public GameState lastGameState;
 
     //this keeps track of ALL the cards that have been dealt in a given hand
@@ -116,6 +117,7 @@ public class Dealer : MonoBehaviour
         //for easy scene creation
         InitializePlayers(3500);
         Table.gameState = GameState.NewRound;
+		Debug.Log("Gamestate = " + Table.gameState);
         Table.dealerState = DealerState.DealingState;
         lastGameState = GameState.NewRound;
     }
@@ -130,11 +132,12 @@ public class Dealer : MonoBehaviour
         if (Table.gameState == GameState.NewRound)
         {
             int cardCount = 0;
+			Debug.Log("newRound cardCount = " + cardCount);
             messageText.text = "player0 chipCount is " + players[0].ChipCount +
                    "\nplayer1 chipCount is " + players[1].ChipCount +
-                   //"\nplayer2 chipCount is " + players[2].ChipCount +
-                   //"\nplayer3 chipCount is " + players[3].ChipCount +
-                   //"\nplayer4 chipCount is " + players[4].ChipCount +
+                   "\nplayer2 chipCount is " + players[2].ChipCount +
+                   "\nplayer3 chipCount is " + players[3].ChipCount +
+                   "\nplayer4 chipCount is " + players[4].ChipCount +
                    "\npotSize is at " + Table.instance.DeterminePotSize();
             for (int playerCardIndex = 0; playerCardIndex < Table.instance.playerCards.Length; playerCardIndex++)
             {
@@ -204,7 +207,7 @@ public class Dealer : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             //Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.callP1);
-            //Table.instance.DebugHandsAndChips();
+            Table.instance.DebugHandsAndChips();
         }
 
         //this resets bools necessary to start new rounds
@@ -278,7 +281,7 @@ public class Dealer : MonoBehaviour
             if (!playersHaveBeenEvaluated)
             {
                 messageText.text = "Give the winner(s) their winnings (pot size is " + Table.instance.PotChips + " , that's a black chip)";
-                List<PokerPlayer> playersInHand = new List<PokerPlayer>();
+                List<PokerPlayerRedux> playersInHand = new List<PokerPlayerRedux>();
                 for (int i = 0; i < players.Count; i++)
                 {
                     if(players[i].PlayerState == PlayerState.Playing)
@@ -331,7 +334,7 @@ public class Dealer : MonoBehaviour
     public void StartRound()
     {
         SetCurrentAndLastBet();
-        PokerPlayer firstPlayerToAct;
+        PokerPlayerRedux firstPlayerToAct;
         if (Table.gameState == GameState.PreFlop)
         {
             firstPlayerToAct = players[SeatsAwayFromDealer(3)];
@@ -346,16 +349,16 @@ public class Dealer : MonoBehaviour
     //this finds the player who is supposed to act first
     //we find the person after the dealer button
     //if that player is NotPlaying, then we find the next possible person to act
-    //in either case, we return the PokerPlayer
-    public PokerPlayer FindFirstPlayerToAct()
+    //in either case, we return the PokerPlayerRedux
+    public PokerPlayerRedux FindFirstPlayerToAct()
     {
-        PokerPlayer player;
+        PokerPlayerRedux player;
         player = players[SeatsAwayFromDealer(1)];
         if(player.PlayerState == PlayerState.NotPlaying)
         {
             for (int i = 0; i < players.Count; i++)
             {
-                PokerPlayer nextPlayer = players[(player.SeatPos + i) % players.Count];
+                PokerPlayerRedux nextPlayer = players[(player.SeatPos + i) % players.Count];
                 if(nextPlayer.PlayerState == PlayerState.Playing)
                 {
                     player = nextPlayer;
@@ -385,7 +388,7 @@ public class Dealer : MonoBehaviour
     //if everyone has acted, all the people that are playing are still playing
     //and all the bets have been met, then we end the round
     //if not, then someone else needs to act, to we call this function and pass the nextPlayer
-    IEnumerator playerAction(PokerPlayer playerToAct)
+    IEnumerator playerAction(PokerPlayerRedux playerToAct)
     {
         playerToAct.EvaluateHand();
         while (!playerToAct.turnComplete)
@@ -396,7 +399,7 @@ public class Dealer : MonoBehaviour
         playerToAct.turnComplete = false;
         int currentPlayerSeatPos = playerToAct.SeatPos;
         bool roundFinished = true;
-        PokerPlayer nextPlayer = null;
+        PokerPlayerRedux nextPlayer = null;
         for (int i = 1; i < players.Count; i++)
         {
             nextPlayer = players[(currentPlayerSeatPos + i) % players.Count];
@@ -425,9 +428,11 @@ public class Dealer : MonoBehaviour
     //and then have the big and small blinds bet their chips
     public void InitializePlayers(int chipCount)
     {
-        for (int i = 0; i < playerCount; i++)
+        for (int i = 0; i < players.Count; i++)
         {
-            players.Add(new PokerPlayer(i));
+            //players.Add(new PokerPlayerRedux(i));
+			players[i].SeatPos = i;
+			players[i].PlayerState = PlayerState.Playing;
             List<GameObject> startingStack  = players[i].SetChipStacks(chipCount);
             foreach(GameObject chip in startingStack)
             {
@@ -474,19 +479,19 @@ public class Dealer : MonoBehaviour
     //if they're the same cards, they get added to the same list in a list of player ranks
     //therefore the first list in the playerRank list is ALWAYS the list of winners
     //then we just move down and add players to subsequent lists as they have worse and worse hands
-    public void EvaluatePlayersOnShowdown(List<PokerPlayer> playersToEvaluate)
+    public void EvaluatePlayersOnShowdown(List<PokerPlayerRedux> playersToEvaluate)
     {
-        List<PokerPlayer> sortedPlayers = new List<PokerPlayer>(playersToEvaluate.OrderByDescending(bestHand => bestHand.Hand.HandValues.PokerHand).ThenByDescending(bestHand => bestHand.Hand.HandValues.Total).ThenByDescending(bestHand => bestHand.Hand.HandValues.HighCard));
+        List<PokerPlayerRedux> sortedPlayers = new List<PokerPlayerRedux>(playersToEvaluate.OrderByDescending(bestHand => bestHand.Hand.HandValues.PokerHand).ThenByDescending(bestHand => bestHand.Hand.HandValues.Total).ThenByDescending(bestHand => bestHand.Hand.HandValues.HighCard));
 
         sortedPlayers[0].PlayerState = PlayerState.Winner;
 
-        List<List<PokerPlayer>> PlayerRank = new List<List<PokerPlayer>>();
+        List<List<PokerPlayerRedux>> PlayerRank = new List<List<PokerPlayerRedux>>();
 
         for (int i = 0; i < sortedPlayers.Count; i++)
         {
             if (PlayerRank.Count == 0)
             {
-                PlayerRank.Add(new List<PokerPlayer>() { sortedPlayers[i] });
+                PlayerRank.Add(new List<PokerPlayerRedux>() { sortedPlayers[i] });
             }
             else if (sortedPlayers[i].Hand.HandValues.PokerHand == PlayerRank[PlayerRank.Count - 1][0].Hand.HandValues.PokerHand)
             {
@@ -498,24 +503,24 @@ public class Dealer : MonoBehaviour
                     }             
                     else
                     {
-                        PlayerRank.Add(new List<PokerPlayer>() { sortedPlayers[i] });
+                        PlayerRank.Add(new List<PokerPlayerRedux>() { sortedPlayers[i] });
                     }
                 }
                 else
                 {
-                    PlayerRank.Add(new List<PokerPlayer>() { sortedPlayers[i] });
+                    PlayerRank.Add(new List<PokerPlayerRedux>() { sortedPlayers[i] });
                 }
             }
             else
             {
-                PlayerRank.Add(new List<PokerPlayer>() { sortedPlayers[i] });
+                PlayerRank.Add(new List<PokerPlayerRedux>() { sortedPlayers[i] });
             }
         }
         for (int i = 0; i < PlayerRank.Count; i++)
         {
             if (i == 0)
             {
-                foreach (PokerPlayer player in PlayerRank[0])
+                foreach (PokerPlayerRedux player in PlayerRank[0])
                 {
                     player.PlayerState = PlayerState.Winner;
                     player.ChipCountToCheckWhenWinning = player.ChipCount;
@@ -523,7 +528,7 @@ public class Dealer : MonoBehaviour
             }
             else
             {
-                foreach (PokerPlayer player in PlayerRank[i])
+                foreach (PokerPlayerRedux player in PlayerRank[i])
                 {
                     player.PlayerState = PlayerState.Loser;
                 }
@@ -541,11 +546,11 @@ public class Dealer : MonoBehaviour
     public IEnumerator WaitForWinnersToGetPaid()
     {
         Debug.Assert(numberOfWinners > 0);
-        List<PokerPlayer> winningPlayers = new List<PokerPlayer>();
+        List<PokerPlayerRedux> winningPlayers = new List<PokerPlayerRedux>();
         int potAmount = Table.instance.PotChips;
         for (int i = 0; i < players.Count; i++)
         {
-            PokerPlayer playerToCheck = players[SeatsAwayFromDealer(i + 1)];
+            PokerPlayerRedux playerToCheck = players[SeatsAwayFromDealer(i + 1)];
             if(playerToCheck.PlayerState == PlayerState.Winner)
             {
                 winningPlayers.Add(playerToCheck);
@@ -603,14 +608,14 @@ public class Dealer : MonoBehaviour
     }
 
     //this is out current method for calling the reaction audio for winners
-    IEnumerator WaitForWinner(float time, PokerPlayer player)
+    IEnumerator WaitForWinner(float time, PokerPlayerRedux player)
     {
         yield return new WaitForSeconds(time);
         player.WinnerReactions();
     }
 
     //this is out current method for calling the reaction audio for losers
-    IEnumerator WaitForLoser(float time, PokerPlayer player)
+    IEnumerator WaitForLoser(float time, PokerPlayerRedux player)
     {
         yield return new WaitForSeconds(time);
         player.LoserReactions();
@@ -621,7 +626,7 @@ public class Dealer : MonoBehaviour
     public void GivePlayersWinnings()
     {
         int winnerChipStack = 0;    
-        foreach (PokerPlayer player in players)
+        foreach (PokerPlayerRedux player in players)
         {
             if(player.PlayerState == PlayerState.Winner)
             {
