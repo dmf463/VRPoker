@@ -68,10 +68,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 	private int amountToRaise;
 
 	//this is here so that I can run for-loops and access the functions from Table that use the playerDest enum
-	private List<Destination> playerDestinations;// = new List<Destination>
-//	{
-//		Destination.player0, Destination.player1, Destination.player2, Destination.player3, Destination.player4
-//	};
+	private List<Destination> playerDestinations;
 
 	//this is a public PokerPlayerRedux used in initialization, but also to create fake players for determining handstrength
 	public PokerPlayerRedux(int seatPos)
@@ -89,7 +86,8 @@ public class PokerPlayerRedux : MonoBehaviour{
 	//after that, we check whether that was the LAST player to fold
 	//if the player folded, and there is only one player left, that player becomes the winner
 	//so we set the game to CleanUp and run the function used to award players their winnings
-	void Start(){
+	void Start()
+    {
 		playerDestinations = Table.instance.playerDestinations;
 	}
 
