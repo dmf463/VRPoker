@@ -68,7 +68,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 	private int amountToRaise;
 
 	//this is here so that I can run for-loops and access the functions from Table that use the playerDest enum
-	private List<Destination> playerDestinations;
+	public List<Destination> playerDestinations;
 
 	//this is a public PokerPlayerRedux used in initialization, but also to create fake players for determining handstrength
 	public PokerPlayerRedux(int seatPos)
@@ -88,7 +88,15 @@ public class PokerPlayerRedux : MonoBehaviour{
 	//so we set the game to CleanUp and run the function used to award players their winnings
 	void Start()
     {
-		playerDestinations = Table.instance.playerDestinations;
+        playerDestinations = new List<Destination>
+        {
+            Destination.player0, Destination.player1, Destination.player2, Destination.player3, Destination.player4
+        };
+        Debug.Log(playerDestinations.Count); 
+        //playerDestinations = //Table.instance.playerDestinations;
+        for (int i = 0; i < playerDestinations.Count; i++) {
+            Debug.Log("Slot " + i + " in list contains: " + playerDestinations[i]);
+        }
 	}
 
 	public void Fold()
@@ -577,116 +585,42 @@ public class PokerPlayerRedux : MonoBehaviour{
 	//we should go back to the generic one and make percentage variables that we can adjust in individual players
 	public void FoldCallRaiseDecision(float returnRate)
 	{
-		if (Table.gameState == GameState.PreFlop)
-		{
-			Call();
-			turnComplete = true;
-			actedThisRound = true;
-		}
-		else
-		{
-			if(SeatPos == 0)
-			{
-				#region Conservative Player decisions
-				if ((ChipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && HandStrength < 0.5) Fold();
-				else if (returnRate < 0.8)
-				{
-					//95% chance fold, 5% bluff (raise)
-					//conservative player change 99% fold, 1% bluff
-					float randomNumber = Random.Range(0, 100);
-					if (randomNumber < 99)
-					{
-						//if there's not bet, don't fold, just call for free.
-						if (Services.Dealer.LastBet > 0) Fold();
-						else Call();
-					}
-					else Raise();
-				}
-				else if (returnRate < 1)
-				{
-					//80% chance fold, 5% call, 15% bluff(raise)
-					//conservative player change: 90% fold, 5% call, 5% bluff
-					float randomNumber = Random.Range(0, 100);
-					if (randomNumber < 85)
-					{
-						if (Services.Dealer.LastBet > 0) Fold();
-						else Call();
-					}
-					else if (randomNumber - 80 < 5) Call();
-					else Raise();
-				}
-				else if (returnRate < 1.3)
-				{
-					//60% chance call, 40% raise
-					//conservative player change 90% call, 10% raise
-					float randomNumber = Random.Range(0, 100);
-					if (randomNumber < 90) Call();
-					else Raise();
-				}
-				else if (returnRate >= 1.3)
-				{
-					//70% chance raise, 30% call
-					//conservative player 50% raise 50% call
-					float randomNumber = Random.Range(0, 100);
-					if (randomNumber < 50) Raise();
-					else Call();
-				}
-				turnComplete = true;
-				actedThisRound = true;
-				#endregion
-			}
-			else if(SeatPos == 1)
-			{
-				#region Aggressive Player decisions
-				if ((ChipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && HandStrength < 0.5) Fold();
-				else if (returnRate < 0.8)
-				{
-					//95% chance fold, 5% bluff (raise)
-					//aggressive player 60% fold, 30% call, 10% bluff
-					float randomNumber = Random.Range(0, 100);
-					if (randomNumber < 60)
-					{
-						//if there's not bet, don't fold, just call for free.
-						if (Services.Dealer.LastBet > 0) Fold();
-						else Call();
-					}
-					else if (randomNumber - 60 < 30) Call();
-					else Raise();
-				}
-				else if (returnRate < 1)
-				{
-					//80% chance fold, 5% call, 15% bluff(raise)
-					//aggressive player 50% fold, 30% call, 20%bluff(raise)
-					float randomNumber = Random.Range(0, 100);
-					if (randomNumber < 50)
-					{
-						if (Services.Dealer.LastBet > 0) Fold();
-						else Call();
-					}
-					else if (randomNumber - 80 < 30) Call();
-					else Raise();
-				}
-				else if (returnRate < 1.3)
-				{
-					//60% chance call, 40% raise
-					//aggressive player change 60% raise 40%call
-					float randomNumber = Random.Range(0, 100);
-					if (randomNumber < 40) Call();
-					else Raise();
-				}
-				else if (returnRate >= 1.3)
-				{
-					//70% chance raise, 30% call
-					//aggressive player change 90% raise 10% call
-					float randomNumber = Random.Range(0, 100);
-					if (randomNumber < 90) Raise();
-					else Call();
-				}
-				turnComplete = true;
-				actedThisRound = true;
-				#endregion
-			}
-		}
+        if (Table.gameState == GameState.PreFlop) {
+            Call();
+            turnComplete = true;
+            actedThisRound = true;
+        } else {
+            if ((ChipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && HandStrength < 0.5) Fold();
+            else if (returnRate < 0.8) {
+                //95% chance fold, 5% bluff (raise)
+                float randomNumber = Random.Range(0, 100);
+                if (randomNumber < 95) {
+                    //if there's not bet, don't fold, just call for free.
+                    if (Services.Dealer.LastBet > 0) Fold();
+                    else Call();
+                } else Raise();
+            } else if (returnRate < 1) {
+                //80% chance fold, 5% call, 15% bluff(raise)
+                float randomNumber = Random.Range(0, 100);
+                if (randomNumber < 80) {
+                    if (Services.Dealer.LastBet > 0) Fold();
+                    else Call();
+                } else if (randomNumber - 80 < 5) Call();
+                else Raise();
+            } else if (returnRate < 1.3) {
+                //60% chance call, 40% raise
+                float randomNumber = Random.Range(0, 100);
+                if (randomNumber < 60) Call();
+                else Raise();
+            } else if (returnRate >= 1.3) {
+                //70% chance raise, 30% call
+                float randomNumber = Random.Range(0, 100);
+                if (randomNumber < 70) Raise();
+                else Call();
+            }
+            turnComplete = true;
+            actedThisRound = true;
+        }
 	}
 
 	//so this is the function that calls all the organization functions, evaluation functions, and handStrength
@@ -1406,6 +1340,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 							Chip chipToRemove = Table.instance.playerChipStacks[SeatPos][tableChipIndex];
 							Debug.Log("ChipRemoved was a " + chipToRemove.GetComponent<Chip>().chipValue + " chip");
 							Debug.Log("Removing chip from seat" + SeatPos);
+                            Debug.Log(playerDestinations.Count);
 							Debug.Log("Removing chip from seat" + playerDestinations[SeatPos]);
 							Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chipToRemove);
 							chipToRemove.DestroyChip();
