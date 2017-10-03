@@ -345,18 +345,6 @@ public class Dealer : MonoBehaviour
         //StartCoroutine(playerAction(firstPlayerToAct));
     }
 
-    public void TriggerPlayerAction()
-    {
-        //so we want this function to essentially work as: when you look at a player, they act
-        //but we also want to make sure the RIGHT player is acting at the right time
-        //so that if you look at the wrong player, they don't act out of turn. 
-        //so we need to log who the first player is, and then determine the order of play
-        //so maybe we should have a global variable that we call "PlayerToAct" and set that at the beginning of each round
-        //and then when that player finishes the turn, the variable changes to the next available player. 
-        //this is interesting because it means that if a player makes a mistake and puts down the next card, then there needs to be a reaction
-        //but for now, let's just change the variable to the next player. when we check, we use the algorithm that we used in the playerAction formula
-
-    }
 
     //this finds the player who is supposed to act first
     //we find the person after the dealer button
@@ -431,6 +419,7 @@ public class Dealer : MonoBehaviour
     //this gets invoked whenever we gaze at a player
     public void SetNextPlayer()
     {
+        Debug.Log("current playerToAct = " + playerToAct);
         int currentPlayerSeatPos = playerToAct.SeatPos;
         bool roundFinished = true;
         PokerPlayerRedux nextPlayer = null;
@@ -441,7 +430,7 @@ public class Dealer : MonoBehaviour
             {
                 roundFinished = false;
                 playerToAct = nextPlayer;
-                Debug.Log("nextPlayer to act is player " + nextPlayer.SeatPos);
+                Debug.Log("nextPlayer to act is player " + playerToAct);
                 break;
             }
         }

@@ -37,7 +37,7 @@ public class PlayerGazeTrigger : MonoBehaviour
             {
                 Debug.Log("Hitting: " + this.gameObject.name);
                 timeLookedAt = Mathf.Clamp01(timeLookedAt + Time.deltaTime); //after 1 second, this variable will be 1f;
-                if (timeLookedAt == 1f && pokerPlayer == Services.Dealer.playerToAct)
+                if (timeLookedAt/4 == 0.25f && pokerPlayer == Services.Dealer.playerToAct)
                 {
                     Debug.Log("Ready to invoke");
                     timeLookedAt = 0f;
