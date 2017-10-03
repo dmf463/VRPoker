@@ -334,16 +334,15 @@ public class Dealer : MonoBehaviour
     public void StartRound()
     {
         SetCurrentAndLastBet();
-        PokerPlayerRedux firstPlayerToAct;
         if (Table.gameState == GameState.PreFlop)
         {
-            firstPlayerToAct = players[SeatsAwayFromDealer(3)];
+            playerToAct = players[SeatsAwayFromDealer(3)];
         }
         else
         {
-            firstPlayerToAct = FindFirstPlayerToAct();
+            playerToAct = FindFirstPlayerToAct();
         }
-        StartCoroutine(playerAction(firstPlayerToAct));
+        //StartCoroutine(playerAction(firstPlayerToAct));
     }
 
     public void TriggerPlayerAction()
@@ -426,6 +425,31 @@ public class Dealer : MonoBehaviour
         if (!roundFinished) StartCoroutine(playerAction(nextPlayer));
         else playersReady = true;
         yield break;
+    }
+
+
+    //this gets invoked whenever we gaze at a player
+    public void SetNextPlayer()
+    {
+        int currentPlayerSeatPos = playerToAct.SeatPos;
+        bool roundFinished = true;
+        PokerPlayerRedux nextPlayer = null;
+        for (int i = 1; i < players.Count; i++)
+        {
+            nextPlayer = players[(currentPlayerSeatPos + i) % players.Count];
+            if ((!nextPlayer.actedThisRound || nextPlayer.currentBet < LastBet || nextPlayer.ChipCount == 0) && nextPlayer.PlayerState == PlayerState.Playing)
+            {
+                roundFinished = false;
+                playerToAct = nextPlayer;
+                Debug.Log("nextPlayer to act is player " + nextPlayer.SeatPos);
+                break;
+            }
+        }
+        if (roundFinished)
+        {
+            playerToAct = null;
+            playersReady = true;
+        }
     }
 
 
