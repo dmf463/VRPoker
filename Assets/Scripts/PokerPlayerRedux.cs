@@ -85,12 +85,19 @@ public class PokerPlayerRedux : MonoBehaviour{
 	[Header("Player Behavior")]
 	[Header("Low RR (<)")]
 	public float foldChanceLow = 95f;
+	public float callChanceLow = 5f;
+	public float raiseChanceLow = 0f;
 	[Header("Decent RR (<)")]
 	public float foldChanceDecent = 80f;
 	public float callChanceDecent = 5f;
+	public float raiseChanceDecent = 0f;
 	[Header("High RR (<)")]
+	public float foldChanceHigh = 0f;
 	public float callChanceHigh = 60f;
+	public float raiseChanceHigh = 40f;
 	[Header("Very High RR (>=)")]
+	public float foldChanceVeryHigh = 0f;
+	public float callChanceVeryHigh = 30f;
 	public float raiseChanceVeryHigh = 70f;
 
     //this is here so that I can run for-loops and access the functions from Table that use the playerDest enum
@@ -626,7 +633,9 @@ public class PokerPlayerRedux : MonoBehaviour{
                     //if there's not bet, don't fold, just call for free.
                     if (Services.Dealer.LastBet > 0) Fold();
                     else Call();
-                } else Raise();
+				} else if (randomNumber - foldChanceLow < callChanceLow) Call();
+				else Raise();
+
 			} else if (returnRate < decentReturnRate) {
                 //80% chance fold, 5% call, 15% bluff(raise)
                 float randomNumber = Random.Range(0, 100);
@@ -635,16 +644,24 @@ public class PokerPlayerRedux : MonoBehaviour{
                     else Call();
 				} else if (randomNumber - foldChanceDecent < callChanceDecent) Call();
                 else Raise();
+
 			} else if (returnRate < highReturnRate) {
                 //60% chance call, 40% raise
                 float randomNumber = Random.Range(0, 100);
-				if (randomNumber < callChanceHigh) Call();
+				if (randomNumber < foldChanceHigh) {
+					if (Services.Dealer.LastBet > 0) Fold();
+					else Call();
+				} else if (randomNumber - foldChanceHigh < callChanceHigh) Call();
                 else Raise();
+
 			} else if (returnRate >= highReturnRate) {
                 //70% chance raise, 30% call
                 float randomNumber = Random.Range(0, 100);
-				if (randomNumber < raiseChanceVeryHigh) Raise();
-                else Call();
+				if (randomNumber < foldChanceVeryHigh) {
+					if (Services.Dealer.LastBet > 0) Fold();
+					else Call();
+				} else if (randomNumber - foldChanceVeryHigh < callChanceVeryHigh) Call();
+                else Raise();
             }
             turnComplete = true;
             actedThisRound = true;
