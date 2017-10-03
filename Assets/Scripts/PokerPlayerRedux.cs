@@ -27,48 +27,58 @@ public class PokerPlayerRedux : MonoBehaviour{
 	//it has the hand Total, the HighCard, the PokerHand enum, and all relevant hand info
 	public HandEvaluator Hand { get; set; }
 
-	//this is the float that determines their handStrength, it's a number from 0-1.
-	public float HandStrength;
+    //this is the float that determines their handStrength, it's a number from 0-1.
+    [HideInInspector]
+    public float HandStrength;
 
-	//the player's current state
-	public PlayerState PlayerState { get; set; }
+    //the player's current state
+    [HideInInspector]
+    public PlayerState PlayerState { get; set; }
 
-	//the following variables are kind of hopshod and are used in a variety of functions to keep the flow
+    //the following variables are kind of hopshod and are used in a variety of functions to keep the flow
 
-	//when players are being paid, this keeps track of whether a player has been paid or not
-	public bool HasBeenPaid;
+    //when players are being paid, this keeps track of whether a player has been paid or not
+    [HideInInspector]
+    public bool HasBeenPaid;
 
-	//when awarding players, we have to know what their chipstack is BEFORE they have the money they won
-	//this is used to log that.
-	public int ChipCountToCheckWhenWinning;
+    //when awarding players, we have to know what their chipstack is BEFORE they have the money they won
+    //this is used to log that.
+    [HideInInspector]
+    public int ChipCountToCheckWhenWinning;
 
-	//this is the amount the player has won in a given pot.
-	//typically it's equal to the pot, but sometimes it's divided by 2 or 3 or maybe even more
-	public int chipsWon;
+    //this is the amount the player has won in a given pot.
+    //typically it's equal to the pot, but sometimes it's divided by 2 or 3 or maybe even more
+    [HideInInspector]
+    public int chipsWon;
 
-	//this is the the last amount of money that the player has bet.
-	//not to be confused with "lastBet" on Dealer, this keeps track of ONLY what the player's last best was
-	//as opposed to LastBest, in dealer, which keeps track of the last bet any player has made. 
-	public int currentBet;
+    //this is the the last amount of money that the player has bet.
+    //not to be confused with "lastBet" on Dealer, this keeps track of ONLY what the player's last best was
+    //as opposed to LastBest, in dealer, which keeps track of the last bet any player has made. 
+    [HideInInspector]
+    public int currentBet;
 
-	//this is actually super important and is the crux of figuring out whether a player will make the FCR (Fold/Call/Raise) decision. 
-	public float rateOfReturn;
+    //this is actually super important and is the crux of figuring out whether a player will make the FCR (Fold/Call/Raise) decision. 
+    [HideInInspector]
+    public float rateOfReturn;
 
-	//this let's me know if a player's turn has been completed
-	//if they have met the last, or folded, they are marked as completing their turn
-	//if someone acts after in a way that would require the player to act again, turnComplete is set to false
-	public bool turnComplete;
+    //this let's me know if a player's turn has been completed
+    //if they have met the last, or folded, they are marked as completing their turn
+    //if someone acts after in a way that would require the player to act again, turnComplete is set to false
+    [HideInInspector]
+    public bool turnComplete;
 
-	//this is similar to turnComplete, but is only set once, once the player has acted at all. 
-	//this is a means by which we can check if all players have acted before we can move onto the next round
-	public bool actedThisRound;
+    //this is similar to turnComplete, but is only set once, once the player has acted at all. 
+    //this is a means by which we can check if all players have acted before we can move onto the next round
+    [HideInInspector]
+    public bool actedThisRound;
 
 	//this is the int we use in order to determine how much a player will raise in a given situation
 	//the function that uses this needs to be reexamined I think
 	private int amountToRaise;
 
-	//this is here so that I can run for-loops and access the functions from Table that use the playerDest enum
-	public List<Destination> playerDestinations;
+    //this is here so that I can run for-loops and access the functions from Table that use the playerDest enum
+    [HideInInspector]
+    public List<Destination> playerDestinations;
 
 	//this is a public PokerPlayerRedux used in initialization, but also to create fake players for determining handstrength
 	public PokerPlayerRedux(int seatPos)

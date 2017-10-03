@@ -21,6 +21,8 @@ public class Dealer : MonoBehaviour
     //we'll need to discuss how that might look
 	public List<PokerPlayerRedux> players = new List<PokerPlayerRedux>();
 
+    public PokerPlayerRedux playerToAct;
+
     //the list of destinations, so that I could make for-loops where the seatNum corresponds to the destination num in the list
     private List<Destination> playerDestinations = new List<Destination>();
 
@@ -342,6 +344,19 @@ public class Dealer : MonoBehaviour
             firstPlayerToAct = FindFirstPlayerToAct();
         }
         StartCoroutine(playerAction(firstPlayerToAct));
+    }
+
+    public void TriggerPlayerAction()
+    {
+        //so we want this function to essentially work as: when you look at a player, they act
+        //but we also want to make sure the RIGHT player is acting at the right time
+        //so that if you look at the wrong player, they don't act out of turn. 
+        //so we need to log who the first player is, and then determine the order of play
+        //so maybe we should have a global variable that we call "PlayerToAct" and set that at the beginning of each round
+        //and then when that player finishes the turn, the variable changes to the next available player. 
+        //this is interesting because it means that if a player makes a mistake and puts down the next card, then there needs to be a reaction
+        //but for now, let's just change the variable to the next player. when we check, we use the algorithm that we used in the playerAction formula
+
     }
 
     //this finds the player who is supposed to act first
