@@ -16,13 +16,14 @@ public class PlayerGazeTrigger : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        pokerPlayer = GetComponent<PokerPlayerRedux>();
+        pokerPlayer = GetComponentInParent<PokerPlayerRedux>();
+        Debug.Log("PokerPlayer = " + pokerPlayer);
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        //Debug.Log("PlayerToAct = " + Services.Dealer.playerToAct);
         //1. declare your raycast (origin of the array, and then the direction it shoots)
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
 
@@ -38,6 +39,7 @@ public class PlayerGazeTrigger : MonoBehaviour
                 timeLookedAt = Mathf.Clamp01(timeLookedAt + Time.deltaTime); //after 1 second, this variable will be 1f;
                 if (timeLookedAt == 1f && pokerPlayer == Services.Dealer.playerToAct)
                 {
+                    Debug.Log("Ready to invoke");
                     timeLookedAt = 0f;
                     onGazeComplete.Invoke();
                 }
