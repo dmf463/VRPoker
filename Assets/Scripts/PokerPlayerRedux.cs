@@ -76,6 +76,21 @@ public class PokerPlayerRedux : MonoBehaviour{
 	//the function that uses this needs to be reexamined I think
 	private int amountToRaise;
 
+	//the individual player variables for the Fold, Call, Raise decision based on Return Rate
+	[Header("Player Behavior")]
+	[Header("Low RR (<)")]
+	private float lowReturnRate = 0.8f;
+	public float foldChanceLow = 95f;
+	[Header("Decent RR (<)")]
+	private float decentReturnRate = 1f;
+	public float foldChanceDecent = 80f;
+	public float callChanceDecent = 5f;
+	[Header("High RR (<)")]
+	private float highReturnRate = 1.3f;
+	public float callChanceHigh = 60f;
+	[Header("Very High RR (>=)")]
+	public float raiseChanceVeryHigh = 70f;
+
     //this is here so that I can run for-loops and access the functions from Table that use the playerDest enum
     [HideInInspector]
     public List<Destination> playerDestinations;
@@ -601,31 +616,32 @@ public class PokerPlayerRedux : MonoBehaviour{
             actedThisRound = true;
         } else {
             if ((ChipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && HandStrength < 0.5) Fold();
-            else if (returnRate < 0.8) {
+			else if (returnRate < lowReturnRate) {
                 //95% chance fold, 5% bluff (raise)
+
                 float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 95) {
+                if (randomNumber < foldChanceLow) {
                     //if there's not bet, don't fold, just call for free.
                     if (Services.Dealer.LastBet > 0) Fold();
                     else Call();
                 } else Raise();
-            } else if (returnRate < 1) {
+			} else if (returnRate < decentReturnRate) {
                 //80% chance fold, 5% call, 15% bluff(raise)
                 float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 80) {
+                if (randomNumber < foldChanceDecent) {
                     if (Services.Dealer.LastBet > 0) Fold();
                     else Call();
-                } else if (randomNumber - 80 < 5) Call();
+				} else if (randomNumber - foldChanceDecent < callChanceDecent) Call();
                 else Raise();
-            } else if (returnRate < 1.3) {
+			} else if (returnRate < highReturnRate) {
                 //60% chance call, 40% raise
                 float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 60) Call();
+				if (randomNumber < callChanceHigh) Call();
                 else Raise();
-            } else if (returnRate >= 1.3) {
+			} else if (returnRate >= highReturnRate) {
                 //70% chance raise, 30% call
                 float randomNumber = Random.Range(0, 100);
-                if (randomNumber < 70) Raise();
+				if (randomNumber < raiseChanceVeryHigh) Raise();
                 else Call();
             }
             turnComplete = true;
