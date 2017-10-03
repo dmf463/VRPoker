@@ -121,9 +121,9 @@ public class PokerPlayerRedux : MonoBehaviour{
         };
         Debug.Log(playerDestinations.Count); 
         //playerDestinations = //Table.instance.playerDestinations;
-        for (int i = 0; i < playerDestinations.Count; i++) {
-            Debug.Log("Slot " + i + " in list contains: " + playerDestinations[i]);
-        }
+        //for (int i = 0; i < playerDestinations.Count; i++) {
+        //    Debug.Log("Slot " + i + " in list contains: " + playerDestinations[i]);
+        //}
 	}
 
 	public void Fold()
