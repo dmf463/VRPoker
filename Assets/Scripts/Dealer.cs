@@ -341,6 +341,7 @@ public class Dealer : MonoBehaviour
         else
         {
             playerToAct = FindFirstPlayerToAct();
+            Debug.Log("player to act = " + playerToAct);
         }
         //StartCoroutine(playerAction(firstPlayerToAct));
     }

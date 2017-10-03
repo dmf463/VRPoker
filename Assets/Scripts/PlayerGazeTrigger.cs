@@ -29,19 +29,21 @@ public class PlayerGazeTrigger : MonoBehaviour
 
         //2. setup our raycastHit info variable
         RaycastHit rayHit = new RaycastHit();
-
         //3 we're ready to shoot the raycast
         if (Physics.Raycast(ray, out rayHit, rayDistance))
         {
             if (rayHit.transform == this.transform) //are we looking at this thing
             {
-                Debug.Log("Hitting: " + this.gameObject.name);
+                //Debug.Log("Hitting: " + this.gameObject.name);
                 timeLookedAt = Mathf.Clamp01(timeLookedAt + Time.deltaTime); //after 1 second, this variable will be 1f;
-                if (timeLookedAt/4 == 0.25f && pokerPlayer == Services.Dealer.playerToAct)
+                if (timeLookedAt/2 == 0.5f && pokerPlayer == Services.Dealer.playerToAct)
                 {
                     Debug.Log("Ready to invoke");
                     timeLookedAt = 0f;
                     onGazeComplete.Invoke();
+                    Debug.Log("player that just invoked was " + pokerPlayer);
+                    Services.Dealer.SetNextPlayer();
+                    Debug.Log("next player to act is " + Services.Dealer.playerToAct);
                 }
             }
         }
