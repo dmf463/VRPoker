@@ -77,16 +77,18 @@ public class PokerPlayerRedux : MonoBehaviour{
 	private int amountToRaise;
 
 	//the individual player variables for the Fold, Call, Raise decision based on Return Rate
+
+	private float lowReturnRate = 0.8f;
+	private float decentReturnRate = 1f;
+	private float highReturnRate = 1.3f;
+
 	[Header("Player Behavior")]
 	[Header("Low RR (<)")]
-	private float lowReturnRate = 0.8f;
 	public float foldChanceLow = 95f;
 	[Header("Decent RR (<)")]
-	private float decentReturnRate = 1f;
 	public float foldChanceDecent = 80f;
 	public float callChanceDecent = 5f;
 	[Header("High RR (<)")]
-	private float highReturnRate = 1.3f;
 	public float callChanceHigh = 60f;
 	[Header("Very High RR (>=)")]
 	public float raiseChanceVeryHigh = 70f;
