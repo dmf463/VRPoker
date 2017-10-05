@@ -1451,7 +1451,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                         if (chipIndex == 0)
                         {
                             GameObject newChip = GameObject.Instantiate(FindChipPrefab(chipPrefab[colorListIndex]), playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
-                            parentChip = organizedChips[chipStacks][0];
+							parentChip = newChip;
                             parentChip.transform.parent = chipContainer.transform;
                             parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
                             parentChip.GetComponent<Chip>().chipStack = new ChipStack(parentChip.GetComponent<Chip>());
@@ -1470,17 +1470,15 @@ public class PokerPlayerRedux : MonoBehaviour{
                         }
                         else
                         {
-                            if (organizedChips[chipStacks][chipIndex].GetComponent<Rigidbody>() != null)
-                            {
-                                GameObject.Destroy(organizedChips[chipStacks][chipIndex].GetComponent<Rigidbody>());
-                            }
-                            organizedChips[chipStacks][chipIndex].transform.parent = parentChip.transform;
-                            organizedChips[chipStacks][chipIndex].transform.position = new Vector3(parentChip.transform.position.x, parentChip.transform.position.y - (incrementStackBy * chipIndex), parentChip.transform.position.z);
-                            organizedChips[chipStacks][chipIndex].transform.rotation = parentChip.transform.rotation;
-                            organizedChips[chipStacks][chipIndex].GetComponent<Chip>().inAStack = true;
-                            organizedChips[chipStacks][chipIndex].GetComponent<Chip>().chipForBet = false;
-                            parentChip.GetComponent<Chip>().chipStack.chips.Add(organizedChips[chipStacks][chipIndex].GetComponent<Chip>());
-                            parentChip.GetComponent<Chip>().chipStack.stackValue += organizedChips[chipStacks][chipIndex].GetComponent<Chip>().chipValue;
+							GameObject newChip = GameObject.Instantiate(FindChipPrefab(chipPrefab[colorListIndex]), playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
+							Destroy(newChip.GetComponent<Rigidbody>());
+                            newChip.transform.parent = parentChip.transform;
+							newChip.transform.position = new Vector3(parentChip.transform.position.x, parentChip.transform.position.y - (incrementStackBy * chipIndex), parentChip.transform.position.z);
+							newChip.transform.rotation = parentChip.transform.rotation;
+							newChip.GetComponent<Chip>().inAStack = true;
+							newChip.GetComponent<Chip>().chipForBet = false;
+							parentChip.GetComponent<Chip>().chipStack.chips.Add(newChip.GetComponent<Chip>());
+							parentChip.GetComponent<Chip>().chipStack.stackValue += newChip.GetComponent<Chip>().chipValue;
                         }
                     }
                 }
