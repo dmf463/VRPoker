@@ -745,10 +745,14 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     IEnumerator SetNextPlayer()
     {
+        if (turnComplete) {
+        Debug.Log("this is WHere its broken");
+    }
         while (!turnComplete)
         {
             yield return null;
         }
+        Debug.Log("calling set next player from player");
         Services.Dealer.SetNextPlayer();
         yield break;
     }
@@ -1402,7 +1406,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 		}
 
         //if there are less than 5 chips, don't even bother putting them in a stack. because why even?
-        if((colorChipCount[0] + colorChipCount[1] + colorChipCount[2] + colorChipCount[3]) < 5)
+        if((colorChipCount[0] + colorChipCount[1] + colorChipCount[2] + colorChipCount[3]) < 2)
         {
             for (int colorListIndex = 0; colorListIndex < colorChipCount.Count; colorListIndex++)
             {
