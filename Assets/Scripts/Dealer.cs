@@ -343,7 +343,7 @@ public class Dealer : MonoBehaviour
             playerToAct = FindFirstPlayerToAct();
             Debug.Log("player to act = " + playerToAct);
         }
-        //StartCoroutine(playerAction(firstPlayerToAct));
+        //StartCoroutine(playerAction(playerToAct));
     }
 
 
@@ -427,6 +427,14 @@ public class Dealer : MonoBehaviour
         for (int i = 1; i < players.Count; i++)
         {
             nextPlayer = players[(currentPlayerSeatPos + i) % players.Count];
+            if(nextPlayer.PlayerState == PlayerState.Playing)
+            {
+                Debug.Log("nextPlayer = " + nextPlayer.name);
+                Debug.Log("nextPlayer.actedThisRound = " + nextPlayer.actedThisRound);
+                Debug.Log("nextPlayer.currentBet = " + nextPlayer.currentBet + " and lastBet = " + LastBet);
+                Debug.Log("nextPlayer.chipCount = " + nextPlayer.ChipCount);
+                Debug.Log("nextPlayer.PlayerState = " + nextPlayer.PlayerState);
+            }
             if ((!nextPlayer.actedThisRound || nextPlayer.currentBet < LastBet || nextPlayer.ChipCount == 0) && nextPlayer.PlayerState == PlayerState.Playing)
             {
                 roundFinished = false;
@@ -437,6 +445,7 @@ public class Dealer : MonoBehaviour
         }
         if (roundFinished)
         {
+            Debug.Log(Table.gameState + " Finished");
             playerToAct = null;
             playersReady = true;
         }
