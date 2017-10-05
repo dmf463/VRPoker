@@ -210,7 +210,7 @@ public class CardDeckScript : InteractionSuperClass {
         CardType cardToGrab = null;
         if (grabbingLowCard == true)
         {
-            Debug.Log("Grabbing lowest card");
+            //Debug.Log("Grabbing lowest card");
             grabbingLowCard = false;
             cardToGrab = cardsInDeck[0];
             for (int i = 0; i < cardsInDeck.Count; i++)
@@ -224,7 +224,7 @@ public class CardDeckScript : InteractionSuperClass {
         }
         else if (grabbingHighCard == true)
         {
-            Debug.Log("Grabbing high card");
+            //Debug.Log("Grabbing high card");
             grabbingHighCard = false;
             cardToGrab = cardsInDeck[0];
             for (int i = 0; i < cardsInDeck.Count; i++)
@@ -238,7 +238,7 @@ public class CardDeckScript : InteractionSuperClass {
         }
         else
         {
-            Debug.Log("grabbing random card");
+            //Debug.Log("grabbing random card");
             int cardPos = Random.Range(0, cardsInDeck.Count);
             cardToGrab = cardsInDeck[cardPos];
         }

@@ -78,9 +78,9 @@ public class PokerPlayerRedux : MonoBehaviour{
 
 	//the individual player variables for the Fold, Call, Raise decision based on Return Rate
 
-	private float lowReturnRate = 0.8f;
-	private float decentReturnRate = 1f;
-	private float highReturnRate = 1.3f;
+	private float lowReturnRate;
+	private float decentReturnRate;
+	private float highReturnRate;
 
 	[Header("Player Behavior")]
 	[Header("Low RR (<)")]
@@ -110,28 +110,33 @@ public class PokerPlayerRedux : MonoBehaviour{
 		SeatPos = seatPos;
 		PlayerState = PlayerState.Playing;
 	}
-//
-	//This causes the player to Fold
-	//first the player says fold
-	//then it grabs each card in the players hand and places it where the player would normally bet
-	//this visually indicates that the player folded
-	//we set the players playerstate to "Not Playing"
-	//set their hands to null, since they no longer have a hand.
-	//after that, we check whether that was the LAST player to fold
-	//if the player folded, and there is only one player left, that player becomes the winner
-	//so we set the game to CleanUp and run the function used to award players their winnings
-	void Start()
+    //
+    //This causes the player to Fold
+    //first the player says fold
+    //then it grabs each card in the players hand and places it where the player would normally bet
+    //this visually indicates that the player folded
+    //we set the players playerstate to "Not Playing"
+    //set their hands to null, since they no longer have a hand.
+    //after that, we check whether that was the LAST player to fold
+    //if the player folded, and there is only one player left, that player becomes the winner
+    //so we set the game to CleanUp and run the function used to award players their winnings
+    void Start()
     {
         playerDestinations = new List<Destination>
         {
             Destination.player0, Destination.player1, Destination.player2, Destination.player3, Destination.player4
         };
-        Debug.Log(playerDestinations.Count); 
+
+        lowReturnRate = 0.8f;
+        decentReturnRate = 1f;
+        highReturnRate = 1.3f;
+        Debug.Log("lowReturn Rate: " + lowReturnRate + ", decentReturnRate: " + decentReturnRate + ", highReturnRate: " + highReturnRate);
+        //Debug.Log(playerDestinations.Count); 
         //playerDestinations = //Table.instance.playerDestinations;
         //for (int i = 0; i < playerDestinations.Count; i++) {
         //    Debug.Log("Slot " + i + " in list contains: " + playerDestinations[i]);
         //}
-	}
+    }
 
 	public void Fold()
 	{
@@ -615,106 +620,125 @@ public class PokerPlayerRedux : MonoBehaviour{
 		return raise;
 	}
 
-	//this is the FCR decision and this is where we can adjust player types
-	//we should go back to the generic one and make percentage variables that we can adjust in individual players
-	public void FoldCallRaiseDecision(float returnRate)
-	{
-        if (Table.gameState == GameState.PreFlop) {
+    //this is the FCR decision and this is where we can adjust player types
+    //we should go back to the generic one and make percentage variables that we can adjust in individual players
+    public void FoldCallRaiseDecision(float returnRate)
+    {
+        Debug.Log("ReturnRate for Player " + SeatPos + " is " + returnRate);
+        if (Table.gameState == GameState.PreFlop)
+        {
             Call();
             turnComplete = true;
             actedThisRound = true;
-        } else {
+        }
+        else
+        {
             if ((ChipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && HandStrength < 0.5) Fold();
-			else if (returnRate < lowReturnRate) {
+            else if (returnRate < lowReturnRate)
+            {
                 //95% chance fold, 5% bluff (raise)
 
                 float randomNumber = Random.Range(0, 100);
-                if (randomNumber < foldChanceLow) {
+                if (randomNumber < foldChanceLow)
+                {
                     //if there's not bet, don't fold, just call for free.
                     if (Services.Dealer.LastBet > 0) Fold();
                     else Call();
-				} else if (randomNumber - foldChanceLow < callChanceLow) Call();
-				else Raise();
+                }
+                else if (randomNumber - foldChanceLow < callChanceLow) Call();
+                else Raise();
 
-			} else if (returnRate < decentReturnRate) {
+            }
+            else if (returnRate < decentReturnRate)
+            {
                 //80% chance fold, 5% call, 15% bluff(raise)
                 float randomNumber = Random.Range(0, 100);
-                if (randomNumber < foldChanceDecent) {
+                if (randomNumber < foldChanceDecent)
+                {
                     if (Services.Dealer.LastBet > 0) Fold();
                     else Call();
-				} else if (randomNumber - foldChanceDecent < callChanceDecent) Call();
+                }
+                else if (randomNumber - foldChanceDecent < callChanceDecent) Call();
                 else Raise();
 
-			} else if (returnRate < highReturnRate) {
+            }
+            else if (returnRate < highReturnRate)
+            {
                 //60% chance call, 40% raise
                 float randomNumber = Random.Range(0, 100);
-				if (randomNumber < foldChanceHigh) {
-					if (Services.Dealer.LastBet > 0) Fold();
-					else Call();
-				} else if (randomNumber - foldChanceHigh < callChanceHigh) Call();
+                if (randomNumber < foldChanceHigh)
+                {
+                    if (Services.Dealer.LastBet > 0) Fold();
+                    else Call();
+                }
+                else if (randomNumber - foldChanceHigh < callChanceHigh) Call();
                 else Raise();
 
-			} else if (returnRate >= highReturnRate) {
+            }
+            else if (returnRate >= highReturnRate)
+            {
                 //70% chance raise, 30% call
                 float randomNumber = Random.Range(0, 100);
-				if (randomNumber < foldChanceVeryHigh) {
-					if (Services.Dealer.LastBet > 0) Fold();
-					else Call();
-				} else if (randomNumber - foldChanceVeryHigh < callChanceVeryHigh) Call();
+                if (randomNumber < foldChanceVeryHigh)
+                {
+                    if (Services.Dealer.LastBet > 0) Fold();
+                    else Call();
+                }
+                else if (randomNumber - foldChanceVeryHigh < callChanceVeryHigh) Call();
                 else Raise();
             }
             turnComplete = true;
             actedThisRound = true;
         }
-	}
+    }
 
-	//so this is the function that calls all the organization functions, evaluation functions, and handStrength
-	//basically this is what happens on each players turn no matter what if they are playing
-	//first we check if they are playing
-	//then we check what gamestate we're in, so we can call the right functions (this might be a good place for delegates)
-	//we get the sorted cards from the Table
-	//we make a new handEvaluator with those sorted cards
-	//then we evaluate that hand
-	//and set the evaluater as the player's hand.
-	//then we Determine the hand strength of the player, which decides whether they Fold Call or Raise
-	public void EvaluateHand() 
-	{
-		if(PlayerState == PlayerState.Playing)
-		{
-			if (Table.gameState == GameState.PreFlop)
-			{
-				List<CardType> sortedCards = Table.instance.SortPlayerCardsPreFlop(SeatPos);
-				HandEvaluator playerHand = new HandEvaluator(sortedCards);
-				playerHand.EvaluateHandAtPreFlop();
-				Hand = playerHand;
-				DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
-			}
-			else if (Table.gameState == GameState.Flop)
-			{
-				List<CardType> sortedCards = Table.instance.SortPlayerCardsAtFlop(SeatPos);
-				HandEvaluator playerHand = new HandEvaluator(sortedCards);
-				playerHand.EvaluateHandAtFlop();
-				Hand = playerHand;
-				DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
-			}
-			else if (Table.gameState == GameState.Turn)
-			{
-				List<CardType> sortedCards = Table.instance.SortPlayerCardsAtTurn(SeatPos);
-				HandEvaluator playerHand = new HandEvaluator(sortedCards);
-				playerHand.EvaluateHandAtTurn();
-				Hand = playerHand;
-				DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
-			}
-			else if (Table.gameState == GameState.River)
-			{
-				List<CardType> sortedCards = Table.instance.SortPlayerCardsAtRiver(SeatPos);
-				HandEvaluator playerHand = new HandEvaluator(sortedCards);
-				playerHand.EvaluateHandAtRiver();
-				Hand = playerHand;
-				DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
-			}
-		}
-	}
+    //so this is the function that calls all the organization functions, evaluation functions, and handStrength
+    //basically this is what happens on each players turn no matter what if they are playing
+    //first we check if they are playing
+    //then we check what gamestate we're in, so we can call the right functions (this might be a good place for delegates)
+    //we get the sorted cards from the Table
+    //we make a new handEvaluator with those sorted cards
+    //then we evaluate that hand
+    //and set the evaluater as the player's hand.
+    //then we Determine the hand strength of the player, which decides whether they Fold Call or Raise
+    public void EvaluateHand()
+    {
+        if (PlayerState == PlayerState.Playing)
+        {
+            if (Table.gameState == GameState.PreFlop)
+            {
+                List<CardType> sortedCards = Table.instance.SortPlayerCardsPreFlop(SeatPos);
+                HandEvaluator playerHand = new HandEvaluator(sortedCards);
+                playerHand.EvaluateHandAtPreFlop();
+                Hand = playerHand;
+                DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
+            }
+            else if (Table.gameState == GameState.Flop)
+            {
+                List<CardType> sortedCards = Table.instance.SortPlayerCardsAtFlop(SeatPos);
+                HandEvaluator playerHand = new HandEvaluator(sortedCards);
+                playerHand.EvaluateHandAtFlop();
+                Hand = playerHand;
+                DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
+            }
+            else if (Table.gameState == GameState.Turn)
+            {
+                List<CardType> sortedCards = Table.instance.SortPlayerCardsAtTurn(SeatPos);
+                HandEvaluator playerHand = new HandEvaluator(sortedCards);
+                playerHand.EvaluateHandAtTurn();
+                Hand = playerHand;
+                DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
+            }
+            else if (Table.gameState == GameState.River)
+            {
+                List<CardType> sortedCards = Table.instance.SortPlayerCardsAtRiver(SeatPos);
+                HandEvaluator playerHand = new HandEvaluator(sortedCards);
+                playerHand.EvaluateHandAtRiver();
+                Hand = playerHand;
+                DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
+            }
+        }
+    }
 
 	#region These are all the functions that deal with just flipping the cards
 
@@ -1363,10 +1387,10 @@ public class PokerPlayerRedux : MonoBehaviour{
 			}
 
 		}
-		Debug.Log("blackChipCount = " + colorChipCount[0]);
-		Debug.Log("whiteChipCount = " + colorChipCount[1]);
-		Debug.Log("blueChipCount = " + colorChipCount[2]);
-		Debug.Log("redChipCount = " + colorChipCount[3]);
+		//Debug.Log("blackChipCount = " + colorChipCount[0]);
+		//Debug.Log("whiteChipCount = " + colorChipCount[1]);
+		//Debug.Log("blueChipCount = " + colorChipCount[2]);
+		//Debug.Log("redChipCount = " + colorChipCount[3]);
 
 		for (int colorListIndex = 0; colorListIndex < colorChipCount.Count; colorListIndex++)
 		{
@@ -1383,10 +1407,10 @@ public class PokerPlayerRedux : MonoBehaviour{
 						if (newChip.GetComponent<Chip>().chipValue == Table.instance.playerChipStacks[SeatPos][tableChipIndex].chipValue && valueRemaining == 0)
 						{
 							Chip chipToRemove = Table.instance.playerChipStacks[SeatPos][tableChipIndex];
-							Debug.Log("ChipRemoved was a " + chipToRemove.GetComponent<Chip>().chipValue + " chip");
-							Debug.Log("Removing chip from seat" + SeatPos);
+							//Debug.Log("ChipRemoved was a " + chipToRemove.GetComponent<Chip>().chipValue + " chip");
+							//Debug.Log("Removing chip from seat" + SeatPos);
                             Debug.Log(playerDestinations.Count);
-							Debug.Log("Removing chip from seat" + playerDestinations[SeatPos]);
+							//Debug.Log("Removing chip from seat" + playerDestinations[SeatPos]);
 							Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chipToRemove);
 							chipToRemove.DestroyChip();
 							break;

@@ -17,7 +17,7 @@ public class PlayerGazeTrigger : MonoBehaviour
     void Start()
     {
         pokerPlayer = GetComponentInParent<PokerPlayerRedux>();
-        Debug.Log("PokerPlayer = " + pokerPlayer);
+        //Debug.Log("PokerPlayer = " + pokerPlayer);
     }
 
     // Update is called once per frame
@@ -38,12 +38,12 @@ public class PlayerGazeTrigger : MonoBehaviour
                 timeLookedAt = Mathf.Clamp01(timeLookedAt + Time.deltaTime); //after 1 second, this variable will be 1f;
                 if (timeLookedAt/2 == 0.5f && pokerPlayer == Services.Dealer.playerToAct)
                 {
-                    Debug.Log("Ready to invoke");
+                    //Debug.Log("Ready to invoke");
                     timeLookedAt = 0f;
                     onGazeComplete.Invoke();
-                    Debug.Log("player that just invoked was " + pokerPlayer);
+                    //Debug.Log("player that just invoked was " + pokerPlayer);
                     Services.Dealer.SetNextPlayer();
-                    Debug.Log("next player to act is " + Services.Dealer.playerToAct);
+                    //Debug.Log("next player to act is " + Services.Dealer.playerToAct);
                 }
             }
         }
