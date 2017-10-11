@@ -51,6 +51,9 @@ public class PokerPlayerRedux : MonoBehaviour{
     [HideInInspector]
     public int chipsWon;
 
+    [HideInInspector]
+    public bool playerLookedAt = false;
+
     //this is the the last amount of money that the player has bet.
     //not to be confused with "lastBet" on Dealer, this keeps track of ONLY what the player's last best was
     //as opposed to LastBest, in dealer, which keeps track of the last bet any player has made. 
@@ -77,7 +80,6 @@ public class PokerPlayerRedux : MonoBehaviour{
 	private int amountToRaise;
 
 	//the individual player variables for the Fold, Call, Raise decision based on Return Rate
-
 	private float lowReturnRate;
 	private float decentReturnRate;
 	private float highReturnRate;
@@ -706,6 +708,7 @@ public class PokerPlayerRedux : MonoBehaviour{
         {
             if (Table.gameState == GameState.PreFlop)
             {
+                turnComplete = false;
                 List<CardType> sortedCards = Table.instance.SortPlayerCardsPreFlop(SeatPos);
                 HandEvaluator playerHand = new HandEvaluator(sortedCards);
                 playerHand.EvaluateHandAtPreFlop();
@@ -715,6 +718,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             }
             else if (Table.gameState == GameState.Flop)
             {
+                turnComplete = false;
                 List<CardType> sortedCards = Table.instance.SortPlayerCardsAtFlop(SeatPos);
                 HandEvaluator playerHand = new HandEvaluator(sortedCards);
                 playerHand.EvaluateHandAtFlop();
@@ -724,6 +728,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             }
             else if (Table.gameState == GameState.Turn)
             {
+                turnComplete = false;
                 List<CardType> sortedCards = Table.instance.SortPlayerCardsAtTurn(SeatPos);
                 HandEvaluator playerHand = new HandEvaluator(sortedCards);
                 playerHand.EvaluateHandAtTurn();
@@ -733,6 +738,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             }
             else if (Table.gameState == GameState.River)
             {
+                turnComplete = false;
                 List<CardType> sortedCards = Table.instance.SortPlayerCardsAtRiver(SeatPos);
                 HandEvaluator playerHand = new HandEvaluator(sortedCards);
                 playerHand.EvaluateHandAtRiver();
@@ -745,15 +751,13 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     IEnumerator SetNextPlayer()
     {
-        if (turnComplete) {
-        Debug.Log("this is WHere its broken");
-    }
         while (!turnComplete)
         {
             yield return null;
         }
         Debug.Log("calling set next player from player");
         Services.Dealer.SetNextPlayer();
+        playerLookedAt = false;
         yield break;
     }
 
