@@ -163,6 +163,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 					Services.Dealer.players[i].ChipCountToCheckWhenWinning = Services.Dealer.players[i].ChipCount;
 					Debug.Log("We are getting into the fold and the chipCountToCheckWhenWinning = " + ChipCountToCheckWhenWinning);
 					Services.Dealer.playersReady = true;
+                    Services.Dealer.playersHaveBeenEvaluated = true;
 					Services.Dealer.StartCoroutine(Services.Dealer.WaitForWinnersToGetPaid());
 				}
 			}
@@ -1459,7 +1460,23 @@ public class PokerPlayerRedux : MonoBehaviour{
                         if (chipIndex == 0)
                         {
                             GameObject newChip = GameObject.Instantiate(FindChipPrefab(chipPrefab[colorListIndex]), playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
-							parentChip = newChip;
+                            Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChip.GetComponent<Chip>());
+                            Table.instance._potChips.Add(newChip.GetComponent<Chip>());
+                            for (int tableChipIndex = 0; tableChipIndex < Table.instance.playerChipStacks[SeatPos].Count; tableChipIndex++)
+                            {
+                                if (newChip.GetComponent<Chip>().chipValue == Table.instance.playerChipStacks[SeatPos][tableChipIndex].chipValue && valueRemaining == 0)
+                                {
+                                    Chip chipToRemove = Table.instance.playerChipStacks[SeatPos][tableChipIndex];
+                                    //Debug.Log("ChipRemoved was a " + chipToRemove.GetComponent<Chip>().chipValue + " chip");
+                                    //Debug.Log("Removing chip from seat" + SeatPos);
+                                    //Debug.Log(playerDestinations.Count);
+                                    //Debug.Log("Removing chip from seat" + playerDestinations[SeatPos]);
+                                    Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chipToRemove);
+                                    chipToRemove.DestroyChip();
+                                    break;
+                                }
+                            }
+                            parentChip = newChip;
                             parentChip.transform.parent = chipContainer.transform;
                             parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
                             parentChip.GetComponent<Chip>().chipStack = new ChipStack(parentChip.GetComponent<Chip>());
@@ -1480,6 +1497,22 @@ public class PokerPlayerRedux : MonoBehaviour{
                         {
 							GameObject newChip = GameObject.Instantiate(FindChipPrefab(chipPrefab[colorListIndex]), playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
 							Destroy(newChip.GetComponent<Rigidbody>());
+                            Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChip.GetComponent<Chip>());
+                            Table.instance._potChips.Add(newChip.GetComponent<Chip>());
+                            for (int tableChipIndex = 0; tableChipIndex < Table.instance.playerChipStacks[SeatPos].Count; tableChipIndex++)
+                            {
+                                if (newChip.GetComponent<Chip>().chipValue == Table.instance.playerChipStacks[SeatPos][tableChipIndex].chipValue && valueRemaining == 0)
+                                {
+                                    Chip chipToRemove = Table.instance.playerChipStacks[SeatPos][tableChipIndex];
+                                    //Debug.Log("ChipRemoved was a " + chipToRemove.GetComponent<Chip>().chipValue + " chip");
+                                    //Debug.Log("Removing chip from seat" + SeatPos);
+                                    //Debug.Log(playerDestinations.Count);
+                                    //Debug.Log("Removing chip from seat" + playerDestinations[SeatPos]);
+                                    Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chipToRemove);
+                                    chipToRemove.DestroyChip();
+                                    break;
+                                }
+                            }
                             newChip.transform.parent = parentChip.transform;
 							newChip.transform.position = new Vector3(parentChip.transform.position.x, parentChip.transform.position.y - (incrementStackBy * chipIndex), parentChip.transform.position.z);
 							newChip.transform.rotation = parentChip.transform.rotation;
