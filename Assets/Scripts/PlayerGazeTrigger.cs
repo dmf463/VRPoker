@@ -10,7 +10,6 @@ public class PlayerGazeTrigger : MonoBehaviour
     float timeLookedAt = 0f;
     public float rayDistance;
     public UnityEvent onGazeComplete;
-    bool hasActed = false;
     PokerPlayerRedux pokerPlayer;
 
     // Use this for initialization

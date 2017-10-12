@@ -34,11 +34,11 @@ public class InteractionSuperClass : MonoBehaviour {
     protected Vector2 endPosition;
     protected float swipeStartTime;
     // To recognize as swipe user should at lease swipe for this many pixels
-    protected const float MIN_SWIPE_DIST = .02f;
+    protected const float MIN_SWIPE_DIST = .01f;
     // To recognize as a swipe the velocity of the swipe
     // should be at least mMinVelocity
     // Reduce or increase to control the swipe speed
-    protected const float MIN_VELOCITY = 3f;
+    protected const float MIN_VELOCITY = 0.25f;
     protected readonly Vector2 xAxis = new Vector2(1, 0);
     protected readonly Vector2 yAxis = new Vector2(0, 1);
     // The angle range for detecting swipe

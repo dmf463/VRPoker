@@ -471,6 +471,18 @@ public class Card : InteractionSuperClass {
         base.OnSwipeTop();
     }
 
+    public override void OnSwipeLeft()
+    {
+        RotateCard();
+        base.OnSwipeTop();
+    }
+
+    public override void OnSwipeRight()
+    {
+        RotateCard();
+        base.OnSwipeTop();
+    }
+
     //the actual function called in order to trigger the card flip
     public void RotateCard()
     {

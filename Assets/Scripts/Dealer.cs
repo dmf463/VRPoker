@@ -335,13 +335,14 @@ public class Dealer : MonoBehaviour
         SetCurrentAndLastBet();
         if (Table.gameState == GameState.PreFlop)
         {
-            playerToAct = players[SeatsAwayFromDealer(3)];
+            playerToAct = FindFirstPlayerToAct(3);
         }
         else
         {
-            playerToAct = FindFirstPlayerToAct();
+            playerToAct = FindFirstPlayerToAct(1);
             Debug.Log("player to act = " + playerToAct);
         }
+        playerToAct.playerSpotlight.SetActive(true);
         //StartCoroutine(playerAction(playerToAct));
     }
 
@@ -350,10 +351,10 @@ public class Dealer : MonoBehaviour
     //we find the person after the dealer button
     //if that player is NotPlaying, then we find the next possible person to act
     //in either case, we return the PokerPlayerRedux
-    public PokerPlayerRedux FindFirstPlayerToAct()
+    public PokerPlayerRedux FindFirstPlayerToAct(int distance)
     {
         PokerPlayerRedux player;
-        player = players[SeatsAwayFromDealer(1)];
+        player = players[SeatsAwayFromDealer(distance)];
         if(player.PlayerState == PlayerState.NotPlaying)
         {
             for (int i = 0; i < players.Count; i++)
@@ -421,6 +422,7 @@ public class Dealer : MonoBehaviour
     {
         Debug.Log("current playerToAct = " + playerToAct);
         int currentPlayerSeatPos = playerToAct.SeatPos;
+        playerToAct.playerSpotlight.SetActive(false);
         bool roundFinished = true;
         PokerPlayerRedux nextPlayer = null;
         for (int i = 1; i < players.Count; i++)
@@ -438,6 +440,7 @@ public class Dealer : MonoBehaviour
             {
                 roundFinished = false;
                 playerToAct = nextPlayer;
+                playerToAct.playerSpotlight.SetActive(true);
                 Debug.Log("nextPlayer to act is player " + playerToAct);
                 break;
             }
@@ -445,6 +448,7 @@ public class Dealer : MonoBehaviour
         if (roundFinished)
         {
             Debug.Log(Table.gameState + " Finished");
+            playerToAct.playerSpotlight.SetActive(false);
             playerToAct = null;
             playersReady = true;
         }
@@ -726,22 +730,19 @@ public class Dealer : MonoBehaviour
     {
         int seatPos;
         seatPos = (Table.instance.DealerPosition + distance) % players.Count;
-        PokerPlayerRedux player = players[seatPos];
-        if (player.PlayerState != PlayerState.Playing)
-        {
-            if (player.PlayerState == PlayerState.NotPlaying)
-            {
-                for (int i = 0; i < players.Count; i++)
-                {
-                    PokerPlayerRedux nextPlayer = players[(player.SeatPos + i) % players.Count];
-                    if (nextPlayer.PlayerState == PlayerState.Playing)
-                    {
-                        seatPos = nextPlayer.SeatPos;
-                        break;
-                    }
-                }
-            }
-        }
+        //PokerPlayerRedux player = players[seatPos];
+        //if (player.PlayerState != PlayerState.Playing)
+        //{
+        //    for (int i = 0; i < players.Count; i++)
+        //    {
+        //        PokerPlayerRedux nextPlayer = players[(player.SeatPos + i) % players.Count];
+        //        if (nextPlayer.PlayerState == PlayerState.Playing)
+        //        {
+        //            seatPos = nextPlayer.SeatPos;
+        //            break;
+        //        }
+        //    }
+        //}
         return seatPos;
     }
 

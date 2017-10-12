@@ -11,6 +11,8 @@ public enum PlayerState { Playing, NotPlaying, Winner, Loser, Eliminated}
 
 public class PokerPlayerRedux : MonoBehaviour{
 
+    public GameObject playerSpotlight;
+
 	//what position they are at the table, this is set in Dealer and is massively important
 	//this is the current means by which we differentiate between which instance of PokerPlayerRedux we're currently working with
 	public int SeatPos { get; set; }
