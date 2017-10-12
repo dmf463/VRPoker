@@ -126,6 +126,14 @@ public class Card : InteractionSuperClass {
             InstantiateNewDeck();
         }
 
+        if(deckScript.deckWasThrown == true)
+        {
+            if (throwingHand.controller.GetPress(EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPress(EVRButtonId.k_EButton_Grip))
+            {
+                InstantiateNewDeck();
+            }
+        }
+
         //this is basically one of the control things
         //while you're squeezing either grip, the player is in shuffleMode
         if (throwingHand.controller.GetPress(EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPress(EVRButtonId.k_EButton_Grip))

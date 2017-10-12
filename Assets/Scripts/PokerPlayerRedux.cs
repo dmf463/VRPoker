@@ -46,6 +46,14 @@ public class PokerPlayerRedux : MonoBehaviour{
     [HideInInspector]
     public int ChipCountToCheckWhenWinning;
 
+    [HideInInspector]
+    public bool playerIsAllIn = false;
+
+    //we want to know what the chipCount before going all in is
+    //so that we can check if we need to make change for that player
+    [HideInInspector]
+    public int chipCountBeforeAllIn;
+
     //this is the amount the player has won in a given pot.
     //typically it's equal to the pot, but sometimes it's divided by 2 or 3 or maybe even more
     [HideInInspector]
@@ -249,20 +257,40 @@ public class PokerPlayerRedux : MonoBehaviour{
 	public void AllIn()
 	{
 		SayAllIn();
+        chipCountBeforeAllIn = ChipCount;
+        playerIsAllIn = true;
 		Debug.Log("getting ready to go all in");
-		List<GameObject> allInChips = Table.instance.GetChipGameObjects(SeatPos);
-		GameObject chipStackContainer = null;
-		for (int i = 0; i < allInChips.Count; i++)
-		{
-			if (allInChips[i].GetComponent<Chip>().chipStack != null)
-			{
-				chipStackContainer = allInChips[i].transform.parent.gameObject;
-			}
-			Table.instance._potChips.Add(allInChips[i].GetComponent<Chip>());
-			Table.instance.RemoveChipFrom(playerDestinations[SeatPos], allInChips[i].GetComponent<Chip>());
-		}
-		Services.Dealer.StartCoroutine(PushChipsIn(1, chipStackContainer, Table.instance.playerBetZones[SeatPos].transform.position));
-	}
+        Bet(ChipCount);
+		//List<GameObject> allInChips = Table.instance.GetChipGameObjects(SeatPos);
+		//GameObject chipStackContainer = null;
+		//for (int i = 0; i < allInChips.Count; i++)
+		//{
+		//	if (allInChips[i].GetComponent<Chip>().chipStack != null)
+		//	{
+		//		chipStackContainer = allInChips[i].transform.parent.gameObject;
+		//	}
+		//	Table.instance._potChips.Add(allInChips[i].GetComponent<Chip>());
+		//	Table.instance.RemoveChipFrom(playerDestinations[SeatPos], allInChips[i].GetComponent<Chip>());
+		//}
+		//Services.Dealer.StartCoroutine(PushChipsIn(1, chipStackContainer, Table.instance.playerBetZones[SeatPos].transform.position));
+        //similar to fold, when we go all in, we want to see if we're the last person to go all in
+        //if so, then we want to flip the cards
+        int allInPlayerCount = 0;
+        for (int i = 0; i < Services.Dealer.players.Count; i++)
+        {
+            if (Services.Dealer.players[i].playerIsAllIn == true) allInPlayerCount++;
+        }
+        if (Services.Dealer.GetActivePlayerCount() == allInPlayerCount)
+        {
+            for (int i = 0; i < Services.Dealer.players.Count; i++)
+            {
+                if (Services.Dealer.players[i].playerIsAllIn == true)
+                {
+                    Services.Dealer.players[i].FlipCards();
+                }
+            }
+        }
+    }
 
 	//this is the coroutine for pushing in chips
 	//we take a duration, the chipStack (container), and the target pos
@@ -1221,6 +1249,8 @@ public class PokerPlayerRedux : MonoBehaviour{
 		Vector3 offSet = Vector3.zero;
 		Vector3 containerOffset = Vector3.up * .08f;
 		GameObject chipContainer = GameObject.Instantiate(new GameObject(), playerPositions[SeatPos].transform.position + containerOffset, playerPositions[SeatPos].transform.rotation);
+        chipContainer.tag = "Container";
+        chipContainer.name = "Container";
 		chipContainer.transform.rotation = Quaternion.Euler(0, chipContainer.transform.rotation.eulerAngles.y + 90, 0);
 		Vector3 lastStackPos = Vector3.zero;
 		Vector3 firstStackPos = Vector3.zero;
@@ -1268,6 +1298,14 @@ public class PokerPlayerRedux : MonoBehaviour{
 		}
 		Vector3 trueOffset = firstStackPos - lastStackPos;
 		chipContainer.transform.position += trueOffset / 2;
+        GameObject[] emptyContainers = GameObject.FindGameObjectsWithTag("Container");
+        foreach(GameObject container in emptyContainers)
+        {
+            if(container.transform.childCount == 0)
+            {
+                Destroy(container);
+            }
+        }
 	}
 
 	//this is LIKE create and organize chipStacks, except is used only during intialization
@@ -1448,6 +1486,8 @@ public class PokerPlayerRedux : MonoBehaviour{
             Vector3 offSet = Vector3.zero;
             Vector3 containerOffset = Vector3.up * .08f;
             GameObject chipContainer = GameObject.Instantiate(new GameObject(), playerBetZones[SeatPos].transform.position + containerOffset, playerBetZones[SeatPos].transform.rotation);
+            chipContainer.tag = "Container";
+            chipContainer.name = "Container";
             chipContainer.transform.rotation = Quaternion.Euler(0, chipContainer.transform.rotation.eulerAngles.y + 90, 0);
             Vector3 lastStackPos = Vector3.zero;
             Vector3 firstStackPos = Vector3.zero;
@@ -1526,6 +1566,14 @@ public class PokerPlayerRedux : MonoBehaviour{
             }
             Vector3 trueOffset = firstStackPos - lastStackPos;
             chipContainer.transform.position += trueOffset / 2;
+            GameObject[] emptyContainers = GameObject.FindGameObjectsWithTag("Container");
+            foreach (GameObject container in emptyContainers)
+            {
+                if (container.transform.childCount == 0)
+                {
+                    Destroy(container);
+                }
+            }
         }
 
 		if (valueRemaining > 0)

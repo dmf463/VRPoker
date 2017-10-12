@@ -132,13 +132,6 @@ public class Dealer : MonoBehaviour
         if (Table.gameState == GameState.NewRound)
         {
             int cardCount = 0;
-			//Debug.Log("newRound cardCount = " + cardCount);
-            //messageText.text = "player0 chipCount is " + players[0].ChipCount +
-            //       "\nplayer1 chipCount is " + players[1].ChipCount +
-            //       "\nplayer2 chipCount is " + players[2].ChipCount +
-            //       "\nplayer3 chipCount is " + players[3].ChipCount +
-            //       "\nplayer4 chipCount is " + players[4].ChipCount +
-            //       "\npotSize is at " + Table.instance.DeterminePotSize();
             for (int playerCardIndex = 0; playerCardIndex < Table.instance.playerCards.Length; playerCardIndex++)
             {
                 for (int cardTotal = 0; cardTotal < Table.instance.playerCards[playerCardIndex].Count; cardTotal++)
@@ -146,7 +139,6 @@ public class Dealer : MonoBehaviour
                     cardCount++;
                 }
             }
-            //Debug.Log("newRound cardCount = " + cardCount);
             if (cardCount == GetActivePlayerCount() * 2)
             {
                 Table.gameState = GameState.PreFlop;
@@ -258,9 +250,15 @@ public class Dealer : MonoBehaviour
                 StartRound();
                 roundStarted = true;
                 readyForShowdown = false;
-                StartCoroutine(WaitForShowDown(3));
+                StartCoroutine(WaitForShowDown(2));
             }
             //messageText.text = "Click both trigger buttons to start the showdown";
+            int allInPlayerCount = 0;
+            for (int i = 0; i < players.Count; i++)
+            {
+                if (players[i].playerIsAllIn == true) allInPlayerCount++;
+            }
+            if (GetActivePlayerCount() == allInPlayerCount) readyForShowdown = true;
             if(readyForShowdown == true)
             {
                 if (hand1.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true && hand2.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true)
@@ -310,6 +308,7 @@ public class Dealer : MonoBehaviour
         #endregion
         lastGameState = Table.gameState;
     }
+
 
 
     //this is an ease of life function for finding the amount of active players in a round
@@ -713,6 +712,7 @@ public class Dealer : MonoBehaviour
                 players[i].PlayerState = PlayerState.Playing;
             }
             players[i].HasBeenPaid = false;
+            players[i].playerIsAllIn = false;
             //players[i].checkedHandStrength = false;
         }
         Table.gameState = GameState.NewRound;
@@ -726,6 +726,22 @@ public class Dealer : MonoBehaviour
     {
         int seatPos;
         seatPos = (Table.instance.DealerPosition + distance) % players.Count;
+        PokerPlayerRedux player = players[seatPos];
+        if (player.PlayerState != PlayerState.Playing)
+        {
+            if (player.PlayerState == PlayerState.NotPlaying)
+            {
+                for (int i = 0; i < players.Count; i++)
+                {
+                    PokerPlayerRedux nextPlayer = players[(player.SeatPos + i) % players.Count];
+                    if (nextPlayer.PlayerState == PlayerState.Playing)
+                    {
+                        seatPos = nextPlayer.SeatPos;
+                        break;
+                    }
+                }
+            }
+        }
         return seatPos;
     }
 
