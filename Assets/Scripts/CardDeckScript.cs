@@ -191,6 +191,7 @@ public class CardDeckScript : InteractionSuperClass {
             Card card = CreateCard(GrabACard(), interactableObject.transform.position, Quaternion.identity);
             card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
             Services.PokerRules.cardsPulled.Add(card);
+            Services.PokerRules.cardsToDestroy.Add(card);
             hand.otherHand.AttachObject(card.gameObject);
             MakeDeckSmaller();
             if (cardsInDeck.Count == 0)

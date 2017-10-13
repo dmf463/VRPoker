@@ -200,6 +200,10 @@ public class Dealer : MonoBehaviour
             Debug.Log("CardsPulled = " + Services.PokerRules.cardsPulled.Count);
             Services.PokerRules.CorrectMistakes();
         }
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            playerToAct.EvaluateHand();
+        }
 
         //this resets bools necessary to start new rounds
         //once both of these are true, then the next round will start

@@ -8,6 +8,7 @@ public class PokerRules : MonoBehaviour {
     //this way we won't use the same card twice for multiple things
     public List<Card> cardsPulled = new List<Card>();
     public List<Card> cardsLogged = new List<Card>();
+    public List<Card> cardsToDestroy = new List<Card>();
     private List<Destination> playerDestinations = new List<Destination>();
     List<GameObject> boardPos = new List<GameObject>();
     int playerCards;
@@ -38,8 +39,14 @@ public class PokerRules : MonoBehaviour {
 		
 	}
 
+    //the issue we're currently having is that when it instantiates the new cards to replace the old ones
+    //they instantiate somehow BEFORE the old cards are destroyed, so they aren't added to the player cards? I think? idfk
+    //also, as of right now, it ONLY destroys the cards that were LOGGED.
+    //but if the player supremely fucked up and didn't even hit their mark, those cards aren't destroyed...I guess I COULD add them to a different list...
+    //adding them to a different list didn't solve the problem. time to take a breather
     public void CorrectMistakes()
     {
+        Debug.Log("CorrectingMistakes");
         //we take away 1 to account for the 0th position in the list
         playerCards = (Services.Dealer.GetActivePlayerCount() * 2) - 1;
         burnCard1 = playerCards + 1;
@@ -49,15 +56,22 @@ public class PokerRules : MonoBehaviour {
         burnCard3 = playerCards + 7;
         riverCard = playerCards + 8;
 
+        cardsLogged.Clear();
+
         for (int i = 0; i < Services.Dealer.players.Count; i++)
         {
-            foreach(GameObject card in Table.instance.GetCardGameObjects(i))
-            {
-                Destroy(card);
-            }
+            //List<Card> cardsToDestroy = new List<Card>();
+            //for (int cardIndex = 0; cardIndex < Table.instance.playerCards[i].Count; cardIndex++)
+            //{
+            //    cardsToDestroy.Add(Table.instance.playerCards[i][cardIndex]);
+            //}
             Table.instance.playerCards[i].Clear();
+            foreach (Card card in cardsToDestroy)
+            {
+                Destroy(card.gameObject);
+            }
         }
-        foreach(Card card in Table.instance._board)
+        foreach (Card card in Table.instance._board)
         {
             Destroy(card.gameObject);
         }
@@ -80,14 +94,18 @@ public class PokerRules : MonoBehaviour {
                     Card newCard = CreateCard(cardsPulled[i].cardType, 
                         Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardPos[0].transform.position,
                         Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardPos[0].transform.rotation);
+                    Table.instance.AddCardTo(playerDestinations[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count], cardsPulled[i]);
+                    Debug.Log("cardCount after replacing" + Table.instance.playerCards[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].Count);
                 }
                 else
                 {
                     Card newCard = CreateCard(cardsPulled[i].cardType, 
                         Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardPos[1].transform.position,
                         Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardPos[1].transform.rotation);
-                }
-                Table.instance.AddCardTo(playerDestinations[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count], cardsPulled[i]);      
+                    Table.instance.AddCardTo(playerDestinations[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count], cardsPulled[i]);
+                    Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardsReplaced = 0;
+                    Debug.Log("cardCount after replacing" + Table.instance.playerCards[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].Count);
+                }   
             }
             else if(i == burnCard1)
             {
