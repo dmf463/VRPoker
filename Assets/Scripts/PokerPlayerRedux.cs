@@ -1597,6 +1597,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 				Table.instance.AddChipTo(playerDestinations[SeatPos], chip.GetComponent<Chip>());
 				Debug.Log("adding a " + chip.GetComponent<Chip>().chipValue + " chip");
 			}
+            //if the chips that are physically in the players stack, are not equal to what they actually have, assert
 			Debug.Assert(Table.instance.playerChipStacks[SeatPos].Count == newChipStackValue);
 			CreateAndOrganizeChipStacks(newChipStack);
 		}

@@ -523,7 +523,10 @@ public class Dealer : MonoBehaviour
     //then we just move down and add players to subsequent lists as they have worse and worse hands
     public void EvaluatePlayersOnShowdown(List<PokerPlayerRedux> playersToEvaluate)
     {
-        List<PokerPlayerRedux> sortedPlayers = new List<PokerPlayerRedux>(playersToEvaluate.OrderByDescending(bestHand => bestHand.Hand.HandValues.PokerHand).ThenByDescending(bestHand => bestHand.Hand.HandValues.Total).ThenByDescending(bestHand => bestHand.Hand.HandValues.HighCard));
+        List<PokerPlayerRedux> sortedPlayers = new List<PokerPlayerRedux>(playersToEvaluate.
+                                                                          OrderByDescending(bestHand => bestHand.Hand.HandValues.PokerHand).
+                                                                          ThenByDescending(bestHand => bestHand.Hand.HandValues.Total).
+                                                                          ThenByDescending(bestHand => bestHand.Hand.HandValues.HighCard));
 
         sortedPlayers[0].PlayerState = PlayerState.Winner;
 
