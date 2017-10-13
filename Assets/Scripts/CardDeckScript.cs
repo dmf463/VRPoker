@@ -30,7 +30,7 @@ public class CardDeckScript : InteractionSuperClass {
     public float velocityThreshold;
 
     //this is the list of meshes that hold the actual faces of the cards
-    List<Mesh>[] cardMeshes;
+    public List<Mesh>[] cardMeshes;
 
     //we added these in manually in the inspector
     //it's just so we can have a single card prefab and then change the mesh
@@ -106,6 +106,7 @@ public class CardDeckScript : InteractionSuperClass {
             CardType cardType = cardsInDeck[cardPos];
             Card card = CreateCard(cardType, GameObject.Find("ShufflingArea").transform.position, Quaternion.identity);
             card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
+            Services.PokerRules.cardsPulled.Add(card);
         }
 
     }
@@ -189,6 +190,7 @@ public class CardDeckScript : InteractionSuperClass {
             handTouchingDeck = false;
             Card card = CreateCard(GrabACard(), interactableObject.transform.position, Quaternion.identity);
             card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
+            Services.PokerRules.cardsPulled.Add(card);
             hand.otherHand.AttachObject(card.gameObject);
             MakeDeckSmaller();
             if (cardsInDeck.Count == 0)

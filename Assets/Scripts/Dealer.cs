@@ -89,10 +89,6 @@ public class Dealer : MonoBehaviour
 	[HideInInspector]
     public GameState lastGameState;
 
-    //this keeps track of ALL the cards that have been dealt in a given hand
-    //this way we won't use the same card twice for multiple things
-    public List<Card> cardsDealt = new List<Card>();
-
     //this is the bool that ensures all the functions involved with the showdown only happen once
     private bool readyForShowdown = false;
 
@@ -105,6 +101,7 @@ public class Dealer : MonoBehaviour
         Services.PrefabDB = Resources.Load<PrefabDB>("Prefabs/PrefabDB");
         Services.SoundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
         Services.Dealer = this;
+        Services.PokerRules = GameObject.Find("PokerRules").GetComponent<PokerRules>();
     }
 
     // Use this for initialization
@@ -199,7 +196,9 @@ public class Dealer : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             //Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.callP1);
-            Table.instance.DebugHandsAndChips();
+            //Table.instance.DebugHandsAndChips();
+            Debug.Log("CardsPulled = " + Services.PokerRules.cardsPulled.Count);
+            Services.PokerRules.CorrectMistakes();
         }
 
         //this resets bools necessary to start new rounds
@@ -719,6 +718,7 @@ public class Dealer : MonoBehaviour
             players[i].playerIsAllIn = false;
             //players[i].checkedHandStrength = false;
         }
+        Services.PokerRules.cardsPulled.Clear();
         Table.gameState = GameState.NewRound;
         playersHaveBeenEvaluated = false;
         winnersHaveBeenPaid = false;
@@ -730,19 +730,6 @@ public class Dealer : MonoBehaviour
     {
         int seatPos;
         seatPos = (Table.instance.DealerPosition + distance) % players.Count;
-        //PokerPlayerRedux player = players[seatPos];
-        //if (player.PlayerState != PlayerState.Playing)
-        //{
-        //    for (int i = 0; i < players.Count; i++)
-        //    {
-        //        PokerPlayerRedux nextPlayer = players[(player.SeatPos + i) % players.Count];
-        //        if (nextPlayer.PlayerState == PlayerState.Playing)
-        //        {
-        //            seatPos = nextPlayer.SeatPos;
-        //            break;
-        //        }
-        //    }
-        //}
         return seatPos;
     }
 

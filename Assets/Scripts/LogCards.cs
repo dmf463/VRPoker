@@ -58,7 +58,7 @@ public class LogCards : MonoBehaviour
                             Debug.Log(other.gameObject.name + " cannot be added to " + playerNames[i]);
                         }
                         //and the card has not already been dealt to somewhere else
-                        else if (Services.Dealer.cardsDealt.Contains(other.GetComponent<Card>()))
+                        else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
                         {
                             Debug.Log("card is already in play");
                         }
@@ -67,7 +67,7 @@ public class LogCards : MonoBehaviour
                         else
                         {
                             Table.instance.AddCardTo(playerDestinations[i], other.GetComponent<Card>());
-                            Services.Dealer.cardsDealt.Add(other.GetComponent<Card>());
+                            Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
                             Debug.Log("Card went into " + playerNames[i]);
                         }
                     }
@@ -88,14 +88,14 @@ public class LogCards : MonoBehaviour
                     {
                         Debug.Log(other.gameObject.name + "cannot be added to the board");
                     }
-                    else if (Services.Dealer.cardsDealt.Contains(other.GetComponent<Card>()))
+                    else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
                     {
                         Debug.Log("card is already in play");
                     }
                     else
                     {
                         Table.instance.AddCardTo(Destination.board, other.GetComponent<Card>());
-                        Services.Dealer.cardsDealt.Add(other.GetComponent<Card>());
+                        Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
                         Debug.Log("Card went into " + this.gameObject.name);
                     }
                 }
@@ -103,8 +103,24 @@ public class LogCards : MonoBehaviour
             }
             else if (this.gameObject.name == "BurnCards")
             {
-                Table.instance.AddCardTo(Destination.burn, other.GetComponent<Card>());
-                Debug.Log("Card went into " + this.gameObject.name);
+                if (Table.instance._burn.Contains(other.GetComponent<Card>()))
+                {
+                    Debug.Log(other.gameObject.name + " is already in play");
+                }
+                else if (Table.instance._board.Count == 3)
+                {
+                    Debug.Log(other.gameObject.name + "cannot be added to the board");
+                }
+                else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
+                {
+                    Debug.Log("card is already in play");
+                }
+                else
+                {
+                    Table.instance.AddCardTo(Destination.burn, other.GetComponent<Card>());
+                    Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
+                    Debug.Log("Card went into " + this.gameObject.name);
+                }
             }
             else if (this.gameObject.name == "ShufflingArea")
             {
