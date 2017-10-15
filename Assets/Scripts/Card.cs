@@ -15,6 +15,8 @@ public class Card : InteractionSuperClass {
     //if the card is touching the table, this is true
     bool cardOnTable;
 
+    public bool cardMarkedForDestruction;
+
     //this is the threshold by which we check whether we have a fast spin, or a slow spin
     //it COULD be proportional to the velocity of the throw
     //but people really liked the card spin, and I think it's okay to dramaticize some things for the game
@@ -98,6 +100,17 @@ public class Card : InteractionSuperClass {
         //playerHand = GameObject.Find("Hand1").GetComponent<Hand>();
         cardsInHand = 0;
 
+                if (Services.Dealer.OutsideVR)
+        {
+            throwingHand = GameObject.Find("TestHand1").GetComponent<Hand>();
+            deckHand = GameObject.Find("TestHand2").GetComponent<Hand>();
+        }
+        else
+        {
+            GameObject.Find("TestHand1").SetActive(false);
+            GameObject.Find("TestHand2").SetActive(false);
+        }
+
 	}
 	
 
@@ -136,11 +149,14 @@ public class Card : InteractionSuperClass {
 
         //this is basically one of the control things
         //while you're squeezing either grip, the player is in shuffleMode
-        if (throwingHand.controller.GetPress(EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPress(EVRButtonId.k_EButton_Grip))
+        if (!Services.Dealer.OutsideVR)
         {
-            Table.dealerState = DealerState.ShufflingState;
+            if (throwingHand.controller.GetPress(EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPress(EVRButtonId.k_EButton_Grip))
+            {
+                Table.dealerState = DealerState.ShufflingState;
+            }
+            else Table.dealerState = DealerState.DealingState;
         }
-        else Table.dealerState = DealerState.DealingState;
 
         //this is where we're checking whether the card is facing up or not
         //see those "magic numbers"?

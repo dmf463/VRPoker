@@ -6,9 +6,9 @@ public class PokerRules : MonoBehaviour {
 
     //this keeps track of ALL the cards that have been dealt in a given hand
     //this way we won't use the same card twice for multiple things
-    public List<Card> cardsPulled = new List<Card>();
+    public List<CardType> cardsPulled = new List<CardType>();
     public List<Card> cardsLogged = new List<Card>();
-    public List<Card> cardsToDestroy = new List<Card>();
+    public GameObject[] cardsToDestroy;
     private List<Destination> playerDestinations = new List<Destination>();
     List<GameObject> boardPos = new List<GameObject>();
     int playerCards;
@@ -66,9 +66,13 @@ public class PokerRules : MonoBehaviour {
             //    cardsToDestroy.Add(Table.instance.playerCards[i][cardIndex]);
             //}
             Table.instance.playerCards[i].Clear();
-            foreach (Card card in cardsToDestroy)
+            cardsToDestroy = GameObject.FindGameObjectsWithTag("PlayingCard");
+            foreach (GameObject card in cardsToDestroy)
             {
-                Destroy(card.gameObject);
+                if (card.GetComponent<Card>().cardMarkedForDestruction)
+                {
+                    Destroy(card.gameObject);
+                }
             }
         }
         foreach (Card card in Table.instance._board)
@@ -91,65 +95,67 @@ public class PokerRules : MonoBehaviour {
                     Debug.Log("i = " + i);
                     Debug.Log("firstPlayer = " + Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count]);
                     Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardsReplaced++;
-                    Card newCard = CreateCard(cardsPulled[i].cardType, 
+                    Card newCard = CreateCard(cardsPulled[i], 
                         Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardPos[0].transform.position,
                         Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardPos[0].transform.rotation);
-                    Table.instance.AddCardTo(playerDestinations[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count], cardsPulled[i]);
+                    Table.instance.AddCardTo(playerDestinations[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count], newCard);
                     Debug.Log("cardCount after replacing" + Table.instance.playerCards[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].Count);
                 }
                 else
                 {
-                    Card newCard = CreateCard(cardsPulled[i].cardType, 
+                    Card newCard = CreateCard(cardsPulled[i], 
                         Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardPos[1].transform.position,
                         Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardPos[1].transform.rotation);
-                    Table.instance.AddCardTo(playerDestinations[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count], cardsPulled[i]);
+                    Table.instance.AddCardTo(playerDestinations[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count], newCard);
                     Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardsReplaced = 0;
                     Debug.Log("cardCount after replacing" + Table.instance.playerCards[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].Count);
                 }   
             }
             else if(i == burnCard1)
             {
-                Table.instance.AddCardTo(Destination.burn, cardsPulled[i]);
                 GameObject burnPos = GameObject.Find("BurnCards");
-                Card newCard = CreateCard(cardsPulled[i].cardType, burnPos.transform.position, burnPos.transform.rotation);
+                Card newCard = CreateCard(cardsPulled[i], burnPos.transform.position, burnPos.transform.rotation);
+                Table.instance.AddCardTo(Destination.burn, newCard);
             }
             else if(i > burnCard1 && i <= flopCards)
             {
-                Table.instance.AddCardTo(Destination.board, cardsPulled[i]);
                 if(i == burnCard1 + 1)
                 {
-                    Card newCard = CreateCard(cardsPulled[i].cardType, boardPos[0].transform.position, boardPos[0].transform.rotation);
+                    Card newCard = CreateCard(cardsPulled[i], boardPos[0].transform.position, boardPos[0].transform.rotation);
+                    Table.instance.AddCardTo(Destination.board, newCard);
                 }
                 else if(i == burnCard1 + 2)
                 {
-                    Card newCard = CreateCard(cardsPulled[i].cardType, boardPos[1].transform.position, boardPos[1].transform.rotation);
+                    Card newCard = CreateCard(cardsPulled[i], boardPos[1].transform.position, boardPos[1].transform.rotation);
+                    Table.instance.AddCardTo(Destination.board, newCard);
                 }
                 else if(i == burnCard1 + 3)
                 {
-                    Card newCard = CreateCard(cardsPulled[i].cardType, boardPos[2].transform.position, boardPos[2].transform.rotation);
+                    Card newCard = CreateCard(cardsPulled[i], boardPos[2].transform.position, boardPos[2].transform.rotation);
+                    Table.instance.AddCardTo(Destination.board, newCard);
                 }
             }
             else if(i == burnCard2)
             {
-                Table.instance.AddCardTo(Destination.burn, cardsPulled[i]);
                 GameObject burnPos = GameObject.Find("BurnCards");
-                Card newCard = CreateCard(cardsPulled[i].cardType, burnPos.transform.position, burnPos.transform.rotation);
+                Card newCard = CreateCard(cardsPulled[i], burnPos.transform.position, burnPos.transform.rotation);
+                Table.instance.AddCardTo(Destination.board, newCard);
             }
             else if(i == turnCard)
             {
-                Table.instance.AddCardTo(Destination.board, cardsPulled[i]);
-                Card newCard = CreateCard(cardsPulled[i].cardType, boardPos[3].transform.position, boardPos[3].transform.rotation);
+                Card newCard = CreateCard(cardsPulled[i], boardPos[3].transform.position, boardPos[3].transform.rotation);
+                Table.instance.AddCardTo(Destination.board, newCard);
             }
             else if(i == burnCard3)
             {
-                Table.instance.AddCardTo(Destination.burn, cardsPulled[i]);
                 GameObject burnPos = GameObject.Find("BurnCards");
-                Card newCard = CreateCard(cardsPulled[i].cardType, burnPos.transform.position, burnPos.transform.rotation);
+                Card newCard = CreateCard(cardsPulled[i], burnPos.transform.position, burnPos.transform.rotation);
+                Table.instance.AddCardTo(Destination.board, newCard);
             }
             else if(i == riverCard)
             {
-                Table.instance.AddCardTo(Destination.board, cardsPulled[i]);
-                Card newCard = CreateCard(cardsPulled[i].cardType, boardPos[4].transform.position, boardPos[4].transform.rotation);
+                Card newCard = CreateCard(cardsPulled[i], boardPos[4].transform.position, boardPos[4].transform.rotation);
+                Table.instance.AddCardTo(Destination.board, newCard);
             }
         }
     }
@@ -161,6 +167,7 @@ public class PokerRules : MonoBehaviour {
             GameObject.FindGameObjectWithTag("CardDeck").GetComponent<CardDeckScript>().cardMeshes[(int)cardType.suit][(int)cardType.rank - 2];
         playingCard.GetComponent<Card>().cardType = cardType;
         playingCard.gameObject.name = (cardType.rank + " of " + cardType.suit);
+        playingCard.GetComponent<Card>().cardMarkedForDestruction = true;
         return playingCard.GetComponent<Card>();
     }
 }

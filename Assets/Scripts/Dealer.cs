@@ -13,6 +13,8 @@ using Valve.VR.InteractionSystem;
 //PokerPlayerRedux handles all the functions and info that a poker player would need to play
 public class Dealer : MonoBehaviour
 {
+    //we set this to true if we're outside VR so we can text
+    public bool OutsideVR = true;
 
     //this is the players List, this is essentially the current list that handles ALL the players at the poker table
     //you'll notice that EVERY function dealing with the poker players is using the players list. 

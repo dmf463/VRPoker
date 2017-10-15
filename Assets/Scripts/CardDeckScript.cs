@@ -93,10 +93,13 @@ public class CardDeckScript : InteractionSuperClass {
 
         //so if we have a throwing hand, want to make sure we're always checking 
         //whether it was swiped, or pressed
-        if(throwingHand != null)
+        if (!Services.Dealer.OutsideVR)
         {
-            CheckPressPosition(throwingHand);
-            CheckSwipeDirection();
+            if (throwingHand != null)
+            {
+                CheckPressPosition(throwingHand);
+                CheckSwipeDirection();
+            }
         }
 
         //this is so if we're doing something outside of VR we can pull a card
@@ -106,7 +109,7 @@ public class CardDeckScript : InteractionSuperClass {
             CardType cardType = cardsInDeck[cardPos];
             Card card = CreateCard(cardType, GameObject.Find("ShufflingArea").transform.position, Quaternion.identity);
             card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
-            Services.PokerRules.cardsPulled.Add(card);
+            Services.PokerRules.cardsPulled.Add(card.cardType);
         }
 
     }
@@ -190,8 +193,8 @@ public class CardDeckScript : InteractionSuperClass {
             handTouchingDeck = false;
             Card card = CreateCard(GrabACard(), interactableObject.transform.position, Quaternion.identity);
             card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
-            Services.PokerRules.cardsPulled.Add(card);
-            Services.PokerRules.cardsToDestroy.Add(card);
+            Services.PokerRules.cardsPulled.Add(card.cardType);
+            //Services.PokerRules.cardsToDestroy.Add(card);
             hand.otherHand.AttachObject(card.gameObject);
             MakeDeckSmaller();
             if (cardsInDeck.Count == 0)
@@ -390,6 +393,7 @@ public class CardDeckScript : InteractionSuperClass {
         GameObject playingCard = Instantiate(Services.PrefabDB.Card, position, rotation);
         playingCard.GetComponent<MeshFilter>().mesh = cardMeshes[(int)cardType.suit][(int)cardType.rank - 2];
         playingCard.GetComponent<Card>().cardType = cardType;
+        playingCard.GetComponent<Card>().cardMarkedForDestruction = true;
         return playingCard.GetComponent<Card>();
     }
 
