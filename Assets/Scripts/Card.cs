@@ -100,16 +100,16 @@ public class Card : InteractionSuperClass {
         //playerHand = GameObject.Find("Hand1").GetComponent<Hand>();
         cardsInHand = 0;
 
-                if (Services.Dealer.OutsideVR)
-        {
-            throwingHand = GameObject.Find("TestHand1").GetComponent<Hand>();
-            deckHand = GameObject.Find("TestHand2").GetComponent<Hand>();
-        }
-        else
-        {
-            GameObject.Find("TestHand1").SetActive(false);
-            GameObject.Find("TestHand2").SetActive(false);
-        }
+        //if (Services.Dealer.OutsideVR)
+        //{
+        //    throwingHand = GameObject.Find("TestHand1").GetComponent<Hand>();
+        //    deckHand = GameObject.Find("TestHand2").GetComponent<Hand>();
+        //}
+        //else
+        //{
+        //    GameObject.Find("TestHand1").SetActive(false);
+        //    GameObject.Find("TestHand2").SetActive(false);
+        //}
 
 	}
 	
@@ -439,10 +439,11 @@ public class Card : InteractionSuperClass {
     {
         if(Table.dealerState == DealerState.DealingState)
         {
+            Services.PokerRules.cardsPulled.Add(cardType);
             //BUG ALERT: THERE IS A BUG HERE, IF THE CARD IS DEALT/PULLED AT THE WRONG ANGLE, AND THEN 
             //DETACHED IT FREEZES IN THE AIR
             //MAYBE FIXED IT WITH THE if (rb == null)
-            if(rb == null)
+            if (rb == null)
             {
                 rb = GetComponent<Rigidbody>();
             }

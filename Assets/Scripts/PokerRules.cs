@@ -12,20 +12,13 @@ public class PokerRules : MonoBehaviour {
     public GameObject[] cardsToDestroy;
     private List<Destination> playerDestinations = new List<Destination>();
     List<GameObject> boardPos = new List<GameObject>();
-    [HideInInspector]
-    public int playerCards;
-    [HideInInspector]
-    public int burnCard1;
-    [HideInInspector]
-    public int burnCard2;
-    [HideInInspector]
-    public int burnCard3;
-    [HideInInspector]
-    public int flopCards;
-    [HideInInspector]
-    public int turnCard;
-    [HideInInspector]
-    public int riverCard;
+    private int playerCards;
+    private int burnCard1;
+    private int burnCard2;
+    private int burnCard3;
+    private int flopCards;
+    private int turnCard;
+    private int riverCard;
 
     // Use this for initialization
     void Start () {
@@ -50,11 +43,13 @@ public class PokerRules : MonoBehaviour {
             {
                 case 3:
                     FindCardPlacement(Services.Dealer.PlayerAtTableCount());
-                    if (Table.instance._board.Count + (Services.Dealer.PlayerAtTableCount() * 2) != flopCards && !Services.Dealer.correctedMistake)
+                    //check out logged cards, perhaps, the proper 3rd card is not being added...properly...
+                    if (Table.instance._board.Count + ((Services.Dealer.PlayerAtTableCount() * 2) - 1) != flopCards)
                     {
+                        Debug.Log("Correcting Mistakes");
                         Services.Dealer.correctedMistake = true;
                         CorrectMistakes();
-                        Table.gameState = GameState.Flop;
+                        //Table.gameState = GameState.Flop;
                     }
                     else Table.gameState = GameState.Flop;
                     break;
@@ -64,7 +59,7 @@ public class PokerRules : MonoBehaviour {
                     {
                         Services.Dealer.correctedMistake = true;
                         CorrectMistakes();
-                        Table.gameState = GameState.Turn;
+                        //Table.gameState = GameState.Turn;
                     }
                     else Table.gameState = GameState.Turn;
                     break;
@@ -74,7 +69,7 @@ public class PokerRules : MonoBehaviour {
                     {
                         Services.Dealer.correctedMistake = true;
                         CorrectMistakes();
-                        Table.gameState = GameState.River;
+                        //Table.gameState = GameState.River;
                     }
                     else Table.gameState = GameState.River;
                     break;

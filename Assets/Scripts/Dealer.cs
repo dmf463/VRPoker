@@ -14,7 +14,7 @@ using Valve.VR.InteractionSystem;
 public class Dealer : MonoBehaviour
 {
     //we set this to true if we're outside VR so we can text
-    public bool OutsideVR = true;
+    public bool OutsideVR;
 
     //this is the players List, this is essentially the current list that handles ALL the players at the poker table
     //you'll notice that EVERY function dealing with the poker players is using the players list. 
@@ -106,6 +106,7 @@ public class Dealer : MonoBehaviour
         Services.SoundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
         Services.Dealer = this;
         Services.PokerRules = GameObject.Find("PokerRules").GetComponent<PokerRules>();
+        correctedMistake = false;
     }
 
     // Use this for initialization
@@ -121,6 +122,7 @@ public class Dealer : MonoBehaviour
 		Debug.Log("Gamestate = " + Table.gameState);
         Table.dealerState = DealerState.DealingState;
         lastGameState = GameState.NewRound;
+        OutsideVR = false;
     }
 
     // Update is called once per frame
