@@ -87,6 +87,16 @@ public class Table {
         }
     }
 
+    public void ClearAllLists()
+    {
+        foreach(List<Card> playerCards in playerCards)
+        {
+            playerCards.Clear();
+        }
+        _board.Clear();
+        _burn.Clear();
+    }
+
     //this function goes through everything that needs to be reset and resets it
     //it also sets the dealer button to its new position and has players post thier blinds
     //we need to make the blind posting more malleable
