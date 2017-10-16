@@ -94,6 +94,8 @@ public class Dealer : MonoBehaviour
     //this is the bool that ensures all the functions involved with the showdown only happen once
     private bool readyForShowdown = false;
 
+    public bool correctedMistake;
+
     void Awake()
     {
         //just the message board stuff
@@ -130,6 +132,7 @@ public class Dealer : MonoBehaviour
         //the board and the gameState
         if (Table.gameState == GameState.NewRound)
         {
+            messageText.text = "Shuffle Up and Deal!";
             int cardCount = 0;
             for (int playerCardIndex = 0; playerCardIndex < Table.instance.playerCards.Length; playerCardIndex++)
             {
@@ -138,9 +141,17 @@ public class Dealer : MonoBehaviour
                     cardCount++;
                 }
             }
-            if (cardCount == GetActivePlayerCount() * 2)
+            if (cardCount == PlayerAtTableCount() * 2 || Services.PokerRules.cardsPulled.Count == PlayerAtTableCount() * 2)
             {
-                Table.gameState = GameState.PreFlop;
+                if (cardCount == Services.PokerRules.cardsPulled.Count)
+                {
+                    Table.gameState = GameState.PreFlop;
+                }
+                else
+                {
+                    Services.PokerRules.CorrectMistakes();
+                    Table.gameState = GameState.PreFlop;
+                }
             }
         }
         else if (Table.gameState == GameState.CleanUp)
@@ -153,9 +164,10 @@ public class Dealer : MonoBehaviour
         }
         else if (Table.gameState != GameState.ShowDown)
         {
-            switch (Table.instance._board.Count)
+            switch (Table.gameState)
             {
-                case 0:
+                case GameState.PreFlop:
+                    Debug.Log("PREFLOP!");
                     messageText.text = "player0 chipCount is " + players[0].ChipCount +
                                        "\nplayer1 chipCount is " + players[1].ChipCount +
                                        "\nplayer2 chipCount is " + players[2].ChipCount +
@@ -163,32 +175,35 @@ public class Dealer : MonoBehaviour
                                        "\nplayer4 chipCount is " + players[4].ChipCount +
                                        "\npotSize is at " + Table.instance.DeterminePotSize();
                     break;
-                case 3:
-                    Table.gameState = GameState.Flop;
+                case GameState.Flop:
+                    Debug.Log("FLOP!");
                     messageText.text = "player0 chipCount is " + players[0].ChipCount +
                                        "\nplayer1 chipCount is " + players[1].ChipCount +
                                        "\nplayer2 chipCount is " + players[2].ChipCount +
                                        "\nplayer3 chipCount is " + players[3].ChipCount +
                                        "\nplayer4 chipCount is " + players[4].ChipCount +
                                        "\npotSize is at " + Table.instance.DeterminePotSize();
+
                     break;
-                case 4:
-                    Table.gameState = GameState.Turn;
+                case GameState.Turn:
+                    Debug.Log("TURN!");
                     messageText.text = "player0 chipCount is " + players[0].ChipCount +
-                   "\nplayer1 chipCount is " + players[1].ChipCount +
-                   "\nplayer2 chipCount is " + players[2].ChipCount +
-                   "\nplayer3 chipCount is " + players[3].ChipCount +
-                   "\nplayer4 chipCount is " + players[4].ChipCount +
-                   "\npotSize is at " + Table.instance.DeterminePotSize();
+                                       "\nplayer1 chipCount is " + players[1].ChipCount +
+                                       "\nplayer2 chipCount is " + players[2].ChipCount +
+                                       "\nplayer3 chipCount is " + players[3].ChipCount +
+                                       "\nplayer4 chipCount is " + players[4].ChipCount +
+                                       "\npotSize is at " + Table.instance.DeterminePotSize();
+
                     break;
-                case 5:
-                    Table.gameState = GameState.River;
+                case GameState.River:
+                    Debug.Log("RIVER!");
                     messageText.text = "player0 chipCount is " + players[0].ChipCount +
-                   "\nplayer1 chipCount is " + players[1].ChipCount +
-                   "\nplayer2 chipCount is " + players[2].ChipCount +
-                   "\nplayer3 chipCount is " + players[3].ChipCount +
-                   "\nplayer4 chipCount is " + players[4].ChipCount +
-                   "\npotSize is at " + Table.instance.DeterminePotSize();
+                                       "\nplayer1 chipCount is " + players[1].ChipCount +
+                                       "\nplayer2 chipCount is " + players[2].ChipCount +
+                                       "\nplayer3 chipCount is " + players[3].ChipCount +
+                                       "\nplayer4 chipCount is " + players[4].ChipCount +
+                                       "\npotSize is at " + Table.instance.DeterminePotSize();
+
                     break;
                 default:
                     break;
@@ -266,10 +281,14 @@ public class Dealer : MonoBehaviour
             if (GetActivePlayerCount() == allInPlayerCount) readyForShowdown = true;
             if(readyForShowdown == true)
             {
-                if (hand1.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true && hand2.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true)
+                if (!OutsideVR)
                 {
-                    Table.gameState = GameState.ShowDown;
+                    if (hand1.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true && hand2.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true)
+                    {
+                        Table.gameState = GameState.ShowDown;
+                    }
                 }
+                else if (Input.GetKeyDown(KeyCode.DownArrow)) Table.gameState = GameState.ShowDown;
             }
         }
 
@@ -323,6 +342,19 @@ public class Dealer : MonoBehaviour
         for (int i = 0; i < players.Count; i++)
         {
             if (players[i].PlayerState == PlayerState.Playing)
+            {
+                activePlayers++;
+            }
+        }
+        return activePlayers;
+    }
+
+    public int PlayerAtTableCount()
+    {
+        int activePlayers = 0;
+        for (int i = 0; i < players.Count; i++)
+        {
+            if (players[i].PlayerState != PlayerState.Eliminated)
             {
                 activePlayers++;
             }
@@ -394,32 +426,32 @@ public class Dealer : MonoBehaviour
     //if everyone has acted, all the people that are playing are still playing
     //and all the bets have been met, then we end the round
     //if not, then someone else needs to act, to we call this function and pass the nextPlayer
-    IEnumerator playerAction(PokerPlayerRedux playerToAct)
-    {
-        playerToAct.EvaluateHand();
-        while (!playerToAct.turnComplete)
-        {
-            yield return null;
-        }
-        yield return new WaitForSeconds(.5f);
-        playerToAct.turnComplete = false;
-        int currentPlayerSeatPos = playerToAct.SeatPos;
-        bool roundFinished = true;
-        PokerPlayerRedux nextPlayer = null;
-        for (int i = 1; i < players.Count; i++)
-        {
-            nextPlayer = players[(currentPlayerSeatPos + i) % players.Count];
-            if ((!nextPlayer.actedThisRound || nextPlayer.currentBet < LastBet || nextPlayer.ChipCount == 0) && nextPlayer.PlayerState == PlayerState.Playing)
-            {
-                roundFinished = false;
-                Debug.Log("nextPlayer to act is player " + nextPlayer.SeatPos);
-                break;
-            }
-        }
-        if (!roundFinished) StartCoroutine(playerAction(nextPlayer));
-        else playersReady = true;
-        yield break;
-    }
+    //IEnumerator playerAction(PokerPlayerRedux playerToAct)
+    //{
+    //    playerToAct.EvaluateHand();
+    //    while (!playerToAct.turnComplete)
+    //    {
+    //        yield return null;
+    //    }
+    //    yield return new WaitForSeconds(.5f);
+    //    playerToAct.turnComplete = false;
+    //    int currentPlayerSeatPos = playerToAct.SeatPos;
+    //    bool roundFinished = true;
+    //    PokerPlayerRedux nextPlayer = null;
+    //    for (int i = 1; i < players.Count; i++)
+    //    {
+    //        nextPlayer = players[(currentPlayerSeatPos + i) % players.Count];
+    //        if ((!nextPlayer.actedThisRound || nextPlayer.currentBet < LastBet || nextPlayer.ChipCount == 0) && nextPlayer.PlayerState == PlayerState.Playing)
+    //        {
+    //            roundFinished = false;
+    //            Debug.Log("nextPlayer to act is player " + nextPlayer.SeatPos);
+    //            break;
+    //        }
+    //    }
+    //    if (!roundFinished) StartCoroutine(playerAction(nextPlayer));
+    //    else playersReady = true;
+    //    yield break;
+    //}
 
 
     //this gets invoked whenever we gaze at a player

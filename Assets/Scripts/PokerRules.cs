@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PokerRules : MonoBehaviour {
 
+
     //this keeps track of ALL the cards that have been dealt in a given hand
     //this way we won't use the same card twice for multiple things
     public List<CardType> cardsPulled = new List<CardType>();
@@ -11,13 +12,20 @@ public class PokerRules : MonoBehaviour {
     public GameObject[] cardsToDestroy;
     private List<Destination> playerDestinations = new List<Destination>();
     List<GameObject> boardPos = new List<GameObject>();
-    int playerCards;
-    int burnCard1;
-    int burnCard2;
-    int burnCard3;
-    int flopCards;
-    int turnCard;
-    int riverCard;
+    [HideInInspector]
+    public int playerCards;
+    [HideInInspector]
+    public int burnCard1;
+    [HideInInspector]
+    public int burnCard2;
+    [HideInInspector]
+    public int burnCard3;
+    [HideInInspector]
+    public int flopCards;
+    [HideInInspector]
+    public int turnCard;
+    [HideInInspector]
+    public int riverCard;
 
     // Use this for initialization
     void Start () {
@@ -33,11 +41,60 @@ public class PokerRules : MonoBehaviour {
         playerDestinations = Table.instance.playerDestinations;
 		
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
+    void Update()
+    {
+        if (Table.gameState != GameState.ShowDown)
+        {
+            switch (Table.instance._board.Count)
+            {
+                case 3:
+                    FindCardPlacement(Services.Dealer.PlayerAtTableCount());
+                    if (Table.instance._board.Count + (Services.Dealer.PlayerAtTableCount() * 2) != flopCards && !Services.Dealer.correctedMistake)
+                    {
+                        Services.Dealer.correctedMistake = true;
+                        CorrectMistakes();
+                        Table.gameState = GameState.Flop;
+                    }
+                    else Table.gameState = GameState.Flop;
+                    break;
+                case 4:
+                    FindCardPlacement(Services.Dealer.PlayerAtTableCount());
+                    if (Table.instance._board.Count + (Services.Dealer.PlayerAtTableCount() * 2) != turnCard && !Services.Dealer.correctedMistake)
+                    {
+                        Services.Dealer.correctedMistake = true;
+                        CorrectMistakes();
+                        Table.gameState = GameState.Turn;
+                    }
+                    else Table.gameState = GameState.Turn;
+                    break;
+                case 5:
+                    FindCardPlacement(Services.Dealer.PlayerAtTableCount());
+                    if (Table.instance._board.Count + (Services.Dealer.PlayerAtTableCount() * 2) != riverCard && !Services.Dealer.correctedMistake)
+                    {
+                        Services.Dealer.correctedMistake = true;
+                        CorrectMistakes();
+                        Table.gameState = GameState.River;
+                    }
+                    else Table.gameState = GameState.River;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    public void FindCardPlacement(int playerCount)
+    {
+        //we take away 1 to account for the 0th position in the list
+        playerCards = (playerCount * 2) - 1;
+        burnCard1 = playerCards + 1;
+        flopCards = playerCards + 4;
+        burnCard2 = playerCards + 5;
+        turnCard = playerCards + 6;
+        burnCard3 = playerCards + 7;
+        riverCard = playerCards + 8;
+    }
 
     //the issue we're currently having is that when it instantiates the new cards to replace the old ones
     //they instantiate somehow BEFORE the old cards are destroyed, so they aren't added to the player cards? I think? idfk
@@ -47,24 +104,11 @@ public class PokerRules : MonoBehaviour {
     public void CorrectMistakes()
     {
         Debug.Log("CorrectingMistakes");
-        //we take away 1 to account for the 0th position in the list
-        playerCards = (Services.Dealer.GetActivePlayerCount() * 2) - 1;
-        burnCard1 = playerCards + 1;
-        flopCards = playerCards + 4;
-        burnCard2 = playerCards + 5;
-        turnCard = playerCards + 6;
-        burnCard3 = playerCards + 7;
-        riverCard = playerCards + 8;
-
+        FindCardPlacement(Services.Dealer.PlayerAtTableCount());
         cardsLogged.Clear();
 
         for (int i = 0; i < Services.Dealer.players.Count; i++)
         {
-            //List<Card> cardsToDestroy = new List<Card>();
-            //for (int cardIndex = 0; cardIndex < Table.instance.playerCards[i].Count; cardIndex++)
-            //{
-            //    cardsToDestroy.Add(Table.instance.playerCards[i][cardIndex]);
-            //}
             Table.instance.playerCards[i].Clear();
             cardsToDestroy = GameObject.FindGameObjectsWithTag("PlayingCard");
             foreach (GameObject card in cardsToDestroy)
@@ -92,23 +136,31 @@ public class PokerRules : MonoBehaviour {
             {
                 if (Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardsReplaced == 0)
                 {
-                    Debug.Log("i = " + i);
-                    Debug.Log("firstPlayer = " + Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count]);
-                    Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardsReplaced++;
-                    Card newCard = CreateCard(cardsPulled[i], 
-                        Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardPos[0].transform.position,
-                        Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardPos[0].transform.rotation);
-                    Table.instance.AddCardTo(playerDestinations[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count], newCard);
-                    Debug.Log("cardCount after replacing" + Table.instance.playerCards[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].Count);
+                    if (Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].PlayerState == PlayerState.Playing &&
+                        Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].playerIsAllIn == false)
+                    {
+                        Debug.Log("i = " + i);
+                        Debug.Log("firstPlayer = " + Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count]);
+                        Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardsReplaced++;
+                        Card newCard = CreateCard(cardsPulled[i],
+                            Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardPos[0].transform.position,
+                            Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardPos[0].transform.rotation);
+                        Table.instance.AddCardTo(playerDestinations[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count], newCard);
+                        Debug.Log("cardCount after replacing" + Table.instance.playerCards[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].Count);
+                    }
                 }
                 else
                 {
-                    Card newCard = CreateCard(cardsPulled[i], 
+                    if (Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].PlayerState == PlayerState.Playing &&
+                        Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].playerIsAllIn == false)
+                    {
+                        Card newCard = CreateCard(cardsPulled[i],
                         Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardPos[1].transform.position,
                         Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardPos[1].transform.rotation);
-                    Table.instance.AddCardTo(playerDestinations[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count], newCard);
-                    Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardsReplaced = 0;
-                    Debug.Log("cardCount after replacing" + Table.instance.playerCards[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].Count);
+                        Table.instance.AddCardTo(playerDestinations[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count], newCard);
+                        Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardsReplaced = 0;
+                        Debug.Log("cardCount after replacing" + Table.instance.playerCards[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].Count);
+                    }
                 }   
             }
             else if(i == burnCard1)
@@ -139,7 +191,7 @@ public class PokerRules : MonoBehaviour {
             {
                 GameObject burnPos = GameObject.Find("BurnCards");
                 Card newCard = CreateCard(cardsPulled[i], burnPos.transform.position, burnPos.transform.rotation);
-                Table.instance.AddCardTo(Destination.board, newCard);
+                Table.instance.AddCardTo(Destination.burn, newCard);
             }
             else if(i == turnCard)
             {
@@ -150,7 +202,7 @@ public class PokerRules : MonoBehaviour {
             {
                 GameObject burnPos = GameObject.Find("BurnCards");
                 Card newCard = CreateCard(cardsPulled[i], burnPos.transform.position, burnPos.transform.rotation);
-                Table.instance.AddCardTo(Destination.board, newCard);
+                Table.instance.AddCardTo(Destination.burn, newCard);
             }
             else if(i == riverCard)
             {
@@ -158,6 +210,7 @@ public class PokerRules : MonoBehaviour {
                 Table.instance.AddCardTo(Destination.board, newCard);
             }
         }
+        Services.Dealer.correctedMistake = true;
     }
 
     public Card CreateCard(CardType cardType, Vector3 position, Quaternion rotation)
@@ -168,6 +221,7 @@ public class PokerRules : MonoBehaviour {
         playingCard.GetComponent<Card>().cardType = cardType;
         playingCard.gameObject.name = (cardType.rank + " of " + cardType.suit);
         playingCard.GetComponent<Card>().cardMarkedForDestruction = true;
+        cardsLogged.Add(playingCard.GetComponent<Card>());
         return playingCard.GetComponent<Card>();
     }
 }
