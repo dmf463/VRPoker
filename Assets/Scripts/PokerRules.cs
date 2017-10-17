@@ -137,6 +137,48 @@ public class PokerRules : MonoBehaviour {
             }
 
         }
+        else if(Table.gameState == GameState.Flop)
+        {
+            if(cardsPulled.Count == burnCard2)
+            {
+                Behaviour newHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
+                newHalo.enabled = true;
+            }
+            else if(cardsPulled.Count == turnCard)
+            {
+                Behaviour oldHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
+                oldHalo.enabled = false;
+
+                Behaviour newHalo = (Behaviour)cardIndicators[3].GetComponent("Halo");
+                newHalo.enabled = true;
+            }
+            else
+            {
+                Behaviour oldHalo = (Behaviour)cardIndicators[3].GetComponent("Halo");
+                oldHalo.enabled = false;
+            }
+        }
+        else if(Table.gameState == GameState.Turn)
+        {
+            if (cardsPulled.Count == burnCard3)
+            {
+                Behaviour newHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
+                newHalo.enabled = true;
+            }
+            else if (cardsPulled.Count == riverCard)
+            {
+                Behaviour oldHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
+                oldHalo.enabled = false;
+
+                Behaviour newHalo = (Behaviour)cardIndicators[4].GetComponent("Halo");
+                newHalo.enabled = true;
+            }
+            else
+            {
+                Behaviour oldHalo = (Behaviour)cardIndicators[4].GetComponent("Halo");
+                oldHalo.enabled = false;
+            }
+        }
     }
 
     public void IndicateCardPlacement(int cardPlace)
