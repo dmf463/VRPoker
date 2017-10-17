@@ -96,6 +96,9 @@ public class Dealer : MonoBehaviour
 
     public bool correctedMistake;
 
+    private int cardCountForPreFlop;
+    private bool checkedPreFlopCardCount;
+
     void Awake()
     {
         //just the message board stuff
@@ -122,7 +125,7 @@ public class Dealer : MonoBehaviour
 		Debug.Log("Gamestate = " + Table.gameState);
         Table.dealerState = DealerState.DealingState;
         lastGameState = GameState.NewRound;
-        OutsideVR = true;
+        OutsideVR = false;
     }
 
     // Update is called once per frame
@@ -135,25 +138,18 @@ public class Dealer : MonoBehaviour
         if (Table.gameState == GameState.NewRound)
         {
             messageText.text = "Shuffle Up and Deal!";
-            int cardCount = 0;
+            cardCountForPreFlop = 0;
             for (int playerCardIndex = 0; playerCardIndex < Table.instance.playerCards.Length; playerCardIndex++)
             {
                 for (int cardTotal = 0; cardTotal < Table.instance.playerCards[playerCardIndex].Count; cardTotal++)
                 {
-                    cardCount++;
+                    cardCountForPreFlop++;
                 }
             }
-            if (cardCount == PlayerAtTableCount() * 2 || Services.PokerRules.cardsPulled.Count == PlayerAtTableCount() * 2)
+            if (Services.PokerRules.cardsPulled.Count == PlayerAtTableCount() * 2 && !checkedPreFlopCardCount)
             {
-                if (cardCount == Services.PokerRules.cardsPulled.Count)
-                {
-                    Table.gameState = GameState.PreFlop;
-                }
-                else
-                {
-                    Services.PokerRules.CorrectMistakes();
-                    Table.gameState = GameState.PreFlop;
-                }
+                checkedPreFlopCardCount = true;
+                StartCoroutine(CheckForMistakesPreFlop(.025f, cardCountForPreFlop));
             }
         }
         else if (Table.gameState == GameState.CleanUp)
@@ -215,9 +211,9 @@ public class Dealer : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             //Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.callP1);
-            //Table.instance.DebugHandsAndChips();
-            Debug.Log("CardsPulled = " + Services.PokerRules.cardsPulled.Count);
-            Services.PokerRules.CorrectMistakes();
+            Table.instance.DebugHandsAndChips();
+            //Debug.Log("CardsPulled = " + Services.PokerRules.cardsPulled.Count);
+            //Services.PokerRules.CorrectMistakes();
         }
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
@@ -335,7 +331,21 @@ public class Dealer : MonoBehaviour
         lastGameState = Table.gameState;
     }
 
-
+    IEnumerator CheckForMistakesPreFlop(float time, int cardCount)
+    {
+        yield return new WaitForSeconds(time);
+        Debug.Log("Cardcount for checking preFlop = " + cardCount);
+        if (cardCount == Services.PokerRules.cardsPulled.Count)
+        {
+            Table.gameState = GameState.PreFlop;
+        }
+        else
+        {
+            Services.PokerRules.CorrectMistakes();
+            Table.gameState = GameState.PreFlop;
+        }
+        checkedPreFlopCardCount = false;
+    }
 
     //this is an ease of life function for finding the amount of active players in a round
     public int GetActivePlayerCount()

@@ -42,40 +42,48 @@ public class PokerRules : MonoBehaviour {
             switch (Table.instance._board.Count)
             {
                 case 3:
-                    FindCardPlacement(Services.Dealer.PlayerAtTableCount());
-                    //check out logged cards, perhaps, the proper 3rd card is not being added...properly...
-                    Debug.Log("Table.instance._board.Count + playerCards = " + (Table.instance._board.Count + playerCards));
-                    Debug.Log("flopCards = " + flopCards);
-                    if (Table.instance._board.Count + playerCards != flopCards)
+                    Debug.Log("3 CARDS ON BOARD");
+                    if(Table.gameState != GameState.Flop)
                     {
-                        Debug.Log("Correcting Mistakes");
-                        Debug.Log("boardCount = " + Table.instance._board.Count);
-                        Services.Dealer.correctedMistake = true;
-                        CorrectMistakes();
-                        Debug.Log("boardCount after correction = " + Table.instance._board.Count);
-                        //Table.gameState = GameState.Flop;
+                        SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+                        if (cardsPulled.Count - 1 != flopCards)
+                        {
+                            //Debug.Log("Correcting Mistakes");
+                            //Debug.Log("boardCount = " + Table.instance._board.Count);
+                            Services.Dealer.correctedMistake = true;
+                            CorrectMistakes();
+                            //Table.gameState = GameState.Flop;
+                        }
+                        else Table.gameState = GameState.Flop;
                     }
-                    else Table.gameState = GameState.Flop;
                     break;
                 case 4:
-                    FindCardPlacement(Services.Dealer.PlayerAtTableCount());
-                    if (Table.instance._board.Count + playerCards != turnCard && !Services.Dealer.correctedMistake)
+                    Debug.Log("4 CARDS ON BOARD");
+                    if(Table.gameState != GameState.Turn)
                     {
-                        Services.Dealer.correctedMistake = true;
-                        CorrectMistakes();
-                        //Table.gameState = GameState.Turn;
+                        SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+                        if (cardsPulled.Count - 1 != turnCard)
+                        {
+                            Services.Dealer.correctedMistake = true;
+                            CorrectMistakes();
+                            //Table.gameState = GameState.Turn;
+                        }
+                        else Table.gameState = GameState.Turn;
                     }
-                    else Table.gameState = GameState.Turn;
                     break;
                 case 5:
-                    FindCardPlacement(Services.Dealer.PlayerAtTableCount());
-                    if (Table.instance._board.Count + playerCards != riverCard && !Services.Dealer.correctedMistake)
+                    Debug.Log("5 CARDS ON BOARD");
+                    if(Table.gameState != GameState.River)
                     {
-                        Services.Dealer.correctedMistake = true;
-                        CorrectMistakes();
-                        //Table.gameState = GameState.River;
+                        SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+                        if (cardsPulled.Count - 1 != riverCard)
+                        {
+                            Services.Dealer.correctedMistake = true;
+                            CorrectMistakes();
+                            //Table.gameState = GameState.River;
+                        }
+                        else Table.gameState = GameState.River;
                     }
-                    else Table.gameState = GameState.River;
                     break;
                 default:
                     break;
@@ -83,7 +91,7 @@ public class PokerRules : MonoBehaviour {
         }
     }
 
-    public void FindCardPlacement(int playerCount)
+    public void SetCardPlacement(int playerCount)
     {
         //we take away 1 to account for the 0th position in the list
         playerCards = (playerCount * 2) - 1;
@@ -129,7 +137,7 @@ public class PokerRules : MonoBehaviour {
     public void CorrectMistakes()
     {
         Debug.Log("CorrectingMistakes");
-        FindCardPlacement(Services.Dealer.PlayerAtTableCount());
+        SetCardPlacement(Services.Dealer.PlayerAtTableCount());
         cardsLogged.Clear();
         ClearAndDestroyAllLists();
 
