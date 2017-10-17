@@ -96,7 +96,6 @@ public class Dealer : MonoBehaviour
 
     public bool correctedMistake;
 
-    private int cardCountForPreFlop;
     private bool checkedPreFlopCardCount;
 
     void Awake()
@@ -138,7 +137,7 @@ public class Dealer : MonoBehaviour
         if (Table.gameState == GameState.NewRound)
         {
             messageText.text = "Shuffle Up and Deal!";
-            cardCountForPreFlop = 0;
+            int cardCountForPreFlop = 0;
             for (int playerCardIndex = 0; playerCardIndex < Table.instance.playerCards.Length; playerCardIndex++)
             {
                 for (int cardTotal = 0; cardTotal < Table.instance.playerCards[playerCardIndex].Count; cardTotal++)
@@ -146,10 +145,10 @@ public class Dealer : MonoBehaviour
                     cardCountForPreFlop++;
                 }
             }
-            if (Services.PokerRules.cardsPulled.Count == PlayerAtTableCount() * 2 && !checkedPreFlopCardCount)
+            if (cardCountForPreFlop == PlayerAtTableCount() * 2 && !checkedPreFlopCardCount)
             {
                 checkedPreFlopCardCount = true;
-                StartCoroutine(CheckForMistakesPreFlop(.025f, cardCountForPreFlop));
+                StartCoroutine(CheckForMistakesPreFlop(.025f));
             }
         }
         else if (Table.gameState == GameState.CleanUp)
@@ -307,6 +306,7 @@ public class Dealer : MonoBehaviour
                     if(players[i].PlayerState == PlayerState.Playing)
                     {
                         playersInHand.Add(players[i]);
+                        players[i].playerSpotlight.SetActive(false);
                     }
                 }
                 EvaluatePlayersOnShowdown(playersInHand);
@@ -331,11 +331,19 @@ public class Dealer : MonoBehaviour
         lastGameState = Table.gameState;
     }
 
-    IEnumerator CheckForMistakesPreFlop(float time, int cardCount)
+    IEnumerator CheckForMistakesPreFlop(float time)
     {
         yield return new WaitForSeconds(time);
-        Debug.Log("Cardcount for checking preFlop = " + cardCount);
-        if (cardCount == Services.PokerRules.cardsPulled.Count)
+        int cardCountForPreFlop = 0;
+        for (int playerCardIndex = 0; playerCardIndex < Table.instance.playerCards.Length; playerCardIndex++)
+        {
+            for (int cardTotal = 0; cardTotal < Table.instance.playerCards[playerCardIndex].Count; cardTotal++)
+            {
+                cardCountForPreFlop++;
+            }
+        }
+        Debug.Log("Cardcount for checking preFlop = " + cardCountForPreFlop);
+        if (cardCountForPreFlop == Services.PokerRules.cardsPulled.Count)
         {
             Table.gameState = GameState.PreFlop;
         }
@@ -404,7 +412,7 @@ public class Dealer : MonoBehaviour
     {
         PokerPlayerRedux player;
         player = players[SeatsAwayFromDealer(distance)];
-        if(player.PlayerState == PlayerState.NotPlaying)
+        if(player.PlayerState == PlayerState.NotPlaying || player.playerIsAllIn)
         {
             for (int i = 0; i < players.Count; i++)
             {

@@ -262,6 +262,10 @@ public class PokerPlayerRedux : MonoBehaviour{
 	public void AllIn()
 	{
 		SayAllIn();
+        foreach(Card card in Table.instance.playerCards[SeatPos])
+        {
+            card.cardMarkedForDestruction = false;
+        }
         chipCountBeforeAllIn = ChipCount;
         playerIsAllIn = true;
 		Debug.Log("getting ready to go all in");
