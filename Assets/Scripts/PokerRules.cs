@@ -38,7 +38,10 @@ public class PokerRules : MonoBehaviour {
 
     void Update()
     {
-        IndicateCardPlacement(cardsPulled.Count);
+        if(cardsPulled.Count <= Services.Dealer.PlayerAtTableCount() * 2)
+        {
+            IndicateCardPlacement(cardsPulled.Count);
+        }
         if (Table.gameState != GameState.ShowDown)
         {
             switch (Table.instance._board.Count)
@@ -93,13 +96,65 @@ public class PokerRules : MonoBehaviour {
         }
     }
 
+    public void SetCardIndicator()
+    {
+        if (Table.gameState == GameState.PreFlop)
+        {
+            Debug.Log("cardsPulled = " + cardsPulled.Count);
+            if (cardsPulled.Count == burnCard1)
+            {
+                Behaviour newHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
+                newHalo.enabled = true;
+            }
+            else if (cardsPulled.Count == flopCards - 2)
+            {
+                Behaviour oldHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
+                oldHalo.enabled = false;
+
+                Behaviour newHalo = (Behaviour)cardIndicators[0].GetComponent("Halo");
+                newHalo.enabled = true;
+            }
+            else if(cardsPulled.Count == flopCards - 1)
+            {
+                Behaviour oldHalo = (Behaviour)cardIndicators[0].GetComponent("Halo");
+                oldHalo.enabled = false;
+
+                Behaviour newHalo = (Behaviour)cardIndicators[1].GetComponent("Halo");
+                newHalo.enabled = true;
+            }
+            else if (cardsPulled.Count == flopCards)
+            {
+                Behaviour oldHalo = (Behaviour)cardIndicators[1].GetComponent("Halo");
+                oldHalo.enabled = false;
+
+                Behaviour newHalo = (Behaviour)cardIndicators[2].GetComponent("Halo");
+                newHalo.enabled = true;
+            }
+            else
+            {
+                Behaviour oldHalo = (Behaviour)cardIndicators[2].GetComponent("Halo");
+                oldHalo.enabled = false;
+            }
+
+        }
+    }
+
     public void IndicateCardPlacement(int cardPlace)
     {
-        Behaviour oldHalo = (Behaviour)Services.Dealer.FindFirstPlayerToAct((cardPlace + 1) % playerDestinations.Count).playerCardIndicator.GetComponent("Halo");
-        oldHalo.enabled = true;
+        if(cardsPulled.Count < Services.Dealer.PlayerAtTableCount() * 2)
+        {
+            Behaviour oldHalo = (Behaviour)Services.Dealer.FindFirstPlayerToAct((cardPlace) % playerDestinations.Count).playerCardIndicator.GetComponent("Halo");
+            oldHalo.enabled = false;
 
-        Behaviour newHalo = (Behaviour)Services.Dealer.FindFirstPlayerToAct((cardPlace + 1) % playerDestinations.Count).playerCardIndicator.GetComponent("Halo");
-        newHalo.enabled = true;
+            Behaviour newHalo = (Behaviour)Services.Dealer.FindFirstPlayerToAct((cardPlace + 1) % playerDestinations.Count).playerCardIndicator.GetComponent("Halo");
+            newHalo.enabled = true;
+        }
+        else
+        {
+            Behaviour oldHalo = (Behaviour)Services.Dealer.FindFirstPlayerToAct((cardPlace) % playerDestinations.Count).playerCardIndicator.GetComponent("Halo");
+            oldHalo.enabled = false;
+
+        }
     }
 
     public void SetCardPlacement(int playerCount)

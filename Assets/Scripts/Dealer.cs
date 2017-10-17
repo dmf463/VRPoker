@@ -226,6 +226,7 @@ public class Dealer : MonoBehaviour
             roundStarted = false;
             playersReady = false;
         }
+        if(playersReady) Services.PokerRules.SetCardIndicator();
 
         //starts the round for pre-flop
         if (Table.gameState == GameState.PreFlop)
@@ -510,7 +511,6 @@ public class Dealer : MonoBehaviour
             playersReady = true;
         }
     }
-
 
     //this sets all the players by adding them to the player list
     //setting their starting stack
