@@ -115,6 +115,15 @@ public class PokerPlayerRedux : MonoBehaviour{
 	public float callChanceVeryHigh = 30f;
 	public float raiseChanceVeryHigh = 70f;
 
+
+	[Header("Voice Lines")]
+	public AudioClip checkAudio;
+	public AudioClip foldAudio;
+	public AudioClip raiseAudio;
+	public AudioClip betAudio;
+	public AudioClip callAudio;
+	public AudioClip winAudio;
+
     //this is here so that I can run for-loops and access the functions from Table that use the playerDest enum
     [HideInInspector]
     public List<Destination> playerDestinations;
@@ -242,7 +251,14 @@ public class PokerPlayerRedux : MonoBehaviour{
 			}
 			else
 			{
-				SayRaise();
+				if(currentBet == 0)
+				{
+					SayBet();
+				} 
+				else 
+				{ 
+					SayRaise();
+				}
 				Bet(betToRaise);
 				currentBet = betToRaise + currentBet;
 				Services.Dealer.LastBet = currentBet;
@@ -324,32 +340,41 @@ public class PokerPlayerRedux : MonoBehaviour{
 	//def gonna need to refactor
 	public void SayCheck()
 	{
-		if (SeatPos == 0) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.checkP1);
-		else if (SeatPos == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.checkP2);
+		Services.SoundManager.GenerateSourceAndPlay(checkAudio);
+//		if (SeatPos == 0) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.checkP1);
+//		else if (SeatPos == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.checkP2);
 	}
 
 	public void SayFold()
 	{
-		if (SeatPos == 0) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.foldP1);
-		else if (SeatPos == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.foldP2);
+		Services.SoundManager.GenerateSourceAndPlay(foldAudio);
+//		if (SeatPos == 0) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.foldP1);
+//		else if (SeatPos == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.foldP2);
 	}
 
 	public void SayRaise()
 	{
-		if (SeatPos == 0) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.raiseP1);
-		else if (SeatPos == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.raiseP2);
+		Services.SoundManager.GenerateSourceAndPlay(raiseAudio);
+//		if (SeatPos == 0) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.raiseP1);
+//		else if (SeatPos == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.raiseP2);
+	}
+
+	public void SayBet(){
+		Services.SoundManager.GenerateSourceAndPlay(betAudio);
 	}
 
 	public void SayCall()
 	{
-		if(SeatPos == 0 ) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.callP1);
-		else if(SeatPos == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.callP2);
+		Services.SoundManager.GenerateSourceAndPlay(callAudio);
+//		if(SeatPos == 0 ) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.callP1);
+//		else if(SeatPos == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.callP2);
 	}
 
 	public void SayAllIn()
 	{
-		if(SeatPos == 0) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.allInP1);
-		else if(SeatPos == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.allInP2);
+		Services.SoundManager.GenerateSourceAndPlay(raiseAudio);
+//		if(SeatPos == 0) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.allInP1);
+//		else if(SeatPos == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.allInP2);
 	}
 
 	//determines which reaction to have
@@ -384,8 +409,8 @@ public class PokerPlayerRedux : MonoBehaviour{
 				float randomNumber = Random.Range(0, 100);
 				if(randomNumber < 100)
 				{
-					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.badBeatP1[0]);
-					Services.SoundManager.badBeatP1.Remove(Services.SoundManager.badBeatP1[0]);
+//					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.badBeatP1[0]);
+//					Services.SoundManager.badBeatP1.Remove(Services.SoundManager.badBeatP1[0]);
 				}
 			}
 		}
@@ -396,8 +421,8 @@ public class PokerPlayerRedux : MonoBehaviour{
 				float randomNumber = Random.Range(0, 100);
 				if (randomNumber < 100)
 				{
-					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.badBeatP2[0]);
-					Services.SoundManager.badBeatP2.Remove(Services.SoundManager.badBeatP2[0]);
+//					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.badBeatP2[0]);
+//					Services.SoundManager.badBeatP2.Remove(Services.SoundManager.badBeatP2[0]);
 				}
 			}
 		}
@@ -412,8 +437,8 @@ public class PokerPlayerRedux : MonoBehaviour{
 				float randomNumber = Random.Range(0, 100);
 				if (randomNumber < 100)
 				{
-					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.genericBadP1[0]);
-					Services.SoundManager.genericBadP1.Remove(Services.SoundManager.badBeatP1[0]);
+//					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.genericBadP1[0]);
+//					Services.SoundManager.genericBadP1.Remove(Services.SoundManager.badBeatP1[0]);
 				}
 			}
 		}
@@ -424,8 +449,8 @@ public class PokerPlayerRedux : MonoBehaviour{
 				float randomNumber = Random.Range(0, 100);
 				if (randomNumber < 100)
 				{
-					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.genericBadP2[0]);
-					Services.SoundManager.genericBadP2.Remove(Services.SoundManager.genericBadP2[0]);
+//					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.genericBadP2[0]);
+//					Services.SoundManager.genericBadP2.Remove(Services.SoundManager.genericBadP2[0]);
 				}
 			}
 		}
@@ -440,8 +465,8 @@ public class PokerPlayerRedux : MonoBehaviour{
 				float randomNumber = Random.Range(0, 100);
 				if (randomNumber < 100)
 				{
-					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.incredulousP1[0]);
-					Services.SoundManager.incredulousP1.Remove(Services.SoundManager.incredulousP1[0]);
+//					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.incredulousP1[0]);
+//					Services.SoundManager.incredulousP1.Remove(Services.SoundManager.incredulousP1[0]);
 				}
 			}
 		}
@@ -452,8 +477,8 @@ public class PokerPlayerRedux : MonoBehaviour{
 				float randomNumber = Random.Range(0, 100);
 				if (randomNumber < 100)
 				{
-					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.incredulousP2[0]);
-					Services.SoundManager.incredulousP2.Remove(Services.SoundManager.incredulousP2[0]);
+//					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.incredulousP2[0]);
+//					Services.SoundManager.incredulousP2.Remove(Services.SoundManager.incredulousP2[0]);
 				}
 			}
 		}
@@ -461,58 +486,61 @@ public class PokerPlayerRedux : MonoBehaviour{
 
 	public void RespectfulReaction()
 	{
-		if (SeatPos == 0)
-		{
-			if (Services.SoundManager.respectP1.Count != 0)
-			{
-				float randomNumber = Random.Range(0, 100);
-				if (randomNumber < 100)
-				{
-					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.respectP1[0]);
-					Services.SoundManager.respectP1.Remove(Services.SoundManager.respectP1[0]);
-				}
-			}
-		}
-		else if (SeatPos == 1)
-		{
-			if (Services.SoundManager.respectP2.Count != 0)
-			{
-				float randomNumber = Random.Range(0, 100);
-				if (randomNumber < 100)
-				{
-					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.respectP2[0]);
-					Services.SoundManager.respectP2.Remove(Services.SoundManager.respectP2[0]);
-				}
-			}
-		}
+
+		Services.SoundManager.GenerateSourceAndPlay(winAudio);
+//		if (SeatPos == 0)
+//		{
+//			if (Services.SoundManager.respectP1.Count != 0)
+//			{
+//				float randomNumber = Random.Range(0, 100);
+//				if (randomNumber < 100)
+//				{
+////					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.respectP1[0]);
+////					Services.SoundManager.respectP1.Remove(Services.SoundManager.respectP1[0]);
+//				}
+//			}
+//		}
+//		else if (SeatPos == 1)
+//		{
+//			if (Services.SoundManager.respectP2.Count != 0)
+//			{
+//				float randomNumber = Random.Range(0, 100);
+//				if (randomNumber < 100)
+//				{
+////					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.respectP2[0]);
+////					Services.SoundManager.respectP2.Remove(Services.SoundManager.respectP2[0]);
+//				}
+//			}
+//		}
 	}
 
 	public void GoodReaction()
 	{
-		if (SeatPos == 0)
-		{
-			if (Services.SoundManager.goodResponseP1.Count != 0)
-			{
-				float randomNumber = Random.Range(0, 100);
-				if (randomNumber < 100)
-				{
-					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.goodResponseP1[0]);
-					Services.SoundManager.goodResponseP1.Remove(Services.SoundManager.goodResponseP1[0]);
-				}
-			}
-		}
-		else if (SeatPos == 1)
-		{
-			if (Services.SoundManager.goodResponseP2.Count != 0)
-			{
-				float randomNumber = Random.Range(0, 100);
-				if (randomNumber < 100)
-				{
-					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.goodResponseP2[0]);
-					Services.SoundManager.goodResponseP2.Remove(Services.SoundManager.goodResponseP2[0]);
-				}
-			}
-		}
+		Services.SoundManager.GenerateSourceAndPlay(winAudio);
+//		if (SeatPos == 0)
+//		{
+//			if (Services.SoundManager.goodResponseP1.Count != 0)
+//			{
+//				float randomNumber = Random.Range(0, 100);
+//				if (randomNumber < 100)
+//				{
+//					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.goodResponseP1[0]);
+//					Services.SoundManager.goodResponseP1.Remove(Services.SoundManager.goodResponseP1[0]);
+//				}
+//			}
+//		}
+//		else if (SeatPos == 1)
+//		{
+//			if (Services.SoundManager.goodResponseP2.Count != 0)
+//			{
+//				float randomNumber = Random.Range(0, 100);
+//				if (randomNumber < 100)
+//				{
+//					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.goodResponseP2[0]);
+//					Services.SoundManager.goodResponseP2.Remove(Services.SoundManager.goodResponseP2[0]);
+//				}
+//			}
+//		}
 	}
 
 
