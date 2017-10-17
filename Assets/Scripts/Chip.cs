@@ -28,6 +28,9 @@ public class Chip : InteractionSuperClass {
     [HideInInspector]
     public List<Chip> incomingStack;
 
+    [HideInInspector]
+    public List<Chip> stackToHold;
+
     //can this chip be grabbed? we want a little time between dropping a chip and picking it up
     //otherwise as soon as it's dropped it gets picked up by the controller
     public bool canBeGrabbed;
@@ -155,6 +158,10 @@ public class Chip : InteractionSuperClass {
                 isTouchingStack = true;
                 incomingStack = other.gameObject.GetComponent<Chip>().chipStack.chips;
             }
+            else
+            {
+                stackToHold = other.gameObject.GetComponent<Chip>().chipStack.chips;
+            }
         }
     }
 
@@ -171,6 +178,7 @@ public class Chip : InteractionSuperClass {
             isTouchingStack = false;
             isTouchingChip = false;
             incomingChip = null;
+            stackToHold = null;
         }
     }
 
@@ -185,7 +193,8 @@ public class Chip : InteractionSuperClass {
     //this way we know whether we're calling the dropChip function or not
     public override void HandAttachedUpdate(Hand attachedHand)
     {
-        if(chipStack.chips.Count < MAX_CHIPSTACK)
+
+        if (chipStack.chips.Count < MAX_CHIPSTACK)
         {
             if (isTouchingChip && incomingChip.canBeGrabbed)
             {
@@ -209,11 +218,40 @@ public class Chip : InteractionSuperClass {
                 incomingStack = null;
             }
         }
+        else
+        {
+            if(stackToHold != null)
+            {
+                GameObject firstStack = attachedHand.currentAttachedObject.gameObject;
+                Chip chipToGrab = null;
+                foreach (Chip chip in stackToHold)
+                {
+                    if (chip.chipStack != null)
+                    {
+                        chipToGrab = chip;
+                    }
+                }
+                if (chipToGrab != null)
+                {
+                    attachedHand.AttachObject(chipToGrab.gameObject, Hand.AttachmentFlags.ParentToHand);
+                }
+                stackToHold = null;
+            }
+        }
         if (chipStack != null)
         {
             CheckPressPosition(attachedHand);
         }
-        base.HandAttachedUpdate(attachedHand);
+        if (attachedHand.GetStandardInteractionButton() == false)
+        {
+            for (int i = 0; i < attachedHand.AttachedObjects.Count; i++)
+            {
+                if(attachedHand.AttachedObjects[i].attachedObject.GetComponentInChildren<Chip>().chipStack != null)
+                {
+                    attachedHand.DetachObject(attachedHand.AttachedObjects[i].attachedObject);
+                }
+            }
+        }
     }
 
     //so this when a hand is hovering over a chip

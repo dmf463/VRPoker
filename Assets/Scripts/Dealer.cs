@@ -137,15 +137,15 @@ public class Dealer : MonoBehaviour
         if (Table.gameState == GameState.NewRound)
         {
             messageText.text = "Shuffle Up and Deal!";
-            int cardCountForPreFlop = 0;
-            for (int playerCardIndex = 0; playerCardIndex < Table.instance.playerCards.Length; playerCardIndex++)
-            {
-                for (int cardTotal = 0; cardTotal < Table.instance.playerCards[playerCardIndex].Count; cardTotal++)
-                {
-                    cardCountForPreFlop++;
-                }
-            }
-            if (cardCountForPreFlop == PlayerAtTableCount() * 2 && !checkedPreFlopCardCount)
+            //int cardCountForPreFlop = 0;
+            //for (int playerCardIndex = 0; playerCardIndex < Table.instance.playerCards.Length; playerCardIndex++)
+            //{
+            //    for (int cardTotal = 0; cardTotal < Table.instance.playerCards[playerCardIndex].Count; cardTotal++)
+            //    {
+            //        cardCountForPreFlop++;
+            //    }
+            //}
+            if (Services.PokerRules.cardsPulled.Count == PlayerAtTableCount() * 2 && !checkedPreFlopCardCount)
             {
                 checkedPreFlopCardCount = true;
                 StartCoroutine(CheckForMistakesPreFlop(.025f));
