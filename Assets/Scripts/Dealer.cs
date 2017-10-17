@@ -124,7 +124,7 @@ public class Dealer : MonoBehaviour
 		Debug.Log("Gamestate = " + Table.gameState);
         Table.dealerState = DealerState.DealingState;
         lastGameState = GameState.NewRound;
-        OutsideVR = false;
+        OutsideVR = true;
     }
 
     // Update is called once per frame
@@ -544,6 +544,8 @@ public class Dealer : MonoBehaviour
 
         players[SeatsAwayFromDealer(1)].Bet(SmallBlind);
         players[SeatsAwayFromDealer(2)].Bet(BigBlind);
+        //Behaviour halo = (Behaviour)players[SeatsAwayFromDealer(1)].playerCardIndicator.GetComponent("Halo");
+        //halo.enabled = true;
     }
 
     //we call this at the beginning of each round in order to set the blinds as the current and last bet

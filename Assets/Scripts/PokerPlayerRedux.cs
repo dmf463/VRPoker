@@ -12,6 +12,7 @@ public enum PlayerState { Playing, NotPlaying, Winner, Loser, Eliminated}
 public class PokerPlayerRedux : MonoBehaviour{
 
     public GameObject playerSpotlight;
+    public GameObject playerCardIndicator;
     public GameObject[] cardPos;
     public int cardsReplaced = 0;
 

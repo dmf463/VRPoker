@@ -12,6 +12,7 @@ public class PokerRules : MonoBehaviour {
     public GameObject[] cardsToDestroy;
     private List<Destination> playerDestinations = new List<Destination>();
     List<GameObject> boardPos = new List<GameObject>();
+    public GameObject[] cardIndicators;
     private int playerCards;
     private int burnCard1;
     private int burnCard2;
@@ -37,6 +38,7 @@ public class PokerRules : MonoBehaviour {
 
     void Update()
     {
+        IndicateCardPlacement(cardsPulled.Count);
         if (Table.gameState != GameState.ShowDown)
         {
             switch (Table.instance._board.Count)
@@ -91,6 +93,15 @@ public class PokerRules : MonoBehaviour {
         }
     }
 
+    public void IndicateCardPlacement(int cardPlace)
+    {
+        Behaviour oldHalo = (Behaviour)Services.Dealer.FindFirstPlayerToAct((cardPlace + 1) % playerDestinations.Count).playerCardIndicator.GetComponent("Halo");
+        oldHalo.enabled = true;
+
+        Behaviour newHalo = (Behaviour)Services.Dealer.FindFirstPlayerToAct((cardPlace + 1) % playerDestinations.Count).playerCardIndicator.GetComponent("Halo");
+        newHalo.enabled = true;
+    }
+
     public void SetCardPlacement(int playerCount)
     {
         //we take away 1 to account for the 0th position in the list
@@ -129,11 +140,6 @@ public class PokerRules : MonoBehaviour {
         Table.instance._burn.Clear();
     }
 
-    //the issue we're currently having is that when it instantiates the new cards to replace the old ones
-    //they instantiate somehow BEFORE the old cards are destroyed, so they aren't added to the player cards? I think? idfk
-    //also, as of right now, it ONLY destroys the cards that were LOGGED.
-    //but if the player supremely fucked up and didn't even hit their mark, those cards aren't destroyed...I guess I COULD add them to a different list...
-    //adding them to a different list didn't solve the problem. time to take a breather
     public void CorrectMistakes()
     {
         Debug.Log("CorrectingMistakes");
