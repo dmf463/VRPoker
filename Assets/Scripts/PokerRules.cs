@@ -42,58 +42,120 @@ public class PokerRules : MonoBehaviour {
         {
             IndicateCardPlacement(cardsPulled.Count);
         }
-        if (Table.gameState != GameState.ShowDown)
+
+        if (Table.gameState == GameState.PreFlop)
         {
-            switch (Table.instance._board.Count)
+            if (cardsPulled.Count - 1 == flopCards || Table.instance._board.Count == 3)
             {
-                case 3:
-                    Debug.Log("3 CARDS ON BOARD");
-                    if(Table.gameState != GameState.Flop)
+                SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+                if (Table.instance._board.Count + playerCards + 1 == flopCards)
+                {
+                    if (Table.instance._burn.Count < 1)
                     {
-                        SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-                        if (cardsPulled.Count - 1 != flopCards)
-                        {
-                            //Debug.Log("Correcting Mistakes");
-                            //Debug.Log("boardCount = " + Table.instance._board.Count);
-                            Services.Dealer.correctedMistake = true;
-                            CorrectMistakes();
-                            //Table.gameState = GameState.Flop;
-                        }
-                        else Table.gameState = GameState.Flop;
+                        CorrectMistakes();
                     }
-                    break;
-                case 4:
-                    Debug.Log("4 CARDS ON BOARD");
-                    if(Table.gameState != GameState.Turn)
-                    {
-                        SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-                        if (cardsPulled.Count - 1 != turnCard)
-                        {
-                            Services.Dealer.correctedMistake = true;
-                            CorrectMistakes();
-                            //Table.gameState = GameState.Turn;
-                        }
-                        else Table.gameState = GameState.Turn;
-                    }
-                    break;
-                case 5:
-                    Debug.Log("5 CARDS ON BOARD");
-                    if(Table.gameState != GameState.River)
-                    {
-                        SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-                        if (cardsPulled.Count - 1 != riverCard)
-                        {
-                            Services.Dealer.correctedMistake = true;
-                            CorrectMistakes();
-                            //Table.gameState = GameState.River;
-                        }
-                        else Table.gameState = GameState.River;
-                    }
-                    break;
-                default:
-                    break;
+                }
+                else if (cardsPulled.Count - 1 == flopCards)
+                {
+                    CorrectMistakes();
+                    Table.gameState = GameState.Flop;
+                }
+                else Table.gameState = GameState.Flop;
             }
         }
+        else if (Table.gameState == GameState.Flop)
+        {
+            if (cardsPulled.Count - 1 == turnCard || Table.instance._board.Count == 4)
+            {
+                SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+                if (Table.instance._board.Count + playerCards + 1 == turnCard)
+                {
+                    if (Table.instance._burn.Count < 2)
+                    {
+                        CorrectMistakes();
+                    }
+                }
+                else if (cardsPulled.Count - 1 == turnCard)
+                {
+                    CorrectMistakes();
+                    Table.gameState = GameState.Turn;
+                }
+                else Table.gameState = GameState.Turn;
+            }
+        }
+        else if (Table.gameState == GameState.Turn)
+        {
+            if (cardsPulled.Count - 1 == riverCard || Table.instance._board.Count == 5)
+            {
+                SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+                if (Table.instance._board.Count + playerCards + 1 == riverCard)
+                {
+                    if (Table.instance._burn.Count < 3)
+                    {
+                        CorrectMistakes();
+                    }
+                }
+                else if (cardsPulled.Count - 1 == riverCard)
+                {
+                    CorrectMistakes();
+                    Table.gameState = GameState.River;
+                }
+                else Table.gameState = GameState.River;
+            }
+        }
+
+        //if (Table.gameState != GameState.ShowDown)
+        //{
+        //    switch (Table.instance._board.Count)
+        //    {
+        //        case 3:
+        //            Debug.Log("3 CARDS ON BOARD");
+        //            if(Table.gameState != GameState.Flop)
+        //            {
+        //                SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+        //                if (cardsPulled.Count - 1 != flopCards)
+        //                {
+        //                    //Debug.Log("Correcting Mistakes");
+        //                    //Debug.Log("boardCount = " + Table.instance._board.Count);
+        //                    Services.Dealer.correctedMistake = true;
+        //                    CorrectMistakes();
+        //                    //Table.gameState = GameState.Flop;
+        //                }
+        //                else Table.gameState = GameState.Flop;
+        //            }
+        //            break;
+        //        case 4:
+        //            Debug.Log("4 CARDS ON BOARD");
+        //            if(Table.gameState != GameState.Turn)
+        //            {
+        //                SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+        //                if (cardsPulled.Count - 1 != turnCard)
+        //                {
+        //                    Services.Dealer.correctedMistake = true;
+        //                    CorrectMistakes();
+        //                    //Table.gameState = GameState.Turn;
+        //                }
+        //                else Table.gameState = GameState.Turn;
+        //            }
+        //            break;
+        //        case 5:
+        //            Debug.Log("5 CARDS ON BOARD");
+        //            if(Table.gameState != GameState.River)
+        //            {
+        //                SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+        //                if (cardsPulled.Count - 1 != riverCard)
+        //                {
+        //                    Services.Dealer.correctedMistake = true;
+        //                    CorrectMistakes();
+        //                    //Table.gameState = GameState.River;
+        //                }
+        //                else Table.gameState = GameState.River;
+        //            }
+        //            break;
+        //        default:
+        //            break;
+        //    }
+        //}
     }
 
     public void SetCardIndicator()
@@ -323,7 +385,7 @@ public class PokerRules : MonoBehaviour {
                 Table.instance.AddCardTo(Destination.board, newCard);
             }
         }
-        Services.Dealer.correctedMistake = true;
+        SetCardIndicator();
     }
 
     public Card CreateCard(CardType cardType, Vector3 position, Quaternion rotation)

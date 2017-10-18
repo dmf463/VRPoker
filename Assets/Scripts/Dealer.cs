@@ -94,8 +94,6 @@ public class Dealer : MonoBehaviour
     //this is the bool that ensures all the functions involved with the showdown only happen once
     private bool readyForShowdown = false;
 
-    public bool correctedMistake;
-
     private bool checkedPreFlopCardCount;
 
     void Awake()
@@ -108,7 +106,6 @@ public class Dealer : MonoBehaviour
         Services.SoundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
         Services.Dealer = this;
         Services.PokerRules = GameObject.Find("PokerRules").GetComponent<PokerRules>();
-        correctedMistake = false;
     }
 
     // Use this for initialization
@@ -124,7 +121,7 @@ public class Dealer : MonoBehaviour
 		Debug.Log("Gamestate = " + Table.gameState);
         Table.dealerState = DealerState.DealingState;
         lastGameState = GameState.NewRound;
-        OutsideVR = true;
+        OutsideVR = false;
     }
 
     // Update is called once per frame
@@ -400,7 +397,7 @@ public class Dealer : MonoBehaviour
             playerToAct = FindFirstPlayerToAct(1);
             Debug.Log("player to act = " + playerToAct);
         }
-        playerToAct.playerSpotlight.SetActive(true);
+        if(playerToAct != null) playerToAct.playerSpotlight.SetActive(true);
         //StartCoroutine(playerAction(playerToAct));
     }
 
@@ -418,11 +415,12 @@ public class Dealer : MonoBehaviour
             for (int i = 0; i < players.Count; i++)
             {
                 PokerPlayerRedux nextPlayer = players[(player.SeatPos + i) % players.Count];
-                if(nextPlayer.PlayerState == PlayerState.Playing)
+                if (nextPlayer.PlayerState == PlayerState.Playing)
                 {
                     player = nextPlayer;
                     break;
                 }
+                else player = null;
             }
         }
         return player;
@@ -494,7 +492,7 @@ public class Dealer : MonoBehaviour
                 Debug.Log("nextPlayer.chipCount = " + nextPlayer.ChipCount);
                 Debug.Log("nextPlayer.PlayerState = " + nextPlayer.PlayerState);
             }
-            if ((!nextPlayer.actedThisRound || nextPlayer.currentBet < LastBet || nextPlayer.ChipCount == 0) && nextPlayer.PlayerState == PlayerState.Playing)
+            if ((!nextPlayer.actedThisRound || nextPlayer.currentBet < LastBet || nextPlayer.ChipCount == 0 || nextPlayer.playerIsAllIn) && nextPlayer.PlayerState == PlayerState.Playing)
             {
                 roundFinished = false;
                 playerToAct = nextPlayer;
