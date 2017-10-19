@@ -222,7 +222,9 @@ public class Chip : InteractionSuperClass {
         {
             if(stackToHold != null)
             {
-                GameObject firstStack = attachedHand.currentAttachedObject.gameObject;
+                GameObject firstStack = attachedHand.AttachedObjects[0].attachedObject;
+                float xOffSet = firstStack.GetComponent<Collider>().bounds.size.x;
+                Debug.Log("xOffSet = " + xOffSet + " and hand is holding " + attachedHand.AttachedObjects.Count + " objects.");
                 Chip chipToGrab = null;
                 foreach (Chip chip in stackToHold)
                 {
@@ -234,6 +236,9 @@ public class Chip : InteractionSuperClass {
                 if (chipToGrab != null)
                 {
                     attachedHand.AttachObject(chipToGrab.gameObject, Hand.AttachmentFlags.ParentToHand);
+                    chipToGrab.gameObject.transform.localPosition = new Vector3(firstStack.transform.localPosition.x + (xOffSet * attachedHand.AttachedObjects.Count), 
+                                                                                firstStack.transform.localPosition.y, 
+                                                                                firstStack.transform.localPosition.z);
                 }
                 stackToHold = null;
             }

@@ -439,7 +439,10 @@ public class Card : InteractionSuperClass {
     {
         if(Table.dealerState == DealerState.DealingState)
         {
-            Services.PokerRules.cardsPulled.Add(cardType);
+            if (!Services.PokerRules.cardsPulled.Contains(cardType))
+            {
+                Services.PokerRules.cardsPulled.Add(cardType);
+            }
             //BUG ALERT: THERE IS A BUG HERE, IF THE CARD IS DEALT/PULLED AT THE WRONG ANGLE, AND THEN 
             //DETACHED IT FREEZES IN THE AIR
             //MAYBE FIXED IT WITH THE if (rb == null)
@@ -457,6 +460,7 @@ public class Card : InteractionSuperClass {
         }
         base.OnDetachedFromHand(hand);
     }
+
 
     //basically we want to give some time for the card to actually LEAVE the hand before we check the velocity
     //it's this that lets us know whether the card was thrown hard or soft
