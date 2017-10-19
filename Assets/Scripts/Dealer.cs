@@ -312,6 +312,7 @@ public class Dealer : MonoBehaviour
                     }
                 }
                 EvaluatePlayersOnShowdown(playersInHand);
+                playersHaveBeenEvaluated = true;
             }
             if (!readyToAwardPlayers)
             {
@@ -324,7 +325,7 @@ public class Dealer : MonoBehaviour
                     }
                 }
                 //sortedPlayers.Clear();
-                playersHaveBeenEvaluated = true;
+                //playersHaveBeenEvaluated = true;
                 StartCoroutine(WaitForWinnersToGetPaid());
                 readyToAwardPlayers = true;
             }

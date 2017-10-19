@@ -111,10 +111,11 @@ public class Chip : InteractionSuperClass {
     }
     void FixedUpdate()
     {
+
         for (int i = 0; i < 2; i++)
         {
             Hand hand = i == 0 ? throwingHand : deckHand;
-            if (chipStack != null && hand != null)
+            if (chipStack != null && hand != null && chipStack.chips.Count >= MAX_CHIPSTACK - 5)
             {
                 Vector2 handPos = new Vector2(hand.transform.position.x, hand.transform.position.z);
                 Vector2 chipPos = new Vector2(transform.position.x, transform.position.z);
@@ -125,18 +126,22 @@ public class Chip : InteractionSuperClass {
                     Vector2 touchVect = (chipPos - handPos);
                     Vector2 chipDir = touchVect;
                     float dot = Vector2.Dot(vel2D.normalized, touchVect.normalized);
-                    if (vel2D.magnitude > .2f && dot > .6f)
+                    if (vel2D.magnitude > .2f && dot > .5f) //.6
                     {
                         chipDir = vel2D;
                     }
-                    
-                    Vector2 dest = chipPos + vel2D.normalized * ((.12f - touchVect.magnitude) / dot);
+
+                    Vector2 dest = chipPos + vel2D.normalized * ((.12f - touchVect.magnitude) / dot); //.12
                     //float chipHeight = GetComponent<Collider>().bounds.size.y;
                     rb.MovePosition(new Vector3(dest.x, transform.position.y, dest.y));
+                    if (hand.GetStandardInteractionButtonDown() == true) //on Vive controller, this is the trigger
+                    {
+                        hand.AttachObject(gameObject);
+                        hand.HoverLock(interactableObject);
+                    }
                 }
             }
         }
-        
     }
 
     //we're making a function for Destroy Chip, rather than calling Destroy on the gameObject at a given moment
@@ -292,9 +297,6 @@ public class Chip : InteractionSuperClass {
     //so this when a hand is hovering over a chip
     public override void HandHoverUpdate(Hand hand)
     {
-
-        
-
         //if the chip HAS a rigidBody and the controller's trigger is pulled
         //then we want to attach the chip to the hand
         if (gameObject.GetComponent<Rigidbody>() != null)
