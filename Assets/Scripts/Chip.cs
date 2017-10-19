@@ -64,9 +64,10 @@ public class Chip : InteractionSuperClass {
     //it's set in multiple places, but not USED for anything
     public bool chipForBet;
 
+    Rigidbody rb;
     // Use this for initialization
     void Start () {
-
+        rb = GetComponent<Rigidbody>();
         //set the proper bools
         //and assign the chip its value
         canBeGrabbed = true;
@@ -107,6 +108,35 @@ public class Chip : InteractionSuperClass {
                 StartCoroutine(ReadyToBeGrabbed(1.5f));
             }
         }
+    }
+    void FixedUpdate()
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            Hand hand = i == 0 ? throwingHand : deckHand;
+            if (chipStack != null && hand != null)
+            {
+                Vector2 handPos = new Vector2(hand.transform.position.x, hand.transform.position.z);
+                Vector2 chipPos = new Vector2(transform.position.x, transform.position.z);
+                if ((hand.transform.position - transform.position).magnitude < .2f && (handPos - chipPos).magnitude < .12f)
+                {
+                    Vector3 vel = hand.GetTrackedObjectVelocity();
+                    Vector2 vel2D = new Vector2(vel.x, vel.z);
+                    Vector2 touchVect = (chipPos - handPos);
+                    Vector2 chipDir = touchVect;
+                    float dot = Vector2.Dot(vel2D.normalized, touchVect.normalized);
+                    if (vel2D.magnitude > .2f && dot > .6f)
+                    {
+                        chipDir = vel2D;
+                    }
+                    
+                    Vector2 dest = chipPos + vel2D.normalized * ((.12f - touchVect.magnitude) / dot);
+                    //float chipHeight = GetComponent<Collider>().bounds.size.y;
+                    rb.MovePosition(new Vector3(dest.x, transform.position.y, dest.y));
+                }
+            }
+        }
+        
     }
 
     //we're making a function for Destroy Chip, rather than calling Destroy on the gameObject at a given moment
@@ -235,10 +265,10 @@ public class Chip : InteractionSuperClass {
                 }
                 if (chipToGrab != null)
                 {
-                    attachedHand.AttachObject(chipToGrab.gameObject, Hand.AttachmentFlags.ParentToHand);
-                    chipToGrab.gameObject.transform.localPosition = new Vector3(firstStack.transform.localPosition.x + (xOffSet * attachedHand.AttachedObjects.Count), 
-                                                                                firstStack.transform.localPosition.y, 
-                                                                                firstStack.transform.localPosition.z);
+                    //attachedHand.AttachObject(chipToGrab.gameObject, Hand.AttachmentFlags.ParentToHand);
+                    //chipToGrab.gameObject.transform.localPosition = new Vector3(firstStack.transform.localPosition.x + (xOffSet * attachedHand.AttachedObjects.Count), 
+                    //                                                            firstStack.transform.localPosition.y, 
+                    //                                                            firstStack.transform.localPosition.z);
                 }
                 stackToHold = null;
             }
@@ -262,6 +292,9 @@ public class Chip : InteractionSuperClass {
     //so this when a hand is hovering over a chip
     public override void HandHoverUpdate(Hand hand)
     {
+
+        
+
         //if the chip HAS a rigidBody and the controller's trigger is pulled
         //then we want to attach the chip to the hand
         if (gameObject.GetComponent<Rigidbody>() != null)

@@ -230,8 +230,9 @@ public class Dealer : MonoBehaviour
         {
             if (!roundStarted)
             {
-                StartRound();
                 roundStarted = true;
+                if (!OnlyAllInPlayersLeft()) StartRound();
+                else playersReady = true;
             }
         }
         
@@ -240,8 +241,9 @@ public class Dealer : MonoBehaviour
         {
             if (!roundStarted)
             {
-                StartRound();
                 roundStarted = true;
+                if (!OnlyAllInPlayersLeft()) StartRound();
+                else playersReady = true;
             }
         }
 
@@ -250,8 +252,9 @@ public class Dealer : MonoBehaviour
         {
             if (!roundStarted)
             {
-                StartRound();
                 roundStarted = true;
+                if (!OnlyAllInPlayersLeft()) StartRound();
+                else playersReady = true;
             }
         }
         
@@ -262,8 +265,9 @@ public class Dealer : MonoBehaviour
         {
             if (!roundStarted)
             {
-                StartRound();
                 roundStarted = true;
+                if (!OnlyAllInPlayersLeft()) StartRound();
+                else playersReady = true;
                 readyForShowdown = false;
                 StartCoroutine(WaitForShowDown(2));
             }
@@ -420,12 +424,25 @@ public class Dealer : MonoBehaviour
                     player = nextPlayer;
                     break;
                 }
-                else player = null;
             }
         }
         return player;
     }
 
+    public bool OnlyAllInPlayersLeft()
+    {
+        bool onlyAllinPlayersLeft;
+        float allInPlayers = 0;
+
+        for (int i = 0; i < players.Count; i++)
+        {
+            if (players[i].playerIsAllIn) allInPlayers++;
+        }
+        if (allInPlayers == GetActivePlayerCount()) onlyAllinPlayersLeft = true;
+        else onlyAllinPlayersLeft = false;
+
+        return onlyAllinPlayersLeft;
+    }
 
     //this is just a way to give the player a little buffer time so they don't accidentally trigger the showdown
     IEnumerator WaitForShowDown(float time)
@@ -492,7 +509,7 @@ public class Dealer : MonoBehaviour
                 Debug.Log("nextPlayer.chipCount = " + nextPlayer.ChipCount);
                 Debug.Log("nextPlayer.PlayerState = " + nextPlayer.PlayerState);
             }
-            if ((!nextPlayer.actedThisRound || nextPlayer.currentBet < LastBet || nextPlayer.ChipCount == 0 || nextPlayer.playerIsAllIn) && nextPlayer.PlayerState == PlayerState.Playing)
+            if ((!nextPlayer.actedThisRound || nextPlayer.currentBet < LastBet) && nextPlayer.PlayerState == PlayerState.Playing && nextPlayer.ChipCount != 0)
             {
                 roundFinished = false;
                 playerToAct = nextPlayer;
