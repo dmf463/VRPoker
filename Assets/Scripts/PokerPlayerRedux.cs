@@ -116,13 +116,21 @@ public class PokerPlayerRedux : MonoBehaviour{
 	public float raiseChanceVeryHigh = 70f;
 
 
+
+
+
 	[Header("Voice Lines")]
+
 	public AudioClip checkAudio;
 	public AudioClip foldAudio;
 	public AudioClip raiseAudio;
 	public AudioClip betAudio;
 	public AudioClip callAudio;
+	public AudioClip allInAudio;
 	public AudioClip winAudio;
+	public AudioClip loseAudio;
+
+
 
     //this is here so that I can run for-loops and access the functions from Table that use the playerDest enum
     [HideInInspector]
@@ -251,7 +259,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 			}
 			else
 			{
-				if(currentBet == 0)
+				if(Services.Dealer.LastBet == 0)
 				{
 					SayBet();
 				} 

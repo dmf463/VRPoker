@@ -36,6 +36,7 @@ public class SoundManager : MonoBehaviour
 
     void Start()
     {
+		
     }
 
     // Update is called once per frame
@@ -43,13 +44,13 @@ public class SoundManager : MonoBehaviour
     {
 
     }
-
+		
     //so basically when we want to play a sound we generate a prefab object with an audiosource
     //play the clip
     //then destroy the object after the clip is over
     //this works for sound effects and random things
     //but will not be ideal for the final version
-    public void GenerateSourceAndPlay(AudioClip clip)
+	public void GenerateSourceAndPlay(AudioClip clip)
     {
         GameObject specialAudioSource = Instantiate(Services.PrefabDB.GenericAudioSource);
         AudioSource source = specialAudioSource.GetComponent<AudioSource>();
@@ -57,6 +58,5 @@ public class SoundManager : MonoBehaviour
         source.Play();
         Destroy(specialAudioSource, clip.length);
     }
-
 
 }
