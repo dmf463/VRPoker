@@ -112,23 +112,33 @@ public class Table {
         _potChips.Clear();
         Services.Dealer.ResetPlayerStatus();
         gameState = GameState.NewRound;
-        DealerPosition = (DealerPosition + 1) % Services.Dealer.players.Count;
+        //DealerPosition = (DealerPosition + 1) % Services.Dealer.players.Count;
+        DealerPosition = (Services.Dealer.FindFirstPlayerToAct(1).SeatPos); //this does not account for a dead dealer
         SetDealerButtonPos(DealerPosition);
-        if(Services.Dealer.players[(DealerPosition + 1) % Services.Dealer.players.Count].PlayerState == PlayerState.Eliminated)
-        {
-            Services.Dealer.players[(DealerPosition + 2) % Services.Dealer.players.Count].Bet(Services.Dealer.SmallBlind);
-            Services.Dealer.players[(DealerPosition + 2) % Services.Dealer.players.Count].currentBet = Services.Dealer.SmallBlind;
-            Services.Dealer.players[(DealerPosition + 3) % Services.Dealer.players.Count].Bet(Services.Dealer.BigBlind);
-            Services.Dealer.players[(DealerPosition + 3) % Services.Dealer.players.Count].currentBet = Services.Dealer.BigBlind;
-        }
-        else
-        {
-            Services.Dealer.players[(DealerPosition + 1) % Services.Dealer.players.Count].Bet(Services.Dealer.SmallBlind);
-            Services.Dealer.players[(DealerPosition + 1) % Services.Dealer.players.Count].currentBet = Services.Dealer.SmallBlind;
-            Services.Dealer.players[(DealerPosition + 2) % Services.Dealer.players.Count].Bet(Services.Dealer.BigBlind);
-            Services.Dealer.players[(DealerPosition + 2) % Services.Dealer.players.Count].currentBet = Services.Dealer.BigBlind;
-            Services.Dealer.LastBet = Services.Dealer.BigBlind;
-        }
+
+        Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(1).Bet(Services.Dealer.SmallBlind);
+        Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(1).currentBet = Services.Dealer.SmallBlind;
+
+        Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(2).Bet(Services.Dealer.BigBlind);
+        Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(2).currentBet = Services.Dealer.BigBlind;
+
+        Services.Dealer.LastBet = Services.Dealer.BigBlind;
+
+        //if(Services.Dealer.players[(DealerPosition + 1) % Services.Dealer.players.Count].PlayerState == PlayerState.Eliminated)
+        //{
+        //    Services.Dealer.players[(DealerPosition + 2) % Services.Dealer.players.Count].Bet(Services.Dealer.SmallBlind);
+        //    Services.Dealer.players[(DealerPosition + 2) % Services.Dealer.players.Count].currentBet = Services.Dealer.SmallBlind;
+        //    Services.Dealer.players[(DealerPosition + 3) % Services.Dealer.players.Count].Bet(Services.Dealer.BigBlind);
+        //    Services.Dealer.players[(DealerPosition + 3) % Services.Dealer.players.Count].currentBet = Services.Dealer.BigBlind;
+        //}
+        //else
+        //{
+        //    Services.Dealer.players[(DealerPosition + 1) % Services.Dealer.players.Count].Bet(Services.Dealer.SmallBlind);
+        //    Services.Dealer.players[(DealerPosition + 1) % Services.Dealer.players.Count].currentBet = Services.Dealer.SmallBlind;
+        //    Services.Dealer.players[(DealerPosition + 2) % Services.Dealer.players.Count].Bet(Services.Dealer.BigBlind);
+        //    Services.Dealer.players[(DealerPosition + 2) % Services.Dealer.players.Count].currentBet = Services.Dealer.BigBlind;
+        //    Services.Dealer.LastBet = Services.Dealer.BigBlind;
+        //}
     }
 
     //this is the function that converts the chips in the pot into an int value

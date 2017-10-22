@@ -163,7 +163,7 @@ public class PokerRules : MonoBehaviour {
     {
         if (Table.gameState == GameState.PreFlop)
         {
-            Debug.Log("cardsPulled = " + cardsPulled.Count);
+            //Debug.Log("cardsPulled = " + cardsPulled.Count);
             if (cardsPulled.Count == burnCard1)
             {
                 Behaviour newHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
@@ -242,21 +242,34 @@ public class PokerRules : MonoBehaviour {
                 oldHalo.enabled = false;
             }
         }
+        else if(Table.gameState == GameState.River)
+        {
+            TurnOffAllIndicators();
+        }
+    }
+
+    public void TurnOffAllIndicators()
+    {
+        for (int i = 0; i < cardIndicators.Length; i++)
+        {
+            Behaviour halo = (Behaviour)cardIndicators[i].GetComponent("Halo");
+            halo.enabled = false;
+        }
     }
 
     public void IndicateCardPlacement(int cardPlace)
     {
         if(cardsPulled.Count < Services.Dealer.PlayerAtTableCount() * 2)
         {
-            Behaviour oldHalo = (Behaviour)Services.Dealer.FindFirstPlayerToAct((cardPlace) % playerDestinations.Count).playerCardIndicator.GetComponent("Halo");
+            Behaviour oldHalo = (Behaviour)Services.Dealer.players[Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardPlace)].playerCardIndicator.GetComponent("Halo");
             oldHalo.enabled = false;
 
-            Behaviour newHalo = (Behaviour)Services.Dealer.FindFirstPlayerToAct((cardPlace + 1) % playerDestinations.Count).playerCardIndicator.GetComponent("Halo");
+            Behaviour newHalo = (Behaviour)Services.Dealer.players[Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardPlace + 1)].playerCardIndicator.GetComponent("Halo");
             newHalo.enabled = true;
         }
         else
         {
-            Behaviour oldHalo = (Behaviour)Services.Dealer.FindFirstPlayerToAct((cardPlace) % playerDestinations.Count).playerCardIndicator.GetComponent("Halo");
+            Behaviour oldHalo = (Behaviour)Services.Dealer.players[Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardPlace)].playerCardIndicator.GetComponent("Halo");
             oldHalo.enabled = false;
 
         }
@@ -306,81 +319,68 @@ public class PokerRules : MonoBehaviour {
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
         cardsLogged.Clear();
         ClearAndDestroyAllLists();
+        int cardPos;
 
         for (int i = 0; i < cardsPulled.Count; i++)
         {
-            if(i <= playerCards)
+            if (i <= playerCards) //playerCards = 9
             {
-                if (Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardsReplaced == 0)
+                if (i >= (Services.Dealer.PlayerAtTableCount())) cardPos = 1;
+                else cardPos = 0;
+                int playerIndex = Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(i + 1);
+                PokerPlayerRedux player = Services.Dealer.players[playerIndex];
+                Debug.Log("player we're trying to check is + " + player);
+                if (player.PlayerState == PlayerState.Playing && player.playerIsAllIn == false)
                 {
-                    if (Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].PlayerState == PlayerState.Playing &&
-                        Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].playerIsAllIn == false)
-                    {
-                        //Debug.Log("firstPlayer = " + Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count]);
-                        Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardsReplaced++;
-                        Card newCard = CreateCard(cardsPulled[i],
-                            Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardPos[0].transform.position,
-                            Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardPos[0].transform.rotation);
-                        Table.instance.AddCardTo(playerDestinations[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count], newCard);
-                        //Debug.Log("cardCount after replacing" + Table.instance.playerCards[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].Count);
-                    }
+                    Debug.Log("player we're trying to check is + " + player);
+                    //Debug.Log("firstPlayer = " + Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count]);
+                    Card newCard = CreateCard(cardsPulled[i], player.cardPos[cardPos].transform.position, player.cardPos[cardPos].transform.rotation);
+                    Table.instance.AddCardTo(playerDestinations[playerIndex], newCard);
+                    //Debug.Log("cardCount after replacing" + Table.instance.playerCards[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].Count);
                 }
-                else
-                {
-                    if (Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].PlayerState == PlayerState.Playing &&
-                        Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].playerIsAllIn == false)
-                    {
-                        Card newCard = CreateCard(cardsPulled[i],
-                        Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardPos[1].transform.position,
-                        Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardPos[1].transform.rotation);
-                        Table.instance.AddCardTo(playerDestinations[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count], newCard);
-                        Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].cardsReplaced = 0;
-                        //Debug.Log("cardCount after replacing" + Table.instance.playerCards[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].Count);
-                    }
-                }   
             }
-            else if(i == burnCard1)
+            else if (i == burnCard1)
             {
                 GameObject burnPos = GameObject.Find("BurnCards");
                 Card newCard = CreateCard(cardsPulled[i], burnPos.transform.position, burnPos.transform.rotation);
                 Table.instance.AddCardTo(Destination.burn, newCard);
             }
-            else if(i > burnCard1 && i <= flopCards)
+            else if (i > burnCard1 && i <= flopCards)
             {
-                if(i == burnCard1 + 1)
+                if (i == burnCard1 + 1)
                 {
                     Card newCard = CreateCard(cardsPulled[i], boardPos[0].transform.position, boardPos[0].transform.rotation);
                     Table.instance.AddCardTo(Destination.board, newCard);
                 }
-                else if(i == burnCard1 + 2)
+                else if (i == burnCard1 + 2)
                 {
                     Card newCard = CreateCard(cardsPulled[i], boardPos[1].transform.position, boardPos[1].transform.rotation);
                     Table.instance.AddCardTo(Destination.board, newCard);
                 }
-                else if(i == burnCard1 + 3)
+                else if (i == burnCard1 + 3)
                 {
                     Card newCard = CreateCard(cardsPulled[i], boardPos[2].transform.position, boardPos[2].transform.rotation);
                     Table.instance.AddCardTo(Destination.board, newCard);
                 }
             }
-            else if(i == burnCard2)
+            else if (i == burnCard2)
             {
                 GameObject burnPos = GameObject.Find("BurnCards");
                 Card newCard = CreateCard(cardsPulled[i], burnPos.transform.position, burnPos.transform.rotation);
                 Table.instance.AddCardTo(Destination.burn, newCard);
             }
-            else if(i == turnCard)
+            else if (i == turnCard)
             {
                 Card newCard = CreateCard(cardsPulled[i], boardPos[3].transform.position, boardPos[3].transform.rotation);
                 Table.instance.AddCardTo(Destination.board, newCard);
             }
-            else if(i == burnCard3)
+            else if (i == burnCard3)
             {
                 GameObject burnPos = GameObject.Find("BurnCards");
                 Card newCard = CreateCard(cardsPulled[i], burnPos.transform.position, burnPos.transform.rotation);
                 Table.instance.AddCardTo(Destination.burn, newCard);
             }
-            else if(i == riverCard)
+            else if (i == riverCard)
             {
                 Card newCard = CreateCard(cardsPulled[i], boardPos[4].transform.position, boardPos[4].transform.rotation);
                 Table.instance.AddCardTo(Destination.board, newCard);
