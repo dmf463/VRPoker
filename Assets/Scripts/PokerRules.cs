@@ -103,7 +103,7 @@ public class PokerRules : MonoBehaviour {
                 else Table.gameState = GameState.River;
             }
         }
-
+        #region old correction code
         //if (Table.gameState != GameState.ShowDown)
         //{
         //    switch (Table.instance._board.Count)
@@ -156,6 +156,7 @@ public class PokerRules : MonoBehaviour {
         //            break;
         //    }
         //}
+#endregion
     }
 
     public void SetCardIndicator()

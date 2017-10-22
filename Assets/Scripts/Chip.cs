@@ -115,7 +115,13 @@ public class Chip : InteractionSuperClass {
         for (int i = 0; i < 2; i++)
         {
             Hand hand = i == 0 ? throwingHand : deckHand;
-            if (chipStack != null && hand != null && throwingHand.GetStandardInteractionButton() == true && deckHand.GetStandardInteractionButton())
+            if (chipStack != null && hand != null &&
+                throwingHand.GetStandardInteractionButton() == true &&
+                deckHand.GetStandardInteractionButton() == true &&
+                throwingHand.currentAttachedObject.tag != "Chip" &&
+                throwingHand.currentAttachedObject.tag != "PlayingCard" &&
+                deckHand.currentAttachedObject.tag != "Chip" &&
+                deckHand.currentAttachedObject.tag != "PlayingCard")
             {
                 Vector2 handPos = new Vector2(hand.transform.position.x, hand.transform.position.z);
                 Vector2 chipPos = new Vector2(transform.position.x, transform.position.z);
@@ -133,13 +139,11 @@ public class Chip : InteractionSuperClass {
                     }
 
                     Vector2 dest = chipPos + vel2D.normalized * ((.12f - touchVect.magnitude) / dot); //.12
-                    //float chipHeight = GetComponent<Collider>().bounds.size.y;
-                    rb.MovePosition(new Vector3(dest.x, transform.position.y, dest.y));
-                    //if (hand.GetStandardInteractionButtonDown() == true) //on Vive controller, this is the trigger
-                    //{
-                    //    hand.AttachObject(gameObject);
-                    //    hand.HoverLock(interactableObject);
-                    //}
+                    if(rb!= null)
+                    {
+                        rb.MovePosition(new Vector3(dest.x, transform.position.y, dest.y));
+
+                    }
                 }
                 if ((hand.otherHand.transform.position - transform.position).magnitude < .2f && (otherHandPos - chipPos).magnitude < .12f)
                 {
@@ -154,13 +158,11 @@ public class Chip : InteractionSuperClass {
                     }
 
                     Vector2 dest = chipPos + vel2D.normalized * ((.12f - touchVect.magnitude) / dot); //.12
-                    //float chipHeight = GetComponent<Collider>().bounds.size.y;
-                    rb.MovePosition(new Vector3(dest.x, transform.position.y, dest.y));
-                    //if (hand.GetStandardInteractionButtonDown() == true) //on Vive controller, this is the trigger
-                    //{
-                    //    hand.AttachObject(gameObject);
-                    //    hand.HoverLock(interactableObject);
-                    //}
+                    if(rb != null)
+                    {
+                        rb.MovePosition(new Vector3(dest.x, transform.position.y, dest.y));
+
+                    }
                 }
             }
         }

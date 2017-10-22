@@ -142,7 +142,7 @@ public class Dealer : MonoBehaviour
             //        cardCountForPreFlop++;
             //    }
             //}
-            if (Services.PokerRules.cardsPulled.Count == PlayerAtTableCount() * 2 && !checkedPreFlopCardCount)
+            if (Services.PokerRules.cardsPulled.Count == GetActivePlayerCount() * 2 && !checkedPreFlopCardCount)
             {
                 checkedPreFlopCardCount = true;
                 StartCoroutine(CheckForMistakesPreFlop(.025f));
@@ -162,41 +162,41 @@ public class Dealer : MonoBehaviour
             {
                 case GameState.PreFlop:
                     Debug.Log("PREFLOP!");
-                    messageText.text = "player0 chipCount is " + players[0].ChipCount +
-                                       "\nplayer1 chipCount is " + players[1].ChipCount +
-                                       "\nplayer2 chipCount is " + players[2].ChipCount +
-                                       "\nplayer3 chipCount is " + players[3].ChipCount +
-                                       "\nplayer4 chipCount is " + players[4].ChipCount +
-                                       "\npotSize is at " + Table.instance.DeterminePotSize();
+                    //messageText.text = "player0 chipCount is " + players[0].ChipCount +
+                    //                   "\nplayer1 chipCount is " + players[1].ChipCount +
+                    //                   "\nplayer2 chipCount is " + players[2].ChipCount +
+                    //                   "\nplayer3 chipCount is " + players[3].ChipCount +
+                    //                   "\nplayer4 chipCount is " + players[4].ChipCount +
+                    //                   "\npotSize is at " + Table.instance.DeterminePotSize();
                     break;
                 case GameState.Flop:
                     Debug.Log("FLOP!");
-                    messageText.text = "player0 chipCount is " + players[0].ChipCount +
-                                       "\nplayer1 chipCount is " + players[1].ChipCount +
-                                       "\nplayer2 chipCount is " + players[2].ChipCount +
-                                       "\nplayer3 chipCount is " + players[3].ChipCount +
-                                       "\nplayer4 chipCount is " + players[4].ChipCount +
-                                       "\npotSize is at " + Table.instance.DeterminePotSize();
+                    //messageText.text = "player0 chipCount is " + players[0].ChipCount +
+                    //                   "\nplayer1 chipCount is " + players[1].ChipCount +
+                    //                   "\nplayer2 chipCount is " + players[2].ChipCount +
+                    //                   "\nplayer3 chipCount is " + players[3].ChipCount +
+                    //                   "\nplayer4 chipCount is " + players[4].ChipCount +
+                    //                   "\npotSize is at " + Table.instance.DeterminePotSize();
 
                     break;
                 case GameState.Turn:
                     Debug.Log("TURN!");
-                    messageText.text = "player0 chipCount is " + players[0].ChipCount +
-                                       "\nplayer1 chipCount is " + players[1].ChipCount +
-                                       "\nplayer2 chipCount is " + players[2].ChipCount +
-                                       "\nplayer3 chipCount is " + players[3].ChipCount +
-                                       "\nplayer4 chipCount is " + players[4].ChipCount +
-                                       "\npotSize is at " + Table.instance.DeterminePotSize();
+                    //messageText.text = "player0 chipCount is " + players[0].ChipCount +
+                    //                   "\nplayer1 chipCount is " + players[1].ChipCount +
+                    //                   "\nplayer2 chipCount is " + players[2].ChipCount +
+                    //                   "\nplayer3 chipCount is " + players[3].ChipCount +
+                    //                   "\nplayer4 chipCount is " + players[4].ChipCount +
+                    //                   "\npotSize is at " + Table.instance.DeterminePotSize();
 
                     break;
                 case GameState.River:
                     Debug.Log("RIVER!");
-                    messageText.text = "player0 chipCount is " + players[0].ChipCount +
-                                       "\nplayer1 chipCount is " + players[1].ChipCount +
-                                       "\nplayer2 chipCount is " + players[2].ChipCount +
-                                       "\nplayer3 chipCount is " + players[3].ChipCount +
-                                       "\nplayer4 chipCount is " + players[4].ChipCount +
-                                       "\npotSize is at " + Table.instance.DeterminePotSize();
+                    //messageText.text = "player0 chipCount is " + players[0].ChipCount +
+                    //                   "\nplayer1 chipCount is " + players[1].ChipCount +
+                    //                   "\nplayer2 chipCount is " + players[2].ChipCount +
+                    //                   "\nplayer3 chipCount is " + players[3].ChipCount +
+                    //                   "\nplayer4 chipCount is " + players[4].ChipCount +
+                    //                   "\npotSize is at " + Table.instance.DeterminePotSize();
 
                     break;
                 default:
@@ -415,7 +415,7 @@ public class Dealer : MonoBehaviour
     {
         PokerPlayerRedux player;
         player = players[SeatsAwayFromDealer(distance)];
-        if(player.PlayerState == PlayerState.NotPlaying || player.playerIsAllIn)
+        if(player.PlayerState == PlayerState.NotPlaying || player.playerIsAllIn || player.PlayerState == PlayerState.Eliminated)
         {
             for (int i = 0; i < players.Count; i++)
             {

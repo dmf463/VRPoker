@@ -86,7 +86,7 @@ public class Card : InteractionSuperClass {
 
     //this is checking to see if the card is both being held, and also touching the table
     //if it is, then it's being laid down and we want to detach it
-    public bool layingCardsDown;
+    //public bool layingCardsDown;
    
 
     // Use this for initialization
@@ -240,6 +240,7 @@ public class Card : InteractionSuperClass {
         if (rb.isKinematic == true && deckIsEmpty == false)
         {
             CheckSwipeDirection();
+            CheckTouchDown();
         }
     }
 
@@ -375,14 +376,14 @@ public class Card : InteractionSuperClass {
                 //Debug.Log("cardsInHand = " + cardsInHand);
             }
         }
-        if (other.gameObject.tag == "Board") layingCardsDown = true;
+        //if (other.gameObject.tag == "Board") layingCardsDown = true;
         base.OnTriggerEnterX(other);
     }
 
     //the mirror of the last
     public override void OnTriggerExitX(Collider other)
     {
-        if (other.gameObject.tag == "Board") layingCardsDown = false;
+        //if (other.gameObject.tag == "Board") layingCardsDown = false;
         base.OnTriggerExitX(other);
     }
 
@@ -428,10 +429,10 @@ public class Card : InteractionSuperClass {
     public override void HandAttachedUpdate(Hand attachedHand)
     {
         base.HandAttachedUpdate(attachedHand);
-        if (layingCardsDown)
-        {
-            attachedHand.DetachObject(gameObject);
-        }
+        //if (layingCardsDown)
+        //{
+        //    attachedHand.DetachObject(gameObject);
+        //}
     }
 
     //part of the interaction class this derives from.
@@ -489,22 +490,28 @@ public class Card : InteractionSuperClass {
     }
 
     //part of the interaction class this derives from.
-    public override void OnSwipeTop()
-    {
-        RotateCard();
-        base.OnSwipeTop();
-    }
+    //public override void OnSwipeTop()
+    //{
+    //    RotateCard();
+    //    base.OnSwipeTop();
+    //}
 
-    public override void OnSwipeLeft()
-    {
-        RotateCard();
-        base.OnSwipeTop();
-    }
+    //public override void OnSwipeLeft()
+    //{
+    //    RotateCard();
+    //    base.OnSwipeTop();
+    //}
 
-    public override void OnSwipeRight()
+    //public override void OnSwipeRight()
+    //{
+    //    RotateCard();
+    //    base.OnSwipeTop();
+    //}
+
+    public override void TouchingTrackPad()
     {
         RotateCard();
-        base.OnSwipeTop();
+        base.TouchingTrackPad();
     }
 
     //the actual function called in order to trigger the card flip

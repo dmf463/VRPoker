@@ -477,29 +477,29 @@ public class CardDeckScript : InteractionSuperClass {
     //if we can hold another card, and we're already holding a card
     //we instantiate a new card into your hand with the proper offset
     //we also make the deck smaller and destroy the deck if it was the last card
-    public override void OnPressBottom()
-    {
-        if (readyForAnotherCard && handIsHoldingCard == true)
-        {
-            GameObject firstCard = throwingHand.currentAttachedObject.gameObject;
-            Vector3 offset = new Vector3(-0.01f, -0.01f, 0) * throwingHand.AttachedObjects.Count;
-            int cardPos = Random.Range(0, cardsInDeck.Count);
-            CardType cardType = cardsInDeck[cardPos];
-            Card card = CreateCard(cardType, throwingHand.transform.position, Quaternion.identity);
-            card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
-            if(throwingHand.AttachedObjects.Count < 3)
-            {
-                throwingHand.AttachObject(card.gameObject, Hand.AttachmentFlags.ParentToHand);
-                card.gameObject.transform.localPosition = new Vector3(firstCard.transform.localPosition.x + offset.x, firstCard.transform.localPosition.y + offset.y, firstCard.transform.localPosition.z);
-            }
-            MakeDeckSmaller();
-            if (cardsInDeck.Count == 0)
-            {
-                deckHand.HoverUnlock(interactableObject);
-                Destroy(cardDeck);
-                Debug.Log("Destroyed Deck");
-                Table.dealerState = DealerState.ShufflingState;
-            }
-        }
-    }
+    //public override void OnPressBottom()
+    //{
+    //    if (readyForAnotherCard && handIsHoldingCard == true)
+    //    {
+    //        GameObject firstCard = throwingHand.currentAttachedObject.gameObject;
+    //        Vector3 offset = new Vector3(-0.01f, -0.01f, 0) * throwingHand.AttachedObjects.Count;
+    //        int cardPos = Random.Range(0, cardsInDeck.Count);
+    //        CardType cardType = cardsInDeck[cardPos];
+    //        Card card = CreateCard(cardType, throwingHand.transform.position, Quaternion.identity);
+    //        card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
+    //        if(throwingHand.AttachedObjects.Count < 3)
+    //        {
+    //            throwingHand.AttachObject(card.gameObject, Hand.AttachmentFlags.ParentToHand);
+    //            card.gameObject.transform.localPosition = new Vector3(firstCard.transform.localPosition.x + offset.x, firstCard.transform.localPosition.y + offset.y, firstCard.transform.localPosition.z);
+    //        }
+    //        MakeDeckSmaller();
+    //        if (cardsInDeck.Count == 0)
+    //        {
+    //            deckHand.HoverUnlock(interactableObject);
+    //            Destroy(cardDeck);
+    //            Debug.Log("Destroyed Deck");
+    //            Table.dealerState = DealerState.ShufflingState;
+    //        }
+    //    }
+    //}
 }

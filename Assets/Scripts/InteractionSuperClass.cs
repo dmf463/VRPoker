@@ -44,6 +44,8 @@ public class InteractionSuperClass : MonoBehaviour {
     // The angle range for detecting swipe
     protected const float angleRange = 30;
 
+    protected bool touchingTrackPad;
+
 
     //see? these are stupid
     //a lot of these are dumb and useless imo
@@ -135,6 +137,20 @@ public class InteractionSuperClass : MonoBehaviour {
         if (device.GetPressDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad) && device.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad).y < 0)
         {
             OnPressBottom();
+        }
+    }
+
+    public virtual void CheckTouchDown()
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            Hand hand = i == 0 ? throwingHand : deckHand;
+            Vector2 touch = hand.controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
+            var device = hand.GetComponent<Hand>().controller;
+            if (device.GetTouchDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
+            {
+                TouchingTrackPad();
+            }
         }
     }
 
@@ -233,6 +249,11 @@ public class InteractionSuperClass : MonoBehaviour {
     public virtual void OnPressBottom()
     {
         Debug.Log("Press Bottom");
+    }
+
+    public virtual void TouchingTrackPad()
+    {
+        Debug.Log("Touching Pad");
     }
 
 }
