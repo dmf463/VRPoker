@@ -811,5 +811,4 @@ public class Dealer : MonoBehaviour
         seatPos = (Table.instance.DealerPosition + distance) % players.Count;
         return seatPos;
     }
-
 }

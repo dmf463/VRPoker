@@ -139,7 +139,7 @@ public class Card : InteractionSuperClass {
             InstantiateNewDeck();
         }
 
-        if(deckScript.deckWasThrown == true)
+        if (deckScript.deckWasThrown == true)
         {
             if (throwingHand.controller.GetPress(EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPress(EVRButtonId.k_EButton_Grip))
             {
@@ -151,11 +151,14 @@ public class Card : InteractionSuperClass {
         //while you're squeezing either grip, the player is in shuffleMode
         if (!Services.Dealer.OutsideVR)
         {
-            if (throwingHand.controller.GetPress(EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPress(EVRButtonId.k_EButton_Grip))
+            if(deckScript.cardsInDeck.Count > 0)
             {
-                Table.dealerState = DealerState.ShufflingState;
+                if (throwingHand.controller.GetPress(EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPress(EVRButtonId.k_EButton_Grip))
+                {
+                    Table.dealerState = DealerState.ShufflingState;
+                }
+                else Table.dealerState = DealerState.DealingState;
             }
-            else Table.dealerState = DealerState.DealingState;
         }
 
         //this is where we're checking whether the card is facing up or not

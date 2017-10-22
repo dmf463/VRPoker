@@ -12,7 +12,8 @@ using Valve.VR.InteractionSystem;
 public class CardDeckScript : InteractionSuperClass {
 
     //this is the actual list of cards in the deck still
-    List<CardType> cardsInDeck;
+    [HideInInspector]
+    public List<CardType> cardsInDeck;
     
     //this is the deck...idk why I have a reference to the deck on the deck..
     //oh...apparently I have it for readability
