@@ -121,7 +121,7 @@ public class Dealer : MonoBehaviour
 		Debug.Log("Gamestate = " + Table.gameState);
         Table.dealerState = DealerState.DealingState;
         lastGameState = GameState.NewRound;
-        OutsideVR = false;
+        OutsideVR = true;
     }
 
     // Update is called once per frame
@@ -815,7 +815,7 @@ public class Dealer : MonoBehaviour
     {
         int playersInLine = 0;
         int index = 0;
-        distance = distance % GetActivePlayerCount();
+        distance = distance % PlayerAtTableCount();
         Debug.Assert(PlayerAtTableCount() > 0);
         while(playersInLine <= distance)
         {
