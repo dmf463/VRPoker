@@ -100,11 +100,11 @@ public class Card : InteractionSuperClass {
         //playerHand = GameObject.Find("Hand1").GetComponent<Hand>();
         cardsInHand = 0;
 
-        if (Services.Dealer.OutsideVR)
-        {
-            throwingHand = GameObject.Find("TestHand1").GetComponent<Hand>();
-            deckHand = GameObject.Find("TestHand2").GetComponent<Hand>();
-        }
+        //if (Services.Dealer.OutsideVR)
+        //{
+        //    throwingHand = GameObject.Find("TestHand1").GetComponent<Hand>();
+        //    deckHand = GameObject.Find("TestHand2").GetComponent<Hand>();
+        //}
 
     }
 	

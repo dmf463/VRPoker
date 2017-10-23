@@ -121,7 +121,7 @@ public class Dealer : MonoBehaviour
 		Debug.Log("Gamestate = " + Table.gameState);
         Table.dealerState = DealerState.DealingState;
         lastGameState = GameState.NewRound;
-        OutsideVR = true;
+        OutsideVR = false;
     }
 
     // Update is called once per frame
@@ -414,7 +414,7 @@ public class Dealer : MonoBehaviour
     public PokerPlayerRedux FindFirstPlayerToAct(int distance)
     {
         PokerPlayerRedux player;
-        player = players[SeatsAwayFromDealer(distance)];
+        player = PlayerSeatsAwayFromDealerAmongstLivePlayers(distance);
         if(player.PlayerState == PlayerState.NotPlaying || player.playerIsAllIn || player.PlayerState == PlayerState.Eliminated || player.currentBet > 0)
         {
             for (int i = 0; i < players.Count; i++)
@@ -556,11 +556,11 @@ public class Dealer : MonoBehaviour
         Table.instance.DealerPosition = 0;
         Table.instance.SetDealerButtonPos(Table.instance.DealerPosition);
         for (int i = 0; i < 5; i++) {
-            Debug.Log(players[SeatsAwayFromDealer(i)].playerDestinations.Count);
+            Debug.Log(players[SeatsAwayFromDealerAmongstLivePlayers(i)].playerDestinations.Count);
         }
 
-        players[SeatsAwayFromDealer(1)].Bet(SmallBlind);
-        players[SeatsAwayFromDealer(2)].Bet(BigBlind);
+        players[SeatsAwayFromDealerAmongstLivePlayers(1)].Bet(SmallBlind);
+        players[SeatsAwayFromDealerAmongstLivePlayers(2)].Bet(BigBlind);
         //Behaviour halo = (Behaviour)players[SeatsAwayFromDealer(1)].playerCardIndicator.GetComponent("Halo");
         //halo.enabled = true;
     }
@@ -575,8 +575,8 @@ public class Dealer : MonoBehaviour
                 players[i].currentBet = 0;
                 players[i].actedThisRound = false;
             }
-            players[SeatsAwayFromDealer(1)].currentBet = SmallBlind;
-            players[SeatsAwayFromDealer(2)].currentBet = BigBlind;
+            players[SeatsAwayFromDealerAmongstLivePlayers(1)].currentBet = SmallBlind;
+            players[SeatsAwayFromDealerAmongstLivePlayers(2)].currentBet = BigBlind;
             LastBet = BigBlind;
         }
         else
