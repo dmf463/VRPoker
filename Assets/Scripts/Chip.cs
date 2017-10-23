@@ -64,7 +64,10 @@ public class Chip : InteractionSuperClass {
     //it's set in multiple places, but not USED for anything
     public bool chipForBet;
 
+    private List<Vector3> chipPositions;
+
     Rigidbody rb;
+
     // Use this for initialization
     void Start () {
         rb = GetComponent<Rigidbody>();
@@ -138,10 +141,9 @@ public class Chip : InteractionSuperClass {
                         Vector2 dest = chipPos + vel2D.normalized * ((.12f - touchVect.magnitude) / dot); //.12
                         if (rb != null)
                         {
-                            //rb.MovePosition(new Vector3(dest.x, transform.position.y, dest.y));
-                            transform.position = new Vector3(dest.x, transform.position.y, dest.y);
-
+                            rb.MovePosition(new Vector3(dest.x, transform.position.y, dest.y));
                         }
+                        //else rb.isKinematic = false;
                     }
                 }
                 if (hand.otherHand.currentAttachedObject.tag != "Chip" && hand.otherHand.currentAttachedObject.tag != "PlayingCard" &&
@@ -154,7 +156,7 @@ public class Chip : InteractionSuperClass {
                         Vector2 touchVect = (chipPos - otherHandPos);
                         Vector2 chipDir = touchVect;
                         float dot = Vector2.Dot(vel2D.normalized, touchVect.normalized);
-                        if (vel2D.magnitude > .2f && dot > .55f) //.6
+                        if (vel2D.magnitude > .2f && dot > .75f) //.6
                         {
                             chipDir = vel2D;
                         }
@@ -162,10 +164,10 @@ public class Chip : InteractionSuperClass {
                         Vector2 dest = chipPos + vel2D.normalized * ((.12f - touchVect.magnitude) / dot); //.12
                         if (rb != null)
                         {
-                            //rb.MovePosition(new Vector3(dest.x, transform.position.y, dest.y));
-                            transform.position = new Vector3(dest.x, transform.position.y, dest.y);
+                            rb.MovePosition(new Vector3(dest.x, transform.position.y, dest.y));
                         }
                     }
+                    //else rb.isKinematic = false;
                 }
             }
         }
