@@ -8,6 +8,7 @@ public class PokerRules : MonoBehaviour {
 
     public List<Vector3> chipPositionWhenPushing;
     public int chipsBeingPushed;
+    public List<Chip> chipGroup;
     //this keeps track of ALL the cards that have been dealt in a given hand
     //this way we won't use the same card twice for multiple things
     public List<CardType> cardsPulled = new List<CardType>();
@@ -31,11 +32,16 @@ public class PokerRules : MonoBehaviour {
         boardPos.Add(GameObject.Find("Flop3"));
         boardPos.Add(GameObject.Find("Flop4"));
         boardPos.Add(GameObject.Find("Flop5"));
-        playerDestinations = Table.instance.playerDestinations;	
+        playerDestinations = Table.instance.playerDestinations;
+        chipPositionWhenPushing = CreateChipPositions(chipPositionWhenPushing[0], 0.06f, 0.075f, 5, 25);
 	}
 
     void Update()
     {
+        if(chipGroup.Count > 0)
+        {
+            PushGroupOfChips();
+        }
         if(cardsPulled.Count <= Services.Dealer.PlayerAtTableCount() * 2)
         {
             IndicateCardPlacement(cardsPulled.Count);
@@ -397,5 +403,37 @@ public class PokerRules : MonoBehaviour {
         playingCard.GetComponent<Card>().cardMarkedForDestruction = true;
         cardsLogged.Add(playingCard.GetComponent<Card>());
         return playingCard.GetComponent<Card>();
+    }
+
+    private List<Vector3> CreateChipPositions(Vector3 startPosition, float xIncremenet, float zIncrement, int maxRowSize, int maxColumnSize)
+    {
+        List<Vector3> listOfPositions = new List<Vector3>();
+        float xOffset;
+        float zOffset;
+        for (int i = 0; i < maxColumnSize; i++)
+        {
+            if (i % 2 == 0)
+            {
+                xOffset = (((i % maxRowSize) / 2) + 0.5f) * -xIncremenet;
+            }
+            else xOffset = (((i % maxRowSize) / 2) + 0.5f) * xIncremenet;
+
+            zOffset = (i / maxRowSize) * zIncrement;
+
+            listOfPositions.Add(new Vector3(startPosition.x + xOffset, 0, startPosition.z + zOffset));
+        }
+
+        return listOfPositions;
+    }
+
+    public void PushGroupOfChips()
+    {
+        for (int i = 0; i < chipGroup.Count; i++)
+        {
+            Rigidbody rb = chipGroup[i].gameObject.GetComponent<Rigidbody>();
+            int chipSpotIndex = chipGroup[i].spotIndex;
+            Vector3 dest = chipGroup[i].handPushingChip.transform.TransformPoint(chipPositionWhenPushing[chipSpotIndex]);
+            rb.MovePosition(new Vector3 (dest.x, chipGroup[i].gameObject.transform.position.y, dest.z));
+        }
     }
 }

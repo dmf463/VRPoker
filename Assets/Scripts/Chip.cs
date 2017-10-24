@@ -64,8 +64,10 @@ public class Chip : InteractionSuperClass {
     //it's set in multiple places, but not USED for anything
     public bool chipForBet;
     private bool pushingChip;
-    private int spotIndex;
-    private Hand handPushingChip;
+    [HideInInspector]
+    public int spotIndex;
+    [HideInInspector]
+    public Hand handPushingChip;
 
     Rigidbody rb;
 
@@ -142,24 +144,27 @@ public class Chip : InteractionSuperClass {
 
                         Vector3 dest = hand.transform.TransformPoint(Services.PokerRules.chipPositionWhenPushing[spotIndex]);
                         //Vector3 dest = chipPos + vel2D.normalized * ((.12f - touchVect.magnitude) / dot); //.12
-                        if (rb != null)
+                        //if (rb != null)
+                        //{
+                        //    rb.MovePosition(new Vector3(dest.x, transform.position.y, dest.z));
+                        //}
+                        if (!pushingChip)
                         {
-                            rb.MovePosition(new Vector3(dest.x, transform.position.y, dest.z));
-                            if (!pushingChip)
-                            {
-                                handPushingChip = hand;
-                                pushingChip = true;
-                                spotIndex = Services.PokerRules.chipsBeingPushed;
-                                Services.PokerRules.chipsBeingPushed += 1;
-                                Debug.Log(Services.PokerRules.chipsBeingPushed);
-                            }
+                            Services.PokerRules.chipGroup.Add(this);
+                            handPushingChip = hand;
+                            pushingChip = true;
+                            spotIndex = Services.PokerRules.chipsBeingPushed;
+                            Services.PokerRules.chipsBeingPushed += 1;
+                            Debug.Log(Services.PokerRules.chipsBeingPushed);
                         }
                     }
                 }
+
                 else
                 {
                     if (pushingChip && !handPushingChip.controller.GetTouch(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
                     {
+                        Services.PokerRules.chipGroup.Clear();
                         handPushingChip = null;
                         pushingChip = false;
                         spotIndex = 0;
