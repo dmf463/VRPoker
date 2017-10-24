@@ -123,29 +123,32 @@ public class CardDeckScript : InteractionSuperClass {
     //but we're just messing with scale in order to achieve the illusion that we're pulling cards and stuff
     void OnCollisionEnter(Collision other)
     {
-        if(Table.dealerState == DealerState.ShufflingState)
+        if (Table.dealerState == DealerState.ShufflingState)
         {
-            if(other.gameObject.tag == "PlayingCard")
+            if (Table.gameState == GameState.CleanUp || Table.gameState == GameState.PostHand)
             {
-                Destroy(other.gameObject);
-                MakeDeckLarger();
-            }
-            //this is the problem, because like, whenever we decrement and increment the card deck
-            //we permanently change the scale
-            //which makes this trigger early sometimes
-            //I should do
-            //have a variable that knows how many cards are on the table
-            //once I've destroyed that many cards
-            //refill the deck, and set the decks scale to the original deck scale
-            if (currentCardDeckScale.y >= newCardDeckScale.y)
-            {
-                GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
-                foreach(GameObject card in deadCards)
+                if (other.gameObject.tag == "PlayingCard")
                 {
-                    Destroy(card);
+                    Destroy(other.gameObject);
+                    MakeDeckLarger();
                 }
-                RefillCardDeck();
-                Table.dealerState = DealerState.DealingState;
+                //this is the problem, because like, whenever we decrement and increment the card deck
+                //we permanently change the scale
+                //which makes this trigger early sometimes
+                //I should do
+                //have a variable that knows how many cards are on the table
+                //once I've destroyed that many cards
+                //refill the deck, and set the decks scale to the original deck scale
+                if (currentCardDeckScale.y >= newCardDeckScale.y)
+                {
+                    GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
+                    foreach (GameObject card in deadCards)
+                    {
+                        Destroy(card);
+                    }
+                    RefillCardDeck();
+                    Table.dealerState = DealerState.DealingState;
+                }
             }
         }
     }

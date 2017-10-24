@@ -112,6 +112,7 @@ public class Table {
         _potChips.Clear();
         Services.Dealer.ResetPlayerStatus();
         gameState = GameState.NewRound;
+        Services.PokerRules.TurnOffAllIndicators();
         DealerPosition = (Services.Dealer.FindFirstPlayerToAct(1).SeatPos); //this does not account for a dead dealer
         SetDealerButtonPos(DealerPosition);
 

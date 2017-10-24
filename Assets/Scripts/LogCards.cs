@@ -58,7 +58,7 @@ public class LogCards : MonoBehaviour
                             Debug.Log(other.gameObject.name + " cannot be added to " + playerNames[i]);
                         }
                         //and the card has not already been dealt to somewhere else
-                        if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
+                        else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
                         {
                             Debug.Log(other.gameObject.name + " is already in play");
                         }
@@ -88,9 +88,13 @@ public class LogCards : MonoBehaviour
                     {
                         Debug.Log(other.gameObject.name + "cannot be added to the board");
                     }
-                    if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
+                    else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
                     {
                         Debug.Log(other.gameObject.name + " is already in play");
+                    }
+                    else if (other.gameObject.GetComponent<Rigidbody>().isKinematic)
+                    {
+                        Debug.Log("Still holding card");
                     }
                     else
                     {
@@ -111,9 +115,13 @@ public class LogCards : MonoBehaviour
                 {
                     Debug.Log(other.gameObject.name + "cannot be added to the board");
                 }
-                if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
+                else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
                 {
                     Debug.Log("card is already in play");
+                }
+                else if (other.gameObject.GetComponent<Rigidbody>().isKinematic)
+                {
+                    Debug.Log("Still holding card");
                 }
                 else
                 {

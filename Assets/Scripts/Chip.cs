@@ -50,7 +50,7 @@ public class Chip : InteractionSuperClass {
     const float MAGNITUDE_THRESHOLD = 1;
 
     //the max amount of chips that can go in a chipstack
-    const float MAX_CHIPSTACK = 20;
+    const float MAX_CHIPSTACK = 30;
 
     //the force modifier for when we throw chips
     const float CHIP_FORCE_MODIFIER = 1.5f;
@@ -148,7 +148,7 @@ public class Chip : InteractionSuperClass {
                         //{
                         //    rb.MovePosition(new Vector3(dest.x, transform.position.y, dest.z));
                         //}
-                        if (!pushingChip)
+                        if (!pushingChip && Services.PokerRules.chipGroup.Count <= 20)
                         {
                             Services.PokerRules.chipGroup.Add(this);
                             handPushingChip = hand;

@@ -33,7 +33,7 @@ public class PokerRules : MonoBehaviour {
         boardPos.Add(GameObject.Find("Flop4"));
         boardPos.Add(GameObject.Find("Flop5"));
         playerDestinations = Table.instance.playerDestinations;
-        chipPositionWhenPushing = CreateChipPositions(chipPositionWhenPushing[0], 0.06f, 0.075f, 5, 25);
+        chipPositionWhenPushing = CreateChipPositions(chipPositionWhenPushing[0], 0.06f, 0.07f, 5, 25);
 	}
 
     void Update()
@@ -432,8 +432,11 @@ public class PokerRules : MonoBehaviour {
         {
             Rigidbody rb = chipGroup[i].gameObject.GetComponent<Rigidbody>();
             int chipSpotIndex = chipGroup[i].spotIndex;
-            Vector3 dest = chipGroup[i].handPushingChip.transform.TransformPoint(chipPositionWhenPushing[chipSpotIndex]);
-            rb.MovePosition(new Vector3 (dest.x, chipGroup[i].gameObject.transform.position.y, dest.z));
+            Vector3 dest = chipGroup[i].handPushingChip.GetAttachmentTransform("PushChip").transform.TransformPoint(chipPositionWhenPushing[chipSpotIndex]);
+            if(rb != null)
+            {
+                rb.MovePosition(new Vector3(dest.x, chipGroup[i].gameObject.transform.position.y, dest.z));
+            }
         }
     }
 }
