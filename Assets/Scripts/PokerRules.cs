@@ -1,10 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Valve.VR;
+using Valve.VR.InteractionSystem;
 
 public class PokerRules : MonoBehaviour {
 
-
+    public List<Vector3> chipPositionWhenPushing;
+    public int chipsBeingPushed;
     //this keeps track of ALL the cards that have been dealt in a given hand
     //this way we won't use the same card twice for multiple things
     public List<CardType> cardsPulled = new List<CardType>();
@@ -28,12 +31,7 @@ public class PokerRules : MonoBehaviour {
         boardPos.Add(GameObject.Find("Flop3"));
         boardPos.Add(GameObject.Find("Flop4"));
         boardPos.Add(GameObject.Find("Flop5"));
-        for (int i = 0; i < boardPos.Count; i++)
-        {
-            Debug.Log("board pos " + i + " is " + boardPos[i].transform.position);
-        }
-        playerDestinations = Table.instance.playerDestinations;
-		
+        playerDestinations = Table.instance.playerDestinations;	
 	}
 
     void Update()

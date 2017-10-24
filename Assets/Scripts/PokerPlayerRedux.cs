@@ -162,7 +162,7 @@ public class PokerPlayerRedux : MonoBehaviour{
         lowReturnRate = 0.8f;
         decentReturnRate = 1f;
         highReturnRate = 1.3f;
-        Debug.Log("lowReturn Rate: " + lowReturnRate + ", decentReturnRate: " + decentReturnRate + ", highReturnRate: " + highReturnRate);
+        //Debug.Log("lowReturn Rate: " + lowReturnRate + ", decentReturnRate: " + decentReturnRate + ", highReturnRate: " + highReturnRate);
         //Debug.Log(playerDestinations.Count); 
         //playerDestinations = //Table.instance.playerDestinations;
         //for (int i = 0; i < playerDestinations.Count; i++) {

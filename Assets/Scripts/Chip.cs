@@ -63,8 +63,9 @@ public class Chip : InteractionSuperClass {
     //I don't think this is actually relevant
     //it's set in multiple places, but not USED for anything
     public bool chipForBet;
-
-    private List<Vector3> chipPositions;
+    private bool pushingChip;
+    private int spotIndex;
+    private Hand handPushingChip;
 
     Rigidbody rb;
 
@@ -74,6 +75,7 @@ public class Chip : InteractionSuperClass {
         //set the proper bools
         //and assign the chip its value
         canBeGrabbed = true;
+        pushingChip = false;
         regrabCoroutineActive = false;
         switch (GetComponent<MeshFilter>().mesh.name)
         {
@@ -130,7 +132,7 @@ public class Chip : InteractionSuperClass {
                     {
                         Vector3 vel = hand.GetTrackedObjectVelocity();
                         Vector2 vel2D = new Vector2(vel.x, vel.z);
-                        Vector2 touchVect = (chipPos - handPos);
+                        Vector2 touchVect = (chipPos - (handPos));
                         Vector2 chipDir = touchVect;
                         float dot = Vector2.Dot(vel2D.normalized, touchVect.normalized);
                         if (vel2D.magnitude > .2f && dot > .75f) //.6
@@ -138,36 +140,31 @@ public class Chip : InteractionSuperClass {
                             chipDir = vel2D;
                         }
 
-                        Vector2 dest = chipPos + vel2D.normalized * ((.12f - touchVect.magnitude) / dot); //.12
+                        Vector3 dest = hand.transform.TransformPoint(Services.PokerRules.chipPositionWhenPushing[spotIndex]);
+                        //Vector3 dest = chipPos + vel2D.normalized * ((.12f - touchVect.magnitude) / dot); //.12
                         if (rb != null)
                         {
-                            rb.MovePosition(new Vector3(dest.x, transform.position.y, dest.y));
+                            rb.MovePosition(new Vector3(dest.x, transform.position.y, dest.z));
+                            if (!pushingChip)
+                            {
+                                handPushingChip = hand;
+                                pushingChip = true;
+                                spotIndex = Services.PokerRules.chipsBeingPushed;
+                                Services.PokerRules.chipsBeingPushed += 1;
+                                Debug.Log(Services.PokerRules.chipsBeingPushed);
+                            }
                         }
-                        //else rb.isKinematic = false;
                     }
                 }
-                if (hand.otherHand.currentAttachedObject.tag != "Chip" && hand.otherHand.currentAttachedObject.tag != "PlayingCard" &&
-                    hand.otherHand.controller.GetTouch(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
+                else
                 {
-                    if ((hand.otherHand.transform.position - transform.position).magnitude < .2f && (otherHandPos - chipPos).magnitude < .12f)
+                    if (pushingChip && !handPushingChip.controller.GetTouch(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
                     {
-                        Vector3 vel = hand.otherHand.GetTrackedObjectVelocity();
-                        Vector2 vel2D = new Vector2(vel.x, vel.z);
-                        Vector2 touchVect = (chipPos - otherHandPos);
-                        Vector2 chipDir = touchVect;
-                        float dot = Vector2.Dot(vel2D.normalized, touchVect.normalized);
-                        if (vel2D.magnitude > .2f && dot > .75f) //.6
-                        {
-                            chipDir = vel2D;
-                        }
-
-                        Vector2 dest = chipPos + vel2D.normalized * ((.12f - touchVect.magnitude) / dot); //.12
-                        if (rb != null)
-                        {
-                            rb.MovePosition(new Vector3(dest.x, transform.position.y, dest.y));
-                        }
+                        handPushingChip = null;
+                        pushingChip = false;
+                        spotIndex = 0;
+                        Services.PokerRules.chipsBeingPushed = 0;
                     }
-                    //else rb.isKinematic = false;
                 }
             }
         }
@@ -288,7 +285,7 @@ public class Chip : InteractionSuperClass {
             {
                 GameObject firstStack = attachedHand.AttachedObjects[0].attachedObject;
                 float xOffSet = firstStack.GetComponent<Collider>().bounds.size.x;
-                Debug.Log("xOffSet = " + xOffSet + " and hand is holding " + attachedHand.AttachedObjects.Count + " objects.");
+                //Debug.Log("xOffSet = " + xOffSet + " and hand is holding " + attachedHand.AttachedObjects.Count + " objects.");
                 Chip chipToGrab = null;
                 foreach (Chip chip in stackToHold)
                 {

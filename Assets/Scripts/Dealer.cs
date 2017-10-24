@@ -555,9 +555,9 @@ public class Dealer : MonoBehaviour
         }
         Table.instance.DealerPosition = 0;
         Table.instance.SetDealerButtonPos(Table.instance.DealerPosition);
-        for (int i = 0; i < 5; i++) {
-            Debug.Log(players[SeatsAwayFromDealerAmongstLivePlayers(i)].playerDestinations.Count);
-        }
+        //for (int i = 0; i < 5; i++) {
+        //    Debug.Log(players[SeatsAwayFromDealerAmongstLivePlayers(i)].playerDestinations.Count);
+        //}
 
         players[SeatsAwayFromDealerAmongstLivePlayers(1)].Bet(SmallBlind);
         players[SeatsAwayFromDealerAmongstLivePlayers(2)].Bet(BigBlind);
