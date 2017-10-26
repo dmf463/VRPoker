@@ -1374,7 +1374,9 @@ public class PokerPlayerRedux : MonoBehaviour{
 							GameObject.Destroy(organizedChips[chipStacks][chipIndex].GetComponent<Rigidbody>());
 						}
 						organizedChips[chipStacks][chipIndex].transform.parent = parentChip.transform;
-						organizedChips[chipStacks][chipIndex].transform.position = new Vector3(parentChip.transform.position.x, parentChip.transform.position.y - (incrementStackBy * chipStackSize), parentChip.transform.position.z);
+						organizedChips[chipStacks][chipIndex].transform.position = new Vector3(parentChip.transform.position.x, 
+                                                                                               parentChip.transform.position.y - (incrementStackBy * chipStackSize), 
+                                                                                               parentChip.transform.position.z);
 						organizedChips[chipStacks][chipIndex].transform.rotation = parentChip.transform.rotation;
 						organizedChips[chipStacks][chipIndex].GetComponent<Chip>().inAStack = true;
 						organizedChips[chipStacks][chipIndex].GetComponent<Chip>().chipForBet = false;
