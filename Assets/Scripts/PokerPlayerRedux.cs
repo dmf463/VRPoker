@@ -129,6 +129,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 	public AudioClip allInAudio;
 	public AudioClip winAudio;
 	public AudioClip loseAudio;
+	public AudioClip fiftyTwoAudio;
 
 
 
@@ -388,16 +389,12 @@ public class PokerPlayerRedux : MonoBehaviour{
 	//determines which reaction to have
 	public void WinnerReactions()
 	{
-		for (int i = 0; i < Services.Dealer.players.Count; i++)
-		{
-			if(Services.Dealer.players[i].PlayerState == PlayerState.Loser)
-			{
-				PokerPlayerRedux losingPlayer = Services.Dealer.players[i];
-				if (losingPlayer.HandStrength < 0.25) IncredulousReaction();
-				else if (losingPlayer.HandStrength < 0.5) RespectfulReaction();
-				else GoodReaction();
-			}
-		}
+		Services.SoundManager.GenerateSourceAndPlay(winAudio);
+
+//				PokerPlayerRedux losingPlayer = Services.Dealer.players[i];
+//				if (losingPlayer.HandStrength < 0.25) IncredulousReaction();
+//				else if (losingPlayer.HandStrength < 0.5) RespectfulReaction();
+//				else GoodReaction();
 	}
 
 	//determines which loser reaction there is
