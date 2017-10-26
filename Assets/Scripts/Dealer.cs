@@ -529,6 +529,25 @@ public class Dealer : MonoBehaviour
         }
     }
 
+    public bool CheckIfOnlyPlayerNotAllIn()
+    {
+        bool onlyOnePlayerNotAllIn = false;
+        int playersAllIn = 0;
+        for (int i = 0; i < players.Count; i++)
+        {
+            if (players[i].playerIsAllIn)
+            {
+                playersAllIn++;
+            }
+        }
+        if(GetActivePlayerCount() - playersAllIn == 1)
+        {
+            onlyOnePlayerNotAllIn = true;
+        }
+
+        return onlyOnePlayerNotAllIn;
+    }
+
     //this sets all the players by adding them to the player list
     //setting their starting stack
     //adding their chips to the proper list
