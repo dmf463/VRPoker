@@ -316,6 +316,9 @@ public class Card : InteractionSuperClass {
             gameObject.GetComponent<ConstantForce>().enabled = false;
             cardThrownWrong = false;
         }
+		if (other.gameObject.tag == "PokerPlayerFace"){
+			
+		}
         if(Table.dealerState == DealerState.ShufflingState)
         {
             if (other.gameObject.tag == "PlayingCard")
