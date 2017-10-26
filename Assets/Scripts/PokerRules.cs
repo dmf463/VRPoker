@@ -41,6 +41,10 @@ public class PokerRules : MonoBehaviour {
         if(chipGroup.Count > 0)
         {
             PushGroupOfChips();
+            //foreach(GameObject chip in chipGroup)
+            //{
+            //    chip.GetComponent<BoxCollider>().enabled = false;
+            //}
         }
         if(cardsPulled.Count <= Services.Dealer.PlayerAtTableCount() * 2)
         {
@@ -436,9 +440,8 @@ public class PokerRules : MonoBehaviour {
             if(rb != null)
             {
                 rb.MovePosition(new Vector3(dest.x, chipGroup[i].gameObject.transform.position.y, dest.z));
-                //RigidbodyConstraints constraints = rb.constraints;
-                //constraints = RigidbodyConstraints.FreezeRotation;
-                //constraints = RigidbodyConstraints.FreezeAll;
+                RigidbodyConstraints constraints = rb.constraints;
+                constraints = RigidbodyConstraints.FreezeRotation;
             }
         }
     }
