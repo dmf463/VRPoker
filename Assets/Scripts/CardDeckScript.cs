@@ -452,6 +452,8 @@ public class CardDeckScript : InteractionSuperClass {
         }
         StartCoroutine(WaitToDestroyDeck(0.25f));
         
+		PokerPlayerRedux randomPlayer = Services.Dealer.players[Random.Range(0,5)];
+		Services.SoundManager.GenerateSourceAndPlay(randomPlayer.fiftyTwoAudio);
     }
 
     //destroys the deck and sets us to shuffling mode
