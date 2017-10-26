@@ -436,6 +436,9 @@ public class PokerRules : MonoBehaviour {
             if(rb != null)
             {
                 rb.MovePosition(new Vector3(dest.x, chipGroup[i].gameObject.transform.position.y, dest.z));
+                //RigidbodyConstraints constraints = rb.constraints;
+                //constraints = RigidbodyConstraints.FreezeRotation;
+                //constraints = RigidbodyConstraints.FreezeAll;
             }
         }
     }

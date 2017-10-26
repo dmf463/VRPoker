@@ -1300,14 +1300,27 @@ public class PokerPlayerRedux : MonoBehaviour{
 		chipContainer.transform.rotation = Quaternion.Euler(0, chipContainer.transform.rotation.eulerAngles.y + 90, 0);
 		Vector3 lastStackPos = Vector3.zero;
 		Vector3 firstStackPos = Vector3.zero;
-		for (int chipStacks = 0; chipStacks < organizedChips.Count; chipStacks++)
+
+        int stackCountMax = 25;
+        int stacksCreated = 0;
+        int stackRowMax = 5;
+
+        for (int chipStacks = 0; chipStacks < organizedChips.Count; chipStacks++)
 		{
 			if (organizedChips[chipStacks].Count != 0)
 			{
+                int chipStackSize = 0;
 				for (int chipIndex = 0; chipIndex < organizedChips[chipStacks].Count; chipIndex++)
 				{
 					if (chipIndex == 0)
 					{
+                        chipStackSize++;
+                        stacksCreated++;
+                        if(stacksCreated >= stackRowMax)
+                        {
+                            stacksCreated = 0;
+                            offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.z + .01f, 0, 0);
+                        }
 						parentChip = organizedChips[chipStacks][0];
 						parentChip.transform.parent = chipContainer.transform;
 						parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
@@ -1325,14 +1338,43 @@ public class PokerPlayerRedux : MonoBehaviour{
 						}
 						lastStackPos = parentChip.transform.position;
 					}
+                    else if(chipStackSize >= stackCountMax)
+                    {
+                        Debug.Log("creating new stack cause max stack count reached");
+                        chipStackSize = 0;
+                        stacksCreated++;
+                        if (stacksCreated >= stackRowMax)
+                        {
+                            Debug.Log("moving row forward");
+                            stacksCreated = 0;
+                            offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.z + .01f, 0, 0);
+                        }
+                        parentChip = organizedChips[chipStacks][chipIndex];
+                        parentChip.transform.parent = chipContainer.transform;
+                        parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
+                        parentChip.GetComponent<Chip>().chipStack = new ChipStack(parentChip.GetComponent<Chip>());
+                        if (parentChip.GetComponent<Rigidbody>() == null)
+                        {
+                            parentChip.AddComponent<Rigidbody>();
+                        }
+                        incrementStackBy = parentChip.gameObject.GetComponent<Collider>().bounds.size.y;
+                        parentChip.transform.localPosition = offSet;
+                        offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.x + .01f, 0, 0);
+                        if (firstStackPos == Vector3.zero)
+                        {
+                            firstStackPos = parentChip.transform.position;
+                        }
+                        lastStackPos = parentChip.transform.position;
+                    }
 					else
 					{
+                        chipStackSize++;
 						if(organizedChips[chipStacks][chipIndex].GetComponent<Rigidbody>() != null)
 						{
 							GameObject.Destroy(organizedChips[chipStacks][chipIndex].GetComponent<Rigidbody>());
 						}
 						organizedChips[chipStacks][chipIndex].transform.parent = parentChip.transform;
-						organizedChips[chipStacks][chipIndex].transform.position = new Vector3(parentChip.transform.position.x, parentChip.transform.position.y - (incrementStackBy * chipIndex), parentChip.transform.position.z);
+						organizedChips[chipStacks][chipIndex].transform.position = new Vector3(parentChip.transform.position.x, parentChip.transform.position.y - (incrementStackBy * chipStackSize), parentChip.transform.position.z);
 						organizedChips[chipStacks][chipIndex].transform.rotation = parentChip.transform.rotation;
 						organizedChips[chipStacks][chipIndex].GetComponent<Chip>().inAStack = true;
 						organizedChips[chipStacks][chipIndex].GetComponent<Chip>().chipForBet = false;
@@ -1612,14 +1654,6 @@ public class PokerPlayerRedux : MonoBehaviour{
             }
             Vector3 trueOffset = firstStackPos - lastStackPos;
             chipContainer.transform.position += trueOffset / 2;
-            GameObject[] emptyContainers = GameObject.FindGameObjectsWithTag("Container");
-            foreach (GameObject container in emptyContainers)
-            {
-                if (container.transform.childCount == 0)
-                {
-                    Destroy(container);
-                }
-            }
         }
 
 		if (valueRemaining > 0)
@@ -1652,7 +1686,15 @@ public class PokerPlayerRedux : MonoBehaviour{
 		{
 			CreateAndOrganizeChipStacks(Table.instance.GetChipGameObjects(SeatPos));
 		}
-	}
+        GameObject[] emptyContainers = GameObject.FindGameObjectsWithTag("Container");
+        foreach (GameObject container in emptyContainers)
+        {
+            if (container.transform.childCount == 0)
+            {
+                Destroy(container);
+            }
+        }
+    }
 
 	//this basically goes through a given chipValue and finds each instance of that chipValue in the playerChipStack
 	public int FindChipMax(int chipValue)

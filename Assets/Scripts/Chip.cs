@@ -50,7 +50,7 @@ public class Chip : InteractionSuperClass {
     const float MAGNITUDE_THRESHOLD = 1;
 
     //the max amount of chips that can go in a chipstack
-    const float MAX_CHIPSTACK = 30;
+    const float MAX_CHIPSTACK = 25;
 
     //the force modifier for when we throw chips
     const float CHIP_FORCE_MODIFIER = 1.5f;
