@@ -130,6 +130,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 	public AudioClip winAudio;
 	public AudioClip loseAudio;
 	public AudioClip fiftyTwoAudio;
+	public AudioClip cardHitAudio;
 
 
 

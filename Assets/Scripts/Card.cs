@@ -317,7 +317,8 @@ public class Card : InteractionSuperClass {
             cardThrownWrong = false;
         }
 		if (other.gameObject.tag == "PokerPlayerFace"){
-			
+			AudioClip hitSound = other.gameObject.GetComponentInParent<PokerPlayerRedux>().cardHitAudio;
+			Services.SoundManager.GenerateSourceAndPlay(hitSound);
 		}
         if(Table.dealerState == DealerState.ShufflingState)
         {
