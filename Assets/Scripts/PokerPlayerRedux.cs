@@ -1319,7 +1319,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                             stacksCreated = 0;
                             offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.z + .01f, 0, 0);
                         }
-						parentChip = organizedChips[chipStacks][0];
+						parentChip = Instantiate(organizedChips[chipStacks][0], chipContainer.transform.position, Quaternion.identity);
 						parentChip.transform.parent = chipContainer.transform;
 						parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
 						parentChip.GetComponent<Chip>().chipStack = new ChipStack(parentChip.GetComponent<Chip>());
@@ -1347,7 +1347,8 @@ public class PokerPlayerRedux : MonoBehaviour{
                             stacksCreated = 0;
                             offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.z + .01f, 0, 0);
                         }
-                        parentChip = organizedChips[chipStacks][chipIndex];
+                        //parentChip = organizedChips[chipStacks][chipIndex];
+                        parentChip = Instantiate(organizedChips[chipStacks][chipIndex], chipContainer.transform.position, Quaternion.identity) as GameObject;
                         parentChip.transform.parent = chipContainer.transform;
                         parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
                         parentChip.GetComponent<Chip>().chipStack = new ChipStack(parentChip.GetComponent<Chip>());
@@ -1367,17 +1368,20 @@ public class PokerPlayerRedux : MonoBehaviour{
 					else
 					{
                         chipStackSize++;
-						if(organizedChips[chipStacks][chipIndex].GetComponent<Rigidbody>() != null)
-						{
-							GameObject.Destroy(organizedChips[chipStacks][chipIndex].GetComponent<Rigidbody>());
-						}
-						organizedChips[chipStacks][chipIndex].transform.parent = parentChip.transform;
-						organizedChips[chipStacks][chipIndex].transform.position = new Vector3(parentChip.transform.position.x, 
-                                                                                               parentChip.transform.position.y - (incrementStackBy * chipStackSize), 
-                                                                                               parentChip.transform.position.z);
-						organizedChips[chipStacks][chipIndex].transform.rotation = parentChip.transform.rotation;
-						organizedChips[chipStacks][chipIndex].GetComponent<Chip>().inAStack = true;
-						organizedChips[chipStacks][chipIndex].GetComponent<Chip>().chipForBet = false;
+                        //if(organizedChips[chipStacks][chipIndex].GetComponent<Rigidbody>() != null)
+                        //{
+                        //	GameObject.Destroy(organizedChips[chipStacks][chipIndex].GetComponent<Rigidbody>());
+                        //}
+                        //organizedChips[chipStacks][chipIndex].transform.parent = parentChip.transform;
+                        //organizedChips[chipStacks][chipIndex].transform.position = new Vector3(parentChip.transform.position.x, 
+                        //                                                                                         parentChip.transform.position.y - (incrementStackBy * chipStackSize), 
+                        //                                                                                         parentChip.transform.position.z);
+                        //organizedChips[chipStacks][chipIndex].transform.rotation = parentChip.transform.rotation;
+                        //organizedChips[chipStacks][chipIndex].GetComponent<Chip>().inAStack = true;
+                        //organizedChips[chipStacks][chipIndex].GetComponent<Chip>().chipForBet = false;
+                        parentChip.transform.localScale = new Vector3(parentChip.transform.localScale.x,
+                                                                      parentChip.transform.localScale.y + incrementStackBy,
+                                                                      parentChip.transform.localScale.z);
 						parentChip.GetComponent<Chip>().chipStack.chips.Add(organizedChips[chipStacks][chipIndex].GetComponent<Chip>());
 						parentChip.GetComponent<Chip>().chipStack.stackValue += organizedChips[chipStacks][chipIndex].GetComponent<Chip>().chipValue;
 					}
@@ -1431,25 +1435,25 @@ public class PokerPlayerRedux : MonoBehaviour{
 
 		for (int i = 0; i < blackChipCount; i++)
 		{
-			GameObject newChip = GameObject.Instantiate(FindChipPrefab(ChipConfig.BLACK_CHIP_VALUE), playerPositions[SeatPos].transform.position, Quaternion.Euler(-90, 0, 0));
+            GameObject newChip = FindChipPrefab(ChipConfig.BLACK_CHIP_VALUE) as GameObject;
 			startingStack.Add(newChip);
 		}
 		for (int i = 0; i < whiteChipCount; i++)
 		{
-			GameObject newChip = GameObject.Instantiate(FindChipPrefab(ChipConfig.WHITE_CHIP_VALUE), playerPositions[SeatPos].transform.position, Quaternion.Euler(-90, 0, 0));
+			GameObject newChip = FindChipPrefab(ChipConfig.WHITE_CHIP_VALUE) as GameObject;
 			startingStack.Add(newChip);
 		}
 		for (int i = 0; i < blueChipCount; i++)
 		{
-			GameObject newChip = GameObject.Instantiate(FindChipPrefab(ChipConfig.BLUE_CHIP_VALUE), playerPositions[SeatPos].transform.position, Quaternion.Euler(-90, 0, 0));
+			GameObject newChip = FindChipPrefab(ChipConfig.BLUE_CHIP_VALUE) as GameObject;
 			startingStack.Add(newChip);
 		}
 		for (int i = 0; i < redChipCount; i++)
 		{
-			GameObject newChip = GameObject.Instantiate(FindChipPrefab(ChipConfig.RED_CHIP_VALUE), playerPositions[SeatPos].transform.position, Quaternion.Euler(-90, 0, 0));
+			GameObject newChip = FindChipPrefab(ChipConfig.RED_CHIP_VALUE) as GameObject;
 			startingStack.Add(newChip);
 		}
-
+        Debug.Log("startingStack size = " + startingStack.Count);
 		return startingStack;
 	}
 
@@ -1528,11 +1532,11 @@ public class PokerPlayerRedux : MonoBehaviour{
 					colorChipCount[3]++;
 				}
 			}
-			foreach(GameObject chip in chipChange)
-			{
-				Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chip.GetComponent<Chip>());
-				chip.GetComponent<Chip>().DestroyChip();       
-			}
+			//foreach(GameObject chip in chipChange)
+			//{
+			//	Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chip.GetComponent<Chip>());
+			//	chip.GetComponent<Chip>().DestroyChip();       
+			//}
 
 		}
 
@@ -1559,7 +1563,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                                 //Debug.Log(playerDestinations.Count);
                                 //Debug.Log("Removing chip from seat" + playerDestinations[SeatPos]);
                                 Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chipToRemove);
-                                chipToRemove.DestroyChip();
+                                //chipToRemove.DestroyChip();
                                 break;
                             }
                         }
@@ -1600,7 +1604,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                                     //Debug.Log(playerDestinations.Count);
                                     //Debug.Log("Removing chip from seat" + playerDestinations[SeatPos]);
                                     Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chipToRemove);
-                                    chipToRemove.DestroyChip();
+                                    //chipToRemove.DestroyChip();
                                     break;
                                 }
                             }
@@ -1637,7 +1641,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                                     //Debug.Log(playerDestinations.Count);
                                     //Debug.Log("Removing chip from seat" + playerDestinations[SeatPos]);
                                     Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chipToRemove);
-                                    chipToRemove.DestroyChip();
+                                    //chipToRemove.DestroyChip();
                                     break;
                                 }
                             }
@@ -1664,7 +1668,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 				Chip chip = Table.instance.playerChipStacks[SeatPos][i];
 				Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chip);
 				Debug.Log("Removing a " + chip.chipValue + " chip");
-				chip.DestroyChip();
+				//chip.DestroyChip();
 			}
 			Debug.Assert(Table.instance.playerChipStacks[SeatPos].Count == 0);
 			List<GameObject> newChipStack = SetChipStacks(newChipStackValue);
@@ -1684,7 +1688,8 @@ public class PokerPlayerRedux : MonoBehaviour{
 		}
 		else
 		{
-			CreateAndOrganizeChipStacks(Table.instance.GetChipGameObjects(SeatPos));
+            List<GameObject> newChipStack = SetChipStacks(Table.instance.GetChipStackTotal(SeatPos));
+			CreateAndOrganizeChipStacks(newChipStack);
 		}
         GameObject[] emptyContainers = GameObject.FindGameObjectsWithTag("Container");
         foreach (GameObject container in emptyContainers)
