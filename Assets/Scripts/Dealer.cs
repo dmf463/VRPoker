@@ -121,7 +121,7 @@ public class Dealer : MonoBehaviour
 		Debug.Log("Gamestate = " + Table.gameState);
         Table.dealerState = DealerState.DealingState;
         lastGameState = GameState.NewRound;
-        OutsideVR = false;
+        OutsideVR = true;
     }
 
     // Update is called once per frame
@@ -162,41 +162,41 @@ public class Dealer : MonoBehaviour
             {
                 case GameState.PreFlop:
                     //Debug.Log("PREFLOP!");
-                    //messageText.text = "player0 chipCount is " + players[0].ChipCount +
-                    //                   "\nplayer1 chipCount is " + players[1].ChipCount +
-                    //                   "\nplayer2 chipCount is " + players[2].ChipCount +
-                    //                   "\nplayer3 chipCount is " + players[3].ChipCount +
-                    //                   "\nplayer4 chipCount is " + players[4].ChipCount +
-                    //                   "\npotSize is at " + Table.instance.DeterminePotSize();
+                    messageText.text = "player0 chipCount is " + players[0].ChipCount +
+                                       "\nplayer1 chipCount is " + players[1].ChipCount +
+                                       "\nplayer2 chipCount is " + players[2].ChipCount +
+                                       "\nplayer3 chipCount is " + players[3].ChipCount +
+                                       "\nplayer4 chipCount is " + players[4].ChipCount +
+                                       "\npotSize is at " + Table.instance.DeterminePotSize();
                     break;
                 case GameState.Flop:
                     //Debug.Log("FLOP!");
-                    //messageText.text = "player0 chipCount is " + players[0].ChipCount +
-                    //                   "\nplayer1 chipCount is " + players[1].ChipCount +
-                    //                   "\nplayer2 chipCount is " + players[2].ChipCount +
-                    //                   "\nplayer3 chipCount is " + players[3].ChipCount +
-                    //                   "\nplayer4 chipCount is " + players[4].ChipCount +
-                    //                   "\npotSize is at " + Table.instance.DeterminePotSize();
+                    messageText.text = "player0 chipCount is " + players[0].ChipCount +
+                                       "\nplayer1 chipCount is " + players[1].ChipCount +
+                                       "\nplayer2 chipCount is " + players[2].ChipCount +
+                                       "\nplayer3 chipCount is " + players[3].ChipCount +
+                                       "\nplayer4 chipCount is " + players[4].ChipCount +
+                                       "\npotSize is at " + Table.instance.DeterminePotSize();
 
                     break;
                 case GameState.Turn:
                     //Debug.Log("TURN!");
-                    //messageText.text = "player0 chipCount is " + players[0].ChipCount +
-                    //                   "\nplayer1 chipCount is " + players[1].ChipCount +
-                    //                   "\nplayer2 chipCount is " + players[2].ChipCount +
-                    //                   "\nplayer3 chipCount is " + players[3].ChipCount +
-                    //                   "\nplayer4 chipCount is " + players[4].ChipCount +
-                    //                   "\npotSize is at " + Table.instance.DeterminePotSize();
+                    messageText.text = "player0 chipCount is " + players[0].ChipCount +
+                                       "\nplayer1 chipCount is " + players[1].ChipCount +
+                                       "\nplayer2 chipCount is " + players[2].ChipCount +
+                                       "\nplayer3 chipCount is " + players[3].ChipCount +
+                                       "\nplayer4 chipCount is " + players[4].ChipCount +
+                                       "\npotSize is at " + Table.instance.DeterminePotSize();
 
                     break;
                 case GameState.River:
                     //Debug.Log("RIVER!");
-                    //messageText.text = "player0 chipCount is " + players[0].ChipCount +
-                    //                   "\nplayer1 chipCount is " + players[1].ChipCount +
-                    //                   "\nplayer2 chipCount is " + players[2].ChipCount +
-                    //                   "\nplayer3 chipCount is " + players[3].ChipCount +
-                    //                   "\nplayer4 chipCount is " + players[4].ChipCount +
-                    //                   "\npotSize is at " + Table.instance.DeterminePotSize();
+                    messageText.text = "player0 chipCount is " + players[0].ChipCount +
+                                       "\nplayer1 chipCount is " + players[1].ChipCount +
+                                       "\nplayer2 chipCount is " + players[2].ChipCount +
+                                       "\nplayer3 chipCount is " + players[3].ChipCount +
+                                       "\nplayer4 chipCount is " + players[4].ChipCount +
+                                       "\npotSize is at " + Table.instance.DeterminePotSize();
 
                     break;
                 default:
@@ -574,14 +574,23 @@ public class Dealer : MonoBehaviour
         }
         Table.instance.DealerPosition = 0;
         Table.instance.SetDealerButtonPos(Table.instance.DealerPosition);
+        StartCoroutine(WaitToPostBlinds(.25f));
         //for (int i = 0; i < 5; i++) {
         //    Debug.Log(players[SeatsAwayFromDealerAmongstLivePlayers(i)].playerDestinations.Count);
         //}
-
-        players[SeatsAwayFromDealerAmongstLivePlayers(1)].Bet(SmallBlind);
-        players[SeatsAwayFromDealerAmongstLivePlayers(2)].Bet(BigBlind);
         //Behaviour halo = (Behaviour)players[SeatsAwayFromDealer(1)].playerCardIndicator.GetComponent("Halo");
         //halo.enabled = true;
+    }
+
+    public IEnumerator WaitToPostBlinds(float time)
+    {
+        yield return new WaitForSeconds(time);
+        PostBlinds();
+    }
+    public void PostBlinds()
+    {
+        players[SeatsAwayFromDealerAmongstLivePlayers(1)].Bet(SmallBlind);
+        players[SeatsAwayFromDealerAmongstLivePlayers(2)].Bet(BigBlind);
     }
 
     //we call this at the beginning of each round in order to set the blinds as the current and last bet

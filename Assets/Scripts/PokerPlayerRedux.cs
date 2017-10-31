@@ -13,6 +13,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public GameObject playerSpotlight;
     public GameObject playerCardIndicator;
+    private List<GameObject> parentChips;
     public GameObject[] cardPos;
     public int cardsReplaced = 0;
 
@@ -161,6 +162,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             Destination.player0, Destination.player1, Destination.player2, Destination.player3, Destination.player4
         };
 
+        parentChips = new List<GameObject>();
         lowReturnRate = 0.8f;
         decentReturnRate = 1f;
         highReturnRate = 1.3f;
@@ -1283,7 +1285,23 @@ public class PokerPlayerRedux : MonoBehaviour{
 	//and move the container there
 	public void CreateAndOrganizeChipStacks(List<GameObject> chipsToOrganize )
 	{
-		List<List<GameObject>> organizedChips = OrganizeChipsIntoColorStacks(chipsToOrganize);
+        GameObject[] emptyContainers = GameObject.FindGameObjectsWithTag("Container");
+        foreach (GameObject container in emptyContainers)
+        {
+            if (container.transform.childCount == 0)
+            {
+                Destroy(container);
+            }
+        }
+        if(parentChips.Count != 0)
+        {
+            foreach (GameObject chip in parentChips)
+            {
+                Destroy(chip);
+            }
+            parentChips.Clear();
+        }
+        List<List<GameObject>> organizedChips = OrganizeChipsIntoColorStacks(chipsToOrganize);
 		GameObject parentChip = null;
 		float incrementStackBy = 0;
 		List<GameObject> playerPositions = new List<GameObject>
@@ -1320,6 +1338,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                             offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.z + .01f, 0, 0);
                         }
 						parentChip = Instantiate(organizedChips[chipStacks][0], chipContainer.transform.position, Quaternion.identity);
+                        parentChips.Add(parentChip);
 						parentChip.transform.parent = chipContainer.transform;
 						parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
 						parentChip.GetComponent<Chip>().chipStack = new ChipStack(parentChip.GetComponent<Chip>());
@@ -1327,7 +1346,8 @@ public class PokerPlayerRedux : MonoBehaviour{
 						{
 							parentChip.AddComponent<Rigidbody>();
 						}
-						incrementStackBy = parentChip.gameObject.GetComponent<Collider>().bounds.size.y;
+                        //incrementStackBy = parentChip.gameObject.GetComponent<Collider>().bounds.size.y;
+                        incrementStackBy = parentChip.transform.localScale.z;
 						parentChip.transform.localPosition = offSet;
 						offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.x + .01f, 0, 0);
 						if(firstStackPos == Vector3.zero)
@@ -1349,6 +1369,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                         }
                         //parentChip = organizedChips[chipStacks][chipIndex];
                         parentChip = Instantiate(organizedChips[chipStacks][chipIndex], chipContainer.transform.position, Quaternion.identity) as GameObject;
+                        parentChips.Add(parentChip);
                         parentChip.transform.parent = chipContainer.transform;
                         parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
                         parentChip.GetComponent<Chip>().chipStack = new ChipStack(parentChip.GetComponent<Chip>());
@@ -1356,7 +1377,8 @@ public class PokerPlayerRedux : MonoBehaviour{
                         {
                             parentChip.AddComponent<Rigidbody>();
                         }
-                        incrementStackBy = parentChip.gameObject.GetComponent<Collider>().bounds.size.y;
+                        //incrementStackBy = parentChip.gameObject.GetComponent<Collider>().bounds.size.y;
+                        incrementStackBy = parentChip.transform.localScale.z;
                         parentChip.transform.localPosition = offSet;
                         offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.x + .01f, 0, 0);
                         if (firstStackPos == Vector3.zero)
@@ -1380,9 +1402,9 @@ public class PokerPlayerRedux : MonoBehaviour{
                         //organizedChips[chipStacks][chipIndex].GetComponent<Chip>().inAStack = true;
                         //organizedChips[chipStacks][chipIndex].GetComponent<Chip>().chipForBet = false;
                         parentChip.transform.localScale = new Vector3(parentChip.transform.localScale.x,
-                                                                      parentChip.transform.localScale.y + incrementStackBy,
-                                                                      parentChip.transform.localScale.z);
-						parentChip.GetComponent<Chip>().chipStack.chips.Add(organizedChips[chipStacks][chipIndex].GetComponent<Chip>());
+                                                                      parentChip.transform.localScale.y,
+                                                                      parentChip.transform.localScale.z + incrementStackBy);
+                        parentChip.GetComponent<Chip>().chipStack.chips.Add(organizedChips[chipStacks][chipIndex].GetComponent<Chip>());
 						parentChip.GetComponent<Chip>().chipStack.stackValue += organizedChips[chipStacks][chipIndex].GetComponent<Chip>().chipValue;
 					}
 				}
@@ -1390,14 +1412,6 @@ public class PokerPlayerRedux : MonoBehaviour{
 		}
 		Vector3 trueOffset = firstStackPos - lastStackPos;
 		chipContainer.transform.position += trueOffset / 2;
-        GameObject[] emptyContainers = GameObject.FindGameObjectsWithTag("Container");
-        foreach(GameObject container in emptyContainers)
-        {
-            if(container.transform.childCount == 0)
-            {
-                Destroy(container);
-            }
-        }
 	}
 
 	//this is LIKE create and organize chipStacks, except is used only during intialization
@@ -1453,7 +1467,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 			GameObject newChip = FindChipPrefab(ChipConfig.RED_CHIP_VALUE) as GameObject;
 			startingStack.Add(newChip);
 		}
-        Debug.Log("startingStack size = " + startingStack.Count);
+        //Debug.Log("startingStack size = " + startingStack.Count);
 		return startingStack;
 	}
 

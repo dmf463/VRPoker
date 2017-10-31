@@ -337,10 +337,10 @@ public class PokerRules : MonoBehaviour {
                 else cardPos = 0;
                 int playerIndex = Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(i + 1);
                 PokerPlayerRedux player = Services.Dealer.players[playerIndex];
-                Debug.Log("player we're trying to check is + " + player);
+                //Debug.Log("player we're trying to check is + " + player);
                 if (player.PlayerState == PlayerState.Playing && player.playerIsAllIn == false)
                 {
-                    Debug.Log("player we're trying to check is + " + player);
+                    //Debug.Log("player we're trying to check is + " + player);
                     //Debug.Log("firstPlayer = " + Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count]);
                     Card newCard = CreateCard(cardsPulled[i], player.cardPos[cardPos].transform.position, player.cardPos[cardPos].transform.rotation);
                     Table.instance.AddCardTo(playerDestinations[playerIndex], newCard);
