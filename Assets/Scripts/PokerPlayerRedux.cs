@@ -1536,7 +1536,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
 		}
 
-        //if there are less than 5 chips, don't even bother putting them in a stack. because why even?
+        //if there are less than 2 chips, don't even bother putting them in a stack. because why even?
         if((colorChipCount[0] + colorChipCount[1] + colorChipCount[2] + colorChipCount[3]) < 2)
         {
             for (int colorListIndex = 0; colorListIndex < colorChipCount.Count; colorListIndex++)
