@@ -57,7 +57,7 @@ public class ChipStack {
             incomingChip.transform.localPosition = new Vector3(chips[0].transform.localPosition.x, chips[0].transform.localPosition.y, (chips[chips.Count - 1].transform.localPosition.z + incrementStackBy));
             incomingChip.transform.rotation = chips[0].transform.rotation;
             incomingChip.GetComponent<Chip>().inAStack = true;
-            incomingChip.GetComponent<Chip>().chipForBet = false;
+            incomingChip.GetComponent<Chip>().chipForBet = true;
             stackValue += incomingChip.GetComponent<Chip>().chipValue;
             chips.Add(incomingChip.GetComponent<Chip>());
             //Debug.Log("chipStack is worth " + stackValue);   

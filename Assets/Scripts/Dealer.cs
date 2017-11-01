@@ -121,7 +121,7 @@ public class Dealer : MonoBehaviour
 		Debug.Log("Gamestate = " + Table.gameState);
         Table.dealerState = DealerState.DealingState;
         lastGameState = GameState.NewRound;
-        OutsideVR = true;
+        OutsideVR = false;
     }
 
     // Update is called once per frame
@@ -831,6 +831,22 @@ public class Dealer : MonoBehaviour
         playersHaveBeenEvaluated = false;
         winnersHaveBeenPaid = false;
         readyToAwardPlayers = false;
+        GameObject[] chipsOnTable = GameObject.FindGameObjectsWithTag("Chip");
+        if (chipsOnTable.Length > 0)
+        {
+            foreach (GameObject chip in chipsOnTable)
+            {
+                Destroy(chip);
+            }
+        }
+        for (int i = 0; i < players.Count; i++)
+        {
+            if(players[i].PlayerState == PlayerState.Playing)
+            {
+                List<GameObject> newStacks = players[i].SetChipStacks(players[i].ChipCount);
+                players[i].CreateAndOrganizeChipStacks(newStacks);
+            }
+        }
     }
 
     //this is an ease of life function to find how far away from the dealer button a given player is

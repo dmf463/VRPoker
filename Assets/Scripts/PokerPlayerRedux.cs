@@ -1258,7 +1258,11 @@ public class PokerPlayerRedux : MonoBehaviour{
 		colorChips.Add(blueChips);
 		colorChips.Add(whiteChips);
 		colorChips.Add(blackChips);
-		return colorChips;
+        Debug.Log("redChips.count = " + redChips.Count);
+        Debug.Log("blueChips.count = " + blueChips.Count);
+        Debug.Log("whiteChips.count = " + whiteChips.Count);
+        Debug.Log("blackChips.count = " + blackChips.Count);
+        return colorChips;
 	}
 
 	//so here we're actually instantiating the chips that we passed in the last function. 
@@ -1301,6 +1305,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             }
             parentChips.Clear();
         }
+
         List<List<GameObject>> organizedChips = OrganizeChipsIntoColorStacks(chipsToOrganize);
 		GameObject parentChip = null;
 		float incrementStackBy = 0;
@@ -1317,7 +1322,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 		Vector3 lastStackPos = Vector3.zero;
 		Vector3 firstStackPos = Vector3.zero;
 
-        int stackCountMax = 25;
+        int stackCountMax = 30;
         int stacksCreated = 0;
         int stackRowMax = 5;
 
@@ -1663,7 +1668,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 							newChip.transform.position = new Vector3(parentChip.transform.position.x, parentChip.transform.position.y - (incrementStackBy * chipIndex), parentChip.transform.position.z);
 							newChip.transform.rotation = parentChip.transform.rotation;
 							newChip.GetComponent<Chip>().inAStack = true;
-							newChip.GetComponent<Chip>().chipForBet = false;
+							newChip.GetComponent<Chip>().chipForBet = true;
 							parentChip.GetComponent<Chip>().chipStack.chips.Add(newChip.GetComponent<Chip>());
 							parentChip.GetComponent<Chip>().chipStack.stackValue += newChip.GetComponent<Chip>().chipValue;
                         }
