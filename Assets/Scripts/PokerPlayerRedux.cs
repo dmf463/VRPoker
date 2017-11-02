@@ -1337,11 +1337,11 @@ public class PokerPlayerRedux : MonoBehaviour{
 					{
                         chipStackSize++;
                         stacksCreated++;
-                        if(stacksCreated >= stackRowMax)
-                        {
-                            stacksCreated = 0;
-                            offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.z + .01f, 0, 0);
-                        }
+                        //if(stacksCreated >= stackRowMax)
+                        //{
+                        //    stacksCreated = 0;
+                        //    offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.z + .01f, 0, 0);
+                        //}
 						parentChip = Instantiate(organizedChips[chipStacks][0], chipContainer.transform.position, Quaternion.identity);
                         parentChips.Add(parentChip);
 						parentChip.transform.parent = chipContainer.transform;
@@ -1366,12 +1366,12 @@ public class PokerPlayerRedux : MonoBehaviour{
                         Debug.Log("creating new stack cause max stack count reached");
                         chipStackSize = 0;
                         stacksCreated++;
-                        if (stacksCreated >= stackRowMax)
-                        {
-                            Debug.Log("moving row forward");
-                            stacksCreated = 0;
-                            offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.z + .01f, 0, 0);
-                        }
+                        //if (stacksCreated >= stackRowMax)
+                        //{
+                        //    Debug.Log("moving row forward");
+                        //    stacksCreated = 0;
+                        //    offSet += new Vector3(0, 0, (parentChip.GetComponent<Collider>().bounds.size.x + .01f) * 1.5f);
+                        //}
                         //parentChip = organizedChips[chipStacks][chipIndex];
                         parentChip = Instantiate(organizedChips[chipStacks][chipIndex], chipContainer.transform.position, Quaternion.identity) as GameObject;
                         parentChips.Add(parentChip);
@@ -1437,9 +1437,9 @@ public class PokerPlayerRedux : MonoBehaviour{
 		int redChipCount = 0;
 
 		//change these hard coded variables to a function that finds the proper amount of chips based on a percent of the chipAmount
-		int blackChipCountMAX = 15;
-		int whiteChipCountMAX = 25;
-		int blueChipCountMAX = 25;
+		int blackChipCountMAX = (int)(chipAmount * 0.45f) / ChipConfig.BLACK_CHIP_VALUE;
+		int whiteChipCountMAX = (int)(chipAmount * 0.35f) / ChipConfig.WHITE_CHIP_VALUE;
+		int blueChipCountMAX = (int)(chipAmount * 0.15f) / ChipConfig.BLUE_CHIP_VALUE;
 
 		blackChipCount = Mathf.Min(blackChipCountMAX, valueRemaining / ChipConfig.BLACK_CHIP_VALUE);
 		valueRemaining -= blackChipCount * ChipConfig.BLACK_CHIP_VALUE;

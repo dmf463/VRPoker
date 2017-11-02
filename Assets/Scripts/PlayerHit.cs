@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class PlayerHit : MonoBehaviour
 {
+    public CardDeckScript deckScript;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "PlayingCard" || other.gameObject.tag == "Chip")
+        GameObject cardDeck = GameObject.FindGameObjectWithTag("CardDeck");
+        deckScript = cardDeck.GetComponent<CardDeckScript>();
+        if ((other.gameObject.tag == "PlayingCard" && !deckScript.deckWasThrown)|| other.gameObject.tag == "Chip")
         {
             Debug.Log("WE HIT SOMETHING");
             AudioClip hitSound = GetComponentInParent<PokerPlayerRedux>().cardHitAudio;

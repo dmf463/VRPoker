@@ -33,7 +33,7 @@ public class PokerRules : MonoBehaviour {
         boardPos.Add(GameObject.Find("Flop4"));
         boardPos.Add(GameObject.Find("Flop5"));
         playerDestinations = Table.instance.playerDestinations;
-        chipPositionWhenPushing = CreateChipPositions(chipPositionWhenPushing[0], 0.06f, 0.07f, 5, 25);
+        chipPositionWhenPushing = CreateChipPositions(chipPositionWhenPushing[0], 0.05f, 0.075f, 5, 25);
 	}
 
     void Update()

@@ -421,19 +421,66 @@ public class Chip : InteractionSuperClass {
         //Debug.Log("rb.velocity.magnitude = " + rb.velocity.magnitude);
         if (GetComponent<Rigidbody>().velocity.magnitude > MAGNITUDE_THRESHOLD)
         {
-            foreach(Chip chip in chipStack.chips)
+            if(gameObject.transform.childCount != 0)
             {
-                chip.gameObject.AddComponent<Rigidbody>();
-                chip.gameObject.transform.parent = null;
-                chip.inAStack = false;
-                chip.gameObject.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity() * CHIP_FORCE_MODIFIER, ForceMode.Impulse);
-                chip.gameObject.GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);
-                if (chip.chipStack != null)
+                foreach (Chip chip in chipStack.chips)
                 {
-                    chip.chipStack = null;
+                    chip.gameObject.AddComponent<Rigidbody>();
+                    chip.gameObject.transform.parent = null;
+                    chip.inAStack = false;
+                    chip.gameObject.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity() * CHIP_FORCE_MODIFIER, ForceMode.Impulse);
+                    chip.gameObject.GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);
+                    if (chip.chipStack != null)
+                    {
+                        chip.chipStack = null;
+                    }
+                }
+            }
+            else
+            {
+                if(chipStack.chips.Count != 0)
+                {
+                    float chipSpawnOffset = 0.07f;
+                    for (int i = 0; i < chipStack.chips.Count; i++)
+                    {
+                        GameObject newChip = Instantiate(FindChipPrefab(chipStack.chips[i].chipValue), 
+                                                         transform.position + Random.insideUnitSphere * chipSpawnOffset, 
+                                                         Quaternion.identity);
+                        Rigidbody rb = newChip.gameObject.GetComponent<Rigidbody>();
+                        rb.AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);
+                        rb.AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);
+                        rb.AddForce(Random.Range(0, 150), Random.Range(0, 150), Random.Range(0, 150));
+                        Vector3 randomRot = new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
+                        transform.Rotate(randomRot * Time.deltaTime);
+                    }
+                    Destroy(gameObject);
                 }
             }
         }
+    }
+
+    //this is just me ease-of-life function for findining the correct prefab
+    public GameObject FindChipPrefab(int chipValue)
+    {
+        GameObject chipPrefab = null;
+        switch (chipValue)
+        {
+            case ChipConfig.RED_CHIP_VALUE:
+                chipPrefab = Services.PrefabDB.RedChip;
+                break;
+            case ChipConfig.BLUE_CHIP_VALUE:
+                chipPrefab = Services.PrefabDB.BlueChip;
+                break;
+            case ChipConfig.WHITE_CHIP_VALUE:
+                chipPrefab = Services.PrefabDB.WhiteChip;
+                break;
+            case ChipConfig.BLACK_CHIP_VALUE:
+                chipPrefab = Services.PrefabDB.BlackChip;
+                break;
+            default:
+                break;
+        }
+        return chipPrefab;
     }
 
 }
