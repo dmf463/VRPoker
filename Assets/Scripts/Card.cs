@@ -309,6 +309,13 @@ public class Card : InteractionSuperClass {
     //but this doesn't always work. if I grab cards multiple times
     void OnCollisionEnter(Collision other)
     {
+        if (other.gameObject.tag == "PokerPlayer")
+        {
+            Debug.Log("WE HIT SOMETHING");
+            AudioClip hitSound = other.gameObject.GetComponentInParent<PokerPlayerRedux>().cardHitAudio;
+            Services.SoundManager.GenerateSourceAndPlay(hitSound);
+        }
+
         startLerping = true;
         elapsedTimeForThrowTorque = 0;
         if (cardThrownWrong == true && other.gameObject.tag != "CardDeck" && other.gameObject.tag != "PlayingCard") 
@@ -316,10 +323,7 @@ public class Card : InteractionSuperClass {
             gameObject.GetComponent<ConstantForce>().enabled = false;
             cardThrownWrong = false;
         }
-		if (other.gameObject.tag == "PokerPlayerFace"){
-			AudioClip hitSound = other.gameObject.GetComponentInParent<PokerPlayerRedux>().cardHitAudio;
-			Services.SoundManager.GenerateSourceAndPlay(hitSound);
-		}
+		
         if(Table.dealerState == DealerState.ShufflingState)
         {
             if (other.gameObject.tag == "PlayingCard")
@@ -367,6 +371,7 @@ public class Card : InteractionSuperClass {
     //this is also where we are checking whether the card is being laid down
     public override void OnTriggerEnterX(Collider other)
     {
+       
         if (Table.dealerState == DealerState.ShufflingState)
         {
             if (other.gameObject.tag == "Hand" && cardOnTable == true)
