@@ -9,12 +9,15 @@ public class PlayerHit : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         GameObject cardDeck = GameObject.FindGameObjectWithTag("CardDeck");
-        deckScript = cardDeck.GetComponent<CardDeckScript>();
-        if ((other.gameObject.tag == "PlayingCard" && !deckScript.deckWasThrown)|| other.gameObject.tag == "Chip")
+        if(cardDeck != null)
         {
-            Debug.Log("WE HIT SOMETHING");
-            AudioClip hitSound = GetComponentInParent<PokerPlayerRedux>().cardHitAudio;
-            Services.SoundManager.GenerateSourceAndPlay(hitSound);
+            deckScript = cardDeck.GetComponent<CardDeckScript>();
+            if ((other.gameObject.tag == "PlayingCard" && !deckScript.deckWasThrown) || other.gameObject.tag == "Chip")
+            {
+                Debug.Log("WE HIT SOMETHING");
+                AudioClip hitSound = GetComponentInParent<PokerPlayerRedux>().cardHitAudio;
+                Services.SoundManager.GenerateSourceAndPlay(hitSound);
+            }
         }
     }
 }
