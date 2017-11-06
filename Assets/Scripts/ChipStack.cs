@@ -55,11 +55,13 @@ public class ChipStack {
             {
                 GameObject incomingChip = chip.FindChipPrefab(chip.chipValue);
                 Chip newChip = incomingChip.GetComponent<Chip>();
+
                 newChip.GetComponent<Chip>().inAStack = true;
                 newChip.GetComponent<Chip>().chipForBet = true;
                 stackValue += newChip.GetComponent<Chip>().chipValue;
                 chips.Add(newChip.GetComponent<Chip>());
                 Debug.Log("incomingChip is a " + newChip.chipValue + " dollar chip");
+
                 GameObject.Destroy(chip.gameObject);
                 GameObject mainChip = chips[0].gameObject;
                 mainChip.transform.localScale = new Vector3(mainChip.transform.localScale.x,
