@@ -277,7 +277,7 @@ public class Dealer : MonoBehaviour
             {
                 if (players[i].playerIsAllIn == true) allInPlayerCount++;
             }
-            if (GetActivePlayerCount() == allInPlayerCount) readyForShowdown = true;
+            if (GetActivePlayerCount() == allInPlayerCount) Table.gameState = GameState.ShowDown;
             if(readyForShowdown == true)
             {
                 if (!OutsideVR)
@@ -440,7 +440,14 @@ public class Dealer : MonoBehaviour
         {
             if (players[i].playerIsAllIn) allInPlayers++;
         }
-        if (allInPlayers == GetActivePlayerCount()) onlyAllinPlayersLeft = true;
+        if (allInPlayers == GetActivePlayerCount())
+        {
+            onlyAllinPlayersLeft = true;
+        }
+        else if(GetActivePlayerCount() - allInPlayers == 1)
+        {
+            onlyAllinPlayersLeft = true;
+        }
         else onlyAllinPlayersLeft = false;
 
         return onlyAllinPlayersLeft;
@@ -491,6 +498,30 @@ public class Dealer : MonoBehaviour
     //    yield break;
     //}
 
+
+    
+    public void CheckAllInPlayers()
+    {
+        int allInPlayerCount = 0;
+        for (int i = 0; i < players.Count; i++)
+        {
+            if (players[i].playerIsAllIn == true) allInPlayerCount++;
+        }
+        if (GetActivePlayerCount() == allInPlayerCount)
+        {
+            for (int i = 0; i < Services.Dealer.players.Count; i++)
+            {
+                if (players[i].playerIsAllIn == true)
+                {
+                    players[i].FlipCards();
+                }
+            }
+        }
+        else if((GetActivePlayerCount() - allInPlayerCount) == 1)
+        {
+            playersReady = true;
+        }
+    }
 
     //this gets invoked whenever we gaze at a player
     public void SetNextPlayer()

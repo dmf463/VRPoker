@@ -403,14 +403,14 @@ public class Chip : InteractionSuperClass {
 
     //if we're holding a chip and we press on the bottom
     //then it drops a chip
-    public override void OnPressBottom()
-    {
-        if(chipStack != null)
-        {
-            if (chipStack.chips.Count > 1) chipStack.TakeFromStackInHand();
-        }
-        base.OnPressBottom();
-    }
+    //public override void OnPressBottom()
+    //{
+    //    if(chipStack != null)
+    //    {
+    //        if (chipStack.chips.Count > 1) chipStack.TakeFromStackInHand();
+    //    }
+    //    base.OnPressBottom();
+    //}
 
     //if the velocity of the chipStack is greater than the threshold
     //then set all the chips back to their original state and destroy the chipStack
@@ -426,7 +426,7 @@ public class Chip : InteractionSuperClass {
                 foreach (Chip chip in chipStack.chips)
                 {
                     chip.gameObject.AddComponent<Rigidbody>();
-                    chip.gameObject.transform.parent = null;
+                    //chip.gameObject.transform.parent = null;
                     chip.inAStack = false;
                     chip.gameObject.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity() * CHIP_FORCE_MODIFIER, ForceMode.Impulse);
                     chip.gameObject.GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);

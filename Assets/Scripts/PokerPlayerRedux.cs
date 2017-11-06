@@ -299,35 +299,9 @@ public class PokerPlayerRedux : MonoBehaviour{
         playerIsAllIn = true;
 		Debug.Log("getting ready to go all in");
         Bet(ChipCount);
-		//List<GameObject> allInChips = Table.instance.GetChipGameObjects(SeatPos);
-		//GameObject chipStackContainer = null;
-		//for (int i = 0; i < allInChips.Count; i++)
-		//{
-		//	if (allInChips[i].GetComponent<Chip>().chipStack != null)
-		//	{
-		//		chipStackContainer = allInChips[i].transform.parent.gameObject;
-		//	}
-		//	Table.instance._potChips.Add(allInChips[i].GetComponent<Chip>());
-		//	Table.instance.RemoveChipFrom(playerDestinations[SeatPos], allInChips[i].GetComponent<Chip>());
-		//}
-		//Services.Dealer.StartCoroutine(PushChipsIn(1, chipStackContainer, Table.instance.playerBetZones[SeatPos].transform.position));
         //similar to fold, when we go all in, we want to see if we're the last person to go all in
         //if so, then we want to flip the cards
-        int allInPlayerCount = 0;
-        for (int i = 0; i < Services.Dealer.players.Count; i++)
-        {
-            if (Services.Dealer.players[i].playerIsAllIn == true) allInPlayerCount++;
-        }
-        if (Services.Dealer.GetActivePlayerCount() == allInPlayerCount)
-        {
-            for (int i = 0; i < Services.Dealer.players.Count; i++)
-            {
-                if (Services.Dealer.players[i].playerIsAllIn == true)
-                {
-                    Services.Dealer.players[i].FlipCards();
-                }
-            }
-        }
+        Services.Dealer.CheckAllInPlayers();
     }
 
 	//this is the coroutine for pushing in chips

@@ -30,7 +30,8 @@ public class ChipStack {
         chips.Add(chip);
         chip.inAStack = true;
         stackValue = chips[0].chipValue;
-        incrementStackBy = ((chips[0].gameObject.GetComponent<Collider>().bounds.size.z / 88) * -1);
+        //incrementStackBy = ((chips[0].gameObject.GetComponent<Collider>().bounds.size.z / 88) * -1);
+        incrementStackBy = chips[0].gameObject.transform.localScale.z;
     }
 
     //so when you're holding a chip
@@ -50,18 +51,25 @@ public class ChipStack {
         Debug.Log("adding a " + chip.chipValue + " chip back to the stack");
         if (chip.gameObject != null)
         {
-            Debug.Log("incomingChip is a " + chip.chipValue + " dollar chip");
-            GameObject incomingChip = chip.gameObject;
+            GameObject incomingChip = chip.FindChipPrefab(chip.chipValue);
+            Chip newChip = incomingChip.GetComponent<Chip>();
+            newChip.GetComponent<Chip>().inAStack = true;
+            newChip.GetComponent<Chip>().chipForBet = true;
+            stackValue += newChip.GetComponent<Chip>().chipValue;
+            chips.Add(newChip.GetComponent<Chip>());
+            Debug.Log("incomingChip is a " + newChip.chipValue + " dollar chip");
+            GameObject.Destroy(chip.gameObject);
+            GameObject mainChip = chips[0].gameObject;
+            mainChip.transform.localScale = new Vector3(mainChip.transform.localScale.x,
+                                                        mainChip.transform.localScale.y,
+                                                        mainChip.transform.localScale.z + incrementStackBy);
+            //GameObject incomingChip = chip.gameObject;
             //pretty sure these two lines are the source of some issues FOR SOME REASON
-            GameObject.Destroy(incomingChip.GetComponent<Rigidbody>());
-            incomingChip.transform.parent = chips[0].transform;
+            //GameObject.Destroy(incomingChip.GetComponent<Rigidbody>());
+            //incomingChip.transform.parent = chips[0].transform;
             //
-            incomingChip.transform.localPosition = new Vector3(chips[0].transform.localPosition.x, chips[0].transform.localPosition.y, (chips[chips.Count - 1].transform.localPosition.z + incrementStackBy));
-            incomingChip.transform.rotation = chips[0].transform.rotation;
-            incomingChip.GetComponent<Chip>().inAStack = true;
-            incomingChip.GetComponent<Chip>().chipForBet = true;
-            stackValue += incomingChip.GetComponent<Chip>().chipValue;
-            chips.Add(incomingChip.GetComponent<Chip>());
+            //incomingChip.transform.localPosition = new Vector3(chips[0].transform.localPosition.x, chips[0].transform.localPosition.y, (chips[chips.Count - 1].transform.localPosition.z + incrementStackBy));
+            //incomingChip.transform.rotation = chips[0].transform.rotation;
             //Debug.Log("chipStack is worth " + stackValue);   
         }
 
@@ -70,15 +78,15 @@ public class ChipStack {
     //so this is when we want to drop a chip
     //we basically reset the bools, remove it from the stack
     //and by setting its parent to null, it drops from the stack
-    public void TakeFromStackInHand()
-    {
-        chips[chips.Count - 1].transform.parent = null;
-        chips[chips.Count - 1].gameObject.AddComponent<Rigidbody>();
-        stackValue -= chips[chips.Count - 1].chipValue;
-        chips[chips.Count - 1].canBeGrabbed = false;
-        chips[chips.Count - 1].inAStack = false;
-        chips.Remove(chips[chips.Count - 1]);
-    }
+    //public void TakeFromStackInHand()
+    //{
+    //    chips[chips.Count - 1].transform.parent = null;
+    //    chips[chips.Count - 1].gameObject.AddComponent<Rigidbody>();
+    //    stackValue -= chips[chips.Count - 1].chipValue;
+    //    chips[chips.Count - 1].canBeGrabbed = false;
+    //    chips[chips.Count - 1].inAStack = false;
+    //    chips.Remove(chips[chips.Count - 1]);
+    //}
 
 
 }
