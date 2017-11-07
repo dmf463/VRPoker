@@ -6,11 +6,6 @@ using Valve.VR.InteractionSystem;
 
 public class Chip : InteractionSuperClass {
 
-    //this is the chip color, and I don't think we ever actually use it?
-    //should probably be deleted
-    [HideInInspector]
-    public ChipColor ChipColor;
-
     //super important, this is how much the chip costs, we set this in chipConfig and assign it at start
     public int chipValue;
 
@@ -43,7 +38,7 @@ public class Chip : InteractionSuperClass {
     public ChipStack chipStack;
 
     //is the chip in a stack?
-    [HideInInspector]
+
     public bool inAStack = false;
 
     //the velocity threshold by which chip stacks come apart
@@ -68,6 +63,7 @@ public class Chip : InteractionSuperClass {
     public int spotIndex;
     [HideInInspector]
     public Hand handPushingChip;
+    public int stackValue;
 
     Rigidbody rb;
 
@@ -82,19 +78,15 @@ public class Chip : InteractionSuperClass {
         switch (GetComponent<MeshFilter>().mesh.name)
         {
             case "RedChip Instance":
-                ChipColor = ChipColor.Red;
                 chipValue = ChipConfig.RED_CHIP_VALUE;
                 break;
             case "BlueChip Instance":
-                ChipColor = ChipColor.Blue;
                 chipValue = ChipConfig.BLUE_CHIP_VALUE;
                 break;
             case "WhiteChip Instance":
-                ChipColor = ChipColor.White;
                 chipValue = ChipConfig.WHITE_CHIP_VALUE;
                 break;
             case "BlackChip Instance":
-                ChipColor = ChipColor.Black;
                 chipValue = ChipConfig.BLACK_CHIP_VALUE;
                 break;
             default:
@@ -105,7 +97,10 @@ public class Chip : InteractionSuperClass {
 	
 	// Update is called once per frame
 	void Update () {
-
+        if(chipStack != null)
+        {
+            stackValue = chipStack.stackValue;
+        }
         //if the chip can't be grabbed, start the coroutine that sets it back to being grabbable
         if (!canBeGrabbed)
         {
