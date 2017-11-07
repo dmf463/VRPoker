@@ -162,41 +162,41 @@ public class Dealer : MonoBehaviour
             {
                 case GameState.PreFlop:
                     //Debug.Log("PREFLOP!");
-                    messageText.text = "player0 chipCount is " + players[0].ChipCount +
-                                       "\nplayer1 chipCount is " + players[1].ChipCount +
-                                       "\nplayer2 chipCount is " + players[2].ChipCount +
-                                       "\nplayer3 chipCount is " + players[3].ChipCount +
-                                       "\nplayer4 chipCount is " + players[4].ChipCount +
-                                       "\npotSize is at " + Table.instance.DeterminePotSize();
+                    messageText.text = "player0 chipCount is " + players[0].chipCount +
+                                       "\nplayer1 chipCount is " + players[1].chipCount +
+                                       "\nplayer2 chipCount is " + players[2].chipCount +
+                                       "\nplayer3 chipCount is " + players[3].chipCount +
+                                       "\nplayer4 chipCount is " + players[4].chipCount +
+                                       "\npotSize is at " + Table.instance.potChips;
                     break;
                 case GameState.Flop:
                     //Debug.Log("FLOP!");
-                    messageText.text = "player0 chipCount is " + players[0].ChipCount +
-                                       "\nplayer1 chipCount is " + players[1].ChipCount +
-                                       "\nplayer2 chipCount is " + players[2].ChipCount +
-                                       "\nplayer3 chipCount is " + players[3].ChipCount +
-                                       "\nplayer4 chipCount is " + players[4].ChipCount +
-                                       "\npotSize is at " + Table.instance.DeterminePotSize();
+                    messageText.text = "player0 chipCount is " + players[0].chipCount +
+                                       "\nplayer1 chipCount is " + players[1].chipCount +
+                                       "\nplayer2 chipCount is " + players[2].chipCount +
+                                       "\nplayer3 chipCount is " + players[3].chipCount +
+                                       "\nplayer4 chipCount is " + players[4].chipCount +
+                                       "\npotSize is at " + Table.instance.potChips;
 
                     break;
                 case GameState.Turn:
                     //Debug.Log("TURN!");
-                    messageText.text = "player0 chipCount is " + players[0].ChipCount +
-                                       "\nplayer1 chipCount is " + players[1].ChipCount +
-                                       "\nplayer2 chipCount is " + players[2].ChipCount +
-                                       "\nplayer3 chipCount is " + players[3].ChipCount +
-                                       "\nplayer4 chipCount is " + players[4].ChipCount +
-                                       "\npotSize is at " + Table.instance.DeterminePotSize();
+                    messageText.text = "player0 chipCount is " + players[0].chipCount +
+                                       "\nplayer1 chipCount is " + players[1].chipCount +
+                                       "\nplayer2 chipCount is " + players[2].chipCount +
+                                       "\nplayer3 chipCount is " + players[3].chipCount +
+                                       "\nplayer4 chipCount is " + players[4].chipCount +
+                                       "\npotSize is at " + Table.instance.potChips;
 
                     break;
                 case GameState.River:
                     //Debug.Log("RIVER!");
-                    messageText.text = "player0 chipCount is " + players[0].ChipCount +
-                                       "\nplayer1 chipCount is " + players[1].ChipCount +
-                                       "\nplayer2 chipCount is " + players[2].ChipCount +
-                                       "\nplayer3 chipCount is " + players[3].ChipCount +
-                                       "\nplayer4 chipCount is " + players[4].ChipCount +
-                                       "\npotSize is at " + Table.instance.DeterminePotSize();
+                    messageText.text = "player0 chipCount is " + players[0].chipCount +
+                                       "\nplayer1 chipCount is " + players[1].chipCount +
+                                       "\nplayer2 chipCount is " + players[2].chipCount +
+                                       "\nplayer3 chipCount is " + players[3].chipCount +
+                                       "\nplayer4 chipCount is " + players[4].chipCount +
+                                       "\npotSize is at " + Table.instance.potChips;
 
                     break;
                 default:
@@ -301,7 +301,7 @@ public class Dealer : MonoBehaviour
         {
             if (!playersHaveBeenEvaluated)
             {
-                messageText.text = "Give the winner(s) their winnings (pot size is " + Table.instance.PotChips + " , that's a black chip)";
+                messageText.text = "Give the winner(s) their winnings (pot size is " + Table.instance.potChips + " , that's a black chip)";
                 List<PokerPlayerRedux> playersInHand = new List<PokerPlayerRedux>();
                 for (int i = 0; i < players.Count; i++)
                 {
@@ -539,10 +539,10 @@ public class Dealer : MonoBehaviour
                 Debug.Log("nextPlayer = " + nextPlayer.name);
                 Debug.Log("nextPlayer.actedThisRound = " + nextPlayer.actedThisRound);
                 Debug.Log("nextPlayer.currentBet = " + nextPlayer.currentBet + " and lastBet = " + LastBet);
-                Debug.Log("nextPlayer.chipCount = " + nextPlayer.ChipCount);
+                Debug.Log("nextPlayer.chipCount = " + nextPlayer.chipCount);
                 Debug.Log("nextPlayer.PlayerState = " + nextPlayer.PlayerState);
             }
-            if ((!nextPlayer.actedThisRound || nextPlayer.currentBet < LastBet) && nextPlayer.PlayerState == PlayerState.Playing && nextPlayer.ChipCount != 0)
+            if ((!nextPlayer.actedThisRound || nextPlayer.currentBet < LastBet) && nextPlayer.PlayerState == PlayerState.Playing && nextPlayer.chipCount != 0)
             {
                 roundFinished = false;
                 playerToAct = nextPlayer;
@@ -596,11 +596,13 @@ public class Dealer : MonoBehaviour
             //players.Add(new PokerPlayerRedux(i));
 			players[i].SeatPos = i;
 			players[i].PlayerState = PlayerState.Playing;
-            List<GameObject> startingStack  = players[i].SetChipStacks(chipCount);
-            foreach(GameObject chip in startingStack)
-            {
-                Table.instance.AddChipTo(playerDestinations[i], chip.GetComponent<Chip>());
-            }
+            List<int> startingStack  = players[i].SetChipStacks(chipCount);
+            //foreach(int chip in startingStack)
+            //{
+            //    Table.instance.AddChipTo(playerDestinations[i], chip);
+            //}
+            Table.instance.AddChipTo(playerDestinations[i], chipCount);
+            players[i].chipCount = chipCount;
             players[i].CreateAndOrganizeChipStacks(startingStack);
         }
         Table.instance.DealerPosition = 0;
@@ -620,6 +622,7 @@ public class Dealer : MonoBehaviour
     }
     public void PostBlinds()
     {
+        Debug.Log("posting blinds");
         players[SeatsAwayFromDealerAmongstLivePlayers(1)].Bet(SmallBlind);
         players[SeatsAwayFromDealerAmongstLivePlayers(2)].Bet(BigBlind);
     }
@@ -704,7 +707,7 @@ public class Dealer : MonoBehaviour
                 foreach (PokerPlayerRedux player in PlayerRank[0])
                 {
                     player.PlayerState = PlayerState.Winner;
-                    player.ChipCountToCheckWhenWinning = player.ChipCount;
+                    player.ChipCountToCheckWhenWinning = player.chipCount;
                 }
             }
             else
@@ -728,7 +731,7 @@ public class Dealer : MonoBehaviour
     {
         Debug.Assert(numberOfWinners > 0);
         List<PokerPlayerRedux> winningPlayers = new List<PokerPlayerRedux>();
-        int potAmount = Table.instance.PotChips;
+        int potAmount = Table.instance.potChips;
         for (int i = 0; i < players.Count; i++)
         {
             PokerPlayerRedux playerToCheck = players[SeatsAwayFromDealer(i + 1)];
@@ -813,8 +816,8 @@ public class Dealer : MonoBehaviour
             {
                 //Debug.Log("chipCountToCheckWhenWinning = " + player.ChipCountToCheckWhenWinning + " and potAmountToGiveWinner = " + potAmountToGiveWinner);
                 winnerChipStack = player.ChipCountToCheckWhenWinning + player.chipsWon;
-                Debug.Log("for player" + player.SeatPos + " the winnerChipStack = " + winnerChipStack + " and the Player has" + player.ChipCount);
-                if (player.ChipCount == winnerChipStack && player.HasBeenPaid == false)
+                Debug.Log("for player" + player.SeatPos + " the winnerChipStack = " + winnerChipStack + " and the Player has" + player.chipCount);
+                if (player.chipCount == winnerChipStack && player.HasBeenPaid == false)
                 {
                     winnersPaid++;
                     player.HasBeenPaid = true;
@@ -823,13 +826,13 @@ public class Dealer : MonoBehaviour
             else if(player.PlayerState == PlayerState.Loser)
             {
                 winnerChipStack = player.ChipCountToCheckWhenWinning + potAmountToGiveWinner;
-                if(player.ChipCount == winnerChipStack)
+                if(player.chipCount == winnerChipStack)
                 {
                     messageText.text = "I think you messed up, I didn't win this money.";
                 }
                 else
                 {
-                    messageText.text = "Give the winner(s) their winnings. the pot size is " + Table.instance.PotChips + " and there is/are " + numberOfWinners + " winner(s)";
+                    messageText.text = "Give the winner(s) their winnings. the pot size is " + Table.instance.potChips + " and there is/are " + numberOfWinners + " winner(s)";
                 }
             }
         }
@@ -848,7 +851,7 @@ public class Dealer : MonoBehaviour
     {
         for (int i = 0; i < players.Count; i++)
         {
-            if (players[i].ChipCount == 0) players[i].PlayerState = PlayerState.Eliminated;
+            if (players[i].chipCount == 0) players[i].PlayerState = PlayerState.Eliminated;
             if (players[i].PlayerState != PlayerState.Eliminated)
             {
                 players[i].PlayerState = PlayerState.Playing;
@@ -874,7 +877,7 @@ public class Dealer : MonoBehaviour
         {
             if(players[i].PlayerState == PlayerState.Playing)
             {
-                List<GameObject> newStacks = players[i].SetChipStacks(players[i].ChipCount);
+                List<int> newStacks = players[i].SetChipStacks(players[i].chipCount);
                 players[i].CreateAndOrganizeChipStacks(newStacks);
             }
         }

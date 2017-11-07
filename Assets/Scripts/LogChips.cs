@@ -45,26 +45,27 @@ public class LogChips : MonoBehaviour
                     {
                         if (other.GetComponent<Chip>().inAStack == false)
                         {
-                            if (!Table.instance.playerChipStacks[i].Contains(other.GetComponent<Chip>()))
-                            {
-                                Table.instance.AddChipTo(playerDestinations[i], other.GetComponent<Chip>());
-                                //Debug.Log("something is being added at " + Time.time);
-                            }
+                            Table.instance.AddChipTo(playerDestinations[i], other.GetComponent<Chip>().chipData.ChipValue);
+                            //if (!Table.instance.playerChipStacks[i].Contains(other.GetComponent<Chip>().chipData))
+                            //{
+                            //    Table.instance.AddChipTo(playerDestinations[i], other.GetComponent<Chip>());
+                            //    //Debug.Log("something is being added at " + Time.time);
+                            //}
                             //else Debug.Log("This chip has already been logged");
                         }
                         else if (other.GetComponent<Chip>().inAStack == true)
                         {
                             ChipStack chipStack;
                             chipStack = other.GetComponent<Chip>().chipStack;
-                            foreach (Chip chip in chipStack.chips)
-                            {
-                                if (!Table.instance.playerChipStacks[i].Contains(chip))
-                                {
-                                    Table.instance.AddChipTo(playerDestinations[i], chip);
+                            //foreach (Chip chip in chipStack.chips)
+                            //{
+                            //    if (!Table.instance.playerChipStacks[i].Contains(chip))
+                            //    {
+                                    Table.instance.AddChipTo(playerDestinations[i], chipStack.stackValue);
                                     //Debug.Log("something is being added at " + Time.time);
-                                }
-                                else Debug.Log("this chip, as part of a stack, is already logged");
-                            }
+                            //    }
+                            //    else Debug.Log("this chip, as part of a stack, is already logged");
+                            //}
                         }
                     }
                 }
@@ -85,16 +86,16 @@ public class LogChips : MonoBehaviour
                     {
                         if (other.GetComponent<Chip>().inAStack == false)
                         {
-                            Table.instance.RemoveChipFrom(playerDestinations[i], other.GetComponent<Chip>());
+                            Table.instance.RemoveChipFrom(playerDestinations[i], other.GetComponent<Chip>().chipData.ChipValue);
                         }
                         else if (other.GetComponent<Chip>().inAStack == true)
                         {
                             ChipStack chipStack;
                             chipStack = other.GetComponent<Chip>().chipStack;
-                            foreach (Chip chip in chipStack.chips)
-                            {
-                                Table.instance.RemoveChipFrom(playerDestinations[i], chip);
-                            }
+                            //foreach (Chip chip in chipStack.chips)
+                            //{
+                                Table.instance.RemoveChipFrom(playerDestinations[i], chipStack.stackValue);
+                            //}
                         }
                     }
                 }

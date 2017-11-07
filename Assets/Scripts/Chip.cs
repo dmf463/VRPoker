@@ -7,7 +7,9 @@ using Valve.VR.InteractionSystem;
 public class Chip : InteractionSuperClass {
 
     //super important, this is how much the chip costs, we set this in chipConfig and assign it at start
-    //public int chipValue
+    //public int chipValue;
+
+    public ChipData chipData;
 
     //is the chip touching another chip?
     private bool isTouchingChip;
@@ -21,10 +23,10 @@ public class Chip : InteractionSuperClass {
 
     //the stack that is going to be added to the stack
     [HideInInspector]
-    public List<Chip> incomingStack;
+    public Chip incomingStack;
 
     [HideInInspector]
-    public List<Chip> stackToHold;
+    public List<ChipData> stackToHold;
 
     //can this chip be grabbed? we want a little time between dropping a chip and picking it up
     //otherwise as soon as it's dropped it gets picked up by the controller
@@ -63,7 +65,6 @@ public class Chip : InteractionSuperClass {
     public int spotIndex;
     [HideInInspector]
     public Hand handPushingChip;
-    public int stackValue;
 
     Rigidbody rb;
 
@@ -78,16 +79,16 @@ public class Chip : InteractionSuperClass {
         switch (GetComponent<MeshFilter>().mesh.name)
         {
             case "RedChip Instance":
-                chipValue = ChipConfig.RED_CHIP_VALUE;
+                chipData = new ChipData(ChipConfig.RED_CHIP_VALUE);
                 break;
             case "BlueChip Instance":
-                chipValue = ChipConfig.BLUE_CHIP_VALUE;
+                chipData = new ChipData(ChipConfig.BLUE_CHIP_VALUE);
                 break;
             case "WhiteChip Instance":
-                chipValue = ChipConfig.WHITE_CHIP_VALUE;
+                chipData = new ChipData(ChipConfig.WHITE_CHIP_VALUE);
                 break;
             case "BlackChip Instance":
-                chipValue = ChipConfig.BLACK_CHIP_VALUE;
+                chipData = new ChipData(ChipConfig.BLACK_CHIP_VALUE);
                 break;
             default:
                 break;
@@ -97,19 +98,15 @@ public class Chip : InteractionSuperClass {
 	
 	// Update is called once per frame
 	void Update () {
-        if(chipStack != null)
-        {
-            stackValue = chipStack.stackValue;
-        }
         //if the chip can't be grabbed, start the coroutine that sets it back to being grabbable
-        if (!canBeGrabbed)
-        {
-            if (!regrabCoroutineActive)
-            {
-                regrabCoroutineActive = true;
-                StartCoroutine(ReadyToBeGrabbed(1.5f));
-            }
-        }
+        //if (!canBeGrabbed)
+        //{
+        //    if (!regrabCoroutineActive)
+        //    {
+        //        regrabCoroutineActive = true;
+        //        StartCoroutine(ReadyToBeGrabbed(1.5f));
+        //    }
+        //}
     }
     void FixedUpdate()
     {
@@ -173,31 +170,31 @@ public class Chip : InteractionSuperClass {
     //we're making a function for Destroy Chip, rather than calling Destroy on the gameObject at a given moment
     //this is happening because there are certain situations that apply to certain chips in certain times when destroyed
     //by having a function to destroy the chip, we can make sure we're never accidentally forgetting to write some line of code
-    public void DestroyChip()
-    {
-        markedForDestruction = true;
-        if (inAStack)
-        {
-            Chip[] groupedChips = GetComponentsInParent<Chip>();
-            for (int i = 0; i < groupedChips.Length; i++)
-            {
-                if(groupedChips[i] != this)
-                {
-                    groupedChips[i].chipStack.chips.Remove(this);
-                }
-            }
-        }
-        Destroy(gameObject);
-    }
+    //public void DestroyChip()
+    //{
+    //    markedForDestruction = true;
+    //    if (inAStack)
+    //    {
+    //        Chip[] groupedChips = GetComponentsInParent<Chip>();
+    //        for (int i = 0; i < groupedChips.Length; i++)
+    //        {
+    //            if(groupedChips[i] != this)
+    //            {
+    //                groupedChips[i].chipStack.chips.Remove(this.gameObject);
+    //            }
+    //        }
+    //    }
+    //    Destroy(gameObject);
+    //}
 
     //the chip can be grabbed again soon
-    IEnumerator ReadyToBeGrabbed(float time)
-    {
-        yield return new WaitForSeconds(time);
-        canBeGrabbed = true;
-        regrabCoroutineActive = false;
-        //Debug.Log("coroutine finished at time " + Time.time);
-    }
+    //IEnumerator ReadyToBeGrabbed(float time)
+    //{
+    //    yield return new WaitForSeconds(time);
+    //    canBeGrabbed = true;
+    //    regrabCoroutineActive = false;
+    //    //Debug.Log("coroutine finished at time " + Time.time);
+    //}
 
     //on collision, we want to check:
     //a) is the object a chip?
@@ -221,11 +218,7 @@ public class Chip : InteractionSuperClass {
             if (other.gameObject.GetComponent<Chip>().chipStack.chips.Count < MAX_CHIPSTACK)
             {
                 isTouchingStack = true;
-                incomingStack = other.gameObject.GetComponent<Chip>().chipStack.chips;
-            }
-            else
-            {
-                stackToHold = other.gameObject.GetComponent<Chip>().chipStack.chips;
+                incomingStack = other.gameObject.GetComponent<Chip>();
             }
         }
     }
@@ -243,7 +236,6 @@ public class Chip : InteractionSuperClass {
             isTouchingStack = false;
             isTouchingChip = false;
             incomingChip = null;
-            stackToHold = null;
         }
     }
 
@@ -266,7 +258,8 @@ public class Chip : InteractionSuperClass {
                 //Debug.Log("adding " + incomingChip.gameObject.name);
                 if(incomingChip != null)
                 {
-                    chipStack.AddToStackInHand(incomingChip);
+                    chipStack.AddToStackInHand(incomingChip.chipData);
+                    Destroy(incomingChip.gameObject);
                     incomingChip = null;
                     isTouchingChip = false;
                 }
@@ -275,39 +268,40 @@ public class Chip : InteractionSuperClass {
             }
             if (isTouchingStack)
             {
-                foreach (Chip chip in incomingStack)
+                foreach (ChipData chip in incomingStack.chipStack.chips)
                 {
                     chipStack.AddToStackInHand(chip);
                     isTouchingStack = false;
                 }
+                Destroy(incomingStack.gameObject);
                 incomingStack = null;
             }
         }
-        else
-        {
-            if(stackToHold != null)
-            {
-                GameObject firstStack = attachedHand.AttachedObjects[0].attachedObject;
-                float xOffSet = firstStack.GetComponent<Collider>().bounds.size.x;
-                //Debug.Log("xOffSet = " + xOffSet + " and hand is holding " + attachedHand.AttachedObjects.Count + " objects.");
-                Chip chipToGrab = null;
-                foreach (Chip chip in stackToHold)
-                {
-                    if (chip.chipStack != null)
-                    {
-                        chipToGrab = chip;
-                    }
-                }
-                if (chipToGrab != null)
-                {
-                    //attachedHand.AttachObject(chipToGrab.gameObject, Hand.AttachmentFlags.ParentToHand);
-                    //chipToGrab.gameObject.transform.localPosition = new Vector3(firstStack.transform.localPosition.x + (xOffSet * attachedHand.AttachedObjects.Count), 
-                    //                                                            firstStack.transform.localPosition.y, 
-                    //                                                            firstStack.transform.localPosition.z);
-                }
-                stackToHold = null;
-            }
-        }
+        //else
+        //{
+            //if(stackToHold != null)
+            //{
+            //    GameObject firstStack = attachedHand.AttachedObjects[0].attachedObject;
+            //    float xOffSet = firstStack.GetComponent<Collider>().bounds.size.x;
+            //    //Debug.Log("xOffSet = " + xOffSet + " and hand is holding " + attachedHand.AttachedObjects.Count + " objects.");
+            //    Chip chipToGrab = null;
+            //    foreach (Chip chip in stackToHold)
+            //    {
+            //        if (chip.chipStack != null)
+            //        {
+            //            chipToGrab = chip;
+            //        }
+            //    }
+                //if (chipToGrab != null)
+                //{
+                //    //attachedHand.AttachObject(chipToGrab.gameObject, Hand.AttachmentFlags.ParentToHand);
+                //    //chipToGrab.gameObject.transform.localPosition = new Vector3(firstStack.transform.localPosition.x + (xOffSet * attachedHand.AttachedObjects.Count), 
+                //    //                                                            firstStack.transform.localPosition.y, 
+                //    //                                                            firstStack.transform.localPosition.z);
+                //}
+                //stackToHold = null;
+            //}
+        //}
         if (chipStack != null)
         {
             CheckPressPosition(attachedHand);
@@ -416,43 +410,43 @@ public class Chip : InteractionSuperClass {
         //Debug.Log("rb.velocity.magnitude = " + rb.velocity.magnitude);
         if (GetComponent<Rigidbody>().velocity.magnitude > MAGNITUDE_THRESHOLD)
         {
-            if(gameObject.transform.childCount != 0)
+            //if(gameObject.transform.childCount != 0)
+            //{
+            //    foreach (Chip chip in chipStack.chips)
+            //    {
+            //        chip.gameObject.AddComponent<Rigidbody>();
+            //        //chip.gameObject.transform.parent = null;
+            //        chip.inAStack = false;
+            //        chip.gameObject.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity() * CHIP_FORCE_MODIFIER, ForceMode.Impulse);
+            //        chip.gameObject.GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);
+            //        if (chip.chipStack != null)
+            //        {
+            //            chip.chipStack = null;
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            if (chipStack.chips.Count != 0)
             {
-                foreach (Chip chip in chipStack.chips)
+                float chipSpawnOffset = 0.07f;
+                for (int i = 0; i < chipStack.chips.Count; i++)
                 {
-                    chip.gameObject.AddComponent<Rigidbody>();
-                    //chip.gameObject.transform.parent = null;
-                    chip.inAStack = false;
-                    chip.gameObject.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity() * CHIP_FORCE_MODIFIER, ForceMode.Impulse);
-                    chip.gameObject.GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);
-                    if (chip.chipStack != null)
-                    {
-                        chip.chipStack = null;
-                    }
+                    GameObject newChip = Instantiate(FindChipPrefab(chipStack.chips[i].ChipValue),
+                                                     transform.position + Random.insideUnitSphere * chipSpawnOffset,
+                                                     Quaternion.identity);
+                    Rigidbody rb = newChip.gameObject.GetComponent<Rigidbody>();
+                    rb.AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);
+                    rb.AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);
+                    rb.AddForce(Random.Range(0, 150), Random.Range(0, 150), Random.Range(0, 150));
+                    Vector3 randomRot = new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
+                    transform.Rotate(randomRot * Time.deltaTime);
                 }
-            }
-            else
-            {
-                if(chipStack.chips.Count != 0)
-                {
-                    float chipSpawnOffset = 0.07f;
-                    for (int i = 0; i < chipStack.chips.Count; i++)
-                    {
-                        GameObject newChip = Instantiate(FindChipPrefab(chipStack.chips[i].chipValue), 
-                                                         transform.position + Random.insideUnitSphere * chipSpawnOffset, 
-                                                         Quaternion.identity);
-                        Rigidbody rb = newChip.gameObject.GetComponent<Rigidbody>();
-                        rb.AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);
-                        rb.AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);
-                        rb.AddForce(Random.Range(0, 150), Random.Range(0, 150), Random.Range(0, 150));
-                        Vector3 randomRot = new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
-                        transform.Rotate(randomRot * Time.deltaTime);
-                    }
-                    Destroy(gameObject);
-                }
+                Destroy(gameObject);
             }
         }
     }
+    
 
     //this is just me ease-of-life function for findining the correct prefab
     public GameObject FindChipPrefab(int chipValue)

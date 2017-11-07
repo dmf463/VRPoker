@@ -12,13 +12,15 @@ using Valve.VR.InteractionSystem;
 public class ChipStack {
 
     //the list of chips in the stack
-    public List<Chip> chips = new List<Chip>();
+    public List<ChipData> chips = new List<ChipData>();
 
     //the value of the stack
     public int stackValue;
 
     //the float by which we're incrementing the stack and putting chips on top of other chip
     private float incrementStackBy;
+
+    public GameObject parentChip;
 
     //a public construct for when we create a new chipStack
     //we add the initial chip
@@ -27,11 +29,13 @@ public class ChipStack {
     //and we set the increment stack float
     public ChipStack(Chip chip)
     {
-        chips.Add(chip);
+        Debug.Log("chip.ChipData.chipValue = " + chip.chipData.ChipValue);
+        chips.Add(chip.chipData);
+        parentChip = chip.gameObject;
         chip.inAStack = true;
-        stackValue = chips[0].chipValue;
+        stackValue = chip.chipData.ChipValue;
         //incrementStackBy = ((chips[0].gameObject.GetComponent<Collider>().bounds.size.z / 88) * -1);
-        incrementStackBy = chips[0].gameObject.transform.localScale.z;
+        incrementStackBy = parentChip.gameObject.transform.localScale.z;
     }
 
     //so when you're holding a chip
@@ -44,29 +48,29 @@ public class ChipStack {
     //then we set the boos we need to say the incoming chip is in a stack and NOT a chip to bet with
     //we increase the stackValue
     //and then add the chip to the list
-    public void AddToStackInHand(Chip chip)
+    public void AddToStackInHand(ChipData chip)
     {
         //Debug.Log("chipStack has " + chips.Count + "  and stackValue ==  " + stackValue + " and incrementStackBy =  " + incrementStackInHandBy);
         //Debug.Log("trying to destroy " + chip.gameObject.name);
-        Debug.Log("adding a " + chip.chipValue + " chip back to the stack");
-        if (chip.gameObject != null)
+        //Debug.Log("adding a " + chip.chipData.ChipValue + " chip back to the stack");
+        //if (chip.gameObject != null)
+        //{
+        if (chip.ChipValue == chips[0].ChipValue)
         {
-            if(chip.chipValue == chips[0].chipValue)
-            {
-                GameObject incomingChip = chip.FindChipPrefab(chip.chipValue);
-                Chip newChip = incomingChip.GetComponent<Chip>();
-                GameObject.Destroy(incomingChip.gameObject);
-                newChip.GetComponent<Chip>().inAStack = true;
-                newChip.GetComponent<Chip>().chipForBet = true;
-                stackValue += newChip.GetComponent<Chip>().chipValue;
-                chips.Add(newChip.GetComponent<Chip>());
-                Debug.Log("incomingChip is a " + newChip.chipValue + " dollar chip");
-                GameObject mainChip = chips[0].gameObject;
-                mainChip.transform.localScale = new Vector3(mainChip.transform.localScale.x,
-                                                            mainChip.transform.localScale.y,
-                                                            mainChip.transform.localScale.z + incrementStackBy);
-                Debug.Log("chipStack has " + chips.Count + "chips");
-            }
+            //ChipData incomingChip = new ChipData(chip.chipData.ChipValue);
+            //GameObject.Destroy(chip.gameObject);
+            //GameObject.Destroy(incomingChip.gameObject);
+            //newChip.GetComponent<Chip>().inAStack = true;
+            //newChip.GetComponent<Chip>().chipForBet = true;
+            stackValue += chip.ChipValue;
+            chips.Add(chip);
+            //Debug.Log("incomingChip is a " + newChip.chipValue + " dollar chip");
+            //GameObject mainChip = chips[0].gameObject;
+            parentChip.transform.localScale = new Vector3(parentChip.transform.localScale.x,
+                                                        parentChip.transform.localScale.y,
+                                                        parentChip.transform.localScale.z + incrementStackBy);
+            Debug.Log("chipStack has " + chips.Count + "chips");
+        }
             //else
             //{
             //    GameObject incomingChip = chip.gameObject;
@@ -100,4 +104,4 @@ public class ChipStack {
     //}
 
 
-}
+//}

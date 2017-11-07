@@ -55,21 +55,25 @@ public class Table {
     public List<Card> _burn = new List<Card>();
 
     //this is the list that holds all the players chips. this is where we get the actual chips to count and instantiate
-    public List<Chip>[] playerChipStacks = new List<Chip>[5]
+    public List<int> playerChipStacks = new List<int>(5)
     {
-        new List<Chip>(), new List<Chip>(), new List<Chip>(), new List<Chip>(), new List<Chip>()
+        Services.Dealer.players[0].chipCount,
+        Services.Dealer.players[1].chipCount,
+        Services.Dealer.players[2].chipCount,
+        Services.Dealer.players[3].chipCount,
+        Services.Dealer.players[4].chipCount
     };
 
     //we transfer chips that have been bet to here
-    public List<Chip> _potChips = new List<Chip>();
-    
+    //public List<Chip> _potChips = new List<Chip>();
+
     //the int value of the chips in the pot
-    public int PotChips { get { return potChips; } set { potChips = value; } }
-    private int potChips
-    {
-        get { return DeterminePotSize(); }
-        set { }
-    }
+    public int potChips; //{ get { return potChips; } set { potChips = value; } }
+    //private int potChips
+    //{
+    //    get { return DeterminePotSize(); }
+    //    set { }
+    //}
     public int DealerPosition;
 
     //this function instantiates a new dealer button if there is none
@@ -109,7 +113,7 @@ public class Table {
         }
         _board.Clear();
         _burn.Clear();
-        _potChips.Clear();
+        potChips = 0;
         Services.Dealer.ResetPlayerStatus();
         gameState = GameState.NewRound;
         Services.PokerRules.TurnOffAllIndicators();
@@ -126,27 +130,27 @@ public class Table {
     }
 
     //this is the function that converts the chips in the pot into an int value
-    public int DeterminePotSize()
-    {
-        int potSize = 0;
-        for (int i = 0; i < _potChips.Count; i++)
-        {
-            potSize += _potChips[i].chipValue;
-        }
-        return potSize;
-    }
+    //public int DeterminePotSize()
+    //{
+    //    int potSize = 0;
+    //    for (int i = 0; i < _potChips.Count; i++)
+    //    {
+    //        potSize += _potChips[i].chipValue;
+    //    }
+    //    return potSize;
+    //}
 
     //literally same as above but for chipStacks
     //since both of these hold chips, we need to take those chip values and add them up
-    public int GetChipStackTotal(int seatPos)
-    {
-        int chipStack = 0;
-        for (int i = 0; i < playerChipStacks[seatPos].Count; i++)
-        {
-            chipStack += playerChipStacks[seatPos][i].chipValue;
-        }
-        return chipStack;
-    }
+    //public int GetChipStackTotal(int seatPos)
+    //{
+    //    int chipStack = 0;
+    //    for (int i = 0; i < playerChipStacks[seatPos].Count; i++)
+    //    {
+    //        chipStack += playerChipStacks[seatPos][i].chipValue;
+    //    }
+    //    return chipStack;
+    //}
 
     //we use this function in order to get access to the actual card gameObjects
     //this is really only used when we want to flip and rearrange the cards (which should probably be made better)
@@ -163,43 +167,43 @@ public class Table {
     //same as above. sometimes we need access to the actual chip gameObjects, and this is where we do that
     //this was the source of some major problems for me for a while, because it interacted with log chips in a weird way
     //LogChips would sometimes trigger and remove gameobjects, but the Chip itself was still there, so I would get a missing reference
-    public List<GameObject> GetChipGameObjects(int seatPos)
-    {
-        List<GameObject> chipsInStack = new List<GameObject>();
-        for (int i = 0; i < playerChipStacks[seatPos].Count; i++)
-        {
-            if (playerChipStacks[seatPos][i] == null)
-            {
-                Debug.Log("ChipCount from GetChipGameObjects() for player " + seatPos + " is equal to " + GetChipStackTotal(seatPos));
-                Debug.Log("ChipCount from ChipCount for player " + seatPos + " is equal to " + Services.Dealer.players[seatPos].ChipCount);
-                Debug.Log("in the for loop, i = " + i + " and the playerChipStack[" + seatPos + "].count = " + playerChipStacks[seatPos].Count + " and time is " + Time.time);
-            }
-            chipsInStack.Add(playerChipStacks[seatPos][i].gameObject);
-        }
-        return chipsInStack;
-    }
+    //public List<GameObject> GetChipGameObjects(int seatPos)
+    //{
+    //    List<GameObject> chipsInStack = new List<GameObject>();
+    //    for (int i = 0; i < playerChipStacks[seatPos].Count; i++)
+    //    {
+    //        if (playerChipStacks[seatPos][i] == null)
+    //        {
+    //            Debug.Log("ChipCount from GetChipGameObjects() for player " + seatPos + " is equal to " + GetChipStackTotal(seatPos));
+    //            Debug.Log("ChipCount from ChipCount for player " + seatPos + " is equal to " + Services.Dealer.players[seatPos].ChipCount);
+    //            Debug.Log("in the for loop, i = " + i + " and the playerChipStack[" + seatPos + "].count = " + playerChipStacks[seatPos].Count + " and time is " + Time.time);
+    //        }
+    //        chipsInStack.Add(playerChipStacks[seatPos][i].gameObject);
+    //    }
+    //    return chipsInStack;
+    //}
 
     //two functions below are mirror images of each other, and are used in LogChips to add and remove chips to and from thier proper lists
     //this was part of the above issue
-    public void AddChipTo(Destination dest, Chip chip) 
+    public void AddChipTo(Destination dest, int chipValue) 
     {
         for (int i = 0; i < playerDestinations.Count; i++)
         {
             if(dest == playerDestinations[i])
             {
-                playerChipStacks[i].Add(chip);
+                playerChipStacks[i] += chipValue;
             }
         }
     }
 
     //see above
-    public void RemoveChipFrom(Destination dest, Chip chip)
+    public void RemoveChipFrom(Destination dest, int chipValue)
     {
         for (int i = 0; i < playerDestinations.Count; i++)
         {
             if (dest == playerDestinations[i])
             {
-                playerChipStacks[i].Remove(chip);
+                playerChipStacks[i] -= chipValue;
             }
         }
     }
@@ -308,10 +312,10 @@ public class Table {
             Debug.Log("Board Card " + i + " is " + _board[i].cardType.rank + " of " + _board[i].cardType.rank);
         }
 
-        for (int i = 0; i < playerChipStacks.Length; i++)
+        for (int i = 0; i < playerChipStacks.Count; i++)
         {
-            Debug.Log("Player " + i + " has a chipStack of " + GetChipStackTotal(i));
+            Debug.Log("Player " + i + " has a chipStack of " + playerChipStacks[i]);
         }
-        Debug.Log("the pot is at" + PotChips);
+        Debug.Log("the pot is at" + potChips);
     }
 }

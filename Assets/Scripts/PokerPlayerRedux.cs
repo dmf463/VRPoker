@@ -21,13 +21,13 @@ public class PokerPlayerRedux : MonoBehaviour{
 	//this is the current means by which we differentiate between which instance of PokerPlayerRedux we're currently working with
 	public int SeatPos { get; set; }
 
-	//this lets me keep track of the players chip count, but only when I call ChipCount, so it may be less reliable than it can be
-	public int ChipCount { get { return chipCount; } set { value = chipCount; } }
-	private int chipCount
-	{
-		get { return Table.instance.GetChipStackTotal(SeatPos); }
-		set { }
-	}
+    //this lets me keep track of the players chip count, but only when I call ChipCount, so it may be less reliable than it can be
+    public int chipCount;
+	//private int chipCount
+	//{
+	//	get { return Table.instance.GetChipStackTotal(SeatPos); }
+	//	set { }
+	//}
 
 	//this is the Hand of the player and holds ALL the information about thier hand
 	//it has the hand Total, the HighCard, the PokerHand enum, and all relevant hand info
@@ -194,8 +194,8 @@ public class PokerPlayerRedux : MonoBehaviour{
 				{
 					Services.Dealer.players[i].PlayerState = PlayerState.Winner;
 					Services.Dealer.numberOfWinners = 1;
-					Debug.Log("current chip stack is at " + ChipCount);
-					Services.Dealer.players[i].ChipCountToCheckWhenWinning = Services.Dealer.players[i].ChipCount;
+					Debug.Log("current chip stack is at " + chipCount);
+					Services.Dealer.players[i].ChipCountToCheckWhenWinning = Services.Dealer.players[i].chipCount;
 					Debug.Log("We are getting into the fold and the chipCountToCheckWhenWinning = " + ChipCountToCheckWhenWinning);
 					Services.Dealer.playersReady = true;
                     Services.Dealer.playersHaveBeenEvaluated = true;
@@ -220,7 +220,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 		{
 			Debug.Log("currentBet = " + currentBet);
 			int betToCall = Services.Dealer.LastBet - currentBet;
-			if(ChipCount - betToCall <= 0)
+			if(chipCount - betToCall <= 0)
 			{
 				AllIn();
 				Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
@@ -234,7 +234,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 				currentBet = betToCall + currentBet;
 				Services.Dealer.LastBet = currentBet;
 				Debug.Log("Player " + SeatPos + " called " + betToCall);
-				Debug.Log("and the pot is now at " + Table.instance.PotChips);
+				Debug.Log("and the pot is now at " + Table.instance.potChips);
 			}
 		}
 	}
@@ -246,11 +246,11 @@ public class PokerPlayerRedux : MonoBehaviour{
 	//again, the amount to raise probably needs more refiguring and balancing
 	public void Raise()
 	{
-		if (ChipCount > 0)
+		if (chipCount > 0)
 		{
 			int raiseAmount = amountToRaise; 
 			int betToRaise = Services.Dealer.LastBet + (raiseAmount - currentBet);
-			if (ChipCount - betToRaise <= 0)
+			if (chipCount - betToRaise <= 0)
 			{
 				AllIn();
 				Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
@@ -258,8 +258,8 @@ public class PokerPlayerRedux : MonoBehaviour{
 				Services.Dealer.LastBet = currentBet;
 				Debug.Log("player " + SeatPos + " raises " + betToRaise);
 				Debug.Log("Player " + SeatPos + " raised!");
-				Debug.Log("and the pot is now at " + Table.instance.PotChips);
-				Debug.Log("and player " + SeatPos + " is now at " + ChipCount);
+				Debug.Log("and the pot is now at " + Table.instance.potChips);
+				Debug.Log("and player " + SeatPos + " is now at " + chipCount);
 			}
 			else
 			{
@@ -276,8 +276,8 @@ public class PokerPlayerRedux : MonoBehaviour{
 				Services.Dealer.LastBet = currentBet;
 				Debug.Log("player " + SeatPos + " raises " + betToRaise);
 				Debug.Log("Player " + SeatPos + " raised!");
-				Debug.Log("and the pot is now at " + Table.instance.PotChips);
-				Debug.Log("and player " + SeatPos + " is now at " + ChipCount);
+				Debug.Log("and the pot is now at " + Table.instance.potChips);
+				Debug.Log("and player " + SeatPos + " is now at " + chipCount);
 			}
 		}
 	}
@@ -295,10 +295,10 @@ public class PokerPlayerRedux : MonoBehaviour{
         {
             card.cardMarkedForDestruction = false;
         }
-        chipCountBeforeAllIn = ChipCount;
+        chipCountBeforeAllIn = chipCount;
         playerIsAllIn = true;
 		Debug.Log("getting ready to go all in");
-        Bet(ChipCount);
+        Bet(chipCount);
         //similar to fold, when we go all in, we want to see if we're the last person to go all in
         //if so, then we want to flip the cards
         Services.Dealer.CheckAllInPlayers();
@@ -534,7 +534,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 		//in this case, since we're going to do limit, the bet will always be the bigBlind;
 		//else, we need to write another function that determines what the possible bet will be
 		amountToRaise = DetermineRaiseAmount();
-		float potSize = Table.instance.PotChips;
+		float potSize = Table.instance.potChips;
 		float potOdds = amountToRaise / (amountToRaise + potSize);
 		float returnRate = HandStrength / potOdds;
 		return returnRate;
@@ -561,7 +561,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 					}
 					else raise = Services.Dealer.LastBet * 2;
 				}
-				else raise = ChipCount;
+				else raise = chipCount;
 			}
 			else if (HandStrength > .5)
 			{
@@ -575,7 +575,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 					}
 					else raise = Services.Dealer.LastBet * 2;
 				}
-				else raise = ChipCount;
+				else raise = chipCount;
 			}
 			else if (HandStrength > .3)
 			{
@@ -602,9 +602,9 @@ public class PokerPlayerRedux : MonoBehaviour{
 				float randomNum = Random.Range(0, 100);
 				if (randomNum < 95)
 				{
-					raise = Table.instance.PotChips;
+					raise = Table.instance.potChips;
 				}
-				else raise = ChipCount;
+				else raise = chipCount;
 			}
 			else if (HandStrength > .5)
 			{
@@ -612,13 +612,13 @@ public class PokerPlayerRedux : MonoBehaviour{
 				float randomNum = Random.Range(0, 100);
 				if (randomNum < 50)
 				{
-					raise = Table.instance.PotChips;
+					raise = Table.instance.potChips;
 				}
 				else if(randomNum - 50 < 35)
 				{
-					int remainder = (Table.instance.PotChips / 2) % ChipConfig.RED_CHIP_VALUE;
-					if (remainder > 0) raise = ((Table.instance.PotChips / 2) - remainder) + ChipConfig.RED_CHIP_VALUE;
-					else raise = Table.instance.PotChips / 2;
+					int remainder = (Table.instance.potChips / 2) % ChipConfig.RED_CHIP_VALUE;
+					if (remainder > 0) raise = ((Table.instance.potChips / 2) - remainder) + ChipConfig.RED_CHIP_VALUE;
+					else raise = Table.instance.potChips / 2;
 				}
 				else if(randomNum - 50 < 10)
 				{
@@ -630,7 +630,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 				}
 				else if(randomNum - 50 < 5)
 				{
-					raise = ChipCount;
+					raise = chipCount;
 				}
 			}
 			else if (HandStrength > .3)
@@ -639,9 +639,9 @@ public class PokerPlayerRedux : MonoBehaviour{
 				float randomNum = Random.Range(0, 100);
 				if (randomNum < 70)
 				{
-					int remainder = (Table.instance.PotChips / 2) % ChipConfig.RED_CHIP_VALUE;
-					if (remainder > 0) raise = ((Table.instance.PotChips / 2) - remainder) + ChipConfig.RED_CHIP_VALUE;
-					else raise = Table.instance.PotChips / 2;
+					int remainder = (Table.instance.potChips / 2) % ChipConfig.RED_CHIP_VALUE;
+					if (remainder > 0) raise = ((Table.instance.potChips / 2) - remainder) + ChipConfig.RED_CHIP_VALUE;
+					else raise = Table.instance.potChips / 2;
 				}
 				else
 				{
@@ -683,7 +683,7 @@ public class PokerPlayerRedux : MonoBehaviour{
         }
         else
         {
-            if ((ChipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && HandStrength < 0.5) Fold();
+            if ((chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && HandStrength < 0.5) Fold();
             else if (returnRate < lowReturnRate)
             {
                 //95% chance fold, 5% bluff (raise)
@@ -1197,71 +1197,146 @@ public class PokerPlayerRedux : MonoBehaviour{
 		yield break;
 	}
 
-	//okay so we essentially use this function in order to organize whatever list of chips we're passing it into lists by color
-	//we can use this function then to create chip stacks and make bets
-	//basically we go through the chips that were passed, look at the value, and add them to the proper list
+    //okay so we essentially use this function in order to organize whatever list of chips we're passing it into lists by color
+    //we can use this function then to create chip stacks and make bets
+    //basically we go through the chips that were passed, look at the value, and add them to the proper list
 
-	public List<List<GameObject>> OrganizeChipsIntoColorStacks(List<GameObject> chipsToOrganize)
-	{
-		List<List<GameObject>> colorChips = new List<List<GameObject>>();
-		List<GameObject> redChips = new List<GameObject>();
-		List<GameObject> blueChips = new List<GameObject>();
-		List<GameObject> whiteChips = new List<GameObject>();
-		List<GameObject> blackChips = new List<GameObject>();
+    //public List<List<GameObject>> OrganizeChipsIntoColorStacks(List<GameObject> chipsToOrganize)
+    //{
+    //	List<List<GameObject>> colorChips = new List<List<GameObject>>();
+    //	List<GameObject> redChips = new List<GameObject>();
+    //	List<GameObject> blueChips = new List<GameObject>();
+    //	List<GameObject> whiteChips = new List<GameObject>();
+    //	List<GameObject> blackChips = new List<GameObject>();
 
-		for (int chipIndex = 0; chipIndex < chipsToOrganize.Count; chipIndex++)
-		{
-			if(chipsToOrganize[chipIndex].GetComponent<Chip>().chipValue == ChipConfig.RED_CHIP_VALUE)
-			{
-				redChips.Add(chipsToOrganize[chipIndex]);
-			}
-			else if(chipsToOrganize[chipIndex].GetComponent<Chip>().chipValue == ChipConfig.BLUE_CHIP_VALUE)
-			{
-				blueChips.Add(chipsToOrganize[chipIndex]);
-			}
-			else if (chipsToOrganize[chipIndex].GetComponent<Chip>().chipValue == ChipConfig.WHITE_CHIP_VALUE)
-			{
-				whiteChips.Add(chipsToOrganize[chipIndex]);
-			}
-			else if (chipsToOrganize[chipIndex].GetComponent<Chip>().chipValue == ChipConfig.BLACK_CHIP_VALUE)
-			{
-				blackChips.Add(chipsToOrganize[chipIndex]);
-			}
-		}
-		colorChips.Add(redChips);
-		colorChips.Add(blueChips);
-		colorChips.Add(whiteChips);
-		colorChips.Add(blackChips);
-        Debug.Log("redChips.count = " + redChips.Count);
-        Debug.Log("blueChips.count = " + blueChips.Count);
-        Debug.Log("whiteChips.count = " + whiteChips.Count);
-        Debug.Log("blackChips.count = " + blackChips.Count);
-        return colorChips;
-	}
+    //	for (int chipIndex = 0; chipIndex < chipsToOrganize.Count; chipIndex++)
+    //	{
+    //		if(chipsToOrganize[chipIndex].GetComponent<Chip>().chipValue == ChipConfig.RED_CHIP_VALUE)
+    //		{
+    //			redChips.Add(chipsToOrganize[chipIndex]);
+    //		}
+    //		else if(chipsToOrganize[chipIndex].GetComponent<Chip>().chipValue == ChipConfig.BLUE_CHIP_VALUE)
+    //		{
+    //			blueChips.Add(chipsToOrganize[chipIndex]);
+    //		}
+    //		else if (chipsToOrganize[chipIndex].GetComponent<Chip>().chipValue == ChipConfig.WHITE_CHIP_VALUE)
+    //		{
+    //			whiteChips.Add(chipsToOrganize[chipIndex]);
+    //		}
+    //		else if (chipsToOrganize[chipIndex].GetComponent<Chip>().chipValue == ChipConfig.BLACK_CHIP_VALUE)
+    //		{
+    //			blackChips.Add(chipsToOrganize[chipIndex]);
+    //		}
+    //	}
+    //	colorChips.Add(redChips);
+    //	colorChips.Add(blueChips);
+    //	colorChips.Add(whiteChips);
+    //	colorChips.Add(blackChips);
+    //       Debug.Log("redChips.count = " + redChips.Count);
+    //       Debug.Log("blueChips.count = " + blueChips.Count);
+    //       Debug.Log("whiteChips.count = " + whiteChips.Count);
+    //       Debug.Log("blackChips.count = " + blackChips.Count);
+    //       return colorChips;
+    //}
 
-	//so here we're actually instantiating the chips that we passed in the last function. 
-	//this function makes it so that we can have nicely organized chipstacks at any given moment
-	//so first we pass the organized chipstacks
-	//we set a parentChip to null in order to use it late
-	//we have an amount we're going to increment the stack by, because when we organize a chip, we want to put it in the right place
-	//then we have a list of the playerPositions, so we know where to put the chips, and an offset that we set to zero.
-	//as well, for ease of use, we are going to create an empty container class so that all the chips have the same parent
-	//so we make an offset for that in order to have them instantiate above the table and in not IN it.
-	//then we make the chipContainer, which will hold all subsequent chips
-	//we set the lastStackPos and firstStackPos to zero, so that we can revalue them later. 
-	//we'll use these two values to make sure each chipStack is centered in their proper area
-	//then we run the for-loop that makes the chips
-	//for each list of coloredStacks we grab the first chip and make that the parent
-	//we make that chip a chipStack (which is a class on Chips) and call all the appropriate functions and set the appropriate bools
-	//then we set the increment size by the bounds of that chip and set the offset by those bounds as well, so that each chips instantiates
-	//on top of the other
-	//for every subsequent chip, we destory the rigidBody so that there are no collisions
-	//then set all the necessary parent information and bools
-	//we also add it to the list that the parent chip is holding
-	//we do this for EACH stack of colored chips, which are then instantiated next to each other according to the offset
-	//then in order to move them ALL to the center, we take the firstStackPos and the lastStackPos and find the average
-	//and move the container there
-	public void CreateAndOrganizeChipStacks(List<GameObject> chipsToOrganize )
+
+    //this is LIKE create and organize chipStacks, except is used only during intialization
+    public List<int> SetChipStacks(int chipAmount)
+    {
+
+        List<int> startingStack = new List<int>();
+
+        List<GameObject> playerPositions = new List<GameObject>
+        {
+            GameObject.Find("P0Cards"), GameObject.Find("P1Cards"), GameObject.Find("P2Cards"), GameObject.Find("P3Cards"), GameObject.Find("P4Cards")
+        };
+
+        int valueRemaining = chipAmount;
+        int blackChipCount = 0;
+        int whiteChipCount = 0;
+        int blueChipCount = 0;
+        int redChipCount = 0;
+
+        //change these hard coded variables to a function that finds the proper amount of chips based on a percent of the chipAmount
+        int blackChipCountMAX = (int)((chipAmount * 0.45f) / ChipConfig.BLACK_CHIP_VALUE); 
+        int whiteChipCountMAX = (int)((chipAmount * 0.35f) / ChipConfig.WHITE_CHIP_VALUE);
+        int blueChipCountMAX = (int)((chipAmount) * 0.15f / ChipConfig.BLUE_CHIP_VALUE);
+
+        blackChipCount = Mathf.Min(blackChipCountMAX, valueRemaining / ChipConfig.BLACK_CHIP_VALUE);
+        valueRemaining -= (blackChipCount * ChipConfig.BLACK_CHIP_VALUE);
+        Debug.Log("blackChipCount = " + blackChipCount);
+        Debug.Log("valueRemaining = " + valueRemaining);
+        startingStack.Add(blackChipCount);
+
+        whiteChipCount = Mathf.Min(whiteChipCountMAX, valueRemaining / ChipConfig.WHITE_CHIP_VALUE);
+        valueRemaining -= (whiteChipCount * ChipConfig.WHITE_CHIP_VALUE);
+        Debug.Log("whiteChipCount = " + whiteChipCount);
+        Debug.Log("valueRemaining = " + valueRemaining);
+        startingStack.Add(whiteChipCount);
+
+        blueChipCount = Mathf.Min(blueChipCountMAX, valueRemaining / ChipConfig.BLUE_CHIP_VALUE);
+        valueRemaining -= (blueChipCount * ChipConfig.BLUE_CHIP_VALUE);
+        Debug.Log("blueChipCount = " + blueChipCount);
+        Debug.Log("valueRemaining = " + valueRemaining);
+        startingStack.Add(blueChipCount);
+
+        redChipCount = valueRemaining / ChipConfig.RED_CHIP_VALUE;
+        Debug.Log("redChipCount = " + redChipCount);
+        Debug.Log("valueRemaining = " + valueRemaining);
+        startingStack.Add(redChipCount);
+
+        for (int i = 0; i < startingStack.Count; i++)
+        {
+            Debug.Log("startingStack " + i + " has " + startingStack[i] + " chips");
+        }
+
+        //for (int i = 0; i < blackChipCount; i++)
+        //{
+        //          GameObject newChip = FindChipPrefab(ChipConfig.BLACK_CHIP_VALUE) as GameObject;
+        //	startingStack.Add(newChip);
+        //}
+        //for (int i = 0; i < whiteChipCount; i++)
+        //{
+        //	GameObject newChip = FindChipPrefab(ChipConfig.WHITE_CHIP_VALUE) as GameObject;
+        //	startingStack.Add(newChip);
+        //}
+        //for (int i = 0; i < blueChipCount; i++)
+        //{
+        //	GameObject newChip = FindChipPrefab(ChipConfig.BLUE_CHIP_VALUE) as GameObject;
+        //	startingStack.Add(newChip);
+        //}
+        //for (int i = 0; i < redChipCount; i++)
+        //{
+        //	GameObject newChip = FindChipPrefab(ChipConfig.RED_CHIP_VALUE) as GameObject;
+        //	startingStack.Add(newChip);
+        //}
+        //Debug.Log("startingStack size = " + startingStack.Count);
+        return startingStack;
+    }
+
+    //so here we're actually instantiating the chips that we passed in the last function. 
+    //this function makes it so that we can have nicely organized chipstacks at any given moment
+    //so first we pass the organized chipstacks
+    //we set a parentChip to null in order to use it late
+    //we have an amount we're going to increment the stack by, because when we organize a chip, we want to put it in the right place
+    //then we have a list of the playerPositions, so we know where to put the chips, and an offset that we set to zero.
+    //as well, for ease of use, we are going to create an empty container class so that all the chips have the same parent
+    //so we make an offset for that in order to have them instantiate above the table and in not IN it.
+    //then we make the chipContainer, which will hold all subsequent chips
+    //we set the lastStackPos and firstStackPos to zero, so that we can revalue them later. 
+    //we'll use these two values to make sure each chipStack is centered in their proper area
+    //then we run the for-loop that makes the chips
+    //for each list of coloredStacks we grab the first chip and make that the parent
+    //we make that chip a chipStack (which is a class on Chips) and call all the appropriate functions and set the appropriate bools
+    //then we set the increment size by the bounds of that chip and set the offset by those bounds as well, so that each chips instantiates
+    //on top of the other
+    //for every subsequent chip, we destory the rigidBody so that there are no collisions
+    //then set all the necessary parent information and bools
+    //we also add it to the list that the parent chip is holding
+    //we do this for EACH stack of colored chips, which are then instantiated next to each other according to the offset
+    //then in order to move them ALL to the center, we take the firstStackPos and the lastStackPos and find the average
+    //and move the container there
+    public void CreateAndOrganizeChipStacks(List<int> chipsToOrganize )
 	{
         GameObject[] emptyContainers = GameObject.FindGameObjectsWithTag("Container");
         foreach (GameObject container in emptyContainers)
@@ -1280,7 +1355,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             parentChips.Clear();
         }
 
-        List<List<GameObject>> organizedChips = OrganizeChipsIntoColorStacks(chipsToOrganize);
+        List<int>organizedChips = chipsToOrganize;
 		GameObject parentChip = null;
 		float incrementStackBy = 0;
 		List<GameObject> playerPositions = new List<GameObject>
@@ -1302,10 +1377,32 @@ public class PokerPlayerRedux : MonoBehaviour{
 
         for (int chipStacks = 0; chipStacks < organizedChips.Count; chipStacks++)
 		{
-			if (organizedChips[chipStacks].Count != 0)
+            GameObject chipToMake = null;
+            if (organizedChips[chipStacks] != 0)
 			{
+                switch (chipStacks)
+                {
+                    case 0:
+                        chipToMake = FindChipPrefab(ChipConfig.BLACK_CHIP_VALUE);
+                        chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.BLACK_CHIP_VALUE);
+                        break;
+                    case 1:
+                        chipToMake = FindChipPrefab(ChipConfig.WHITE_CHIP_VALUE);
+                        chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.WHITE_CHIP_VALUE);
+                        break;
+                    case 2:
+                        chipToMake = FindChipPrefab(ChipConfig.BLUE_CHIP_VALUE);
+                        chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.BLUE_CHIP_VALUE);
+                        break;
+                    case 3:
+                        chipToMake = FindChipPrefab(ChipConfig.RED_CHIP_VALUE);
+                        chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.RED_CHIP_VALUE);
+                        break;
+                    default:
+                        break;
+                }
                 int chipStackSize = 0;
-				for (int chipIndex = 0; chipIndex < organizedChips[chipStacks].Count; chipIndex++)
+				for (int chipIndex = 0; chipIndex < organizedChips[chipStacks]; chipIndex++)
 				{
 					if (chipIndex == 0)
 					{
@@ -1316,7 +1413,9 @@ public class PokerPlayerRedux : MonoBehaviour{
                         //    stacksCreated = 0;
                         //    offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.z + .01f, 0, 0);
                         //}
-						parentChip = Instantiate(organizedChips[chipStacks][0], chipContainer.transform.position, Quaternion.identity);
+                        Debug.Log("ChipToMake = " + chipToMake);
+						parentChip = Instantiate(chipToMake, chipContainer.transform.position, Quaternion.identity) as GameObject;
+                        parentChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
                         parentChips.Add(parentChip);
 						parentChip.transform.parent = chipContainer.transform;
 						parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
@@ -1347,7 +1446,8 @@ public class PokerPlayerRedux : MonoBehaviour{
                         //    offSet += new Vector3(0, 0, (parentChip.GetComponent<Collider>().bounds.size.x + .01f) * 1.5f);
                         //}
                         //parentChip = organizedChips[chipStacks][chipIndex];
-                        parentChip = Instantiate(organizedChips[chipStacks][chipIndex], chipContainer.transform.position, Quaternion.identity) as GameObject;
+                        parentChip = Instantiate(chipToMake, chipContainer.transform.position, Quaternion.identity) as GameObject;
+                        parentChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
                         parentChips.Add(parentChip);
                         parentChip.transform.parent = chipContainer.transform;
                         parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
@@ -1372,71 +1472,15 @@ public class PokerPlayerRedux : MonoBehaviour{
                         parentChip.transform.localScale = new Vector3(parentChip.transform.localScale.x,
                                                                       parentChip.transform.localScale.y,
                                                                       parentChip.transform.localScale.z + incrementStackBy);
-                        parentChip.GetComponent<Chip>().chipStack.chips.Add(organizedChips[chipStacks][chipIndex].GetComponent<Chip>());
-						parentChip.GetComponent<Chip>().chipStack.stackValue += organizedChips[chipStacks][chipIndex].GetComponent<Chip>().chipValue;
+                        ChipData newChipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
+                        parentChip.GetComponent<Chip>().chipStack.chips.Add(newChipData);
+						parentChip.GetComponent<Chip>().chipStack.stackValue += newChipData.ChipValue;
 					}
 				}
 			}
 		}
 		Vector3 trueOffset = firstStackPos - lastStackPos;
 		chipContainer.transform.position += trueOffset / 2;
-	}
-
-	//this is LIKE create and organize chipStacks, except is used only during intialization
-	public List<GameObject> SetChipStacks(int chipAmount)
-	{
-
-		List<GameObject> startingStack = new List<GameObject>();
-
-		List<GameObject> playerPositions = new List<GameObject>
-		{
-			GameObject.Find("P0Cards"), GameObject.Find("P1Cards"), GameObject.Find("P2Cards"), GameObject.Find("P3Cards"), GameObject.Find("P4Cards")
-		};
-
-		int valueRemaining = chipAmount;
-		int blackChipCount = 0;
-		int whiteChipCount = 0;
-		int blueChipCount = 0;
-		int redChipCount = 0;
-
-		//change these hard coded variables to a function that finds the proper amount of chips based on a percent of the chipAmount
-		int blackChipCountMAX = (int)(chipAmount * 0.45f) / ChipConfig.BLACK_CHIP_VALUE;
-		int whiteChipCountMAX = (int)(chipAmount * 0.35f) / ChipConfig.WHITE_CHIP_VALUE;
-		int blueChipCountMAX = (int)(chipAmount * 0.15f) / ChipConfig.BLUE_CHIP_VALUE;
-
-		blackChipCount = Mathf.Min(blackChipCountMAX, valueRemaining / ChipConfig.BLACK_CHIP_VALUE);
-		valueRemaining -= blackChipCount * ChipConfig.BLACK_CHIP_VALUE;
-
-		whiteChipCount = Mathf.Min(whiteChipCountMAX, valueRemaining / ChipConfig.WHITE_CHIP_VALUE);
-		valueRemaining -= whiteChipCount * ChipConfig.WHITE_CHIP_VALUE;
-
-		blueChipCount = Mathf.Min(blueChipCountMAX, valueRemaining / ChipConfig.BLUE_CHIP_VALUE);
-		valueRemaining -= blueChipCount * ChipConfig.BLUE_CHIP_VALUE;
-
-		redChipCount = valueRemaining / ChipConfig.RED_CHIP_VALUE;
-
-		for (int i = 0; i < blackChipCount; i++)
-		{
-            GameObject newChip = FindChipPrefab(ChipConfig.BLACK_CHIP_VALUE) as GameObject;
-			startingStack.Add(newChip);
-		}
-		for (int i = 0; i < whiteChipCount; i++)
-		{
-			GameObject newChip = FindChipPrefab(ChipConfig.WHITE_CHIP_VALUE) as GameObject;
-			startingStack.Add(newChip);
-		}
-		for (int i = 0; i < blueChipCount; i++)
-		{
-			GameObject newChip = FindChipPrefab(ChipConfig.BLUE_CHIP_VALUE) as GameObject;
-			startingStack.Add(newChip);
-		}
-		for (int i = 0; i < redChipCount; i++)
-		{
-			GameObject newChip = FindChipPrefab(ChipConfig.RED_CHIP_VALUE) as GameObject;
-			startingStack.Add(newChip);
-		}
-        //Debug.Log("startingStack size = " + startingStack.Count);
-		return startingStack;
 	}
 
 	//so this controls all betting
@@ -1457,7 +1501,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 	public void Bet(int betAmount)
 	{
 		Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.chips);
-		int oldChipStackValue = ChipCount;
+		int oldChipStackValue = chipCount;
 		List<GameObject> playerBetZones = new List<GameObject>
 		{
 			GameObject.Find("P0BetZone"), GameObject.Find("P1BetZone"), GameObject.Find("P2BetZone"), GameObject.Find("P3BetZone"), GameObject.Find("P4BetZone")
@@ -1476,9 +1520,13 @@ public class PokerPlayerRedux : MonoBehaviour{
 		int valueRemaining = betAmount;
 
 		int blackChipCountMAX = FindChipMax(ChipConfig.BLACK_CHIP_VALUE);
+        Debug.Log("blackChipCountMax = " + blackChipCountMAX);
 		int whiteChipCountMAX = FindChipMax(ChipConfig.WHITE_CHIP_VALUE);
+        Debug.Log("whiteChipCountMax = " + whiteChipCountMAX);
 		int blueChipCountMAX = FindChipMax(ChipConfig.BLUE_CHIP_VALUE);
+        Debug.Log("blueChipCountMax = " + blueChipCountMAX);
 		int redChipCountMAX = FindChipMax(ChipConfig.RED_CHIP_VALUE);
+        Debug.Log("redChipCountMax = " + redChipCountMAX);
 
 		colorChipCount[0] = Mathf.Min(blackChipCountMAX, valueRemaining / ChipConfig.BLACK_CHIP_VALUE);
 		valueRemaining -= colorChipCount[0] * ChipConfig.BLACK_CHIP_VALUE;
@@ -1492,67 +1540,98 @@ public class PokerPlayerRedux : MonoBehaviour{
 		colorChipCount[3] = Mathf.Min(redChipCountMAX, valueRemaining / ChipConfig.RED_CHIP_VALUE);
 		valueRemaining -= colorChipCount[3] * ChipConfig.RED_CHIP_VALUE;
 
-		if(valueRemaining > 0)
-		{
-			List<GameObject> chipChange = SetChipStacks(valueRemaining);
-			for (int i = 0; i < chipChange.Count; i++)
-			{
-				if(chipChange[i].GetComponent<Chip>().chipValue == ChipConfig.BLACK_CHIP_VALUE)
-				{
-					colorChipCount[0]++;
-				}
-				else if(chipChange[i].GetComponent<Chip>().chipValue == ChipConfig.WHITE_CHIP_VALUE)
-				{
-					colorChipCount[1]++;
-				}
-				else if (chipChange[i].GetComponent<Chip>().chipValue == ChipConfig.BLUE_CHIP_VALUE)
-				{
-					colorChipCount[2]++;
-				}
-				else if (chipChange[i].GetComponent<Chip>().chipValue == ChipConfig.RED_CHIP_VALUE)
-				{
-					colorChipCount[3]++;
-				}
-			}
+		//if(valueRemaining > 0)
+		//{
+		//	List<int> chipChange = SetChipStacks(valueRemaining);
+		//	for (int i = 0; i < chipChange.Count; i++)
+		//	{
+                //if(chipChange[i].GetComponent<Chip>().chipValue == ChipConfig.BLACK_CHIP_VALUE)
+                //{
+                //	colorChipCount[0]++;
+                //}
+                //else if(chipChange[i].GetComponent<Chip>().chipValue == ChipConfig.WHITE_CHIP_VALUE)
+                //{
+                //	colorChipCount[1]++;
+                //}
+                //else if (chipChange[i].GetComponent<Chip>().chipValue == ChipConfig.BLUE_CHIP_VALUE)
+                //{
+                //	colorChipCount[2]++;
+                //}
+                //else if (chipChange[i].GetComponent<Chip>().chipValue == ChipConfig.RED_CHIP_VALUE)
+                //{
+                //	colorChipCount[3]++;
+                //}
+                //colorChipCount[0] += chipChange[0];
+                //colorChipCount[1] += chipChange[1];
+                //colorChipCount[2] += chipChange[2];
+                //colorChipCount[3] += chipChange[3];
+
+            //}
 			//foreach(GameObject chip in chipChange)
 			//{
 			//	Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chip.GetComponent<Chip>());
 			//	chip.GetComponent<Chip>().DestroyChip();       
 			//}
 
-		}
+		//}
 
         //if there are less than 2 chips, don't even bother putting them in a stack. because why even?
-        if((colorChipCount[0] + colorChipCount[1] + colorChipCount[2] + colorChipCount[3]) < 8)
+        if ((colorChipCount[0] + colorChipCount[1] + colorChipCount[2] + colorChipCount[3]) < 8)
         {
             for (int colorListIndex = 0; colorListIndex < colorChipCount.Count; colorListIndex++)
             {
+                GameObject chipToMake = null;
+                switch (colorListIndex)
+                {
+                    case 0:
+                        chipToMake = FindChipPrefab(ChipConfig.BLACK_CHIP_VALUE);
+                        chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.BLACK_CHIP_VALUE);
+                        break;
+                    case 1:
+                        chipToMake = FindChipPrefab(ChipConfig.WHITE_CHIP_VALUE);
+                        chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.WHITE_CHIP_VALUE);
+                        break;
+                    case 2:
+                        chipToMake = FindChipPrefab(ChipConfig.BLUE_CHIP_VALUE);
+                        chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.BLUE_CHIP_VALUE);
+                        break;
+                    case 3:
+                        chipToMake = FindChipPrefab(ChipConfig.RED_CHIP_VALUE);
+                        chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.RED_CHIP_VALUE);
+                        break;
+                    default:
+                        break;
+                }
                 if (colorChipCount[colorListIndex] > 0)
                 {
+
                     for (int colorCount = 0; colorCount < colorChipCount[colorListIndex]; colorCount++)
                     {
                         Vector3 offSet = new Vector3(Random.Range(0, .03f), .1f, Random.Range(0, .03f));
-                        GameObject newChip = GameObject.Instantiate(FindChipPrefab(chipPrefab[colorListIndex]), playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
+                        GameObject newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
+                        newChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
                         newChip.GetComponent<Chip>().chipForBet = true;
-                        Table.instance._potChips.Add(newChip.GetComponent<Chip>());
-                        for (int tableChipIndex = 0; tableChipIndex < Table.instance.playerChipStacks[SeatPos].Count; tableChipIndex++)
-                        {
-                            if (newChip.GetComponent<Chip>().chipValue == Table.instance.playerChipStacks[SeatPos][tableChipIndex].chipValue && valueRemaining == 0)
-                            {
-                                Chip chipToRemove = Table.instance.playerChipStacks[SeatPos][tableChipIndex];
-                                //Debug.Log("ChipRemoved was a " + chipToRemove.GetComponent<Chip>().chipValue + " chip");
-                                //Debug.Log("Removing chip from seat" + SeatPos);
-                                //Debug.Log(playerDestinations.Count);
-                                //Debug.Log("Removing chip from seat" + playerDestinations[SeatPos]);
-                                Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chipToRemove);
-                                //chipToRemove.DestroyChip();
-                                break;
-                            }
-                        }
+                        Table.instance.potChips += newChip.GetComponent<Chip>().chipData.ChipValue;
+                        Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChip.GetComponent<Chip>().chipData.ChipValue);
+                        //for (int tableChipIndex = 0; tableChipIndex < Table.instance.playerChipStacks[SeatPos].Count; tableChipIndex++)
+                        //{
+                        //    if (newChip.GetComponent<Chip>().chipValue == Table.instance.playerChipStacks[SeatPos][tableChipIndex].chipValue && valueRemaining == 0)
+                        //    {
+                        //        Chip chipToRemove = Table.instance.playerChipStacks[SeatPos][tableChipIndex];
+                        //        //Debug.Log("ChipRemoved was a " + chipToRemove.GetComponent<Chip>().chipValue + " chip");
+                        //        //Debug.Log("Removing chip from seat" + SeatPos);
+                        //        //Debug.Log(playerDestinations.Count);
+                        //        //Debug.Log("Removing chip from seat" + playerDestinations[SeatPos]);
+                        //        Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chipToRemove);
+                        //        //chipToRemove.DestroyChip();
+                        //        break;
+                        //    }
+                        //}
                     }
                 }
             }
         }
+
         else //if there are more than 5 chips to bet, STACK THOSE MOTHERFUCKERS.
         {
             GameObject parentChip = null;
@@ -1568,6 +1647,28 @@ public class PokerPlayerRedux : MonoBehaviour{
             int chipCountMax = 30;
             for (int colorListIndex = 0; colorListIndex < colorChipCount.Count; colorListIndex++) //this runs 4 times, one for each color
             {
+                GameObject chipToMake = null;
+                switch (colorListIndex)
+                {
+                    case 0:
+                        chipToMake = FindChipPrefab(ChipConfig.BLACK_CHIP_VALUE);
+                        chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.BLACK_CHIP_VALUE);
+                        break;
+                    case 1:
+                        chipToMake = FindChipPrefab(ChipConfig.WHITE_CHIP_VALUE);
+                        chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.WHITE_CHIP_VALUE);
+                        break;
+                    case 2:
+                        chipToMake = FindChipPrefab(ChipConfig.BLUE_CHIP_VALUE);
+                        chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.BLUE_CHIP_VALUE);
+                        break;
+                    case 3:
+                        chipToMake = FindChipPrefab(ChipConfig.RED_CHIP_VALUE);
+                        chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.RED_CHIP_VALUE);
+                        break;
+                    default:
+                        break;
+                }
                 if (colorChipCount.Count != 0) //if there is a number
                 {
                     int chipStackCount = 0;
@@ -1576,23 +1677,24 @@ public class PokerPlayerRedux : MonoBehaviour{
                         if (chipIndex == 0)
                         {
                             chipStackCount++;
-                            GameObject newChip = GameObject.Instantiate(FindChipPrefab(chipPrefab[colorListIndex]), playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
-                            Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChip.GetComponent<Chip>());
-                            Table.instance._potChips.Add(newChip.GetComponent<Chip>());
-                            for (int tableChipIndex = 0; tableChipIndex < Table.instance.playerChipStacks[SeatPos].Count; tableChipIndex++)
-                            {
-                                if (newChip.GetComponent<Chip>().chipValue == Table.instance.playerChipStacks[SeatPos][tableChipIndex].chipValue && valueRemaining == 0)
-                                {
-                                    Chip chipToRemove = Table.instance.playerChipStacks[SeatPos][tableChipIndex];
-                                    //Debug.Log("ChipRemoved was a " + chipToRemove.GetComponent<Chip>().chipValue + " chip");
-                                    //Debug.Log("Removing chip from seat" + SeatPos);
-                                    //Debug.Log(playerDestinations.Count);
-                                    //Debug.Log("Removing chip from seat" + playerDestinations[SeatPos]);
-                                    Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chipToRemove);
-                                    //chipToRemove.DestroyChip();
-                                    break;
-                                }
-                            }
+                            GameObject newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
+                            newChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
+                            Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChip.GetComponent<Chip>().chipData.ChipValue);
+                            Table.instance.potChips += newChip.GetComponent<Chip>().chipData.ChipValue;
+                            //for (int tableChipIndex = 0; tableChipIndex < Table.instance.playerChipStacks[SeatPos].Count; tableChipIndex++)
+                            //{
+                            //    if (newChip.GetComponent<Chip>().chipValue == Table.instance.playerChipStacks[SeatPos][tableChipIndex].chipValue && valueRemaining == 0)
+                            //    {
+                            //        Chip chipToRemove = Table.instance.playerChipStacks[SeatPos][tableChipIndex];
+                            //        //Debug.Log("ChipRemoved was a " + chipToRemove.GetComponent<Chip>().chipValue + " chip");
+                            //        //Debug.Log("Removing chip from seat" + SeatPos);
+                            //        //Debug.Log(playerDestinations.Count);
+                            //        //Debug.Log("Removing chip from seat" + playerDestinations[SeatPos]);
+                            //        Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chipToRemove);
+                            //        //chipToRemove.DestroyChip();
+                            //        break;
+                            //    }
+                            //}
                             parentChip = newChip;
                             parentChip.transform.parent = chipContainer.transform;
                             parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
@@ -1611,26 +1713,26 @@ public class PokerPlayerRedux : MonoBehaviour{
                             }
                             lastStackPos = parentChip.transform.position;
                         }
-                        else if(chipStackCount >= chipCountMax)
+                        else if (chipStackCount >= chipCountMax)
                         {
                             chipStackCount = 1;
-                            GameObject newChip = GameObject.Instantiate(FindChipPrefab(chipPrefab[colorListIndex]), playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
-                            Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChip.GetComponent<Chip>());
-                            Table.instance._potChips.Add(newChip.GetComponent<Chip>());
-                            for (int tableChipIndex = 0; tableChipIndex < Table.instance.playerChipStacks[SeatPos].Count; tableChipIndex++)
-                            {
-                                if (newChip.GetComponent<Chip>().chipValue == Table.instance.playerChipStacks[SeatPos][tableChipIndex].chipValue && valueRemaining == 0)
-                                {
-                                    Chip chipToRemove = Table.instance.playerChipStacks[SeatPos][tableChipIndex];
-                                    //Debug.Log("ChipRemoved was a " + chipToRemove.GetComponent<Chip>().chipValue + " chip");
-                                    //Debug.Log("Removing chip from seat" + SeatPos);
-                                    //Debug.Log(playerDestinations.Count);
-                                    //Debug.Log("Removing chip from seat" + playerDestinations[SeatPos]);
-                                    Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chipToRemove);
-                                    //chipToRemove.DestroyChip();
-                                    break;
-                                }
-                            }
+                            GameObject newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
+                            Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chipToMake.GetComponent<Chip>().chipData.ChipValue);
+                            Table.instance.potChips += newChip.GetComponent<Chip>().chipData.ChipValue;
+                            //for (int tableChipIndex = 0; tableChipIndex < Table.instance.playerChipStacks[SeatPos].Count; tableChipIndex++)
+                            //{
+                            //    if (newChip.GetComponent<Chip>().chipValue == Table.instance.playerChipStacks[SeatPos][tableChipIndex].chipValue && valueRemaining == 0)
+                            //    {
+                            //        Chip chipToRemove = Table.instance.playerChipStacks[SeatPos][tableChipIndex];
+                            //        //Debug.Log("ChipRemoved was a " + chipToRemove.GetComponent<Chip>().chipValue + " chip");
+                            //        //Debug.Log("Removing chip from seat" + SeatPos);
+                            //        //Debug.Log(playerDestinations.Count);
+                            //        //Debug.Log("Removing chip from seat" + playerDestinations[SeatPos]);
+                            //        Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chipToRemove);
+                            //        //chipToRemove.DestroyChip();
+                            //        break;
+                            //    }
+                            //}
                             parentChip = newChip;
                             parentChip.transform.parent = chipContainer.transform;
                             parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
@@ -1652,30 +1754,31 @@ public class PokerPlayerRedux : MonoBehaviour{
                         else
                         {
                             chipStackCount++;
-                            GameObject newChip = FindChipPrefab(chipPrefab[colorListIndex]);
-                            Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChip.GetComponent<Chip>());
-                            Table.instance._potChips.Add(newChip.GetComponent<Chip>());
-                            for (int tableChipIndex = 0; tableChipIndex < Table.instance.playerChipStacks[SeatPos].Count; tableChipIndex++)
-                            {
-                                if (newChip.GetComponent<Chip>().chipValue == Table.instance.playerChipStacks[SeatPos][tableChipIndex].chipValue && valueRemaining == 0)
-                                {
-                                    Chip chipToRemove = Table.instance.playerChipStacks[SeatPos][tableChipIndex];
-                                    //Debug.Log("ChipRemoved was a " + chipToRemove.GetComponent<Chip>().chipValue + " chip");
-                                    //Debug.Log("Removing chip from seat" + SeatPos);
-                                    //Debug.Log(playerDestinations.Count);
-                                    //Debug.Log("Removing chip from seat" + playerDestinations[SeatPos]);
-                                    Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chipToRemove);
-                                    //chipToRemove.DestroyChip();
-                                    break;
-                                }
-                            }
+                            //GameObject newChip = FindChipPrefab(chipPrefab[colorListIndex]);
+                            Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chipToMake.GetComponent<Chip>().chipData.ChipValue);
+                            Table.instance.potChips += chipToMake.GetComponent<Chip>().chipData.ChipValue;
+                            //for (int tableChipIndex = 0; tableChipIndex < Table.instance.playerChipStacks[SeatPos].Count; tableChipIndex++)
+                            //{
+                            //    if (newChip.GetComponent<Chip>().chipValue == Table.instance.playerChipStacks[SeatPos][tableChipIndex].chipValue && valueRemaining == 0)
+                            //    {
+                            //        Chip chipToRemove = Table.instance.playerChipStacks[SeatPos][tableChipIndex];
+                            //        //Debug.Log("ChipRemoved was a " + chipToRemove.GetComponent<Chip>().chipValue + " chip");
+                            //        //Debug.Log("Removing chip from seat" + SeatPos);
+                            //        //Debug.Log(playerDestinations.Count);
+                            //        //Debug.Log("Removing chip from seat" + playerDestinations[SeatPos]);
+                            //        Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chipToRemove);
+                            //        //chipToRemove.DestroyChip();
+                            //        break;
+                            //    }
+                            //}
                             //newChip.transform.parent = parentChip.transform;
                             //newChip.transform.position = new Vector3(parentChip.transform.position.x, parentChip.transform.position.y - (incrementStackBy * chipIndex), parentChip.transform.position.z);
                             //newChip.transform.rotation = parentChip.transform.rotation;
-                            newChip.GetComponent<Chip>().inAStack = true;
-                            newChip.GetComponent<Chip>().chipForBet = true;
-                            parentChip.GetComponent<Chip>().chipStack.chips.Add(newChip.GetComponent<Chip>());
-                            parentChip.GetComponent<Chip>().chipStack.stackValue += newChip.GetComponent<Chip>().chipValue;
+                            //newChip.GetComponent<Chip>().inAStack = true;
+                            //newChip.GetComponent<Chip>().chipForBet = true;
+                            ChipData newChipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
+                            parentChip.GetComponent<Chip>().chipStack.chips.Add(newChipData);
+                            parentChip.GetComponent<Chip>().chipStack.stackValue += newChipData.ChipValue;
                             parentChip.transform.localScale = new Vector3(parentChip.transform.localScale.x,
                                                                           parentChip.transform.localScale.y,
                                                                           parentChip.transform.localScale.z + incrementStackBy);
@@ -1689,33 +1792,57 @@ public class PokerPlayerRedux : MonoBehaviour{
 
 		if (valueRemaining > 0)
 		{
-			int newChipStackValue = oldChipStackValue - betAmount;
-			for (int i = Table.instance.playerChipStacks[SeatPos].Count - 1; i >= 0; i--)
-			{
-				Chip chip = Table.instance.playerChipStacks[SeatPos][i];
-				Table.instance.RemoveChipFrom(playerDestinations[SeatPos], chip);
-				Debug.Log("Removing a " + chip.chipValue + " chip");
-				//chip.DestroyChip();
-			}
-			Debug.Assert(Table.instance.playerChipStacks[SeatPos].Count == 0);
-			List<GameObject> newChipStack = SetChipStacks(newChipStackValue);
-			foreach(GameObject chip in newChipStack)
-			{
-				Table.instance.AddChipTo(playerDestinations[SeatPos], chip.GetComponent<Chip>());
-				Debug.Log("adding a " + chip.GetComponent<Chip>().chipValue + " chip");
-			}
-            //if the chips that are physically in the players stack, are not equal to what they actually have, assert
-            if(Table.instance.playerChipStacks[SeatPos].Count != newChipStackValue)
-            {
-                Debug.Log("Table.instance.playerChipStacks[SeatPos].Count = " + Table.instance.playerChipStacks[SeatPos].Count);
-                Debug.Log("newChipStackValue = " + newChipStackValue);
-            }
-			Debug.Assert(Table.instance.playerChipStacks[SeatPos].Count == newChipStackValue);
-			CreateAndOrganizeChipStacks(newChipStack);
+			//int newChipStackValue = oldChipStackValue - betAmount;
+			//for (int i = Table.instance.playerChipStacks[SeatPos] - 1; i >= 0; i--)
+			//{
+			//	//Chip chip = Table.instance.playerChipStacks[SeatPos][i];
+			//	Table.instance.RemoveChipFrom(playerDestinations[SeatPos], betAmount);
+			//	//Debug.Log("Removing a " + chip.chipValue + " chip");
+			//	//chip.DestroyChip();
+			//}
+			//Debug.Assert(Table.instance.playerChipStacks[SeatPos] == 0);
+			//List<int> newChipStack = SetChipStacks(newChipStackValue);
+   //         for (int i = 0; i < newChipStack.Count; i++)
+   //         {
+   //             GameObject chipToMake = null;
+   //             switch (i)
+   //             {
+   //                 case 0:
+   //                     chipToMake = FindChipPrefab(ChipConfig.BLACK_CHIP_VALUE);
+   //                     chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.BLACK_CHIP_VALUE);
+   //                     break;
+   //                 case 1:
+   //                     chipToMake = FindChipPrefab(ChipConfig.WHITE_CHIP_VALUE);
+   //                     chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.WHITE_CHIP_VALUE);
+   //                     break;
+   //                 case 2:
+   //                     chipToMake = FindChipPrefab(ChipConfig.BLUE_CHIP_VALUE);
+   //                     chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.BLUE_CHIP_VALUE);
+   //                     break;
+   //                 case 3:
+   //                     chipToMake = FindChipPrefab(ChipConfig.RED_CHIP_VALUE);
+   //                     chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.RED_CHIP_VALUE);
+   //                     break;
+   //                 default:
+   //                     break;
+   //             }
+   //             for (int chipCount = 0; chipCount < newChipStack[chipCount]; chipCount++)
+   //             {
+   //                 Table.instance.AddChipTo(playerDestinations[SeatPos], chipToMake.GetComponent<Chip>().chipData.ChipValue);
+   //             }
+   //         }
+   //         //if the chips that are physically in the players stack, are not equal to what they actually have, assert
+   //         if(Table.instance.playerChipStacks[SeatPos] != newChipStackValue)
+   //         {
+   //             Debug.Log("Table.instance.playerChipStacks[SeatPos].Count = " + Table.instance.playerChipStacks[SeatPos]);
+   //             Debug.Log("newChipStackValue = " + newChipStackValue);
+   //         }
+			//Debug.Assert(Table.instance.playerChipStacks[SeatPos] == newChipStackValue);
+			//CreateAndOrganizeChipStacks(newChipStack);
 		}
 		else
 		{
-            List<GameObject> newChipStack = SetChipStacks(Table.instance.GetChipStackTotal(SeatPos));
+            List<int> newChipStack = SetChipStacks(Table.instance.playerChipStacks[SeatPos]);
 			CreateAndOrganizeChipStacks(newChipStack);
 		}
         GameObject[] emptyContainers = GameObject.FindGameObjectsWithTag("Container");
@@ -1728,22 +1855,33 @@ public class PokerPlayerRedux : MonoBehaviour{
         }
     }
 
-	//this basically goes through a given chipValue and finds each instance of that chipValue in the playerChipStack
-	public int FindChipMax(int chipValue)
-	{
-		int chipMax = 0;
-		for (int i = 0; i < Table.instance.playerChipStacks[SeatPos].Count; i++)
-		{
-			if(chipValue == Table.instance.playerChipStacks[SeatPos][i].chipValue)
-			{
-				chipMax++;
-			}
-		}
-		return chipMax;
-	}
+    //this basically goes through a given chipValue and finds each instance of that chipValue in the playerChipStack
+    public int FindChipMax(int chipValue)
+    {
+        int chipMax = 0;
+        Debug.Log("chipCount = " + chipCount);
+        switch (chipValue)
+        {
+            case ChipConfig.BLACK_CHIP_VALUE:
+                chipMax = (int)((float)(chipCount * 0.45f) / (float)ChipConfig.BLACK_CHIP_VALUE);
+                break;
+            case ChipConfig.WHITE_CHIP_VALUE:
+                chipMax = (int)((float)(chipCount * 0.35f) / (float)ChipConfig.WHITE_CHIP_VALUE);
+                break;
+            case ChipConfig.BLUE_CHIP_VALUE:
+                chipMax = (int)((float)(chipCount) * 0.15f / (float)ChipConfig.BLUE_CHIP_VALUE);
+                break;
+            case ChipConfig.RED_CHIP_VALUE:
+                chipMax = (int)((float)(chipCount) * 0.05f / (float)ChipConfig.RED_CHIP_VALUE);
+                break;
+            default:
+                break;
+        }
+        return chipMax;
+    }
 
-	//this is just me ease-of-life function for findining the correct prefab
-	public GameObject FindChipPrefab(int chipValue)
+    //this is just me ease-of-life function for findining the correct prefab
+    public GameObject FindChipPrefab(int chipValue)
 	{
 		GameObject chipPrefab = null;
 		switch (chipValue)
