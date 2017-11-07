@@ -55,7 +55,7 @@ public class ChipStack {
             {
                 GameObject incomingChip = chip.FindChipPrefab(chip.chipValue);
                 Chip newChip = incomingChip.GetComponent<Chip>();
-                GameObject.Destroy(chip.gameObject);
+                GameObject.Destroy(incomingChip.gameObject);
                 newChip.GetComponent<Chip>().inAStack = true;
                 newChip.GetComponent<Chip>().chipForBet = true;
                 stackValue += newChip.GetComponent<Chip>().chipValue;

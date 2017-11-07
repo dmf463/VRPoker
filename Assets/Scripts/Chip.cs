@@ -7,7 +7,7 @@ using Valve.VR.InteractionSystem;
 public class Chip : InteractionSuperClass {
 
     //super important, this is how much the chip costs, we set this in chipConfig and assign it at start
-    public int chipValue;
+    //public int chipValue
 
     //is the chip touching another chip?
     private bool isTouchingChip;

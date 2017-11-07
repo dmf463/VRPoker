@@ -11,6 +11,6 @@ public class ChipConfig {
     public const int RED_CHIP_VALUE = 5;
     public const int BLUE_CHIP_VALUE = 25;
     public const int WHITE_CHIP_VALUE = 50;
-    public const int BLACK_CHIP_VALUE = 100;
+    public const int BLACK_CHIP_VALUE = 10+0;
 
 }
