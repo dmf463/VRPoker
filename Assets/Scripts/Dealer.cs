@@ -400,7 +400,7 @@ public class Dealer : MonoBehaviour
         else
         {
             playerToAct = FindFirstPlayerToAct(1);
-            Debug.Log("player to act = " + playerToAct);
+           // Debug.Log("player to act = " + playerToAct);
         }
         if(playerToAct != null) playerToAct.playerSpotlight.SetActive(true);
         //StartCoroutine(playerAction(playerToAct));
@@ -526,7 +526,7 @@ public class Dealer : MonoBehaviour
     //this gets invoked whenever we gaze at a player
     public void SetNextPlayer()
     {
-        Debug.Log("current playerToAct = " + playerToAct);
+        //Debug.Log("current playerToAct = " + playerToAct);
         int currentPlayerSeatPos = playerToAct.SeatPos;
         playerToAct.playerSpotlight.SetActive(false);
         bool roundFinished = true;
@@ -536,24 +536,24 @@ public class Dealer : MonoBehaviour
             nextPlayer = players[(currentPlayerSeatPos + i) % players.Count];
             if(nextPlayer.PlayerState == PlayerState.Playing)
             {
-                Debug.Log("nextPlayer = " + nextPlayer.name);
-                Debug.Log("nextPlayer.actedThisRound = " + nextPlayer.actedThisRound);
-                Debug.Log("nextPlayer.currentBet = " + nextPlayer.currentBet + " and lastBet = " + LastBet);
-                Debug.Log("nextPlayer.chipCount = " + nextPlayer.chipCount);
-                Debug.Log("nextPlayer.PlayerState = " + nextPlayer.PlayerState);
+                //Debug.Log("nextPlayer = " + nextPlayer.name);
+                //Debug.Log("nextPlayer.actedThisRound = " + nextPlayer.actedThisRound);
+                //Debug.Log("nextPlayer.currentBet = " + nextPlayer.currentBet + " and lastBet = " + LastBet);
+                //Debug.Log("nextPlayer.chipCount = " + nextPlayer.chipCount);
+                //Debug.Log("nextPlayer.PlayerState = " + nextPlayer.PlayerState);
             }
             if ((!nextPlayer.actedThisRound || nextPlayer.currentBet < LastBet) && nextPlayer.PlayerState == PlayerState.Playing && nextPlayer.chipCount != 0)
             {
                 roundFinished = false;
                 playerToAct = nextPlayer;
                 playerToAct.playerSpotlight.SetActive(true);
-                Debug.Log("nextPlayer to act is player " + playerToAct);
+                //Debug.Log("nextPlayer to act is player " + playerToAct);
                 break;
             }
         }
         if (roundFinished)
         {
-            Debug.Log(Table.gameState + " Finished");
+            //Debug.Log(Table.gameState + " Finished");
             playerToAct.playerSpotlight.SetActive(false);
             playerToAct = null;
             playersReady = true;
@@ -602,7 +602,7 @@ public class Dealer : MonoBehaviour
             //    Table.instance.AddChipTo(playerDestinations[i], chip);
             //}
             Table.instance.AddChipTo(playerDestinations[i], chipCount);
-            players[i].chipCount = chipCount;
+            //players[i].chipCount = chipCount;
             players[i].CreateAndOrganizeChipStacks(startingStack);
         }
         Table.instance.DealerPosition = 0;
@@ -622,7 +622,7 @@ public class Dealer : MonoBehaviour
     }
     public void PostBlinds()
     {
-        Debug.Log("posting blinds");
+        //Debug.Log("posting blinds");
         players[SeatsAwayFromDealerAmongstLivePlayers(1)].Bet(SmallBlind);
         players[SeatsAwayFromDealerAmongstLivePlayers(2)].Bet(BigBlind);
     }

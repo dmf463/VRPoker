@@ -147,7 +147,7 @@ public class Chip : InteractionSuperClass {
                             pushingChip = true;
                             spotIndex = Services.PokerRules.chipsBeingPushed;
                             Services.PokerRules.chipsBeingPushed += 1;
-                            Debug.Log(Services.PokerRules.chipsBeingPushed);
+                            //Debug.Log(Services.PokerRules.chipsBeingPushed);
                         }
                     }
                 }
@@ -258,8 +258,7 @@ public class Chip : InteractionSuperClass {
                 //Debug.Log("adding " + incomingChip.gameObject.name);
                 if(incomingChip != null)
                 {
-                    chipStack.AddToStackInHand(incomingChip.chipData);
-                    Destroy(incomingChip.gameObject);
+                    chipStack.AddToStackInHand(incomingChip.chipData, incomingChip.gameObject);
                     incomingChip = null;
                     isTouchingChip = false;
                 }
@@ -270,10 +269,9 @@ public class Chip : InteractionSuperClass {
             {
                 foreach (ChipData chip in incomingStack.chipStack.chips)
                 {
-                    chipStack.AddToStackInHand(chip);
+                    chipStack.AddToStackInHand(chip, incomingStack.gameObject);
                     isTouchingStack = false;
                 }
-                Destroy(incomingStack.gameObject);
                 incomingStack = null;
             }
         }

@@ -22,16 +22,16 @@ public class PokerPlayerRedux : MonoBehaviour{
 	public int SeatPos { get; set; }
 
     //this lets me keep track of the players chip count, but only when I call ChipCount, so it may be less reliable than it can be
-    public int chipCount;
-	//private int chipCount
-	//{
-	//	get { return Table.instance.GetChipStackTotal(SeatPos); }
-	//	set { }
-	//}
+    public int chipCount { get { return ChipCount; } set { chipCount = value; } }
+    private int ChipCount
+    {
+        get { return Table.instance.playerChipStacks[SeatPos]; }
+        set { }
+    }
 
-	//this is the Hand of the player and holds ALL the information about thier hand
-	//it has the hand Total, the HighCard, the PokerHand enum, and all relevant hand info
-	public HandEvaluator Hand { get; set; }
+    //this is the Hand of the player and holds ALL the information about thier hand
+    //it has the hand Total, the HighCard, the PokerHand enum, and all relevant hand info
+    public HandEvaluator Hand { get; set; }
 
     //this is the float that determines their handStrength, it's a number from 0-1.
     [HideInInspector]
@@ -184,7 +184,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 		}
 		PlayerState = PlayerState.NotPlaying;
 		Hand = null;
-		Debug.Log("Player " + SeatPos + " folded!");
+		//Debug.Log("Player " + SeatPos + " folded!");
 		if(Services.Dealer.GetActivePlayerCount() == 1)
 		{
 			Table.gameState = GameState.CleanUp;
@@ -194,9 +194,9 @@ public class PokerPlayerRedux : MonoBehaviour{
 				{
 					Services.Dealer.players[i].PlayerState = PlayerState.Winner;
 					Services.Dealer.numberOfWinners = 1;
-					Debug.Log("current chip stack is at " + chipCount);
+					//Debug.Log("current chip stack is at " + chipCount);
 					Services.Dealer.players[i].ChipCountToCheckWhenWinning = Services.Dealer.players[i].chipCount;
-					Debug.Log("We are getting into the fold and the chipCountToCheckWhenWinning = " + ChipCountToCheckWhenWinning);
+					//Debug.Log("We are getting into the fold and the chipCountToCheckWhenWinning = " + ChipCountToCheckWhenWinning);
 					Services.Dealer.playersReady = true;
                     Services.Dealer.playersHaveBeenEvaluated = true;
 					Services.Dealer.StartCoroutine(Services.Dealer.WaitForWinnersToGetPaid());
@@ -218,23 +218,23 @@ public class PokerPlayerRedux : MonoBehaviour{
 	{
 		if(chipCount > 0)
 		{
-			Debug.Log("currentBet = " + currentBet);
+			//Debug.Log("currentBet = " + currentBet);
 			int betToCall = Services.Dealer.LastBet - currentBet;
 			if(chipCount - betToCall <= 0)
 			{
 				AllIn();
-				Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
+				//Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
 			}
 			else
 			{
-				Debug.Log("betToCall = " + betToCall);
+				//Debug.Log("betToCall = " + betToCall);
 				if(betToCall == 0) SayCheck();
 				else SayCall();
 				Bet(betToCall);
 				currentBet = betToCall + currentBet;
 				Services.Dealer.LastBet = currentBet;
-				Debug.Log("Player " + SeatPos + " called " + betToCall);
-				Debug.Log("and the pot is now at " + Table.instance.potChips);
+				//Debug.Log("Player " + SeatPos + " called " + betToCall);
+				//Debug.Log("and the pot is now at " + Table.instance.potChips);
 			}
 		}
 	}
@@ -253,13 +253,13 @@ public class PokerPlayerRedux : MonoBehaviour{
 			if (chipCount - betToRaise <= 0)
 			{
 				AllIn();
-				Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
+				//Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
 				currentBet = betToRaise + currentBet;
 				Services.Dealer.LastBet = currentBet;
-				Debug.Log("player " + SeatPos + " raises " + betToRaise);
-				Debug.Log("Player " + SeatPos + " raised!");
-				Debug.Log("and the pot is now at " + Table.instance.potChips);
-				Debug.Log("and player " + SeatPos + " is now at " + chipCount);
+				//Debug.Log("player " + SeatPos + " raises " + betToRaise);
+				//Debug.Log("Player " + SeatPos + " raised!");
+				//Debug.Log("and the pot is now at " + Table.instance.potChips);
+				//Debug.Log("and player " + SeatPos + " is now at " + chipCount);
 			}
 			else
 			{
@@ -274,10 +274,10 @@ public class PokerPlayerRedux : MonoBehaviour{
 				Bet(betToRaise);
 				currentBet = betToRaise + currentBet;
 				Services.Dealer.LastBet = currentBet;
-				Debug.Log("player " + SeatPos + " raises " + betToRaise);
-				Debug.Log("Player " + SeatPos + " raised!");
-				Debug.Log("and the pot is now at " + Table.instance.potChips);
-				Debug.Log("and player " + SeatPos + " is now at " + chipCount);
+				//Debug.Log("player " + SeatPos + " raises " + betToRaise);
+				//Debug.Log("Player " + SeatPos + " raised!");
+				//Debug.Log("and the pot is now at " + Table.instance.potChips);
+				//Debug.Log("and player " + SeatPos + " is now at " + chipCount);
 			}
 		}
 	}
@@ -297,7 +297,7 @@ public class PokerPlayerRedux : MonoBehaviour{
         }
         chipCountBeforeAllIn = chipCount;
         playerIsAllIn = true;
-		Debug.Log("getting ready to go all in");
+		//Debug.Log("getting ready to go all in");
         Bet(chipCount);
         //similar to fold, when we go all in, we want to see if we're the last person to go all in
         //if so, then we want to flip the cards
@@ -804,7 +804,7 @@ public class PokerPlayerRedux : MonoBehaviour{
         {
             yield return null;
         }
-        Debug.Log("calling set next player from player");
+        //Debug.Log("calling set next player from player");
         Services.Dealer.SetNextPlayer();
         playerLookedAt = false;
         yield break;
@@ -1264,31 +1264,31 @@ public class PokerPlayerRedux : MonoBehaviour{
 
         blackChipCount = Mathf.Min(blackChipCountMAX, valueRemaining / ChipConfig.BLACK_CHIP_VALUE);
         valueRemaining -= (blackChipCount * ChipConfig.BLACK_CHIP_VALUE);
-        Debug.Log("blackChipCount = " + blackChipCount);
-        Debug.Log("valueRemaining = " + valueRemaining);
+        //Debug.Log("blackChipCount = " + blackChipCount);
+        //Debug.Log("valueRemaining = " + valueRemaining);
         startingStack.Add(blackChipCount);
 
         whiteChipCount = Mathf.Min(whiteChipCountMAX, valueRemaining / ChipConfig.WHITE_CHIP_VALUE);
         valueRemaining -= (whiteChipCount * ChipConfig.WHITE_CHIP_VALUE);
-        Debug.Log("whiteChipCount = " + whiteChipCount);
-        Debug.Log("valueRemaining = " + valueRemaining);
+        //Debug.Log("whiteChipCount = " + whiteChipCount);
+        //Debug.Log("valueRemaining = " + valueRemaining);
         startingStack.Add(whiteChipCount);
 
         blueChipCount = Mathf.Min(blueChipCountMAX, valueRemaining / ChipConfig.BLUE_CHIP_VALUE);
         valueRemaining -= (blueChipCount * ChipConfig.BLUE_CHIP_VALUE);
-        Debug.Log("blueChipCount = " + blueChipCount);
-        Debug.Log("valueRemaining = " + valueRemaining);
+        //Debug.Log("blueChipCount = " + blueChipCount);
+        //Debug.Log("valueRemaining = " + valueRemaining);
         startingStack.Add(blueChipCount);
 
         redChipCount = valueRemaining / ChipConfig.RED_CHIP_VALUE;
-        Debug.Log("redChipCount = " + redChipCount);
-        Debug.Log("valueRemaining = " + valueRemaining);
+        //Debug.Log("redChipCount = " + redChipCount);
+        //Debug.Log("valueRemaining = " + valueRemaining);
         startingStack.Add(redChipCount);
 
-        for (int i = 0; i < startingStack.Count; i++)
-        {
-            Debug.Log("startingStack " + i + " has " + startingStack[i] + " chips");
-        }
+        //for (int i = 0; i < startingStack.Count; i++)
+        //{
+        //    Debug.Log("startingStack " + i + " has " + startingStack[i] + " chips");
+        //}
 
         //for (int i = 0; i < blackChipCount; i++)
         //{
@@ -1413,7 +1413,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                         //    stacksCreated = 0;
                         //    offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.z + .01f, 0, 0);
                         //}
-                        Debug.Log("ChipToMake = " + chipToMake);
+                        //Debug.Log("ChipToMake = " + chipToMake);
 						parentChip = Instantiate(chipToMake, chipContainer.transform.position, Quaternion.identity) as GameObject;
                         parentChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
                         parentChips.Add(parentChip);
@@ -1436,7 +1436,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 					}
                     else if(chipStackSize >= stackCountMax)
                     {
-                        Debug.Log("creating new stack cause max stack count reached");
+                        //Debug.Log("creating new stack cause max stack count reached");
                         chipStackSize = 0;
                         stacksCreated++;
                         //if (stacksCreated >= stackRowMax)
@@ -1520,13 +1520,13 @@ public class PokerPlayerRedux : MonoBehaviour{
 		int valueRemaining = betAmount;
 
 		int blackChipCountMAX = FindChipMax(ChipConfig.BLACK_CHIP_VALUE);
-        Debug.Log("blackChipCountMax = " + blackChipCountMAX);
+        //Debug.Log("blackChipCountMax = " + blackChipCountMAX);
 		int whiteChipCountMAX = FindChipMax(ChipConfig.WHITE_CHIP_VALUE);
-        Debug.Log("whiteChipCountMax = " + whiteChipCountMAX);
+        //Debug.Log("whiteChipCountMax = " + whiteChipCountMAX);
 		int blueChipCountMAX = FindChipMax(ChipConfig.BLUE_CHIP_VALUE);
-        Debug.Log("blueChipCountMax = " + blueChipCountMAX);
+        //Debug.Log("blueChipCountMax = " + blueChipCountMAX);
 		int redChipCountMAX = FindChipMax(ChipConfig.RED_CHIP_VALUE);
-        Debug.Log("redChipCountMax = " + redChipCountMAX);
+        //Debug.Log("redChipCountMax = " + redChipCountMAX);
 
 		colorChipCount[0] = Mathf.Min(blackChipCountMAX, valueRemaining / ChipConfig.BLACK_CHIP_VALUE);
 		valueRemaining -= colorChipCount[0] * ChipConfig.BLACK_CHIP_VALUE;
@@ -1859,7 +1859,7 @@ public class PokerPlayerRedux : MonoBehaviour{
     public int FindChipMax(int chipValue)
     {
         int chipMax = 0;
-        Debug.Log("chipCount = " + chipCount);
+        //Debug.Log("chipCount = " + chipCount);
         switch (chipValue)
         {
             case ChipConfig.BLACK_CHIP_VALUE:

@@ -43,8 +43,8 @@ public class PlayerGazeTrigger : MonoBehaviour
                         //Debug.Log("Ready to invoke");
                         timeLookedAt = 0f;
                         onGazeComplete.Invoke();
-                        Debug.Log("player that just invoked was " + pokerPlayer);
-                        Debug.Log("next player to act is " + Services.Dealer.playerToAct);
+                        //Debug.Log("player that just invoked was " + pokerPlayer);
+                        //Debug.Log("next player to act is " + Services.Dealer.playerToAct);
                     }
                 }
             }

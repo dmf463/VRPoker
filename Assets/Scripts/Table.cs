@@ -57,11 +57,12 @@ public class Table {
     //this is the list that holds all the players chips. this is where we get the actual chips to count and instantiate
     public List<int> playerChipStacks = new List<int>(5)
     {
-        Services.Dealer.players[0].chipCount,
-        Services.Dealer.players[1].chipCount,
-        Services.Dealer.players[2].chipCount,
-        Services.Dealer.players[3].chipCount,
-        Services.Dealer.players[4].chipCount
+        0, 0, 0, 0, 0
+        //Services.Dealer.players[0].chipCount,
+        //Services.Dealer.players[1].chipCount,
+        //Services.Dealer.players[2].chipCount,
+        //Services.Dealer.players[3].chipCount,
+        //Services.Dealer.players[4].chipCount
     };
 
     //we transfer chips that have been bet to here
