@@ -58,23 +58,13 @@ public class Table {
     public List<int> playerChipStacks = new List<int>(5)
     {
         0, 0, 0, 0, 0
-        //Services.Dealer.players[0].chipCount,
-        //Services.Dealer.players[1].chipCount,
-        //Services.Dealer.players[2].chipCount,
-        //Services.Dealer.players[3].chipCount,
-        //Services.Dealer.players[4].chipCount
     };
 
     //we transfer chips that have been bet to here
     //public List<Chip> _potChips = new List<Chip>();
 
     //the int value of the chips in the pot
-    public int potChips; //{ get { return potChips; } set { potChips = value; } }
-    //private int potChips
-    //{
-    //    get { return DeterminePotSize(); }
-    //    set { }
-    //}
+    public int potChips; 
     public int DealerPosition;
 
     //this function instantiates a new dealer button if there is none
@@ -121,37 +111,10 @@ public class Table {
         DealerPosition = (Services.Dealer.FindFirstPlayerToAct(1).SeatPos); //this does not account for a dead dealer
         SetDealerButtonPos(DealerPosition);
         Services.Dealer.StartCoroutine(Services.Dealer.WaitToPostBlinds(.25f));
-        //Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(1).Bet(Services.Dealer.SmallBlind);
         Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(1).currentBet = Services.Dealer.SmallBlind;
-
-        //Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(2).Bet(Services.Dealer.BigBlind);
         Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(2).currentBet = Services.Dealer.BigBlind;
-
         Services.Dealer.LastBet = Services.Dealer.BigBlind;
     }
-
-    //this is the function that converts the chips in the pot into an int value
-    //public int DeterminePotSize()
-    //{
-    //    int potSize = 0;
-    //    for (int i = 0; i < _potChips.Count; i++)
-    //    {
-    //        potSize += _potChips[i].chipValue;
-    //    }
-    //    return potSize;
-    //}
-
-    //literally same as above but for chipStacks
-    //since both of these hold chips, we need to take those chip values and add them up
-    //public int GetChipStackTotal(int seatPos)
-    //{
-    //    int chipStack = 0;
-    //    for (int i = 0; i < playerChipStacks[seatPos].Count; i++)
-    //    {
-    //        chipStack += playerChipStacks[seatPos][i].chipValue;
-    //    }
-    //    return chipStack;
-    //}
 
     //we use this function in order to get access to the actual card gameObjects
     //this is really only used when we want to flip and rearrange the cards (which should probably be made better)
@@ -164,25 +127,6 @@ public class Table {
         }
         return cardsInHand;
     }
-
-    //same as above. sometimes we need access to the actual chip gameObjects, and this is where we do that
-    //this was the source of some major problems for me for a while, because it interacted with log chips in a weird way
-    //LogChips would sometimes trigger and remove gameobjects, but the Chip itself was still there, so I would get a missing reference
-    //public List<GameObject> GetChipGameObjects(int seatPos)
-    //{
-    //    List<GameObject> chipsInStack = new List<GameObject>();
-    //    for (int i = 0; i < playerChipStacks[seatPos].Count; i++)
-    //    {
-    //        if (playerChipStacks[seatPos][i] == null)
-    //        {
-    //            Debug.Log("ChipCount from GetChipGameObjects() for player " + seatPos + " is equal to " + GetChipStackTotal(seatPos));
-    //            Debug.Log("ChipCount from ChipCount for player " + seatPos + " is equal to " + Services.Dealer.players[seatPos].ChipCount);
-    //            Debug.Log("in the for loop, i = " + i + " and the playerChipStack[" + seatPos + "].count = " + playerChipStacks[seatPos].Count + " and time is " + Time.time);
-    //        }
-    //        chipsInStack.Add(playerChipStacks[seatPos][i].gameObject);
-    //    }
-    //    return chipsInStack;
-    //}
 
     //two functions below are mirror images of each other, and are used in LogChips to add and remove chips to and from thier proper lists
     //this was part of the above issue

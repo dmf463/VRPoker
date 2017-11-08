@@ -134,14 +134,6 @@ public class Dealer : MonoBehaviour
         if (Table.gameState == GameState.NewRound)
         {
             messageText.text = "Shuffle Up and Deal!";
-            //int cardCountForPreFlop = 0;
-            //for (int playerCardIndex = 0; playerCardIndex < Table.instance.playerCards.Length; playerCardIndex++)
-            //{
-            //    for (int cardTotal = 0; cardTotal < Table.instance.playerCards[playerCardIndex].Count; cardTotal++)
-            //    {
-            //        cardCountForPreFlop++;
-            //    }
-            //}
             if (Services.PokerRules.cardsPulled.Count == PlayerAtTableCount() * 2 && !checkedPreFlopCardCount)
             {
                 checkedPreFlopCardCount = true;
@@ -593,26 +585,15 @@ public class Dealer : MonoBehaviour
     {
         for (int i = 0; i < players.Count; i++)
         {
-            //players.Add(new PokerPlayerRedux(i));
 			players[i].SeatPos = i;
 			players[i].PlayerState = PlayerState.Playing;
             List<int> startingStack  = players[i].SetChipStacks(chipCount);
-            //foreach(int chip in startingStack)
-            //{
-            //    Table.instance.AddChipTo(playerDestinations[i], chip);
-            //}
             Table.instance.AddChipTo(playerDestinations[i], chipCount);
-            //players[i].chipCount = chipCount;
             players[i].CreateAndOrganizeChipStacks(startingStack);
         }
         Table.instance.DealerPosition = 0;
         Table.instance.SetDealerButtonPos(Table.instance.DealerPosition);
         StartCoroutine(WaitToPostBlinds(.25f));
-        //for (int i = 0; i < 5; i++) {
-        //    Debug.Log(players[SeatsAwayFromDealerAmongstLivePlayers(i)].playerDestinations.Count);
-        //}
-        //Behaviour halo = (Behaviour)players[SeatsAwayFromDealer(1)].playerCardIndicator.GetComponent("Halo");
-        //halo.enabled = true;
     }
 
     public IEnumerator WaitToPostBlinds(float time)

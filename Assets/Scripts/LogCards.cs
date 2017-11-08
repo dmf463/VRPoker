@@ -50,17 +50,17 @@ public class LogCards : MonoBehaviour
                         //and the card has not already been logged
                         if (Table.instance.playerCards[i].Contains(other.GetComponent<Card>()))
                         {
-                            Debug.Log(other.gameObject.name + " is already in play.");
+                            //Debug.Log(other.gameObject.name + " is already in play.");
                         }
                         //and the player does not have 2 cards already
                         else if (Table.instance.playerCards[i].Count == 2)
                         {
-                            Debug.Log(other.gameObject.name + " cannot be added to " + playerNames[i]);
+                            //Debug.Log(other.gameObject.name + " cannot be added to " + playerNames[i]);
                         }
                         //and the card has not already been dealt to somewhere else
                         else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
                         {
-                            Debug.Log(other.gameObject.name + " is already in play");
+                            //Debug.Log(other.gameObject.name + " is already in play");
                         }
                         //add the card to the right players
                         //add it to the cardsDealt to keep track
@@ -68,7 +68,7 @@ public class LogCards : MonoBehaviour
                         {
                             Table.instance.AddCardTo(playerDestinations[i], other.GetComponent<Card>());
                             Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
-                            Debug.Log(other.gameObject.name + " went into " + playerNames[i]);
+                            //Debug.Log(other.gameObject.name + " went into " + playerNames[i]);
                         }
                     }
                 }
@@ -82,25 +82,25 @@ public class LogCards : MonoBehaviour
                 {
                     if (Table.instance._board.Contains(other.GetComponent<Card>()))
                     {
-                        Debug.Log(other.gameObject.name + " is already in play");
+                        //Debug.Log(other.gameObject.name + " is already in play");
                     }
                     else if (Table.instance._board.Count == 5)
                     {
-                        Debug.Log(other.gameObject.name + "cannot be added to the board");
+                        //Debug.Log(other.gameObject.name + "cannot be added to the board");
                     }
                     else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
                     {
-                        Debug.Log(other.gameObject.name + " is already in play");
+                        //Debug.Log(other.gameObject.name + " is already in play");
                     }
                     else if (other.gameObject.GetComponent<Rigidbody>().isKinematic)
                     {
-                        Debug.Log("Still holding card");
+                        //Debug.Log("Still holding card");
                     }
                     else
                     {
                         Table.instance.AddCardTo(Destination.board, other.GetComponent<Card>());
                         Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
-                        Debug.Log(other.gameObject.name + " went into " + this.gameObject.name);
+                        //Debug.Log(other.gameObject.name + " went into " + this.gameObject.name);
                     }
                 }
 
@@ -109,32 +109,32 @@ public class LogCards : MonoBehaviour
             {
                 if (Table.instance._burn.Contains(other.GetComponent<Card>()))
                 {
-                    Debug.Log(other.gameObject.name + " is already in play");
+                    //Debug.Log(other.gameObject.name + " is already in play");
                 }
                 else if (Table.instance._board.Count == 3)
                 {
-                    Debug.Log(other.gameObject.name + "cannot be added to the board");
+                    //Debug.Log(other.gameObject.name + "cannot be added to the board");
                 }
                 else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
                 {
-                    Debug.Log("card is already in play");
+                    //Debug.Log("card is already in play");
                 }
                 else if (other.gameObject.GetComponent<Rigidbody>().isKinematic)
                 {
-                    Debug.Log("Still holding card");
+                    //Debug.Log("Still holding card");
                 }
                 else
                 {
                     Table.instance.AddCardTo(Destination.burn, other.GetComponent<Card>());
                     Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
-                    Debug.Log("Card went into " + this.gameObject.name);
+                    //Debug.Log("Card went into " + this.gameObject.name);
                 }
             }
             else if (this.gameObject.name == "ShufflingArea")
             {
                 if (GameObject.FindGameObjectWithTag("CardDeck") == null)
                 {
-                    Debug.Log("Could not find CardDeck, instantiating new one");
+                    //Debug.Log("Could not find CardDeck, instantiating new one");
                     newCardDeck = Instantiate(Services.PrefabDB.CardDeck, transform.position, Quaternion.identity) as GameObject;
                     newCardDeck.GetComponent<CardDeckScript>().BuildDeckFromOneCard(newCardDeck);
                     madeNewDeck = true;
@@ -142,7 +142,7 @@ public class LogCards : MonoBehaviour
                 if (Table.dealerState == DealerState.ShufflingState && madeNewDeck == true)
                 {
                     Destroy(other.gameObject);
-                    Debug.Log("destroying cards");
+                    //Debug.Log("destroying cards");
                     newCardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
                     if (newCardDeck.GetComponent<CardDeckScript>().currentCardDeckScale.y > newCardDeck.GetComponent<CardDeckScript>().newCardDeckScale.y)
                     {
