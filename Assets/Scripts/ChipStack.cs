@@ -48,16 +48,16 @@ public class ChipStack {
     //then we set the boos we need to say the incoming chip is in a stack and NOT a chip to bet with
     //we increase the stackValue
     //and then add the chip to the list
-    public void AddToStackInHand(ChipData chip, GameObject chipToDestroy)
+    public void AddToStackInHand(ChipData chip)
     {
         //Debug.Log("chipStack has " + chips.Count + "  and stackValue ==  " + stackValue + " and incrementStackBy =  " + incrementStackInHandBy);
         //Debug.Log("trying to destroy " + chip.gameObject.name);
         //Debug.Log("adding a " + chip.chipData.ChipValue + " chip back to the stack");
         //if (chip.gameObject != null)
         //{
-        if (chip.ChipValue == chips[0].ChipValue)
-        {
-            GameObject.Destroy(chipToDestroy);
+        //if (chip.ChipValue == chips[0].ChipValue)
+        //{
+            //GameObject.Destroy(chipToDestroy);
             //ChipData incomingChip = new ChipData(chip.chipData.ChipValue);
             //GameObject.Destroy(chip.gameObject);
             //GameObject.Destroy(incomingChip.gameObject);
@@ -71,7 +71,7 @@ public class ChipStack {
                                                         parentChip.transform.localScale.y,
                                                         parentChip.transform.localScale.z + incrementStackBy);
             //Debug.Log("chipStack has " + chips.Count + "chips");
-        }
+        //}
             //else
             //{
             //    GameObject incomingChip = chip.gameObject;

@@ -24,6 +24,9 @@ public class Dealer : MonoBehaviour
 	public List<PokerPlayerRedux> players = new List<PokerPlayerRedux>();
 
     public PokerPlayerRedux playerToAct;
+    public PokerPlayerRedux previousPlayerToAct;
+    public PokerPlayerRedux smallBlind;
+    public PokerPlayerRedux bigBlind;
 
     //the list of destinations, so that I could make for-loops where the seatNum corresponds to the destination num in the list
     private List<Destination> playerDestinations = new List<Destination>();
@@ -153,7 +156,7 @@ public class Dealer : MonoBehaviour
             switch (Table.gameState)
             {
                 case GameState.PreFlop:
-                    //Debug.Log("PREFLOP!");
+                    Debug.Log("PREFLOP!");
                     messageText.text = "player0 chipCount is " + players[0].chipCount +
                                        "\nplayer1 chipCount is " + players[1].chipCount +
                                        "\nplayer2 chipCount is " + players[2].chipCount +
@@ -162,7 +165,7 @@ public class Dealer : MonoBehaviour
                                        "\npotSize is at " + Table.instance.potChips;
                     break;
                 case GameState.Flop:
-                    //Debug.Log("FLOP!");
+                    Debug.Log("FLOP!");
                     messageText.text = "player0 chipCount is " + players[0].chipCount +
                                        "\nplayer1 chipCount is " + players[1].chipCount +
                                        "\nplayer2 chipCount is " + players[2].chipCount +
@@ -172,7 +175,7 @@ public class Dealer : MonoBehaviour
 
                     break;
                 case GameState.Turn:
-                    //Debug.Log("TURN!");
+                    Debug.Log("TURN!");
                     messageText.text = "player0 chipCount is " + players[0].chipCount +
                                        "\nplayer1 chipCount is " + players[1].chipCount +
                                        "\nplayer2 chipCount is " + players[2].chipCount +
@@ -182,7 +185,7 @@ public class Dealer : MonoBehaviour
 
                     break;
                 case GameState.River:
-                    //Debug.Log("RIVER!");
+                    Debug.Log("RIVER!");
                     messageText.text = "player0 chipCount is " + players[0].chipCount +
                                        "\nplayer1 chipCount is " + players[1].chipCount +
                                        "\nplayer2 chipCount is " + players[2].chipCount +
@@ -273,6 +276,7 @@ public class Dealer : MonoBehaviour
                 if (players[i].playerIsAllIn == true) allInPlayerCount++;
             }
             if (GetActivePlayerCount() == allInPlayerCount) Table.gameState = GameState.ShowDown;
+            else if (GetActivePlayerCount() - allInPlayerCount == 1 && playersReady) Table.gameState = GameState.ShowDown;
             if(readyForShowdown == true)
             {
                 if (!OutsideVR)
@@ -390,12 +394,16 @@ public class Dealer : MonoBehaviour
         SetCurrentAndLastBet();
         if (Table.gameState == GameState.PreFlop)
         {
-            playerToAct = FindFirstPlayerToAct(3);
+            if(GetActivePlayerCount() == 2)
+            {
+                playerToAct = FindFirstPlayerToAct(0);
+            }
+            else playerToAct = FindFirstPlayerToAct(3);
         }
         else
         {
             playerToAct = FindFirstPlayerToAct(1);
-           // Debug.Log("player to act = " + playerToAct);
+            Debug.Log("player to act = " + playerToAct);
         }
         if(playerToAct != null) playerToAct.playerSpotlight.SetActive(true);
         //StartCoroutine(playerAction(playerToAct));
@@ -440,7 +448,7 @@ public class Dealer : MonoBehaviour
         {
             onlyAllinPlayersLeft = true;
         }
-        else if(GetActivePlayerCount() - allInPlayers == 1)
+        else if(GetActivePlayerCount() - allInPlayers == 1 && playerToAct == null)
         {
             onlyAllinPlayersLeft = true;
         }
@@ -515,7 +523,7 @@ public class Dealer : MonoBehaviour
         }
         else if((GetActivePlayerCount() - allInPlayerCount) == 1)
         {
-            playersReady = true;
+            if(playerToAct == null) playersReady = true;
         }
     }
 
@@ -524,6 +532,7 @@ public class Dealer : MonoBehaviour
     {
         //Debug.Log("current playerToAct = " + playerToAct);
         int currentPlayerSeatPos = playerToAct.SeatPos;
+
         playerToAct.playerSpotlight.SetActive(false);
         bool roundFinished = true;
         PokerPlayerRedux nextPlayer = null;
@@ -532,24 +541,35 @@ public class Dealer : MonoBehaviour
             nextPlayer = players[(currentPlayerSeatPos + i) % players.Count];
             if(nextPlayer.PlayerState == PlayerState.Playing)
             {
-                //Debug.Log("nextPlayer = " + nextPlayer.name);
-                //Debug.Log("nextPlayer.actedThisRound = " + nextPlayer.actedThisRound);
-                //Debug.Log("nextPlayer.currentBet = " + nextPlayer.currentBet + " and lastBet = " + LastBet);
-                //Debug.Log("nextPlayer.chipCount = " + nextPlayer.chipCount);
-                //Debug.Log("nextPlayer.PlayerState = " + nextPlayer.PlayerState);
+                Debug.Log("nextPlayer = " + nextPlayer.name);
+                Debug.Log("nextPlayer.actedThisRound = " + nextPlayer.actedThisRound);
+                Debug.Log("nextPlayer.currentBet = " + nextPlayer.currentBet + " and lastBet = " + LastBet);
+                Debug.Log("nextPlayer.chipCount = " + nextPlayer.chipCount);
+                Debug.Log("nextPlayer.PlayerState = " + nextPlayer.PlayerState);
             }
             if ((!nextPlayer.actedThisRound || nextPlayer.currentBet < LastBet) && nextPlayer.PlayerState == PlayerState.Playing && nextPlayer.chipCount != 0)
             {
                 roundFinished = false;
+                previousPlayerToAct = playerToAct;
                 playerToAct = nextPlayer;
                 playerToAct.playerSpotlight.SetActive(true);
-                //Debug.Log("nextPlayer to act is player " + playerToAct);
+                Debug.Log("nextPlayer to act is player " + playerToAct);
                 break;
             }
         }
         if (roundFinished)
         {
-            //Debug.Log(Table.gameState + " Finished");
+            if (OnlyAllInPlayersLeft())
+            {
+                for (int i = 0; i < players.Count; i++)
+                {
+                    if(players[i].Hand != null)
+                    {
+                        players[i].FlipCards();
+                    }
+                }
+            }
+            Debug.Log(Table.gameState + " Finished");
             playerToAct.playerSpotlight.SetActive(false);
             playerToAct = null;
             playersReady = true;
@@ -728,6 +748,7 @@ public class Dealer : MonoBehaviour
         int potRemaining = potAmount;
         for (int i = 0; i < winningPlayers.Count; i++)
         {
+            if (numberOfWinners - i == 0) Debug.Log("numberOfWinners = " + numberOfWinners + " and i = " + i);
             potAmountToGiveWinner = potRemaining / (numberOfWinners - i);
             int remainder = potAmountToGiveWinner % ChipConfig.RED_CHIP_VALUE;
             if (remainder > 0)
@@ -871,18 +892,18 @@ public class Dealer : MonoBehaviour
     //this is an ease of life function to find how far away from the dealer button a given player is
     public int SeatsAwayFromDealer(int distance)
     {
-        return (Table.instance.DealerPosition + distance) % players.Count;
+        return (Table.instance.DealerPosition + distance) % players.Count();
     }
 
     public int SeatsAwayFromDealerAmongstLivePlayers(int distance)
     {
         int playersInLine = 0;
         int index = 0;
-        distance = distance % PlayerAtTableCount();
+        distance = distance % PlayerAtTableCount(); //distance = 3, and P@T = 3, so distance = 0
         Debug.Assert(PlayerAtTableCount() > 0);
-        while(playersInLine <= distance)
+        while(playersInLine <= distance) //while 0 <= 0
         {
-            PokerPlayerRedux player = players[SeatsAwayFromDealer(index)];
+            PokerPlayerRedux player = players[SeatsAwayFromDealer(index)]; //player = players[
             if (player.PlayerState != PlayerState.Eliminated)
             {
                 if (playersInLine == distance) return player.SeatPos;
