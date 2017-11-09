@@ -306,41 +306,41 @@ public class PokerPlayerRedux : MonoBehaviour{
 	//def gonna need to refactor
 	public void SayCheck()
 	{
-		if(!playerAudioSource.isPlaying){
+		if(!playerAudioSource.isPlaying && !playerIsInConversation){
 			Services.SoundManager.GetSourceAndPlay(playerAudioSource, checkAudio);
 		}
 	}
 
 	public void SayFold()
 	{
-		if(!playerAudioSource.isPlaying){
+		if(!playerAudioSource.isPlaying && !playerIsInConversation){
 			Services.SoundManager.GetSourceAndPlay(playerAudioSource, foldAudio);
 		}
 	}
 
 	public void SayRaise()
 	{
-		if(!playerAudioSource.isPlaying){
+		if(!playerAudioSource.isPlaying && !playerIsInConversation){
 			Services.SoundManager.GetSourceAndPlay(playerAudioSource, raiseAudio);
 		}
 	}
 
 	public void SayBet(){
-		if(!playerAudioSource.isPlaying){
+		if(!playerAudioSource.isPlaying && !playerIsInConversation){
 			Services.SoundManager.GetSourceAndPlay(playerAudioSource, betAudio);
 		}
 	}
 
 	public void SayCall()
 	{
-		if(!playerAudioSource.isPlaying){
+		if(!playerAudioSource.isPlaying && !playerIsInConversation){
 			Services.SoundManager.GetSourceAndPlay(playerAudioSource, callAudio);
 		}
 	}
 
 	public void SayAllIn()
 	{
-		if(!playerAudioSource.isPlaying){
+		if(!playerAudioSource.isPlaying && !playerIsInConversation){
 			Services.SoundManager.GetSourceAndPlay(playerAudioSource, allInAudio);
 		}
 	}
@@ -348,7 +348,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 	//determines which reaction to have
 	public void WinnerReactions()
 	{
-		if(!playerAudioSource.isPlaying){
+		if(!playerAudioSource.isPlaying && !playerIsInConversation){
 			Services.SoundManager.GetSourceAndPlay(playerAudioSource, winAudio);
 		}
 
@@ -450,16 +450,16 @@ public class PokerPlayerRedux : MonoBehaviour{
 //		}
 //	}
 
-	public void RespectfulReaction()
-	{
-
-		Services.SoundManager.GetSourceAndPlay(playerAudioSource, winAudio);
-	}
-
-	public void GoodReaction()
-	{
-		Services.SoundManager.GetSourceAndPlay(playerAudioSource, winAudio);
-	}
+//	public void RespectfulReaction()
+//	{
+//
+//		Services.SoundManager.GetSourceAndPlay(playerAudioSource, winAudio);
+//	}
+//
+//	public void GoodReaction()
+//	{
+//		Services.SoundManager.GetSourceAndPlay(playerAudioSource, winAudio);
+//	}
 
 
 	//this finds the rate of return
