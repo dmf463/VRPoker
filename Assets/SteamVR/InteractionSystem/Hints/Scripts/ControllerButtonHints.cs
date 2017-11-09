@@ -417,7 +417,6 @@ namespace Valve.VR.InteractionSystem
 		private void HideAllButtonHints()
 		{
 			Clear();
-
 			renderModel.gameObject.SetActive( false );
 		}
 

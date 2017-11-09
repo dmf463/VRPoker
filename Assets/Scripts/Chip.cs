@@ -44,7 +44,7 @@ public class Chip : InteractionSuperClass {
     public bool inAStack = false;
 
     //the velocity threshold by which chip stacks come apart
-    const float MAGNITUDE_THRESHOLD = 1;
+    const float MAGNITUDE_THRESHOLD = 2;
 
     //the max amount of chips that can go in a chipstack
     const float MAX_CHIPSTACK = 25;
@@ -65,6 +65,8 @@ public class Chip : InteractionSuperClass {
     public int spotIndex;
     [HideInInspector]
     public Hand handPushingChip;
+
+    public int stackValue;
 
     Rigidbody rb;
 
@@ -107,6 +109,8 @@ public class Chip : InteractionSuperClass {
         //        StartCoroutine(ReadyToBeGrabbed(1.5f));
         //    }
         //}
+
+        if (chipStack != null) stackValue = chipStack.stackValue;
     }
     void FixedUpdate()
     {
@@ -256,22 +260,24 @@ public class Chip : InteractionSuperClass {
             if (isTouchingChip && incomingChip.canBeGrabbed)
             {
                 //Debug.Log("adding " + incomingChip.gameObject.name);
-                if(incomingChip != null)
+                if(incomingChip != null && incomingChip.chipData.ChipValue == chipData.ChipValue)
                 {
-                    chipStack.AddToStackInHand(incomingChip.chipData, incomingChip.gameObject);
+                    chipStack.AddToStackInHand(incomingChip.chipData);
+                    Destroy(incomingChip.gameObject);
                     incomingChip = null;
                     isTouchingChip = false;
                 }
                 //we might not need this. what's it for?
                 isTouchingChip = false;
             }
-            if (isTouchingStack)
+            if (isTouchingStack && incomingStack.chipData.ChipValue == chipData.ChipValue)
             {
                 foreach (ChipData chip in incomingStack.chipStack.chips)
                 {
-                    chipStack.AddToStackInHand(chip, incomingStack.gameObject);
+                    chipStack.AddToStackInHand(chip);
                     isTouchingStack = false;
                 }
+                Destroy(incomingStack.gameObject);
                 incomingStack = null;
             }
         }
