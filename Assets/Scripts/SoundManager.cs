@@ -5,30 +5,45 @@ using UnityEngine;
 //controls all the sounds
 public class SoundManager : MonoBehaviour
 {
+	public PokerPlayerRedux player0;
+	public PokerPlayerRedux player1;
+	public PokerPlayerRedux player2;
+	public PokerPlayerRedux player3;
+	public PokerPlayerRedux player4;
 
-    [Header("Floyd Lines")]
-    public AudioClip checkP1;
-    public AudioClip callP1;
-    public AudioClip raiseP1;
-    public AudioClip foldP1;
-    public AudioClip allInP1;
-    public List<AudioClip> genericBadP1 = new List<AudioClip>();
-    public List<AudioClip> badBeatP1 = new List<AudioClip>();
-    public List<AudioClip> incredulousP1 = new List<AudioClip>();
-    public List<AudioClip> respectP1 = new List<AudioClip>();
-    public List<AudioClip> goodResponseP1 = new List<AudioClip>();
 
-    [Header("Willy Lines")]
-    public AudioClip checkP2;
-    public AudioClip callP2;
-    public AudioClip raiseP2;
-    public AudioClip foldP2;
-    public AudioClip allInP2;
-    public List<AudioClip> genericBadP2 = new List<AudioClip>();
-    public List<AudioClip> badBeatP2 = new List<AudioClip>();
-    public List<AudioClip> incredulousP2 = new List<AudioClip>();
-    public List<AudioClip> respectP2 = new List<AudioClip>();
-    public List<AudioClip> goodResponseP2 = new List<AudioClip>();
+	public AudioSource p0Source;
+	public AudioSource p1Source;
+	public AudioSource p2Source;
+	public AudioSource p3Source;
+	public AudioSource p4Source;
+//    [Header("Floyd Lines")]
+//    public AudioClip checkP1;
+//    public AudioClip callP1;
+//    public AudioClip raiseP1;
+//    public AudioClip foldP1;
+//    public AudioClip allInP1;
+//    public List<AudioClip> genericBadP1 = new List<AudioClip>();
+//    public List<AudioClip> badBeatP1 = new List<AudioClip>();
+//    public List<AudioClip> incredulousP1 = new List<AudioClip>();
+//    public List<AudioClip> respectP1 = new List<AudioClip>();
+//    public List<AudioClip> goodResponseP1 = new List<AudioClip>();
+//
+//    [Header("Willy Lines")]
+//    public AudioClip checkP2;
+//    public AudioClip callP2;
+//    public AudioClip raiseP2;
+//    public AudioClip foldP2;
+//    public AudioClip allInP2;
+//    public List<AudioClip> genericBadP2 = new List<AudioClip>();
+//    public List<AudioClip> badBeatP2 = new List<AudioClip>();
+//    public List<AudioClip> incredulousP2 = new List<AudioClip>();
+//    public List<AudioClip> respectP2 = new List<AudioClip>();
+//    public List<AudioClip> goodResponseP2 = new List<AudioClip>();
+
+
+	public AudioClip[] convo1Index;
+	public AudioClip[] convo2Index;
 
     [Header("SoundEffects")]
     public AudioClip chips;
@@ -58,5 +73,72 @@ public class SoundManager : MonoBehaviour
         source.Play();
         Destroy(specialAudioSource, clip.length);
     }
+
+	public void GetSourceAndPlay(AudioSource source, AudioClip clip)
+	{
+		source.clip = clip;
+		source.Play();
+	}
+
+
+	public void PlayConversation(int convo)
+	{
+		if(convo == 0){
+			StartCoroutine("Conversation1");
+		}
+		if(convo == 1){
+			StartCoroutine("Conversation2");
+		}
+	}
+
+	IEnumerator Conversation1 (){
+
+		player2.playerIsInConversation = true;
+		player4.playerIsInConversation = true;
+
+		p4Source.clip = convo1Index[0];
+		p4Source.Play();
+		yield return new WaitForSeconds(p4Source.clip.length);
+		p2Source.clip = convo1Index[1];
+		p2Source.Play();
+		yield return new WaitForSeconds(p2Source.clip.length);
+		p4Source.clip = convo1Index[2];
+		p4Source.Play();
+		yield return new WaitForSeconds(p4Source.clip.length);
+		p2Source.clip = convo1Index[3];
+		p2Source.Play();
+		yield return new WaitForSeconds(p2Source.clip.length);
+		p4Source.clip = convo1Index[4];
+		p4Source.Play();
+		yield return new WaitForSeconds(p4Source.clip.length);
+
+		player2.playerIsInConversation = false;
+		player4.playerIsInConversation = false;
+
+	}
+
+	IEnumerator Conversation2 (){
+
+		player2.playerIsInConversation = true;
+		player3.playerIsInConversation = true;
+		player4.playerIsInConversation = true;
+
+		p3Source.clip = convo2Index[0];
+		p3Source.Play();
+		yield return new WaitForSeconds(p3Source.clip.length);
+		p4Source.clip = convo2Index[1];
+		p4Source.Play();
+		yield return new WaitForSeconds(p4Source.clip.length);
+		p2Source.clip = convo2Index[2];
+		p2Source.Play();
+		yield return new WaitForSeconds(p2Source.clip.length);
+		p4Source.clip = convo2Index[3];
+		p4Source.Play();
+		yield return new WaitForSeconds(p4Source.clip.length);
+
+		player2.playerIsInConversation = false;
+		player3.playerIsInConversation = false;
+		player4.playerIsInConversation = false;
+	}
 
 }

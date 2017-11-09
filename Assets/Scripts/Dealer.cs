@@ -121,7 +121,7 @@ public class Dealer : MonoBehaviour
 		Debug.Log("Gamestate = " + Table.gameState);
         Table.dealerState = DealerState.DealingState;
         lastGameState = GameState.NewRound;
-        OutsideVR = false;
+        OutsideVR = true;
     }
 
     // Update is called once per frame
@@ -203,9 +203,12 @@ public class Dealer : MonoBehaviour
             //Debug.Log("CardsPulled = " + Services.PokerRules.cardsPulled.Count);
             //Services.PokerRules.CorrectMistakes();
         }
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+		if (Input.GetKeyDown(KeyCode.X))
         {
+			if(playerToAct != null) 
+			{
             playerToAct.EvaluateHand();
+			}
         }
 
         //this resets bools necessary to start new rounds
@@ -396,6 +399,7 @@ public class Dealer : MonoBehaviour
         }
         if(playerToAct != null) playerToAct.playerSpotlight.SetActive(true);
         //StartCoroutine(playerAction(playerToAct));
+		Services.SoundManager.PlayConversation(UnityEngine.Random.Range(0,2));
     }
 
 
@@ -783,7 +787,7 @@ public class Dealer : MonoBehaviour
     IEnumerator WaitForLoser(float time, PokerPlayerRedux player)
     {
         yield return new WaitForSeconds(time);
-        player.LoserReactions();
+     //   player.LoserReactions();
     }
 
     //this is the function that actually runs to check whether the winners have gotten paid
