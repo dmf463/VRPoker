@@ -611,10 +611,11 @@ public class PokerPlayerRedux : MonoBehaviour{
     //we should go back to the generic one and make percentage variables that we can adjust in individual players
     public void FoldCallRaiseDecision(float returnRate)
     {
+        Debug.Log("Player " + SeatPos + " has a HS " + HandStrength);
         if (Table.gameState == GameState.PreFlop)
         {
-            if (Hand.HandValues.Total > 12) Raise();
-            else if (Hand.HandValues.Total < 5)
+            if (HandStrength > 12) Raise();
+            else if (HandStrength < 5)
             {
                 if (Services.Dealer.LastBet - currentBet == 0) Call();
                 else Fold();
@@ -629,6 +630,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             if ((chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && HandStrength < 0.5) Fold();
             else if (returnRate < lowReturnRate)
             {
+                Debug.Log("lowReturnRate");
                 //95% chance fold, 5% bluff (raise)
                 float randomNumber = Random.Range(0, 100);
                 if (randomNumber < foldChanceLow)
@@ -643,6 +645,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                     if (Services.Dealer.previousPlayerToAct != null)
                     {
                         if (Services.Dealer.previousPlayerToAct.playerIsAllIn) Call();
+                        else Raise();
                     }
                     else Raise();
                 }
@@ -650,6 +653,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             }
             else if (returnRate < decentReturnRate)
             {
+                Debug.Log("decentReturnRate");
                 //80% chance fold, 5% call, 15% bluff(raise)
                 float randomNumber = Random.Range(0, 100);
                 if (randomNumber < foldChanceDecent)
@@ -663,6 +667,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                     if (Services.Dealer.previousPlayerToAct != null)
                     {
                         if (Services.Dealer.previousPlayerToAct.playerIsAllIn) Call();
+                        else Raise();
                     }
                     else Raise();
                 }
@@ -670,6 +675,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             }
             else if (returnRate < highReturnRate)
             {
+                Debug.Log("highReturnRate");
                 //60% chance call, 40% raise
                 float randomNumber = Random.Range(0, 100);
                 if (randomNumber < foldChanceHigh)
@@ -683,6 +689,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                     if (Services.Dealer.previousPlayerToAct != null)
                     {
                         if (Services.Dealer.previousPlayerToAct.playerIsAllIn) Call();
+                        else Raise();
                     }
                     else Raise();
                 }
@@ -690,6 +697,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             }
             else if (returnRate >= highReturnRate)
             {
+                Debug.Log("superHighReturnRate");
                 //70% chance raise, 30% call
                 float randomNumber = Random.Range(0, 100);
                 if (randomNumber < foldChanceVeryHigh)
@@ -703,6 +711,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                     if (Services.Dealer.previousPlayerToAct != null)
                     {
                         if (Services.Dealer.previousPlayerToAct.playerIsAllIn) Call();
+                        else Raise();
                     }
                     else Raise();
                 }
@@ -921,26 +930,8 @@ public class PokerPlayerRedux : MonoBehaviour{
 	//this is essentially why they're always calling preflop
 	public void DeterminePreFlopHandStrength(CardType myCard1, CardType myCard2)
 	{
-		//public enum PokerHand { Connectors, SuitedConnectors, HighCard, OnePair, TwoPair, ThreeOfKind, Straight, Flush, FullHouse, FourOfKind, StraightFlush }
-		//if (Hand.HandValues.PokerHand == PokerHand.HighCard)
-		//{
-		//	HandStrength = (float)(Hand.HandValues.Total + 5) * 0.015f ;
-		//}
-		//else if(Hand.HandValues.PokerHand == PokerHand.Connectors)
-		//{
-		//	HandStrength = (float)(Hand.HandValues.Total + 10) * 0.015f;
-		//}
-		//else if(Hand.HandValues.PokerHand == PokerHand.SuitedConnectors)
-		//{
-		//	HandStrength = (float)(Hand.HandValues.Total + 20) * 0.015f;
-		//}
-		//else if(Hand.HandValues.PokerHand == PokerHand.OnePair)
-		//{
-		//	HandStrength = (float)(Hand.HandValues.Total + 40) * 0.015f;
-		//}
-        Debug.Log("Player " + SeatPos + " has a preflop HS of " + Hand.HandValues.Total);
+        HandStrength = Hand.HandValues.Total;
         rateOfReturn = FindRateOfReturn();
-        Debug.Log("Player " + SeatPos + " has a returnRate of " + rateOfReturn);
 		FoldCallRaiseDecision(rateOfReturn);
 	}
 

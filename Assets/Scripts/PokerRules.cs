@@ -323,7 +323,7 @@ public class PokerRules : MonoBehaviour {
 
     public void CorrectMistakes()
     {
-        Debug.Log("CorrectingMistakes");
+        //Debug.Log("CorrectingMistakes");
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
         cardsLogged.Clear();
         ClearAndDestroyAllLists();
