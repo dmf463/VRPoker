@@ -25,8 +25,6 @@ public class Dealer : MonoBehaviour
 
     public PokerPlayerRedux playerToAct;
     public PokerPlayerRedux previousPlayerToAct;
-    public PokerPlayerRedux smallBlind;
-    public PokerPlayerRedux bigBlind;
 
     //the list of destinations, so that I could make for-loops where the seatNum corresponds to the destination num in the list
     private List<Destination> playerDestinations = new List<Destination>();
@@ -124,7 +122,7 @@ public class Dealer : MonoBehaviour
 		Debug.Log("Gamestate = " + Table.gameState);
         Table.dealerState = DealerState.DealingState;
         lastGameState = GameState.NewRound;
-        OutsideVR = false;
+        OutsideVR = true;
     }
 
     // Update is called once per frame
@@ -156,7 +154,7 @@ public class Dealer : MonoBehaviour
             switch (Table.gameState)
             {
                 case GameState.PreFlop:
-                    Debug.Log("PREFLOP!");
+                    //Debug.Log("PREFLOP!");
                     messageText.text = "player0 chipCount is " + players[0].chipCount +
                                        "\nplayer1 chipCount is " + players[1].chipCount +
                                        "\nplayer2 chipCount is " + players[2].chipCount +
@@ -165,7 +163,7 @@ public class Dealer : MonoBehaviour
                                        "\npotSize is at " + Table.instance.potChips;
                     break;
                 case GameState.Flop:
-                    Debug.Log("FLOP!");
+                    //Debug.Log("FLOP!");
                     messageText.text = "player0 chipCount is " + players[0].chipCount +
                                        "\nplayer1 chipCount is " + players[1].chipCount +
                                        "\nplayer2 chipCount is " + players[2].chipCount +
@@ -175,7 +173,7 @@ public class Dealer : MonoBehaviour
 
                     break;
                 case GameState.Turn:
-                    Debug.Log("TURN!");
+                    //Debug.Log("TURN!");
                     messageText.text = "player0 chipCount is " + players[0].chipCount +
                                        "\nplayer1 chipCount is " + players[1].chipCount +
                                        "\nplayer2 chipCount is " + players[2].chipCount +
@@ -185,7 +183,7 @@ public class Dealer : MonoBehaviour
 
                     break;
                 case GameState.River:
-                    Debug.Log("RIVER!");
+                    //Debug.Log("RIVER!");
                     messageText.text = "player0 chipCount is " + players[0].chipCount +
                                        "\nplayer1 chipCount is " + players[1].chipCount +
                                        "\nplayer2 chipCount is " + players[2].chipCount +
@@ -541,11 +539,11 @@ public class Dealer : MonoBehaviour
             nextPlayer = players[(currentPlayerSeatPos + i) % players.Count];
             if(nextPlayer.PlayerState == PlayerState.Playing)
             {
-                Debug.Log("nextPlayer = " + nextPlayer.name);
-                Debug.Log("nextPlayer.actedThisRound = " + nextPlayer.actedThisRound);
-                Debug.Log("nextPlayer.currentBet = " + nextPlayer.currentBet + " and lastBet = " + LastBet);
-                Debug.Log("nextPlayer.chipCount = " + nextPlayer.chipCount);
-                Debug.Log("nextPlayer.PlayerState = " + nextPlayer.PlayerState);
+                //Debug.Log("nextPlayer = " + nextPlayer.name);
+                //Debug.Log("nextPlayer.actedThisRound = " + nextPlayer.actedThisRound);
+                //Debug.Log("nextPlayer.currentBet = " + nextPlayer.currentBet + " and lastBet = " + LastBet);
+                //Debug.Log("nextPlayer.chipCount = " + nextPlayer.chipCount);
+                //Debug.Log("nextPlayer.PlayerState = " + nextPlayer.PlayerState);
             }
             if ((!nextPlayer.actedThisRound || nextPlayer.currentBet < LastBet) && nextPlayer.PlayerState == PlayerState.Playing && nextPlayer.chipCount != 0)
             {
@@ -629,7 +627,10 @@ public class Dealer : MonoBehaviour
     {
         //Debug.Log("posting blinds");
         players[SeatsAwayFromDealerAmongstLivePlayers(1)].Bet(SmallBlind);
+        players[SeatsAwayFromDealerAmongstLivePlayers(1)].currentBet = SmallBlind;
         players[SeatsAwayFromDealerAmongstLivePlayers(2)].Bet(BigBlind);
+        players[SeatsAwayFromDealerAmongstLivePlayers(2)].currentBet = BigBlind;
+        LastBet = BigBlind;
     }
 
     //we call this at the beginning of each round in order to set the blinds as the current and last bet

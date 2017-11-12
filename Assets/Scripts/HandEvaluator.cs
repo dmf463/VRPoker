@@ -113,26 +113,27 @@ public class HandEvaluator {
         }
     }
 
-    public PokerHand EvaluateHandAtPreFlop()
+    public void EvaluateHandAtPreFlop()
     {
-        //get number of suit in each hand
-        getNumberOfSuit();
-        if (PocketPair())
-        {
-            return PokerHand.OnePair;
-        }
-        else if (SuitedConnectors())
-        {
-            return PokerHand.SuitedConnectors;
-        }
-        else if (Connectors())
-        {
-            return PokerHand.Connectors;
-        }
-        handValue.HighCard = (int)incomingCards[1].rank;
-        handValue.Total = (int)incomingCards[0].rank + (int)incomingCards[1].rank;
-        handValue.PokerHand = PokerHand.HighCard;
-        return PokerHand.HighCard;
+        ////get number of suit in each hand
+        //getNumberOfSuit();
+        //if (PocketPair())
+        //{
+        //    return PokerHand.OnePair;
+        //}
+        ////else if (SuitedConnectors())
+        ////{
+        ////    return PokerHand.SuitedConnectors;
+        ////}
+        ////else if (Connectors())
+        ////{
+        ////    return PokerHand.Connectors;
+        ////}
+        //handValue.HighCard = (int)incomingCards[1].rank;
+        //handValue.Total = (int)incomingCards[0].rank + (int)incomingCards[1].rank;
+        //handValue.PokerHand = PokerHand.HighCard;
+        //return PokerHand.HighCard;
+        DeterminePreFlopHandScore();
     }
 
     public PokerHand EvaluateHandAtFlop()
@@ -291,8 +292,87 @@ public class HandEvaluator {
  * 
  */
 
+    public void DeterminePreFlopHandScore()
+    {
+        float handScore = 0;
+        float highCardValue = 0;
+        switch (incomingCards[1].rank)
+        {
+            case RankType.Two:
+                highCardValue = 1;
+                break;
+            case RankType.Three:
+                highCardValue = 1.5f;
+                break;
+            case RankType.Four:
+                highCardValue = 2;
+                break;
+            case RankType.Five:
+                highCardValue = 2.5f;
+                break;
+            case RankType.Six:
+                highCardValue = 3;
+                break;
+            case RankType.Seven:
+                highCardValue = 3.5f;
+                break;
+            case RankType.Eight:
+                highCardValue = 4;
+                break;
+            case RankType.Nine:
+                highCardValue = 4.5f;
+                break;
+            case RankType.Ten:
+                highCardValue = 5;
+                break;
+            case RankType.Jack:
+                highCardValue = 6;
+                break;
+            case RankType.Queen:
+                highCardValue = 7;
+                break;
+            case RankType.King:
+                highCardValue = 8;
+                break;
+            case RankType.Ace:
+                highCardValue = 10;
+                break;
+            default:
+                break;
+        }
+        if (incomingCards[0].rank == incomingCards[1].rank)
+        {
+            handScore = highCardValue * 2;
+            if (handScore < 5) handScore = 5;
+            handValue.PokerHand = PokerHand.OnePair;
+        }
+        else
+        {
+            handScore = highCardValue;
+            handValue.PokerHand = PokerHand.HighCard;
+        }
+        if (incomingCards[0].suit == incomingCards[1].suit) handScore += 2;
+
+        if ((int)incomingCards[1].rank - (int)incomingCards[0].rank == 0) handScore += 0;
+        else if ((int)incomingCards[1].rank - (int)incomingCards[0].rank == 1) handScore -= 1;
+        else if ((int)incomingCards[1].rank - (int)incomingCards[0].rank == 2) handScore -= 2;
+        else if ((int)incomingCards[1].rank - (int)incomingCards[0].rank == 3) handScore -= 4;
+        else if ((int)incomingCards[1].rank - (int)incomingCards[0].rank >= 4) handScore -= 5;
+
+        if((int)incomingCards[0].rank < (int)RankType.Queen && 
+           (int)incomingCards[1].rank < (int)RankType.Queen &&
+           (int)incomingCards[1].rank - (int)incomingCards[0].rank <= 1)
+        {
+            handScore += 1;
+        }
+        handValue.Total = Mathf.RoundToInt(handScore + 0.1f);
+        handValue.HighCard = (int)incomingCards[1].rank;
+            
+    }
+
     public bool PocketPair()
     {
+
         //if your preflop cards are the same, you have a pocket pair
         if(incomingCards[0].rank == incomingCards[1].rank)
         {

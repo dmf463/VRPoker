@@ -182,7 +182,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 		}
 		PlayerState = PlayerState.NotPlaying;
 		Hand = null;
-		//Debug.Log("Player " + SeatPos + " folded!");
+		Debug.Log("Player " + SeatPos + " folded!");
 		if(Services.Dealer.GetActivePlayerCount() == 1)
 		{
 			Table.gameState = GameState.CleanUp;
@@ -216,23 +216,23 @@ public class PokerPlayerRedux : MonoBehaviour{
 	{
 		if(chipCount > 0)
 		{
-			//Debug.Log("currentBet = " + currentBet);
+			Debug.Log("currentBet = " + currentBet);
 			int betToCall = Services.Dealer.LastBet - currentBet;
 			if(chipCount - betToCall <= 0)
 			{
 				AllIn();
-				//Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
+				Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
 			}
 			else
 			{
-				//Debug.Log("betToCall = " + betToCall);
+			    Debug.Log("betToCall = " + betToCall);
 				if(betToCall == 0) SayCheck();
 				else SayCall();
 				Bet(betToCall);
 				currentBet = betToCall + currentBet;
 				Services.Dealer.LastBet = currentBet;
-				//Debug.Log("Player " + SeatPos + " called " + betToCall);
-				//Debug.Log("and the pot is now at " + Table.instance.potChips);
+				Debug.Log("Player " + SeatPos + " called " + betToCall);
+				Debug.Log("and the pot is now at " + Table.instance.potChips);
 			}
 		}
 	}
@@ -251,13 +251,13 @@ public class PokerPlayerRedux : MonoBehaviour{
 			if (chipCount - betToRaise <= 0)
 			{
 				AllIn();
-				//Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
+				Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
 				currentBet = betToRaise + currentBet;
 				Services.Dealer.LastBet = currentBet;
-				//Debug.Log("player " + SeatPos + " raises " + betToRaise);
-				//Debug.Log("Player " + SeatPos + " raised!");
-				//Debug.Log("and the pot is now at " + Table.instance.potChips);
-				//Debug.Log("and player " + SeatPos + " is now at " + chipCount);
+				Debug.Log("player " + SeatPos + " raises " + betToRaise);
+				Debug.Log("Player " + SeatPos + " raised!");
+				Debug.Log("and the pot is now at " + Table.instance.potChips);
+				Debug.Log("and player " + SeatPos + " is now at " + chipCount);
 			}
 			else
 			{
@@ -272,10 +272,10 @@ public class PokerPlayerRedux : MonoBehaviour{
 				Bet(betToRaise);
 				currentBet = betToRaise + currentBet;
 				Services.Dealer.LastBet = currentBet;
-				//Debug.Log("player " + SeatPos + " raises " + betToRaise);
-				//Debug.Log("Player " + SeatPos + " raised!");
-				//Debug.Log("and the pot is now at " + Table.instance.potChips);
-				//Debug.Log("and player " + SeatPos + " is now at " + chipCount);
+				Debug.Log("player " + SeatPos + " raises " + betToRaise);
+				Debug.Log("Player " + SeatPos + " raised!");
+				Debug.Log("and the pot is now at " + Table.instance.potChips);
+				Debug.Log("and player " + SeatPos + " is now at " + chipCount);
 			}
 		}
 	}
@@ -295,7 +295,7 @@ public class PokerPlayerRedux : MonoBehaviour{
         }
         chipCountBeforeAllIn = chipCount;
         playerIsAllIn = true;
-		//Debug.Log("getting ready to go all in");
+		Debug.Log("getting ready to go all in");
         Bet(chipCount);
         //similar to fold, when we go all in, we want to see if we're the last person to go all in
         //if so, then we want to flip the cards
@@ -613,7 +613,14 @@ public class PokerPlayerRedux : MonoBehaviour{
     {
         if (Table.gameState == GameState.PreFlop)
         {
-            Call();
+            if (Hand.HandValues.Total > 12) Raise();
+            else if (Hand.HandValues.Total < 5)
+            {
+                if (Services.Dealer.LastBet - currentBet == 0) Call();
+                else Fold();
+            }
+            else Call();
+
             turnComplete = true;
             actedThisRound = true;
         }
@@ -623,7 +630,6 @@ public class PokerPlayerRedux : MonoBehaviour{
             else if (returnRate < lowReturnRate)
             {
                 //95% chance fold, 5% bluff (raise)
-
                 float randomNumber = Random.Range(0, 100);
                 if (randomNumber < foldChanceLow)
                 {
@@ -634,7 +640,10 @@ public class PokerPlayerRedux : MonoBehaviour{
                 else if (randomNumber - foldChanceLow < callChanceLow) Call();
                 else
                 {
-                    if (Services.Dealer.previousPlayerToAct.playerIsAllIn) Call();
+                    if (Services.Dealer.previousPlayerToAct != null)
+                    {
+                        if (Services.Dealer.previousPlayerToAct.playerIsAllIn) Call();
+                    }
                     else Raise();
                 }
 
@@ -651,7 +660,10 @@ public class PokerPlayerRedux : MonoBehaviour{
                 else if (randomNumber - foldChanceDecent < callChanceDecent) Call();
                 else
                 {
-                    if (Services.Dealer.previousPlayerToAct.playerIsAllIn) Call();
+                    if (Services.Dealer.previousPlayerToAct != null)
+                    {
+                        if (Services.Dealer.previousPlayerToAct.playerIsAllIn) Call();
+                    }
                     else Raise();
                 }
 
@@ -668,7 +680,10 @@ public class PokerPlayerRedux : MonoBehaviour{
                 else if (randomNumber - foldChanceHigh < callChanceHigh) Call();
                 else
                 {
-                    if (Services.Dealer.previousPlayerToAct.playerIsAllIn) Call();
+                    if (Services.Dealer.previousPlayerToAct != null)
+                    {
+                        if (Services.Dealer.previousPlayerToAct.playerIsAllIn) Call();
+                    }
                     else Raise();
                 }
 
@@ -685,7 +700,10 @@ public class PokerPlayerRedux : MonoBehaviour{
                 else if (randomNumber - foldChanceVeryHigh < callChanceVeryHigh) Call();
                 else
                 {
-                    if (Services.Dealer.previousPlayerToAct.playerIsAllIn) Call();
+                    if (Services.Dealer.previousPlayerToAct != null)
+                    {
+                        if (Services.Dealer.previousPlayerToAct.playerIsAllIn) Call();
+                    }
                     else Raise();
                 }
             }
@@ -904,23 +922,25 @@ public class PokerPlayerRedux : MonoBehaviour{
 	public void DeterminePreFlopHandStrength(CardType myCard1, CardType myCard2)
 	{
 		//public enum PokerHand { Connectors, SuitedConnectors, HighCard, OnePair, TwoPair, ThreeOfKind, Straight, Flush, FullHouse, FourOfKind, StraightFlush }
-		if (Hand.HandValues.PokerHand == PokerHand.HighCard)
-		{
-			HandStrength = (Hand.HandValues.Total);
-		}
-		if(Hand.HandValues.PokerHand == PokerHand.Connectors)
-		{
-			HandStrength = (Hand.HandValues.Total + 10);
-		}
-		if(Hand.HandValues.PokerHand == PokerHand.SuitedConnectors)
-		{
-			HandStrength = (Hand.HandValues.Total + 15);
-		}
-		if(Hand.HandValues.PokerHand == PokerHand.OnePair)
-		{
-			HandStrength = (Hand.HandValues.Total + 15);
-		}
-		rateOfReturn = FindRateOfReturn();
+		//if (Hand.HandValues.PokerHand == PokerHand.HighCard)
+		//{
+		//	HandStrength = (float)(Hand.HandValues.Total + 5) * 0.015f ;
+		//}
+		//else if(Hand.HandValues.PokerHand == PokerHand.Connectors)
+		//{
+		//	HandStrength = (float)(Hand.HandValues.Total + 10) * 0.015f;
+		//}
+		//else if(Hand.HandValues.PokerHand == PokerHand.SuitedConnectors)
+		//{
+		//	HandStrength = (float)(Hand.HandValues.Total + 20) * 0.015f;
+		//}
+		//else if(Hand.HandValues.PokerHand == PokerHand.OnePair)
+		//{
+		//	HandStrength = (float)(Hand.HandValues.Total + 40) * 0.015f;
+		//}
+        Debug.Log("Player " + SeatPos + " has a preflop HS of " + Hand.HandValues.Total);
+        rateOfReturn = FindRateOfReturn();
+        Debug.Log("Player " + SeatPos + " has a returnRate of " + rateOfReturn);
 		FoldCallRaiseDecision(rateOfReturn);
 	}
 
