@@ -41,10 +41,6 @@ public class PokerRules : MonoBehaviour {
         if(chipGroup.Count > 0)
         {
             PushGroupOfChips();
-            //foreach(GameObject chip in chipGroup)
-            //{
-            //    chip.GetComponent<BoxCollider>().enabled = false;
-            //}
         }
         if(cardsPulled.Count <= Services.Dealer.PlayerAtTableCount() * 2)
         {

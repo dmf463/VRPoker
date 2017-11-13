@@ -61,12 +61,14 @@ public class Chip : InteractionSuperClass {
     //it's set in multiple places, but not USED for anything
     public bool chipForBet;
     private bool pushingChip;
+    private bool splittingChips;
     [HideInInspector]
     public int spotIndex;
     [HideInInspector]
     public Hand handPushingChip;
 
     public int stackValue;
+    private int timesToSplit;
 
     Rigidbody rb;
 
@@ -112,64 +114,76 @@ public class Chip : InteractionSuperClass {
 
         if (chipStack != null) stackValue = chipStack.stackValue;
     }
-    //void FixedUpdate()
-    //{
+    void FixedUpdate()
+    {
 
-    //    for (int i = 0; i < 2; i++)
-    //    {
-    //        Hand hand = i == 0 ? throwingHand : deckHand;
-    //        if (chipStack != null && hand != null)
-    //        {
-    //            Vector2 handPos = new Vector2(hand.transform.position.x, hand.transform.position.z);
-    //            Vector2 chipPos = new Vector2(transform.position.x, transform.position.z);
-    //            Vector2 otherHandPos = new Vector2(hand.otherHand.transform.position.x, hand.otherHand.transform.position.z);
-    //            if (hand.currentAttachedObject.tag != "Chip" && hand.currentAttachedObject.tag != "PlayingCard" &&
-    //                hand.controller.GetTouch(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
-    //            {
-    //                if ((hand.transform.position - transform.position).magnitude < .2f && (handPos - chipPos).magnitude < .12f)
-    //                {
-    //                    Vector3 vel = hand.GetTrackedObjectVelocity();
-    //                    Vector2 vel2D = new Vector2(vel.x, vel.z);
-    //                    Vector2 touchVect = (chipPos - (handPos));
-    //                    Vector2 chipDir = touchVect;
-    //                    float dot = Vector2.Dot(vel2D.normalized, touchVect.normalized);
-    //                    if (vel2D.magnitude > .2f && dot > .75f) //.6
-    //                    {
-    //                        chipDir = vel2D;
-    //                    }
+        for (int i = 0; i < 2; i++)
+        {
+            Hand hand = i == 0 ? throwingHand : deckHand;
+            //if (chipStack != null && hand != null)
+            if(hand != null)
+            {
+                Vector2 handPos = new Vector2(hand.transform.position.x, hand.transform.position.z);
+                Vector2 chipPos = new Vector2(transform.position.x, transform.position.z);
+                Vector2 otherHandPos = new Vector2(hand.otherHand.transform.position.x, hand.otherHand.transform.position.z);
+                if (hand.currentAttachedObject.tag != "Chip" && hand.currentAttachedObject.tag != "PlayingCard" &&
+                    hand.controller.GetTouch(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
+                {
+                    if ((hand.transform.position - transform.position).magnitude < .2f && (handPos - chipPos).magnitude < .12f)
+                    {
+                        Vector3 vel = hand.GetTrackedObjectVelocity();
+                        Vector2 vel2D = new Vector2(vel.x, vel.z);
+                        Vector2 touchVect = (chipPos - (handPos));
+                        Vector2 chipDir = touchVect;
+                        float dot = Vector2.Dot(vel2D.normalized, touchVect.normalized);
+                        if (vel2D.magnitude > .2f && dot > .75f) //.6
+                        {
+                            chipDir = vel2D;
+                        }
 
-    //                    Vector3 dest = hand.transform.TransformPoint(Services.PokerRules.chipPositionWhenPushing[spotIndex]);
-    //                    //Vector3 dest = chipPos + vel2D.normalized * ((.12f - touchVect.magnitude) / dot); //.12
-    //                    //if (rb != null)
-    //                    //{
-    //                    //    rb.MovePosition(new Vector3(dest.x, transform.position.y, dest.z));
-    //                    //}
-    //                    if (!pushingChip && Services.PokerRules.chipGroup.Count <= 20)
-    //                    {
-    //                        Services.PokerRules.chipGroup.Add(this);
-    //                        handPushingChip = hand;
-    //                        pushingChip = true;
-    //                        spotIndex = Services.PokerRules.chipsBeingPushed;
-    //                        Services.PokerRules.chipsBeingPushed += 1;
-    //                        //Debug.Log(Services.PokerRules.chipsBeingPushed);
-    //                    }
-    //                }
-    //            }
+                        Vector3 dest = hand.transform.TransformPoint(Services.PokerRules.chipPositionWhenPushing[spotIndex]);
+                        if (!pushingChip && Services.PokerRules.chipGroup.Count <= 25)
+                        {
+                            Services.PokerRules.chipGroup.Add(this);
+                            handPushingChip = hand;
+                            pushingChip = true;
+                            spotIndex = Services.PokerRules.chipsBeingPushed;
+                            Services.PokerRules.chipsBeingPushed += 1;
+                            //Debug.Log(Services.PokerRules.chipsBeingPushed);
+                        }
+                        //so I want to take the chipGroup and divide it by the #of clicks on the standardInteraction button
+                        //so when I click once, nothing happens, click twice and it splits in 2, 3 and it splits in 3;
+                        //so to do that I need to know how much is in the stack
+                        if (hand.GetStandardInteractionButtonDown() && !splittingChips)
+                        {
+                            timesToSplit++;
+                            int chipCount = 0;
+                            foreach (Chip chip in Services.PokerRules.chipGroup)
+                            {
+                                chipCount += chip.chipData.ChipValue;
+                                Destroy(chip.gameObject);
+                            }
+                            Services.PokerRules.chipGroup.Clear();
 
-    //            else
-    //            {
-    //                if (pushingChip && !handPushingChip.controller.GetTouch(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
-    //                {
-    //                    Services.PokerRules.chipGroup.Clear();
-    //                    handPushingChip = null;
-    //                    pushingChip = false;
-    //                    spotIndex = 0;
-    //                    Services.PokerRules.chipsBeingPushed = 0;
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
+                        }
+                    }
+                }
+
+                else
+                {
+                    if (pushingChip && !handPushingChip.controller.GetTouch(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
+                    {
+                        Services.PokerRules.chipGroup.Clear();
+                        timesToSplit = 0;
+                        handPushingChip = null;
+                        pushingChip = false;
+                        spotIndex = 0;
+                        Services.PokerRules.chipsBeingPushed = 0;
+                    }
+                }
+            }
+        }
+    }
 
     //we're making a function for Destroy Chip, rather than calling Destroy on the gameObject at a given moment
     //this is happening because there are certain situations that apply to certain chips in certain times when destroyed
@@ -329,7 +343,7 @@ public class Chip : InteractionSuperClass {
         //then we want to attach the chip to the hand
         if (gameObject.GetComponent<Rigidbody>() != null)
         {
-            if (hand.GetStandardInteractionButtonDown() == true && gameObject.GetComponent<Rigidbody>().isKinematic == false) //on Vive controller, this is the trigger
+            if (hand.GetStandardInteractionButtonDown() == true && gameObject.GetComponent<Rigidbody>().isKinematic == false && !pushingChip) //on Vive controller, this is the trigger
             {
                 hand.AttachObject(gameObject);
                 hand.HoverLock(interactableObject);

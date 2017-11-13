@@ -46,6 +46,8 @@ public class SoundManager : MonoBehaviour
 	public AudioClip[] convo2Index;
 
     public bool conversationIsPlaying;
+    public bool convo1Played;
+    public bool convo2Played;
 
     [Header("SoundEffects")]
     public AudioClip chips;
@@ -72,6 +74,8 @@ public class SoundManager : MonoBehaviour
         GameObject specialAudioSource = Instantiate(Services.PrefabDB.GenericAudioSource);
         AudioSource source = specialAudioSource.GetComponent<AudioSource>();
         source.clip = clip;
+        if (conversationIsPlaying) source.volume = 0.25f;
+        else source.volume = 0.5f;
         source.Play();
         Destroy(specialAudioSource, clip.length);
     }
@@ -86,16 +90,17 @@ public class SoundManager : MonoBehaviour
 	public void PlayConversation(int convo)
 	{
 		if(convo == 0){
-			StartCoroutine("Conversation1");
+            if(!convo1Played) StartCoroutine("Conversation1");
 		}
 		if(convo == 1){
-			StartCoroutine("Conversation2");
+            if(!convo2Played) StartCoroutine("Conversation2");
 		}
 	}
 
 	IEnumerator Conversation1 (){
 
         conversationIsPlaying = true;
+        
 		player2.playerIsInConversation = true;
 		player4.playerIsInConversation = true;
 
@@ -117,6 +122,7 @@ public class SoundManager : MonoBehaviour
 
 		player2.playerIsInConversation = false;
 		player4.playerIsInConversation = false;
+        convo1Played = true;
         conversationIsPlaying = false;
 
 	}
@@ -144,6 +150,7 @@ public class SoundManager : MonoBehaviour
 		player2.playerIsInConversation = false;
 		player3.playerIsInConversation = false;
 		player4.playerIsInConversation = false;
+        convo2Played = true;
         conversationIsPlaying = false;
 	}
 

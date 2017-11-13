@@ -182,7 +182,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 		}
 		PlayerState = PlayerState.NotPlaying;
 		Hand = null;
-		Debug.Log("Player " + SeatPos + " folded!");
+		//Debug.Log("Player " + SeatPos + " folded!");
 		if(Services.Dealer.GetActivePlayerCount() == 1)
 		{
 			Table.gameState = GameState.CleanUp;
@@ -216,23 +216,23 @@ public class PokerPlayerRedux : MonoBehaviour{
 	{
 		if(chipCount > 0)
 		{
-			Debug.Log("currentBet = " + currentBet);
+			//Debug.Log("currentBet = " + currentBet);
 			int betToCall = Services.Dealer.LastBet - currentBet;
 			if(chipCount - betToCall <= 0)
 			{
 				AllIn();
-				Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
+				//Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
 			}
 			else
 			{
-			    Debug.Log("betToCall = " + betToCall);
+			    //Debug.Log("betToCall = " + betToCall);
 				if(betToCall == 0) SayCheck();
 				else SayCall();
 				Bet(betToCall);
 				currentBet = betToCall + currentBet;
 				Services.Dealer.LastBet = currentBet;
-				Debug.Log("Player " + SeatPos + " called " + betToCall);
-				Debug.Log("and the pot is now at " + Table.instance.potChips);
+				//Debug.Log("Player " + SeatPos + " called " + betToCall);
+				//Debug.Log("and the pot is now at " + Table.instance.potChips);
 			}
 		}
 	}
@@ -251,13 +251,13 @@ public class PokerPlayerRedux : MonoBehaviour{
 			if (chipCount - betToRaise <= 0)
 			{
 				AllIn();
-				Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
+				//Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
 				currentBet = betToRaise + currentBet;
 				Services.Dealer.LastBet = currentBet;
-				Debug.Log("player " + SeatPos + " raises " + betToRaise);
-				Debug.Log("Player " + SeatPos + " raised!");
-				Debug.Log("and the pot is now at " + Table.instance.potChips);
-				Debug.Log("and player " + SeatPos + " is now at " + chipCount);
+				//Debug.Log("player " + SeatPos + " raises " + betToRaise);
+				//Debug.Log("Player " + SeatPos + " raised!");
+				//Debug.Log("and the pot is now at " + Table.instance.potChips);
+				//Debug.Log("and player " + SeatPos + " is now at " + chipCount);
 			}
 			else
 			{
@@ -272,10 +272,10 @@ public class PokerPlayerRedux : MonoBehaviour{
 				Bet(betToRaise);
 				currentBet = betToRaise + currentBet;
 				Services.Dealer.LastBet = currentBet;
-				Debug.Log("player " + SeatPos + " raises " + betToRaise);
-				Debug.Log("Player " + SeatPos + " raised!");
-				Debug.Log("and the pot is now at " + Table.instance.potChips);
-				Debug.Log("and player " + SeatPos + " is now at " + chipCount);
+				//Debug.Log("player " + SeatPos + " raises " + betToRaise);
+				//Debug.Log("Player " + SeatPos + " raised!");
+				//Debug.Log("and the pot is now at " + Table.instance.potChips);
+				//Debug.Log("and player " + SeatPos + " is now at " + chipCount);
 			}
 		}
 	}
