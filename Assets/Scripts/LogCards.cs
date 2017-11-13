@@ -36,7 +36,7 @@ public class LogCards : MonoBehaviour
         cardCount += 1;
         #region Logging the PlayingCard for each space
         //so if it's a card
-        if (other.gameObject.tag == "PlayingCard")
+        if (other.gameObject.tag == "PlayingCard" && !Services.Dealer.inRound)
         {
             //we go through all the player names
             for (int i = 0; i < playerNames.Count; i++)

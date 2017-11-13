@@ -110,7 +110,7 @@ public class CardDeckScript : InteractionSuperClass {
             CardType cardType = cardsInDeck[cardPos];
             Card card = CreateCard(cardType, GameObject.Find("ShufflingArea").transform.position, Quaternion.identity);
             card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
-            Services.PokerRules.cardsPulled.Add(card.cardType);
+            if(!Services.Dealer.inRound) Services.PokerRules.cardsPulled.Add(card.cardType);
         }
 
     }

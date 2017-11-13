@@ -13,6 +13,7 @@ public class PokerRules : MonoBehaviour {
     //this way we won't use the same card twice for multiple things
     public List<CardType> cardsPulled = new List<CardType>();
     public List<Card> cardsLogged = new List<Card>();
+    public List<CardType> misdealtCards = new List<CardType>();
     public GameObject[] cardsToDestroy;
     private List<Destination> playerDestinations = new List<Destination>();
     List<GameObject> boardPos = new List<GameObject>();
@@ -107,60 +108,6 @@ public class PokerRules : MonoBehaviour {
                 else Table.gameState = GameState.River;
             }
         }
-        #region old correction code
-        //if (Table.gameState != GameState.ShowDown)
-        //{
-        //    switch (Table.instance._board.Count)
-        //    {
-        //        case 3:
-        //            Debug.Log("3 CARDS ON BOARD");
-        //            if(Table.gameState != GameState.Flop)
-        //            {
-        //                SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-        //                if (cardsPulled.Count - 1 != flopCards)
-        //                {
-        //                    //Debug.Log("Correcting Mistakes");
-        //                    //Debug.Log("boardCount = " + Table.instance._board.Count);
-        //                    Services.Dealer.correctedMistake = true;
-        //                    CorrectMistakes();
-        //                    //Table.gameState = GameState.Flop;
-        //                }
-        //                else Table.gameState = GameState.Flop;
-        //            }
-        //            break;
-        //        case 4:
-        //            Debug.Log("4 CARDS ON BOARD");
-        //            if(Table.gameState != GameState.Turn)
-        //            {
-        //                SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-        //                if (cardsPulled.Count - 1 != turnCard)
-        //                {
-        //                    Services.Dealer.correctedMistake = true;
-        //                    CorrectMistakes();
-        //                    //Table.gameState = GameState.Turn;
-        //                }
-        //                else Table.gameState = GameState.Turn;
-        //            }
-        //            break;
-        //        case 5:
-        //            Debug.Log("5 CARDS ON BOARD");
-        //            if(Table.gameState != GameState.River)
-        //            {
-        //                SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-        //                if (cardsPulled.Count - 1 != riverCard)
-        //                {
-        //                    Services.Dealer.correctedMistake = true;
-        //                    CorrectMistakes();
-        //                    //Table.gameState = GameState.River;
-        //                }
-        //                else Table.gameState = GameState.River;
-        //            }
-        //            break;
-        //        default:
-        //            break;
-        //    }
-        //}
-#endregion
     }
 
     public void SetCardIndicator()

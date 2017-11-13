@@ -82,6 +82,7 @@ public class Dealer : MonoBehaviour
 
     //this lets us know when a round has started, so that each function for the round is only called once
     public bool roundStarted = false;
+    public bool inRound;
 
     //this is basically our insurance that no round can start unless all players have acted and are ready
     public bool playersReady = true;
@@ -122,7 +123,7 @@ public class Dealer : MonoBehaviour
 		Debug.Log("Gamestate = " + Table.gameState);
         Table.dealerState = DealerState.DealingState;
         lastGameState = GameState.NewRound;
-        OutsideVR = false;
+        OutsideVR = true;
     }
 
     // Update is called once per frame
@@ -138,7 +139,7 @@ public class Dealer : MonoBehaviour
             if (Services.PokerRules.cardsPulled.Count == PlayerAtTableCount() * 2 && !checkedPreFlopCardCount)
             {
                 checkedPreFlopCardCount = true;
-                StartCoroutine(CheckForMistakesPreFlop(.025f));
+                StartCoroutine(CheckForMistakesPreFlop(.05f));
             }
         }
         else if (Table.gameState == GameState.CleanUp)
@@ -154,7 +155,7 @@ public class Dealer : MonoBehaviour
             switch (Table.gameState)
             {
                 case GameState.PreFlop:
-                    //Debug.Log("PREFLOP!");
+                    Debug.Log("PREFLOP!");
                     messageText.text = "player0 chipCount is " + players[0].chipCount +
                                        "\nplayer1 chipCount is " + players[1].chipCount +
                                        "\nplayer2 chipCount is " + players[2].chipCount +
@@ -163,7 +164,7 @@ public class Dealer : MonoBehaviour
                                        "\npotSize is at " + Table.instance.potChips;
                     break;
                 case GameState.Flop:
-                    //Debug.Log("FLOP!");
+                    Debug.Log("FLOP!");
                     messageText.text = "player0 chipCount is " + players[0].chipCount +
                                        "\nplayer1 chipCount is " + players[1].chipCount +
                                        "\nplayer2 chipCount is " + players[2].chipCount +
@@ -173,7 +174,7 @@ public class Dealer : MonoBehaviour
 
                     break;
                 case GameState.Turn:
-                    //Debug.Log("TURN!");
+                    Debug.Log("TURN!");
                     messageText.text = "player0 chipCount is " + players[0].chipCount +
                                        "\nplayer1 chipCount is " + players[1].chipCount +
                                        "\nplayer2 chipCount is " + players[2].chipCount +
@@ -183,7 +184,7 @@ public class Dealer : MonoBehaviour
 
                     break;
                 case GameState.River:
-                    //Debug.Log("RIVER!");
+                    Debug.Log("RIVER!");
                     messageText.text = "player0 chipCount is " + players[0].chipCount +
                                        "\nplayer1 chipCount is " + players[1].chipCount +
                                        "\nplayer2 chipCount is " + players[2].chipCount +
@@ -199,17 +200,14 @@ public class Dealer : MonoBehaviour
         #region Players evaluate their hands based on the gamestate
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            //Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.callP1);
             Table.instance.DebugHandsAndChips();
-            //Debug.Log("CardsPulled = " + Services.PokerRules.cardsPulled.Count);
-            //Services.PokerRules.CorrectMistakes();
         }
-		if (Input.GetKeyDown(KeyCode.X))
+        if (Input.GetKeyDown(KeyCode.X))
         {
-			if(playerToAct != null) 
-			{
-            playerToAct.EvaluateHand();
-			}
+            if (playerToAct != null)
+            {
+                playerToAct.EvaluateHand();
+            }
         }
 
         //this resets bools necessary to start new rounds
@@ -390,6 +388,7 @@ public class Dealer : MonoBehaviour
     public void StartRound()
     {
         SetCurrentAndLastBet();
+        inRound = true;
         if (Table.gameState == GameState.PreFlop)
         {
             if(GetActivePlayerCount() == 2)
@@ -574,6 +573,7 @@ public class Dealer : MonoBehaviour
             playerToAct.playerSpotlight.SetActive(false);
             playerToAct = null;
             playersReady = true;
+            inRound = false;
         }
     }
 

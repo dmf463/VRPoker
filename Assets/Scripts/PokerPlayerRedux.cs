@@ -198,6 +198,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 					Services.Dealer.playersReady = true;
                     Services.Dealer.playersHaveBeenEvaluated = true;
 					Services.Dealer.StartCoroutine(Services.Dealer.WaitForWinnersToGetPaid());
+                    Services.Dealer.players[i].FlipCards();
 				}
 			}
 		}
@@ -988,6 +989,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 			playerCards.Add(new List<CardType>());
 			testEvaluators.Add(new HandEvaluator());
 		}
+        Debug.Assert(testPlayers.Count == Services.Dealer.GetActivePlayerCount());
 		float numberOfWins = 0;
 		float handStrengthTestLoops = 0;
 		while (handStrengthTestLoops < 100)

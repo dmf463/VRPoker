@@ -184,6 +184,7 @@ public class Table {
     {
         List<CardType> EvaluatedHand = new List<CardType>();
         EvaluatedHand = GetCardTypes(seatPos);
+        Debug.Assert(EvaluatedHand.Count == 2);
         EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
         return EvaluatedHand;
     }
@@ -196,6 +197,7 @@ public class Table {
         EvaluatedHand.Add(_board[0].cardType);
         EvaluatedHand.Add(_board[1].cardType);
         EvaluatedHand.Add(_board[2].cardType);
+        Debug.Assert(EvaluatedHand.Count == 5);
         EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
 
         return EvaluatedHand;
@@ -210,6 +212,7 @@ public class Table {
         EvaluatedHand.Add(_board[1].cardType);
         EvaluatedHand.Add(_board[2].cardType);
         EvaluatedHand.Add(_board[3].cardType);
+        Debug.Assert(EvaluatedHand.Count == 6);
         EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
 
         return EvaluatedHand;
@@ -225,6 +228,7 @@ public class Table {
         EvaluatedHand.Add(_board[2].cardType);
         EvaluatedHand.Add(_board[3].cardType);
         EvaluatedHand.Add(_board[4].cardType);
+        Debug.Assert(EvaluatedHand.Count == 7);
         EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
 
         return EvaluatedHand;
@@ -254,7 +258,7 @@ public class Table {
         }
         for (int i = 0; i < _board.Count; i++)
         {
-            Debug.Log("Board Card " + i + " is " + _board[i].cardType.rank + " of " + _board[i].cardType.rank);
+            Debug.Log("Board Card " + i + " is " + _board[i].cardType.rank + " of " + _board[i].cardType.suit);
         }
 
         for (int i = 0; i < playerChipStacks.Count; i++)
