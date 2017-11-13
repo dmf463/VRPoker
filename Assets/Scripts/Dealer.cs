@@ -405,7 +405,10 @@ public class Dealer : MonoBehaviour
         }
         if(playerToAct != null) playerToAct.playerSpotlight.SetActive(true);
         //StartCoroutine(playerAction(playerToAct));
-		Services.SoundManager.PlayConversation(UnityEngine.Random.Range(0,2));
+        if (!Services.SoundManager.conversationIsPlaying)
+        {
+            Services.SoundManager.PlayConversation(UnityEngine.Random.Range(0, 2));
+        }
     }
 
 

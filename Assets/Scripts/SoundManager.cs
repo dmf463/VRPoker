@@ -45,6 +45,8 @@ public class SoundManager : MonoBehaviour
 	public AudioClip[] convo1Index;
 	public AudioClip[] convo2Index;
 
+    public bool conversationIsPlaying;
+
     [Header("SoundEffects")]
     public AudioClip chips;
     public AudioClip cards;
@@ -93,6 +95,7 @@ public class SoundManager : MonoBehaviour
 
 	IEnumerator Conversation1 (){
 
+        conversationIsPlaying = true;
 		player2.playerIsInConversation = true;
 		player4.playerIsInConversation = true;
 
@@ -114,11 +117,13 @@ public class SoundManager : MonoBehaviour
 
 		player2.playerIsInConversation = false;
 		player4.playerIsInConversation = false;
+        conversationIsPlaying = false;
 
 	}
 
 	IEnumerator Conversation2 (){
 
+        conversationIsPlaying = true;
 		player2.playerIsInConversation = true;
 		player3.playerIsInConversation = true;
 		player4.playerIsInConversation = true;
@@ -139,6 +144,7 @@ public class SoundManager : MonoBehaviour
 		player2.playerIsInConversation = false;
 		player3.playerIsInConversation = false;
 		player4.playerIsInConversation = false;
+        conversationIsPlaying = false;
 	}
 
 }
