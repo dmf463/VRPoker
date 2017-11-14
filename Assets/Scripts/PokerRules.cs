@@ -242,7 +242,10 @@ public class PokerRules : MonoBehaviour {
     {
         for (int i = 0; i < Services.Dealer.players.Count; i++)
         {
-            Table.instance.playerCards[i].Clear();
+            if (!Services.Dealer.players[i].playerIsAllIn)
+            {
+                Table.instance.playerCards[i].Clear();
+            }
             cardsToDestroy = GameObject.FindGameObjectsWithTag("PlayingCard");
             foreach (GameObject card in cardsToDestroy)
             {
@@ -266,7 +269,7 @@ public class PokerRules : MonoBehaviour {
 
     public void CorrectMistakes()
     {
-        //Debug.Log("CorrectingMistakes");
+       // Debug.Log("CorrectingMistakes");
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
         cardsLogged.Clear();
         ClearAndDestroyAllLists();
@@ -281,12 +284,15 @@ public class PokerRules : MonoBehaviour {
                 int playerIndex = Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(i + 1);
                 PokerPlayerRedux player = Services.Dealer.players[playerIndex];
                 //Debug.Log("player we're trying to check is + " + player);
-                if (player.PlayerState == PlayerState.Playing && player.playerIsAllIn == false)
+                if (player.PlayerState == PlayerState.Playing)
                 {
+                    if(!player.playerIsAllIn)
+                    {
+                        Card newCard = CreateCard(cardsPulled[i], player.cardPos[cardPos].transform.position, player.cardPos[cardPos].transform.rotation);
+                        Table.instance.playerCards[player.SeatPos].Add(newCard);
+                    }
                     //Debug.Log("player we're trying to check is + " + player);
                     //Debug.Log("firstPlayer = " + Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count]);
-                    Card newCard = CreateCard(cardsPulled[i], player.cardPos[cardPos].transform.position, player.cardPos[cardPos].transform.rotation);
-                    Table.instance.AddCardTo(playerDestinations[playerIndex], newCard);
                     //Debug.Log("cardCount after replacing" + Table.instance.playerCards[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].Count);
                 }
             }

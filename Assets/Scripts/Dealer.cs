@@ -97,6 +97,7 @@ public class Dealer : MonoBehaviour
     private bool readyForShowdown = false;
 
     private bool checkedPreFlopCardCount;
+    private bool finalHandEvaluation;
 
     void Awake()
     {
@@ -246,6 +247,7 @@ public class Dealer : MonoBehaviour
         {
             if (!roundStarted)
             {
+                Debug.Log("turn Debug should only go once");
                 roundStarted = true;
                 if (!OnlyAllInPlayersLeft()) StartRound();
                 else playersReady = true;
@@ -259,6 +261,18 @@ public class Dealer : MonoBehaviour
         {
             if (!roundStarted)
             {
+                if (OnlyAllInPlayersLeft() && !finalHandEvaluation)
+                {
+                    finalHandEvaluation = true;
+                    foreach (PokerPlayerRedux player in players)
+                    {
+                        if (player.PlayerState == PlayerState.Playing)
+                        {
+                            player.EvaluateHand();
+                        }
+                    }
+                }
+                //Debug.Log("River Debug should only go once");
                 roundStarted = true;
                 if (!OnlyAllInPlayersLeft()) StartRound();
                 else playersReady = true;
@@ -315,7 +329,7 @@ public class Dealer : MonoBehaviour
                 {
                     if (players[i].Hand != null)
                     {
-                        players[i].FlipCards();
+                        if(!players[i].flippedCards) players[i].FlipCards();
                         Debug.Log("player" + players[i].SeatPos + "is the " + players[i].PlayerState + " with (a) " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
                     }
                 }
@@ -387,6 +401,7 @@ public class Dealer : MonoBehaviour
     //then we start the coroutine to make player's actually act on that first player
     public void StartRound()
     {
+        Debug.Log("Starting round " + Table.gameState);
         SetCurrentAndLastBet();
         inRound = true;
         if (Table.gameState == GameState.PreFlop)
@@ -530,50 +545,53 @@ public class Dealer : MonoBehaviour
     //this gets invoked whenever we gaze at a player
     public void SetNextPlayer()
     {
-        //Debug.Log("current playerToAct = " + playerToAct);
-        int currentPlayerSeatPos = playerToAct.SeatPos;
+        if (playerToAct != null)
+        {
+            //Debug.Log("current playerToAct = " + playerToAct);
+            int currentPlayerSeatPos = playerToAct.SeatPos;
 
-        playerToAct.playerSpotlight.SetActive(false);
-        bool roundFinished = true;
-        PokerPlayerRedux nextPlayer = null;
-        for (int i = 1; i < players.Count; i++)
-        {
-            nextPlayer = players[(currentPlayerSeatPos + i) % players.Count];
-            if(nextPlayer.PlayerState == PlayerState.Playing)
+            playerToAct.playerSpotlight.SetActive(false);
+            bool roundFinished = true;
+            PokerPlayerRedux nextPlayer = null;
+            for (int i = 1; i < players.Count; i++)
             {
-                //Debug.Log("nextPlayer = " + nextPlayer.name);
-                //Debug.Log("nextPlayer.actedThisRound = " + nextPlayer.actedThisRound);
-                //Debug.Log("nextPlayer.currentBet = " + nextPlayer.currentBet + " and lastBet = " + LastBet);
-                //Debug.Log("nextPlayer.chipCount = " + nextPlayer.chipCount);
-                //Debug.Log("nextPlayer.PlayerState = " + nextPlayer.PlayerState);
-            }
-            if ((!nextPlayer.actedThisRound || nextPlayer.currentBet < LastBet) && nextPlayer.PlayerState == PlayerState.Playing && nextPlayer.chipCount != 0)
-            {
-                roundFinished = false;
-                previousPlayerToAct = playerToAct;
-                playerToAct = nextPlayer;
-                playerToAct.playerSpotlight.SetActive(true);
-                Debug.Log("nextPlayer to act is player " + playerToAct);
-                break;
-            }
-        }
-        if (roundFinished)
-        {
-            if (OnlyAllInPlayersLeft())
-            {
-                for (int i = 0; i < players.Count; i++)
+                nextPlayer = players[(currentPlayerSeatPos + i) % players.Count];
+                if (nextPlayer.PlayerState == PlayerState.Playing)
                 {
-                    if(players[i].Hand != null)
-                    {
-                        players[i].FlipCards();
-                    }
+                    //Debug.Log("nextPlayer = " + nextPlayer.name);
+                    //Debug.Log("nextPlayer.actedThisRound = " + nextPlayer.actedThisRound);
+                    //Debug.Log("nextPlayer.currentBet = " + nextPlayer.currentBet + " and lastBet = " + LastBet);
+                    //Debug.Log("nextPlayer.chipCount = " + nextPlayer.chipCount);
+                    //Debug.Log("nextPlayer.PlayerState = " + nextPlayer.PlayerState);
+                }
+                if ((!nextPlayer.actedThisRound || nextPlayer.currentBet < LastBet) && nextPlayer.PlayerState == PlayerState.Playing && nextPlayer.chipCount != 0)
+                {
+                    roundFinished = false;
+                    previousPlayerToAct = playerToAct;
+                    playerToAct = nextPlayer;
+                    playerToAct.playerSpotlight.SetActive(true);
+                    Debug.Log("nextPlayer to act is player " + playerToAct);
+                    break;
                 }
             }
-            Debug.Log(Table.gameState + " Finished");
-            playerToAct.playerSpotlight.SetActive(false);
-            playerToAct = null;
-            playersReady = true;
-            inRound = false;
+            if (roundFinished)
+            {
+                if (OnlyAllInPlayersLeft())
+                {
+                    for (int i = 0; i < players.Count; i++)
+                    {
+                        if (players[i].Hand != null)
+                        {
+                            players[i].FlipCards();
+                        }
+                    }
+                }
+                Debug.Log(Table.gameState + " Finished");
+                playerToAct.playerSpotlight.SetActive(false);
+                playerToAct = null;
+                playersReady = true;
+                inRound = false;
+            }
         }
     }
 
@@ -868,6 +886,7 @@ public class Dealer : MonoBehaviour
             }
             players[i].HasBeenPaid = false;
             players[i].playerIsAllIn = false;
+            players[i].flippedCards = false;
             //players[i].checkedHandStrength = false;
         }
         Services.PokerRules.cardsPulled.Clear();
@@ -875,6 +894,7 @@ public class Dealer : MonoBehaviour
         playersHaveBeenEvaluated = false;
         winnersHaveBeenPaid = false;
         readyToAwardPlayers = false;
+        finalHandEvaluation = false;
         GameObject[] chipsOnTable = GameObject.FindGameObjectsWithTag("Chip");
         if (chipsOnTable.Length > 0)
         {

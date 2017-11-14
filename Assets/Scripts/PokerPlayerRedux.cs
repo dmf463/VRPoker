@@ -89,9 +89,12 @@ public class PokerPlayerRedux : MonoBehaviour{
     [HideInInspector]
     public bool actedThisRound;
 
-	//this is the int we use in order to determine how much a player will raise in a given situation
-	//the function that uses this needs to be reexamined I think
-	private int amountToRaise;
+    [HideInInspector]
+    public bool flippedCards;
+
+    //this is the int we use in order to determine how much a player will raise in a given situation
+    //the function that uses this needs to be reexamined I think
+    private int amountToRaise;
 
 	//the individual player variables for the Fold, Call, Raise decision based on Return Rate
 	private float lowReturnRate;
@@ -612,7 +615,7 @@ public class PokerPlayerRedux : MonoBehaviour{
     //we should go back to the generic one and make percentage variables that we can adjust in individual players
     public void FoldCallRaiseDecision(float returnRate)
     {
-        Debug.Log("Player " + SeatPos + " has a HS " + HandStrength);
+        //Debug.Log("Player " + SeatPos + " has a HS " + HandStrength);
         if (Table.gameState == GameState.PreFlop)
         {
             if (HandStrength > 12) Raise();
@@ -801,6 +804,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 	//the flipping works fine, but we need to fine tune the WaitForReposition coroutine
 	public void FlipCards()
 	{
+        flippedCards = true;
 		List<GameObject> cardsInHand = Table.instance.GetCardGameObjects(SeatPos);
 		for (int i = 0; i < cardsInHand.Count; i++)
 		{
