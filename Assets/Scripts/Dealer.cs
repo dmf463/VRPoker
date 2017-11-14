@@ -82,7 +82,6 @@ public class Dealer : MonoBehaviour
 
     //this lets us know when a round has started, so that each function for the round is only called once
     public bool roundStarted = false;
-    public bool inRound;
 
     //this is basically our insurance that no round can start unless all players have acted and are ready
     public bool playersReady = true;
@@ -142,7 +141,7 @@ public class Dealer : MonoBehaviour
             if (Services.PokerRules.cardsPulled.Count == PlayerAtTableCount() * 2 && !checkedPreFlopCardCount)
             {
                 checkedPreFlopCardCount = true;
-                StartCoroutine(CheckForMistakesPreFlop(.05f));
+                StartCoroutine(CheckForMistakesPreFlop(1));
             }
         }
         else if (Table.gameState == GameState.CleanUp)
@@ -361,12 +360,14 @@ public class Dealer : MonoBehaviour
             }
         }
         Debug.Log("Cardcount for checking preFlop = " + cardCountForPreFlop);
+        Debug.Log("Cardcount for checking preFlop = " + cardCountForPreFlop);
         if (cardCountForPreFlop == Services.PokerRules.cardsPulled.Count)
         {
             Table.gameState = GameState.PreFlop;
         }
         else
         {
+            Debug.Log("correctingMistakes because cardCountForPreflop != cardsPulled");
             Services.PokerRules.CorrectMistakes();
             Table.gameState = GameState.PreFlop;
         }
@@ -409,7 +410,6 @@ public class Dealer : MonoBehaviour
     {
         Debug.Log("Starting round " + Table.gameState);
         SetCurrentAndLastBet();
-        inRound = true;
         if (Table.gameState == GameState.PreFlop)
         {
             if(GetActivePlayerCount() == 2)
@@ -596,7 +596,6 @@ public class Dealer : MonoBehaviour
                 playerToAct.playerSpotlight.SetActive(false);
                 playerToAct = null;
                 playersReady = true;
-                inRound = false;
             }
         }
     }

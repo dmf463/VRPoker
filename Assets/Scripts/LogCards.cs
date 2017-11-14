@@ -36,7 +36,7 @@ public class LogCards : MonoBehaviour
         cardCount += 1;
         #region Logging the PlayingCard for each space
         //so if it's a card
-        if (other.gameObject.tag == "PlayingCard" && !Services.Dealer.inRound)
+        if (other.gameObject.tag == "PlayingCard")
         {
             //we go through all the player names
             for (int i = 0; i < playerNames.Count; i++)
@@ -60,7 +60,7 @@ public class LogCards : MonoBehaviour
                         //and the card has not already been dealt to somewhere else
                         else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
                         {
-                            //Debug.Log(other.gameObject.name + " is already in play");
+                            Debug.Log(other.gameObject.name + " has already been logged by something else");
                         }
                         //add the card to the right players
                         //add it to the cardsDealt to keep track
@@ -75,7 +75,7 @@ public class LogCards : MonoBehaviour
 
             }
             //if the card is going into TheBoard
-            if (this.gameObject.name == "TheBoard")
+            if (this.gameObject.name == "TheBoard" && Table.gameState != GameState.NewRound)
             {
                 //same thing as above
                 if (Table.dealerState == DealerState.DealingState)

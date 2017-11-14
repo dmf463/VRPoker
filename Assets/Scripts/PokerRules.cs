@@ -25,6 +25,7 @@ public class PokerRules : MonoBehaviour {
     private int flopCards;
     private int turnCard;
     private int riverCard;
+    bool checkedForCorrections;
 
     // Use this for initialization
     void Start () {
@@ -50,22 +51,9 @@ public class PokerRules : MonoBehaviour {
 
         if (Table.gameState == GameState.PreFlop)
         {
-            if (cardsPulled.Count - 1 == flopCards || Table.instance._board.Count == 3)
+            if ((cardsPulled.Count - 1 == flopCards || Table.instance._board.Count == 3) && !checkedForCorrections)
             {
-                SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-                if (Table.instance._board.Count + playerCards + 1 == flopCards)
-                {
-                    if (Table.instance._burn.Count < 1)
-                    {
-                        CorrectMistakes();
-                    }
-                }
-                else if (cardsPulled.Count - 1 == flopCards)
-                {
-                    CorrectMistakes();
-                    Table.gameState = GameState.Flop;
-                }
-                else Table.gameState = GameState.Flop;
+                StartCoroutine(CheckFlopMistakes(1));
             }
         }
         else if (Table.gameState == GameState.Flop)
@@ -110,11 +98,38 @@ public class PokerRules : MonoBehaviour {
         }
     }
 
+    IEnumerator CheckFlopMistakes(float time)
+    {
+        checkedForCorrections = true;
+        yield return new WaitForSeconds(time);
+        SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+        if (Table.instance._board.Count + playerCards + 1 == flopCards)
+        {
+            Debug.Log("boardCount = " + Table.instance._board.Count);
+            Debug.Log("CardsPulled.count = " + cardsPulled.Count);
+            Debug.Log("playerCards = " + playerCards);
+            Debug.Log("flopCards = " + flopCards);
+            Debug.Log("burnCards = " + Table.instance._burn.Count);
+            if (Table.instance._burn.Count < 1)
+            {
+                Debug.Log("CorrectingMistakes cause no burn");
+                CorrectMistakes();
+            }
+        }
+        else if (cardsPulled.Count - 1 == flopCards)
+        {
+            Debug.Log("correcting mistakes because cardsPulled - 1 != flopCards");
+            CorrectMistakes();
+            Table.gameState = GameState.Flop;
+        }
+        else Table.gameState = GameState.Flop;
+    }
+
     public void SetCardIndicator()
     {
+        SetCardPlacement(Services.Dealer.PlayerAtTableCount());
         if (Table.gameState == GameState.PreFlop)
         {
-            //Debug.Log("cardsPulled = " + cardsPulled.Count);
             if (cardsPulled.Count == burnCard1)
             {
                 Behaviour newHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");

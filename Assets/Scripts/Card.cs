@@ -447,7 +447,7 @@ public class Card : InteractionSuperClass {
     {
         if(Table.dealerState == DealerState.DealingState)
         {
-            if (!Services.PokerRules.cardsPulled.Contains(cardType) && !Services.Dealer.inRound)
+            if (!Services.PokerRules.cardsPulled.Contains(cardType) /*&& !Services.Dealer.inRound*/)
             {
                 Services.PokerRules.cardsPulled.Add(cardType);
             }
