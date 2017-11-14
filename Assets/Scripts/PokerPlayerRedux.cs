@@ -1446,7 +1446,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                         Vector3 offSet = new Vector3(Random.Range(0, .03f), .1f, Random.Range(0, .03f));
                         GameObject newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
                         newChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
-                        newChip.GetComponent<Chip>().chipForBet = true;
+                        Services.Dealer.chipsInPot.Add(newChip.GetComponent<Chip>());
                         Table.instance.potChips += newChip.GetComponent<Chip>().chipData.ChipValue;
                         Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChip.GetComponent<Chip>().chipData.ChipValue);
                     }
@@ -1504,6 +1504,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                             Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChip.GetComponent<Chip>().chipData.ChipValue);
                             Table.instance.potChips += newChip.GetComponent<Chip>().chipData.ChipValue;
                             parentChip = newChip;
+                            Services.Dealer.chipsInPot.Add(newChip.GetComponent<Chip>());
                             parentChip.transform.parent = chipContainer.transform;
                             parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
                             parentChip.GetComponent<Chip>().chipStack = new ChipStack(parentChip.GetComponent<Chip>());
@@ -1528,6 +1529,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                             Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChip.GetComponent<Chip>().chipData.ChipValue);
                             Table.instance.potChips += newChip.GetComponent<Chip>().chipData.ChipValue;
                             parentChip = newChip;
+                            Services.Dealer.chipsInPot.Add(newChip.GetComponent<Chip>());
                             parentChip.transform.parent = chipContainer.transform;
                             parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
                             parentChip.GetComponent<Chip>().chipStack = new ChipStack(parentChip.GetComponent<Chip>());
