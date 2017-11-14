@@ -9,6 +9,7 @@ public class PlayerGazeTrigger : MonoBehaviour
 
     float timeLookedAt = 0f;
     public float rayDistance;
+	public LayerMask mask;
     public UnityEvent onGazeComplete;
     PokerPlayerRedux pokerPlayer;
 
@@ -31,7 +32,7 @@ public class PlayerGazeTrigger : MonoBehaviour
             //2. setup our raycastHit info variable
             RaycastHit rayHit = new RaycastHit();
             //3 we're ready to shoot the raycast
-            if (Physics.Raycast(ray, out rayHit, rayDistance))
+            if (Physics.Raycast(ray, out rayHit, rayDistance, mask))
             {
                 if (rayHit.transform == this.transform) //are we looking at this thing
                 {
