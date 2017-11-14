@@ -82,7 +82,7 @@ public class LogCards : MonoBehaviour
                 {
                     if (Table.instance._board.Contains(other.GetComponent<Card>()))
                     {
-                        //Debug.Log(other.gameObject.name + " is already in play");
+                        //Debug.Log(other.gameObject.name + " is already in the board");
                     }
                     else if (Table.instance._board.Count == 5)
                     {
@@ -90,11 +90,11 @@ public class LogCards : MonoBehaviour
                     }
                     else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
                     {
-                        //Debug.Log(other.gameObject.name + " is already in play");
+                        //Debug.Log(other.gameObject.name + " is already logged");
                     }
                     else if (other.gameObject.GetComponent<Rigidbody>().isKinematic)
                     {
-                        //Debug.Log("Still holding card");
+                        //Debug.Log("is Kinematic");
                     }
                     else
                     {
@@ -105,29 +105,28 @@ public class LogCards : MonoBehaviour
                 }
 
             }
-            else if (this.gameObject.name == "BurnCards")
+            else if (this.gameObject.name == "BurnCards" && Table.gameState != GameState.NewRound)
             {
-                if (Table.instance._burn.Contains(other.GetComponent<Card>()))
+                if (Table.dealerState == DealerState.DealingState)
                 {
-                    //Debug.Log(other.gameObject.name + " is already in play");
-                }
-                else if (Table.instance._board.Count == 3)
-                {
-                    //Debug.Log(other.gameObject.name + "cannot be added to the board");
-                }
-                else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
-                {
-                    //Debug.Log("card is already in play");
-                }
-                else if (other.gameObject.GetComponent<Rigidbody>().isKinematic)
-                {
-                    //Debug.Log("Still holding card");
-                }
-                else
-                {
-                    Table.instance.AddCardTo(Destination.burn, other.GetComponent<Card>());
-                    Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
-                    //Debug.Log("Card went into " + this.gameObject.name);
+                    if (Table.instance._burn.Contains(other.GetComponent<Card>()))
+                    {
+                        Debug.Log(other.gameObject.name + " is already in the burn");
+                    }
+                    else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
+                    {
+                        Debug.Log(other.gameObject.name +  "card is already logged");
+                    }
+                    //else if (other.gameObject.GetComponent<Rigidbody>().isKinematic)
+                    //{
+                    //    Debug.Log(other.gameObject.name +  "card is kinematic");
+                    //}
+                    else
+                    {
+                        Table.instance.AddCardTo(Destination.burn, other.GetComponent<Card>());
+                        Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
+                        Debug.Log(other.gameObject.name +  "Card went into " + this.gameObject.name);
+                    }
                 }
             }
             else if (this.gameObject.name == "ShufflingArea")

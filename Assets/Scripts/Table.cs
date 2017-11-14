@@ -158,20 +158,23 @@ public class Table {
     //which can be annoying sometimes, because if a player overshoots or misses thier target by like a millimeter, then the card doesn't get logged
     public void AddCardTo (Destination dest, Card card)
     {
-        for (int i = 0; i < playerDestinations.Count; i++)
-        {
-            if (dest == playerDestinations[i])
-            {
-                playerCards[i].Add(card);
-            }
-        }
-        if(dest == Destination.board)
+        if (dest == Destination.board)
         {
             _board.Add(card);
         }
         else if (dest == Destination.burn)
         {
             _burn.Add(card);
+        }
+        else
+        {
+            for (int i = 0; i < playerDestinations.Count; i++)
+            {
+                if (dest == playerDestinations[i])
+                {
+                    playerCards[i].Add(card);
+                }
+            }
         }
     }
 

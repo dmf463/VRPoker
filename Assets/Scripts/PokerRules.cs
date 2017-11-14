@@ -28,7 +28,7 @@ public class PokerRules : MonoBehaviour {
     bool checkedForCorrections;
 
     // Use this for initialization
-    void Start () {
+    void Start() {
         boardPos.Add(GameObject.Find("Flop1"));
         boardPos.Add(GameObject.Find("Flop2"));
         boardPos.Add(GameObject.Find("Flop3"));
@@ -36,15 +36,15 @@ public class PokerRules : MonoBehaviour {
         boardPos.Add(GameObject.Find("Flop5"));
         playerDestinations = Table.instance.playerDestinations;
         chipPositionWhenPushing = CreateChipPositions(chipPositionWhenPushing[0], 0.05f, 0.075f, 5, 25);
-	}
+    }
 
     void Update()
     {
-        if(chipGroup.Count > 0)
+        if (chipGroup.Count > 0)
         {
             PushGroupOfChips();
         }
-        if(cardsPulled.Count <= Services.Dealer.PlayerAtTableCount() * 2)
+        if (cardsPulled.Count <= Services.Dealer.PlayerAtTableCount() * 2)
         {
             IndicateCardPlacement(cardsPulled.Count);
         }
@@ -58,42 +58,16 @@ public class PokerRules : MonoBehaviour {
         }
         else if (Table.gameState == GameState.Flop)
         {
-            if (cardsPulled.Count - 1 == turnCard || Table.instance._board.Count == 4)
+            if ((cardsPulled.Count - 1 == turnCard || Table.instance._board.Count == 4) && !checkedForCorrections)
             {
-                SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-                if (Table.instance._board.Count + playerCards + 1 == turnCard)
-                {
-                    if (Table.instance._burn.Count < 2)
-                    {
-                        CorrectMistakes();
-                    }
-                }
-                else if (cardsPulled.Count - 1 == turnCard)
-                {
-                    CorrectMistakes();
-                    Table.gameState = GameState.Turn;
-                }
-                else Table.gameState = GameState.Turn;
+                StartCoroutine(CheckTurnMistakes(1));
             }
         }
         else if (Table.gameState == GameState.Turn)
         {
-            if (cardsPulled.Count - 1 == riverCard || Table.instance._board.Count == 5)
+            if ((cardsPulled.Count - 1 == riverCard || Table.instance._board.Count == 5) && !checkedForCorrections)
             {
-                SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-                if (Table.instance._board.Count + playerCards + 1 == riverCard)
-                {
-                    if (Table.instance._burn.Count < 3)
-                    {
-                        CorrectMistakes();
-                    }
-                }
-                else if (cardsPulled.Count - 1 == riverCard)
-                {
-                    CorrectMistakes();
-                    Table.gameState = GameState.River;
-                }
-                else Table.gameState = GameState.River;
+                StartCoroutine(CheckRiverMistakes(1));
             }
         }
     }
@@ -105,24 +79,87 @@ public class PokerRules : MonoBehaviour {
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
         if (Table.instance._board.Count + playerCards + 1 == flopCards)
         {
-            Debug.Log("boardCount = " + Table.instance._board.Count);
-            Debug.Log("CardsPulled.count = " + cardsPulled.Count);
-            Debug.Log("playerCards = " + playerCards);
-            Debug.Log("flopCards = " + flopCards);
-            Debug.Log("burnCards = " + Table.instance._burn.Count);
             if (Table.instance._burn.Count < 1)
             {
-                Debug.Log("CorrectingMistakes cause no burn");
                 CorrectMistakes();
+            }
+            else
+            {
+                Table.gameState = GameState.Flop;
+                checkedForCorrections = false;
             }
         }
         else if (cardsPulled.Count - 1 == flopCards)
         {
-            Debug.Log("correcting mistakes because cardsPulled - 1 != flopCards");
             CorrectMistakes();
             Table.gameState = GameState.Flop;
+            checkedForCorrections = false;
         }
-        else Table.gameState = GameState.Flop;
+        else
+        {
+            Table.gameState = GameState.Flop;
+            checkedForCorrections = false;
+        }
+    }
+
+    IEnumerator CheckTurnMistakes(float time)
+    {
+        checkedForCorrections = true;
+        yield return new WaitForSeconds(time);
+        SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+        if (Table.instance._board.Count + playerCards + 1 == turnCard)
+        {
+            if (Table.instance._burn.Count < 2)
+            {
+                CorrectMistakes();
+            }
+            else
+            {
+                Table.gameState = GameState.Turn;
+                checkedForCorrections = false;
+            }
+        }
+        else if (cardsPulled.Count - 1 == turnCard)
+        {
+            CorrectMistakes();
+            Table.gameState = GameState.Turn;
+            checkedForCorrections = false;
+        }
+        else
+        {
+            Table.gameState = GameState.Turn;
+            checkedForCorrections = false;
+        }
+    }
+
+    IEnumerator CheckRiverMistakes(float time)
+    {
+        checkedForCorrections = true;
+        yield return new WaitForSeconds(time);
+        SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+        if (Table.instance._board.Count + playerCards + 1 == riverCard)
+        {
+            if (Table.instance._burn.Count < 3)
+            {
+                CorrectMistakes();
+            }
+            else
+            {
+                Table.gameState = GameState.River;
+                checkedForCorrections = false;
+            }
+        }
+        else if (cardsPulled.Count - 1 == riverCard)
+        {
+            CorrectMistakes();
+            Table.gameState = GameState.River;
+            checkedForCorrections = false;
+        }
+        else
+        {
+            Table.gameState = GameState.River;
+            checkedForCorrections = false;
+        }
     }
 
     public void SetCardIndicator()
