@@ -167,32 +167,17 @@ public class Dealer : MonoBehaviour
                     break;
                 case GameState.Flop:
                     Debug.Log("FLOP!");
-                    messageText.text = "player0 chipCount is " + players[0].chipCount +
-                                       "\nplayer1 chipCount is " + players[1].chipCount +
-                                       "\nplayer2 chipCount is " + players[2].chipCount +
-                                       "\nplayer3 chipCount is " + players[3].chipCount +
-                                       "\nplayer4 chipCount is " + players[4].chipCount +
-                                       "\npotSize is at " + Table.instance.potChips;
+                    messageText.text = "burnCards.count = " + Table.instance._burn.Count;
 
                     break;
                 case GameState.Turn:
                     Debug.Log("TURN!");
-                    messageText.text = "player0 chipCount is " + players[0].chipCount +
-                                       "\nplayer1 chipCount is " + players[1].chipCount +
-                                       "\nplayer2 chipCount is " + players[2].chipCount +
-                                       "\nplayer3 chipCount is " + players[3].chipCount +
-                                       "\nplayer4 chipCount is " + players[4].chipCount +
-                                       "\npotSize is at " + Table.instance.potChips;
+                    messageText.text = "burnCards.count = " + Table.instance._burn.Count;
 
                     break;
                 case GameState.River:
                     Debug.Log("RIVER!");
-                    messageText.text = "player0 chipCount is " + players[0].chipCount +
-                                       "\nplayer1 chipCount is " + players[1].chipCount +
-                                       "\nplayer2 chipCount is " + players[2].chipCount +
-                                       "\nplayer3 chipCount is " + players[3].chipCount +
-                                       "\nplayer4 chipCount is " + players[4].chipCount +
-                                       "\npotSize is at " + Table.instance.potChips;
+                    messageText.text = "burnCards.count = " + Table.instance._burn.Count;
 
                     break;
                 default:

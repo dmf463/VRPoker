@@ -75,7 +75,7 @@ public class LogCards : MonoBehaviour
 
             }
             //if the card is going into TheBoard
-            if (this.gameObject.name == "TheBoard" && Table.gameState != GameState.NewRound)
+            if (this.gameObject.name == "TheBoard" && Services.Dealer.playerToAct == null)
             {
                 //same thing as above
                 if (Table.dealerState == DealerState.DealingState)
@@ -105,7 +105,7 @@ public class LogCards : MonoBehaviour
                 }
 
             }
-            else if (this.gameObject.name == "BurnCards" && Table.gameState != GameState.NewRound)
+            else if (this.gameObject.name == "BurnCards" &&  Services.Dealer.playerToAct == null)
             {
                 if (Table.dealerState == DealerState.DealingState)
                 {

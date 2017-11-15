@@ -77,10 +77,14 @@ public class PokerRules : MonoBehaviour {
         checkedForCorrections = true;
         yield return new WaitForSeconds(time);
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+        Debug.Log("playersAtTableCount = " + Services.Dealer.PlayerAtTableCount());
+        Debug.Log("in the preflop, checking the flop: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and flopCard = " + flopCards);
+        Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
         if (Table.instance._board.Count + playerCards + 1 == flopCards)
         {
             if (Table.instance._burn.Count < 1)
             {
+                Debug.Log("CORRECTING MISTAKES BECAUSE OF BURN");
                 CorrectMistakes();
             }
             else
@@ -107,10 +111,13 @@ public class PokerRules : MonoBehaviour {
         checkedForCorrections = true;
         yield return new WaitForSeconds(time);
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-        if (Table.instance._board.Count + playerCards + 1 == turnCard)
+        Debug.Log("in the flop, checking the turn: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and turnCard = " + turnCard);
+        Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
+        if (Table.instance._board.Count + playerCards + 2 == turnCard)
         {
             if (Table.instance._burn.Count < 2)
             {
+                Debug.Log("CORRECTING MISTAKES BECAUSE OF BURN");
                 CorrectMistakes();
             }
             else
@@ -137,10 +144,13 @@ public class PokerRules : MonoBehaviour {
         checkedForCorrections = true;
         yield return new WaitForSeconds(time);
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-        if (Table.instance._board.Count + playerCards + 1 == riverCard)
+        Debug.Log("in the turn, checking the river: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and riverCard = " + riverCard);
+        Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
+        if (Table.instance._board.Count + playerCards + 3 == riverCard)
         {
             if (Table.instance._burn.Count < 3)
             {
+                Debug.Log("CORRECTING MISTAKES BECAUSE OF BURN");
                 CorrectMistakes();
             }
             else
@@ -281,13 +291,13 @@ public class PokerRules : MonoBehaviour {
     public void SetCardPlacement(int playerCount)
     {
         //we take away 1 to account for the 0th position in the list
-        playerCards = (playerCount * 2) - 1;
-        burnCard1 = playerCards + 1;
-        flopCards = playerCards + 4;
-        burnCard2 = playerCards + 5;
-        turnCard = playerCards + 6;
-        burnCard3 = playerCards + 7;
-        riverCard = playerCards + 8;
+        playerCards = (playerCount * 2) - 1; //this should be 9
+        burnCard1 = playerCards + 1; //this should be 10
+        flopCards = playerCards + 4; //this should be 13
+        burnCard2 = playerCards + 5; //this should 14
+        turnCard = playerCards + 6; //this should be 15
+        burnCard3 = playerCards + 7; //this should be 16
+        riverCard = playerCards + 8; //this should be 17
     }
 
     public void ClearAndDestroyAllLists()
