@@ -139,9 +139,10 @@ public class CardDeckScript : InteractionSuperClass {
                 //have a variable that knows how many cards are on the table
                 //once I've destroyed that many cards
                 //refill the deck, and set the decks scale to the original deck scale
-                if (currentCardDeckScale.y >= newCardDeckScale.y)
+                GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
+                if (currentCardDeckScale.y >= newCardDeckScale.y || deadCards.Length == 0)
                 {
-                    GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
+                    currentCardDeckScale.y = newCardDeckScale.y;
                     foreach (GameObject card in deadCards)
                     {
                         Destroy(card);
