@@ -359,13 +359,26 @@ public class Card : InteractionSuperClass {
     {
         if (Table.dealerState == DealerState.ShufflingState)
         {
-            if (other.gameObject.tag == "Hand" && cardOnTable == true)
+            if ((other.gameObject.tag == "Hand" && cardOnTable == true && !CardIsInUse(other.gameObject.GetComponent<Card>())) || 
+                Table.gameState == GameState.CleanUp || Table.gameState == GameState.PostHand)
             {
                 transform.position = new Vector3 (other.transform.position.x, transform.position.y, other.transform.position.z);
             }
         }
     }
 
+    public bool CardIsInUse(Card cardToCheck)
+    {
+        for (int i = 0; i < Table.instance.playerCards.Length; i++)
+        {
+            if (Table.instance.playerCards[i].Contains(cardToCheck))
+            return true;
+        }
+        if (Table.instance._board.Contains(cardToCheck)) return true;
+        else if (Table.instance._burn.Contains(cardToCheck)) return true;
+        else return false;
+        
+    }
     //so here's where I was trying to keep track of how many cards I'm touching
     //this is so fucking awkward it hurts
     //this is also where we are checking whether the card is being laid down
@@ -408,20 +421,20 @@ public class Card : InteractionSuperClass {
     //also, when we attach a card to the hand, we reset the slow and fast torque so that if we throw it, it still spins
     public override void OnAttachedToHand(Hand attachedHand)
     {
-        if(Table.dealerState == DealerState.DealingState)
+        //if(Table.dealerState == DealerState.DealingState)
+        //{
+        if (cardFacingUp == false)
         {
-            if (cardFacingUp == false)
-            {
-                transform.rotation = throwingHand.GetAttachmentTransform("CardFaceDown").transform.rotation;
-            }
-            else if (cardFacingUp == true)
-            {
-                transform.rotation = throwingHand.GetAttachmentTransform("CardFaceUp").transform.rotation;
-            }
-            //resetting the torque so they throw properly each time
-            fastTorque = 3;
-            slowTorque = .25f;
+            transform.rotation = throwingHand.GetAttachmentTransform("CardFaceDown").transform.rotation;
         }
+        else if (cardFacingUp == true)
+        {
+            transform.rotation = throwingHand.GetAttachmentTransform("CardFaceUp").transform.rotation;
+        }
+        //resetting the torque so they throw properly each time
+        fastTorque = 3;
+        slowTorque = .25f;
+        //}
 
         base.OnAttachedToHand(attachedHand);
     }
