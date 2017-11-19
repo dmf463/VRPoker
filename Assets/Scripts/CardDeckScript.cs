@@ -123,8 +123,8 @@ public class CardDeckScript : InteractionSuperClass {
     //but we're just messing with scale in order to achieve the illusion that we're pulling cards and stuff
     void OnCollisionEnter(Collision other)
     {
-        if (Table.dealerState == DealerState.ShufflingState)
-        {
+        //if (Table.dealerState == DealerState.ShufflingState)
+        //{
             if (Table.gameState == GameState.CleanUp || Table.gameState == GameState.PostHand)
             {
                 if (other.gameObject.tag == "PlayingCard")
@@ -151,7 +151,7 @@ public class CardDeckScript : InteractionSuperClass {
                     Table.dealerState = DealerState.DealingState;
                 }
             }
-        }
+        //}
     }
 
     //so this is how we know whether the hand is touching the deck or not
@@ -207,7 +207,7 @@ public class CardDeckScript : InteractionSuperClass {
                 hand.HoverUnlock(interactableObject);
                 Destroy(cardDeck);
                 Debug.Log("Destroyed Deck");
-                Table.dealerState = DealerState.ShufflingState;
+                //Table.dealerState = DealerState.ShufflingState;
             }
         }
     }
@@ -462,7 +462,7 @@ public class CardDeckScript : InteractionSuperClass {
     {
         yield return new WaitForSeconds(time);
         Destroy(cardDeck);
-        Table.dealerState = DealerState.ShufflingState;
+        //Table.dealerState = DealerState.ShufflingState;
     }
 
     //when we swipe down, we set grabbingLowCard to true

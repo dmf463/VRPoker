@@ -13,6 +13,8 @@ using Valve.VR.InteractionSystem;
 //PokerPlayerRedux handles all the functions and info that a poker player would need to play
 public class Dealer : MonoBehaviour
 {
+    [HideInInspector]
+    public List<Card> deadCardsList = new List<Card>();
     //we set this to true if we're outside VR so we can text
     public bool OutsideVR = false;
 
@@ -157,7 +159,7 @@ public class Dealer : MonoBehaviour
             switch (Table.gameState)
             {
                 case GameState.PreFlop:
-                    Debug.Log("PREFLOP!");
+                    //Debug.Log("PREFLOP!");
                     messageText.text = "player0 chipCount is " + players[0].chipCount +
                                        "\nplayer1 chipCount is " + players[1].chipCount +
                                        "\nplayer2 chipCount is " + players[2].chipCount +
@@ -166,17 +168,17 @@ public class Dealer : MonoBehaviour
                                        "\npotSize is at " + Table.instance.potChips;
                     break;
                 case GameState.Flop:
-                    Debug.Log("FLOP!");
+                    //Debug.Log("FLOP!");
                     messageText.text = "burnCards.count = " + Table.instance._burn.Count;
 
                     break;
                 case GameState.Turn:
-                    Debug.Log("TURN!");
+                    //Debug.Log("TURN!");
                     messageText.text = "burnCards.count = " + Table.instance._burn.Count;
 
                     break;
                 case GameState.River:
-                    Debug.Log("RIVER!");
+                    //Debug.Log("RIVER!");
                     messageText.text = "burnCards.count = " + Table.instance._burn.Count;
 
                     break;
@@ -604,16 +606,6 @@ public class Dealer : MonoBehaviour
         return onlyOnePlayerNotAllIn;
     }
 
-    //this sets all the players by adding them to the player list
-    //setting their starting stack
-    //adding their chips to the proper list
-    //setting the dealer position
-        //WHICH NOTE
-            //this will have to change. 
-            //when we choose who has the dealer button, we do it by flipping cards, and the player with the highest card is the dealer
-            //this should be mirrored in the game
-            //so we'll probably have to run a coroutine here in order to determine who the dealer is, accounting for player action
-    //and then have the big and small blinds bet their chips
     public void InitializePlayers(int chipCount)
     {
         for (int i = 0; i < players.Count; i++)
@@ -669,14 +661,6 @@ public class Dealer : MonoBehaviour
         }
     }
 
-    //okay, so here we evaluate the players on the showdown
-    //we organize all the players into a sorted list, ranked by hand rank
-    //but then we need to see if anyone has the same hand, cause this is important for split pots and side pots
-    //so we check the person ranked highest, who is always going to be first
-    //and we compare the second.
-    //if they're the same cards, they get added to the same list in a list of player ranks
-    //therefore the first list in the playerRank list is ALWAYS the list of winners
-    //then we just move down and add players to subsequent lists as they have worse and worse hands
     public void EvaluatePlayersOnShowdown(List<PokerPlayerRedux> playersToEvaluate)
     {
         List<PokerPlayerRedux> sortedPlayers = new List<PokerPlayerRedux>(playersToEvaluate.
@@ -738,12 +722,6 @@ public class Dealer : MonoBehaviour
         numberOfWinners = PlayerRank[0].Count;
     }
 
-    //this is the coroutine where we check how much each player is supposed to get paid
-    //whether they get paid
-    //and waits for us to pay them
-    //basically I need to know how much the winner has BEFORE they get paid, and the coroutine is constantly checking
-    //whether THAT number, plus whatever winnings they were supposed to receive is equal to their current pot value
-    //when it IS then we know that player has been paid
     public IEnumerator WaitForWinnersToGetPaid()
     {
         Debug.Assert(numberOfWinners > 0);
@@ -819,6 +797,12 @@ public class Dealer : MonoBehaviour
             yield return null;
         }
         Table.gameState = GameState.PostHand;
+        GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
+        foreach(GameObject card in deadCards)
+        {
+            deadCardsList.Add(card.GetComponent<Card>());
+        }
+        
     }
 
     //this is out current method for calling the reaction audio for winners
@@ -898,6 +882,7 @@ public class Dealer : MonoBehaviour
         readyToAwardPlayers = false;
         finalHandEvaluation = false;
         chipsInPot.Clear();
+        deadCardsList.Clear();
         GameObject[] chipsOnTable = GameObject.FindGameObjectsWithTag("Chip");
         if (chipsOnTable.Length > 0)
         {

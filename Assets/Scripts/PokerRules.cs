@@ -80,7 +80,11 @@ public class PokerRules : MonoBehaviour {
         Debug.Log("playersAtTableCount = " + Services.Dealer.PlayerAtTableCount());
         Debug.Log("in the preflop, checking the flop: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and flopCard = " + flopCards);
         Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
-        if (Table.instance._board.Count + playerCards + 1 == flopCards)
+        if (cardsPulled.Count > flopCards)
+        {
+            Debug.Log("MISDEAL ON THE FLOP");
+        }
+        else if (Table.instance._board.Count + playerCards + 1 == flopCards)
         {
             if (Table.instance._burn.Count < 1)
             {
@@ -113,7 +117,11 @@ public class PokerRules : MonoBehaviour {
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
         Debug.Log("in the flop, checking the turn: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and turnCard = " + turnCard);
         Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
-        if (Table.instance._board.Count + playerCards + 2 == turnCard)
+        if (cardsPulled.Count > turnCard)
+        {
+            Debug.Log("MISDEAL ON THE TURN");
+        }
+        else if (Table.instance._board.Count + playerCards + 2 == turnCard)
         {
             if (Table.instance._burn.Count < 2)
             {
@@ -146,7 +154,11 @@ public class PokerRules : MonoBehaviour {
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
         Debug.Log("in the turn, checking the river: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and riverCard = " + riverCard);
         Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
-        if (Table.instance._board.Count + playerCards + 3 == riverCard)
+        if (cardsPulled.Count > riverCard)
+        {
+            Debug.Log("MISDEAL ON THE RIVER");
+        }
+        else if (Table.instance._board.Count + playerCards + 3 == riverCard)
         {
             if (Table.instance._burn.Count < 3)
             {

@@ -146,14 +146,14 @@ public class Card : InteractionSuperClass {
         //while you're squeezing either grip, the player is in shuffleMode
         if (!Services.Dealer.OutsideVR)
         {
-            if(deckScript.cardsInDeck.Count > 0)
-            {
-                if (throwingHand.controller.GetPress(EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPress(EVRButtonId.k_EButton_Grip))
-                {
-                    Table.dealerState = DealerState.ShufflingState;
-                }
-                else Table.dealerState = DealerState.DealingState;
-            }
+            //if(deckScript.cardsInDeck.Count > 0)
+            //{
+            //    if (throwingHand.controller.GetPress(EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPress(EVRButtonId.k_EButton_Grip))
+            //    {
+            //        Table.dealerState = DealerState.ShufflingState;
+            //    }
+            //    else Table.dealerState = DealerState.DealingState;
+            //}
         }
 
         //this is where we're checking whether the card is facing up or not
@@ -324,16 +324,16 @@ public class Card : InteractionSuperClass {
             cardThrownWrong = false;
         }
 		
-        if(Table.dealerState == DealerState.ShufflingState)
-        {
-            if (other.gameObject.tag == "PlayingCard")
-            {
-                if (cardsInHand > 5)
-                {
-                    Physics.IgnoreCollision(GetComponent<Collider>(), other.gameObject.GetComponent<Collider>(), true);
-                }
-            }
-        }
+        //if(Table.dealerState == DealerState.ShufflingState)
+        //{
+        //    if (other.gameObject.tag == "PlayingCard")
+        //    {
+        //        if (cardsInHand > 5)
+        //        {
+        //            Physics.IgnoreCollision(GetComponent<Collider>(), other.gameObject.GetComponent<Collider>(), true);
+        //        }
+        //    }
+        //}
     }
 
     //so this is how we check if the card is on the table
@@ -357,27 +357,20 @@ public class Card : InteractionSuperClass {
     //I like this
     void OnTriggerStay(Collider other)
     {
-        if (Table.dealerState == DealerState.ShufflingState)
-        {
-            if ((other.gameObject.tag == "Hand" && cardOnTable == true && !CardIsInUse(other.gameObject.GetComponent<Card>())) || 
-                Table.gameState == GameState.CleanUp || Table.gameState == GameState.PostHand)
+        //if (Table.dealerState == DealerState.ShufflingState)
+        //{
+            if (((cardOnTable == true && CardIsDead(this)) || 
+                  Table.gameState == GameState.CleanUp || Table.gameState == GameState.PostHand) && 
+                  other.gameObject.tag == "Hand")
             {
                 transform.position = new Vector3 (other.transform.position.x, transform.position.y, other.transform.position.z);
             }
-        }
+        //}
     }
 
-    public bool CardIsInUse(Card cardToCheck)
+    public bool CardIsDead(Card cardToCheck)
     {
-        for (int i = 0; i < Table.instance.playerCards.Length; i++)
-        {
-            if (Table.instance.playerCards[i].Contains(cardToCheck))
-            return true;
-        }
-        if (Table.instance._board.Contains(cardToCheck)) return true;
-        else if (Table.instance._burn.Contains(cardToCheck)) return true;
-        else return false;
-        
+        return Services.Dealer.deadCardsList.Contains(cardToCheck);  
     }
     //so here's where I was trying to keep track of how many cards I'm touching
     //this is so fucking awkward it hurts
@@ -385,14 +378,14 @@ public class Card : InteractionSuperClass {
     public override void OnTriggerEnterX(Collider other)
     {
        
-        if (Table.dealerState == DealerState.ShufflingState)
-        {
+        //if (Table.dealerState == DealerState.ShufflingState)
+        //{
             if (other.gameObject.tag == "Hand" && cardOnTable == true)
             {
                 cardsInHand += 1;
                 //Debug.Log("cardsInHand = " + cardsInHand);
             }
-        }
+        //}
         //if (other.gameObject.tag == "Board") layingCardsDown = true;
         base.OnTriggerEnterX(other);
     }
@@ -458,9 +451,9 @@ public class Card : InteractionSuperClass {
     //notice the giant bug alert? this could probably be fixed with a RayCast
     public override void OnDetachedFromHand(Hand hand)
     {
-        if(Table.dealerState == DealerState.DealingState)
-        {
-            if (!Services.PokerRules.cardsPulled.Contains(cardType) /*&& !Services.Dealer.inRound*/)
+        //if(Table.dealerState == DealerState.DealingState)
+        //{
+            if (!Services.PokerRules.cardsPulled.Contains(cardType))
             {
                 Services.PokerRules.cardsPulled.Add(cardType);
             }
@@ -478,7 +471,7 @@ public class Card : InteractionSuperClass {
             }
             Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cards);
             StartCoroutine(CheckVelocity(.025f));
-        }
+        //}
         base.OnDetachedFromHand(hand);
     }
 

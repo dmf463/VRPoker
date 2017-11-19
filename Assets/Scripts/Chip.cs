@@ -127,7 +127,7 @@ public class Chip : InteractionSuperClass {
 	                Vector2 handPos = new Vector2(hand.transform.position.x, hand.transform.position.z);
 	                Vector2 chipPos = new Vector2(transform.position.x, transform.position.z);
 	                Vector2 otherHandPos = new Vector2(hand.otherHand.transform.position.x, hand.otherHand.transform.position.z);
-	                if (hand.currentAttachedObject.tag != "Chip" && hand.currentAttachedObject.tag != "PlayingCard" &&
+	                if (/*hand.currentAttachedObject.tag != "Chip" && hand.currentAttachedObject.tag != "PlayingCard" &&*/
 	                    hand.controller.GetTouch(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
 	                {
 	                    if ((hand.transform.position - transform.position).magnitude < .2f && (handPos - chipPos).magnitude < .12f)

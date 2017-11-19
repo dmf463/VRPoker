@@ -42,92 +42,102 @@ public class LogCards : MonoBehaviour
             for (int i = 0; i < playerNames.Count; i++)
             {
                 //when we get to the match, we know which place to put this into
-                if (gameObject.name == playerNames[i])
+                if (gameObject.name == playerNames[i] && Table.gameState == GameState.NewRound)
                 {
                     //if we're dealing
-                    if (Table.dealerState == DealerState.DealingState)
+                    //if (Table.dealerState == DealerState.DealingState)
+                    //{
+                    //and the card has not already been logged
+                    if (Table.instance.playerCards[i].Contains(other.GetComponent<Card>()))
                     {
-                        //and the card has not already been logged
-                        if (Table.instance.playerCards[i].Contains(other.GetComponent<Card>()))
-                        {
-                            //Debug.Log(other.gameObject.name + " is already in play.");
-                        }
-                        //and the player does not have 2 cards already
-                        else if (Table.instance.playerCards[i].Count == 2)
-                        {
-                            //Debug.Log(other.gameObject.name + " cannot be added to " + playerNames[i]);
-                        }
-                        //and the card has not already been dealt to somewhere else
-                        else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
-                        {
-                            Debug.Log(other.gameObject.name + " has already been logged by something else");
-                        }
-                        //add the card to the right players
-                        //add it to the cardsDealt to keep track
-                        else
-                        {
-                            Table.instance.AddCardTo(playerDestinations[i], other.GetComponent<Card>());
-                            Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
-                            //Debug.Log(other.gameObject.name + " went into " + playerNames[i]);
-                        }
+                        //Debug.Log(other.gameObject.name + " is already in play.");
                     }
+                    //and the player does not have 2 cards already
+                    else if (Table.instance.playerCards[i].Count == 2)
+                    {
+                        //Debug.Log(other.gameObject.name + " cannot be added to " + playerNames[i]);
+                    }
+                    //and the card has not already been dealt to somewhere else
+                    else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
+                    {
+                        Debug.Log(other.gameObject.name + " has already been logged by something else");
+                    }
+                    //add the card to the right players
+                    //add it to the cardsDealt to keep track
+                    else
+                    {
+                        Table.instance.AddCardTo(playerDestinations[i], other.GetComponent<Card>());
+                        Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
+                        //Debug.Log(other.gameObject.name + " went into " + playerNames[i]);
+                    }
+                    //}
                 }
 
             }
             //if the card is going into TheBoard
-            if (this.gameObject.name == "TheBoard" && Services.Dealer.playerToAct == null)
+            if (this.gameObject.name == "TheBoard" && Services.Dealer.playerToAct == null && 
+                (Table.gameState != GameState.CleanUp ||
+                 Table.gameState != GameState.PostHand ||
+                 Table.gameState != GameState.NewRound))
             {
                 //same thing as above
-                if (Table.dealerState == DealerState.DealingState)
+                //if (Table.dealerState == DealerState.DealingState)
+                //{
+                if (Table.instance._board.Contains(other.GetComponent<Card>()))
                 {
-                    if (Table.instance._board.Contains(other.GetComponent<Card>()))
-                    {
-                        //Debug.Log(other.gameObject.name + " is already in the board");
-                    }
-                    else if (Table.instance._board.Count == 5)
-                    {
-                        //Debug.Log(other.gameObject.name + "cannot be added to the board");
-                    }
-                    else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
-                    {
-                        //Debug.Log(other.gameObject.name + " is already logged");
-                    }
-                    else if (other.gameObject.GetComponent<Rigidbody>().isKinematic)
-                    {
-                        //Debug.Log("is Kinematic");
-                    }
-                    else
-                    {
-                        Table.instance.AddCardTo(Destination.board, other.GetComponent<Card>());
-                        Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
-                        //Debug.Log(other.gameObject.name + " went into " + this.gameObject.name);
-                    }
+                    //Debug.Log(other.gameObject.name + " is already in the board");
                 }
+                else if (Table.instance._board.Count == 5)
+                {
+                    //Debug.Log(other.gameObject.name + "cannot be added to the board");
+                }
+                else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
+                {
+                    //Debug.Log(other.gameObject.name + " is already logged");
+                }
+                else if (other.gameObject.GetComponent<Rigidbody>().isKinematic)
+                {
+                    //Debug.Log("is Kinematic");
+                }
+                else if (Services.Dealer.deadCardsList.Contains(other.GetComponent<Card>()))
+                {
+                    Debug.Log(other.gameObject.name + "card is dead");
+                }
+                else
+                {
+                    Table.instance.AddCardTo(Destination.board, other.GetComponent<Card>());
+                    Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
+                    //Debug.Log(other.gameObject.name + " went into " + this.gameObject.name);
+                }
+                //}
 
             }
-            else if (this.gameObject.name == "BurnCards" &&  Services.Dealer.playerToAct == null)
+            else if (this.gameObject.name == "BurnCards" && Services.Dealer.playerToAct == null &&
+                (Table.gameState != GameState.CleanUp ||
+                 Table.gameState != GameState.PostHand ||
+                 Table.gameState != GameState.NewRound))
             {
-                if (Table.dealerState == DealerState.DealingState)
+                //if (Table.dealerState == DealerState.DealingState)
+                //{
+                if (Table.instance._burn.Contains(other.GetComponent<Card>()))
                 {
-                    if (Table.instance._burn.Contains(other.GetComponent<Card>()))
-                    {
-                        Debug.Log(other.gameObject.name + " is already in the burn");
-                    }
-                    else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
-                    {
-                        Debug.Log(other.gameObject.name +  "card is already logged");
-                    }
-                    //else if (other.gameObject.GetComponent<Rigidbody>().isKinematic)
-                    //{
-                    //    Debug.Log(other.gameObject.name +  "card is kinematic");
-                    //}
-                    else
-                    {
-                        Table.instance.AddCardTo(Destination.burn, other.GetComponent<Card>());
-                        Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
-                        Debug.Log(other.gameObject.name +  "Card went into " + this.gameObject.name);
-                    }
+                    Debug.Log(other.gameObject.name + " is already in the burn");
                 }
+                else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
+                {
+                    Debug.Log(other.gameObject.name + "card is already logged");
+                }
+                else if (Services.Dealer.deadCardsList.Contains(other.GetComponent<Card>()))
+                {
+                    Debug.Log(other.gameObject.name + "card is dead");
+                }
+                else
+                {
+                    Table.instance.AddCardTo(Destination.burn, other.GetComponent<Card>());
+                    Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
+                    Debug.Log(other.gameObject.name + "Card went into " + this.gameObject.name);
+                }
+                //}
             }
             else if (this.gameObject.name == "ShufflingArea")
             {
@@ -138,7 +148,7 @@ public class LogCards : MonoBehaviour
                     newCardDeck.GetComponent<CardDeckScript>().BuildDeckFromOneCard(newCardDeck);
                     madeNewDeck = true;
                 }
-                if (Table.dealerState == DealerState.ShufflingState && madeNewDeck == true)
+                if (/*Table.dealerState == DealerState.ShufflingState &&*/ madeNewDeck == true)
                 {
                     Destroy(other.gameObject);
                     //Debug.Log("destroying cards");

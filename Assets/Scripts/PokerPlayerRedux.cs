@@ -182,6 +182,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 		{
 			card.transform.position = Table.instance.playerBetZones[SeatPos].transform.position;
             card.cardMarkedForDestruction = false;
+            Services.Dealer.deadCardsList.Add(card);
 		}
 		PlayerState = PlayerState.NotPlaying;
 		Hand = null;
