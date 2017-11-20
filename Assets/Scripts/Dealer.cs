@@ -310,7 +310,7 @@ public class Dealer : MonoBehaviour
         {
             Table.gameState = GameState.PreFlop;
         }
-        else if(Services.PokerRules.cardsPulled.Count > players.Count * 2)
+        else if(Services.PokerRules.cardsPulled.Count > players.Count * 2 && !Services.Dealer.OutsideVR)
         {
             Debug.Log("Dealt to many cards");
             Table.gameState = GameState.Misdeal;

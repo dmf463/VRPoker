@@ -80,7 +80,7 @@ public class PokerRules : MonoBehaviour {
         Debug.Log("playersAtTableCount = " + Services.Dealer.PlayerAtTableCount());
         Debug.Log("in the preflop, checking the flop: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and flopCard = " + flopCards);
         Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
-        if (cardsPulled.Count - 1 > flopCards)
+        if (cardsPulled.Count - 1 > flopCards && !Services.Dealer.OutsideVR)
         {
             Debug.Log("MISDEAL ON THE FLOP");
             Table.gameState = GameState.Misdeal;
@@ -118,7 +118,7 @@ public class PokerRules : MonoBehaviour {
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
         Debug.Log("in the flop, checking the turn: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and turnCard = " + turnCard);
         Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
-        if (cardsPulled.Count - 1 > turnCard)
+        if (cardsPulled.Count - 1 > turnCard && !Services.Dealer.OutsideVR)
         {
             Debug.Log("MISDEAL ON THE TURN");
             Table.gameState = GameState.Misdeal;
@@ -156,7 +156,7 @@ public class PokerRules : MonoBehaviour {
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
         Debug.Log("in the turn, checking the river: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and riverCard = " + riverCard);
         Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
-        if (cardsPulled.Count - 1 > riverCard)
+        if (cardsPulled.Count - 1 > riverCard && !Services.Dealer.OutsideVR)
         {
             Debug.Log("MISDEAL ON THE RIVER");
             Table.gameState = GameState.Misdeal;
