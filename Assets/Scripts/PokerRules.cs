@@ -289,16 +289,16 @@ public class PokerRules : MonoBehaviour {
     {
         if(cardsPulled.Count < Services.Dealer.PlayerAtTableCount() * 2)
         {
-            Behaviour oldHalo = (Behaviour)Services.Dealer.players[Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardPlace)].playerCardIndicator.GetComponent("Halo");
-            oldHalo.enabled = false;
+            GameObject oldIndicator = Services.Dealer.players[Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardPlace)].playerCardIndicator;
+            oldIndicator.SetActive(false);
 
-            Behaviour newHalo = (Behaviour)Services.Dealer.players[Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardPlace + 1)].playerCardIndicator.GetComponent("Halo");
-            newHalo.enabled = true;
+            GameObject newIndicator = Services.Dealer.players[Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardPlace + 1)].playerCardIndicator;
+            newIndicator.SetActive(true);
         }
         else
         {
-            Behaviour oldHalo = (Behaviour)Services.Dealer.players[Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardPlace)].playerCardIndicator.GetComponent("Halo");
-            oldHalo.enabled = false;
+            GameObject oldIndicator = Services.Dealer.players[Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardPlace)].playerCardIndicator;
+            oldIndicator.SetActive(false);
 
         }
     }
