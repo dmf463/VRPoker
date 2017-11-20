@@ -106,6 +106,7 @@ public class Dealer : MonoBehaviour
             messageText.text = "You misdealt the hand, click both triggers to restart the round.";
             if(hand1.GetStandardInteractionButtonDown() && hand2.GetStandardInteractionButtonDown())
             {
+                Debug.Log("Beginning to restart round");
                 Table.instance.RestartRound();
             }
         }
@@ -308,6 +309,11 @@ public class Dealer : MonoBehaviour
         if (cardCountForPreFlop == Services.PokerRules.cardsPulled.Count)
         {
             Table.gameState = GameState.PreFlop;
+        }
+        else if(Services.PokerRules.cardsPulled.Count > players.Count * 2)
+        {
+            Debug.Log("Dealt to many cards");
+            Table.gameState = GameState.Misdeal;
         }
         else
         {
@@ -784,6 +790,7 @@ public class Dealer : MonoBehaviour
             //players[i].checkedHandStrength = false;
         }
         Services.PokerRules.cardsPulled.Clear();
+        Services.PokerRules.cardsLogged.Clear();
         Table.gameState = GameState.NewRound;
         playersHaveBeenEvaluated = false;
         winnersHaveBeenPaid = false;
@@ -812,9 +819,10 @@ public class Dealer : MonoBehaviour
 
     public void ResetGameState()
     {
+        Debug.Log("ResettingGameStatus");
         for (int i = 0; i < players.Count; i++)
         {
-            players[i].chipCount = Table.instance.gameData.PlayerChipStacks[i];
+            Table.instance.playerChipStacks[i] = Table.instance.gameData.PlayerChipStacks[i];
             if (players[i].chipCount == 0) players[i].PlayerState = PlayerState.Eliminated;
             if (players[i].PlayerState != PlayerState.Eliminated)
             {
@@ -828,6 +836,7 @@ public class Dealer : MonoBehaviour
         GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
         foreach (GameObject card in cardsOnTable) Destroy(card);
         Services.PokerRules.cardsPulled.Clear();
+        Services.PokerRules.cardsLogged.Clear();
         Table.gameState = GameState.NewRound;
         playersHaveBeenEvaluated = false;
         winnersHaveBeenPaid = false;

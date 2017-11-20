@@ -134,7 +134,7 @@ public class Card : InteractionSuperClass {
             InstantiateNewDeck();
         }
 
-        if (deckScript.deckWasThrown == true)
+        if (deckScript.deckWasThrown == true || deckScript.cardsInDeck.Count == 0)
         {
             if (throwingHand.controller.GetPress(EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPress(EVRButtonId.k_EButton_Grip))
             {

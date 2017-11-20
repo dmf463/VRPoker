@@ -207,6 +207,10 @@ public class CardDeckScript : InteractionSuperClass {
                 hand.HoverUnlock(interactableObject);
                 Destroy(cardDeck);
                 Debug.Log("Destroyed Deck");
+                if(Table.gameState != GameState.CleanUp || Table.gameState != GameState.PostHand)
+                {
+                    Table.gameState = GameState.Misdeal;
+                }
                 //Table.dealerState = DealerState.ShufflingState;
             }
         }
