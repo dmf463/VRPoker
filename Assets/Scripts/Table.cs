@@ -120,36 +120,55 @@ public class Table {
 
     public void RestartRound()
     {
-        Debug.Log("RestartingRound");
-        if (GameObject.FindGameObjectWithTag("CardDeck") == null)
+        if (gameState == GameState.ShowDown)
         {
-            //Debug.Log("Could not find CardDeck, instantiating new one");
-            GameObject shuffleArea = GameObject.Find("ShufflingArea");
-            GameObject newCardDeck = GameObject.Instantiate(Services.PrefabDB.CardDeck, shuffleArea.transform.position, Quaternion.identity) as GameObject;
+            List<PokerPlayerRedux> winningPlayers = new List<PokerPlayerRedux>();
+            for (int i = 0; i < Services.Dealer.players.Count; i++)
+            {
+                if(Services.Dealer.players[i].PlayerState == PlayerState.Winner)
+                {
+                    winningPlayers.Add(Services.Dealer.players[i]);
+                }
+            }
+            foreach(PokerPlayerRedux player in winningPlayers)
+            {
+                playerChipStacks[player.SeatPos] = (player.chipsWon + player.ChipCountToCheckWhenWinning);
+            }
+            NewHand();
         }
         else
         {
-            GameObject.Destroy(GameObject.FindGameObjectWithTag("CardDeck"));
-            GameObject shuffleArea = GameObject.Find("ShufflingArea");
-            GameObject newCardDeck = GameObject.Instantiate(Services.PrefabDB.CardDeck, shuffleArea.transform.position, Quaternion.identity) as GameObject;
-        }
+            Debug.Log("RestartingRound");
+            if (GameObject.FindGameObjectWithTag("CardDeck") == null)
+            {
+                //Debug.Log("Could not find CardDeck, instantiating new one");
+                GameObject shuffleArea = GameObject.Find("ShufflingArea");
+                GameObject newCardDeck = GameObject.Instantiate(Services.PrefabDB.CardDeck, shuffleArea.transform.position, Quaternion.identity) as GameObject;
+            }
+            else
+            {
+                GameObject.Destroy(GameObject.FindGameObjectWithTag("CardDeck"));
+                GameObject shuffleArea = GameObject.Find("ShufflingArea");
+                GameObject newCardDeck = GameObject.Instantiate(Services.PrefabDB.CardDeck, shuffleArea.transform.position, Quaternion.identity) as GameObject;
+            }
 
-        for (int i = 0; i < playerCards.Length; i++)
-        {
-            playerCards[i].Clear();
+            for (int i = 0; i < playerCards.Length; i++)
+            {
+                playerCards[i].Clear();
+            }
+            _board.Clear();
+            _burn.Clear();
+            potChips = 0;
+            Services.Dealer.ResetGameState();
+            gameState = GameState.NewRound;
+            Services.PokerRules.TurnOffAllIndicators();
+            DealerPosition = gameData.DealerPosition; //this does not account for a dead dealer
+            SetDealerButtonPos(DealerPosition);
+            Services.Dealer.StartCoroutine(Services.Dealer.WaitToPostBlinds(.25f));
+            Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(1).currentBet = Services.Dealer.SmallBlind;
+            Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(2).currentBet = Services.Dealer.BigBlind;
+            Services.Dealer.LastBet = Services.Dealer.BigBlind;
         }
-        _board.Clear();
-        _burn.Clear();
-        potChips = 0;
-        Services.Dealer.ResetGameState();
-        gameState = GameState.NewRound;
-        Services.PokerRules.TurnOffAllIndicators();
-        DealerPosition = gameData.DealerPosition; //this does not account for a dead dealer
-        SetDealerButtonPos(DealerPosition);
-        Services.Dealer.StartCoroutine(Services.Dealer.WaitToPostBlinds(.25f));
-        Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(1).currentBet = Services.Dealer.SmallBlind;
-        Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(2).currentBet = Services.Dealer.BigBlind;
-        Services.Dealer.LastBet = Services.Dealer.BigBlind;
     }
     //we use this function in order to get access to the actual card gameObjects
     //this is really only used when we want to flip and rearrange the cards (which should probably be made better)

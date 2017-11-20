@@ -104,7 +104,7 @@ public class Dealer : MonoBehaviour
         else if(Table.gameState == GameState.Misdeal)
         {
             messageText.text = "You misdealt the hand, click both triggers to restart the round.";
-            if(hand1.GetStandardInteractionButtonDown() && hand2.GetStandardInteractionButtonDown())
+            if(hand1.GetStandardInteractionButton() && hand2.GetStandardInteractionButton())
             {
                 Debug.Log("Beginning to restart round");
                 Table.instance.RestartRound();
