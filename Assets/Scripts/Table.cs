@@ -122,6 +122,7 @@ public class Table {
     {
         if (gameState == GameState.ShowDown)
         {
+            Debug.Log("Restarting Round in ShowDown");
             List<PokerPlayerRedux> winningPlayers = new List<PokerPlayerRedux>();
             for (int i = 0; i < Services.Dealer.players.Count; i++)
             {
@@ -134,6 +135,8 @@ public class Table {
             {
                 playerChipStacks[player.SeatPos] = (player.chipsWon + player.ChipCountToCheckWhenWinning);
             }
+            GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
+            foreach (GameObject card in cardsOnTable) GameObject.Destroy(card);
             NewHand();
         }
         else

@@ -149,7 +149,8 @@ public class Dealer : MonoBehaviour
         #region Players evaluate their hands based on the gamestate
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Table.instance.DebugHandsAndChips();
+            //Table.instance.DebugHandsAndChips();
+            Table.instance.RestartRound();
         }
         if (Input.GetKeyDown(KeyCode.X))
         {
