@@ -398,8 +398,21 @@ public class CardDeckScript : InteractionSuperClass {
         GameObject playingCard = Instantiate(Services.PrefabDB.Card, position, rotation);
         playingCard.GetComponent<MeshFilter>().mesh = cardMeshes[(int)cardType.suit][(int)cardType.rank - 2];
         playingCard.GetComponent<Card>().cardType = cardType;
-        playingCard.GetComponent<Card>().cardMarkedForDestruction = true;
+        playingCard.GetComponent<Card>().cardMarkedForDestruction = CheckCardStatus();
         return playingCard.GetComponent<Card>();
+    }
+
+    public bool CheckCardStatus()
+    {
+        if(Table.gameState == GameState.NewRound)
+        {
+            if (Services.PokerRules.cardsPulled.Count > Services.Dealer.PlayerAtTableCount() * 2)
+            {
+                return false;
+            }
+            else return true;
+        }
+        return true;
     }
 
     //this is what we call when the deck is completely empty, and we want to start with "one" card
@@ -462,6 +475,7 @@ public class CardDeckScript : InteractionSuperClass {
     {
         yield return new WaitForSeconds(time);
         Destroy(cardDeck);
+        Table.gameState = GameState.Misdeal;
         //Table.dealerState = DealerState.ShufflingState;
     }
 

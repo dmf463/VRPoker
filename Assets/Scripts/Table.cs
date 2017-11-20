@@ -9,7 +9,7 @@ using System.Linq;
 //Gamestate is super important and controls the flow of the game. 
 public enum Destination { player0, player1, player2, player3, player4, board, burn, pot}
 public enum DealerState { DealingState, ShufflingState };
-public enum GameState {NewRound, PreFlop, Flop, Turn, River, ShowDown, CleanUp, PostHand}
+public enum GameState {NewRound, PreFlop, Flop, Turn, River, ShowDown, CleanUp, PostHand, Misdeal}
 
 public class Table {
     
@@ -30,6 +30,7 @@ public class Table {
     //the pubic functions for controlling the enums
     public static GameState gameState;
     public static DealerState dealerState;
+    public PokerGameData gameData;
 
     //Where the cards could possibly go
     public List<Destination> playerDestinations = new List<Destination>
@@ -110,12 +111,32 @@ public class Table {
         Services.PokerRules.TurnOffAllIndicators();
         DealerPosition = (Services.Dealer.FindFirstPlayerToAct(1).SeatPos); //this does not account for a dead dealer
         SetDealerButtonPos(DealerPosition);
+        gameData = new PokerGameData(DealerPosition, Services.Dealer.players);
         Services.Dealer.StartCoroutine(Services.Dealer.WaitToPostBlinds(.25f));
         Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(1).currentBet = Services.Dealer.SmallBlind;
         Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(2).currentBet = Services.Dealer.BigBlind;
         Services.Dealer.LastBet = Services.Dealer.BigBlind;
     }
 
+    public void RestartRound()
+    {
+        for (int i = 0; i < playerCards.Length; i++)
+        {
+            playerCards[i].Clear();
+        }
+        _board.Clear();
+        _burn.Clear();
+        potChips = 0;
+        Services.Dealer.ResetGameState();
+        gameState = GameState.NewRound;
+        Services.PokerRules.TurnOffAllIndicators();
+        DealerPosition = gameData.DealerPosition; //this does not account for a dead dealer
+        SetDealerButtonPos(DealerPosition);
+        Services.Dealer.StartCoroutine(Services.Dealer.WaitToPostBlinds(.25f));
+        Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(1).currentBet = Services.Dealer.SmallBlind;
+        Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(2).currentBet = Services.Dealer.BigBlind;
+        Services.Dealer.LastBet = Services.Dealer.BigBlind;
+    }
     //we use this function in order to get access to the actual card gameObjects
     //this is really only used when we want to flip and rearrange the cards (which should probably be made better)
     public List<GameObject> GetCardGameObjects(int seatPos)

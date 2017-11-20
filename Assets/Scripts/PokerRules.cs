@@ -83,6 +83,7 @@ public class PokerRules : MonoBehaviour {
         if (cardsPulled.Count > flopCards)
         {
             Debug.Log("MISDEAL ON THE FLOP");
+            Table.gameState = GameState.Misdeal;
         }
         else if (Table.instance._board.Count + playerCards + 1 == flopCards)
         {
@@ -120,6 +121,7 @@ public class PokerRules : MonoBehaviour {
         if (cardsPulled.Count > turnCard)
         {
             Debug.Log("MISDEAL ON THE TURN");
+            Table.gameState = GameState.Misdeal;
         }
         else if (Table.instance._board.Count + playerCards + 2 == turnCard)
         {
@@ -157,6 +159,7 @@ public class PokerRules : MonoBehaviour {
         if (cardsPulled.Count > riverCard)
         {
             Debug.Log("MISDEAL ON THE RIVER");
+            Table.gameState = GameState.Misdeal;
         }
         else if (Table.instance._board.Count + playerCards + 3 == riverCard)
         {
@@ -339,6 +342,38 @@ public class PokerRules : MonoBehaviour {
             Destroy(card.gameObject);
         }
         Table.instance._burn.Clear();
+    }
+
+    public void CorrectMistakesPreFlop()
+    {
+        // Debug.Log("CorrectingMistakes");
+        SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+        cardsLogged.Clear();
+        ClearAndDestroyAllLists();
+        int cardPos;
+
+        for (int i = 0; i < cardsPulled.Count; i++)
+        {
+            if (i <= playerCards) //playerCards = 9
+            {
+                if (i >= (Services.Dealer.PlayerAtTableCount())) cardPos = 1;
+                else cardPos = 0;
+                int playerIndex = Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(i + 1);
+                PokerPlayerRedux player = Services.Dealer.players[playerIndex];
+                //Debug.Log("player we're trying to check is + " + player);
+                if (player.PlayerState == PlayerState.Playing)
+                {
+                    if (!player.playerIsAllIn)
+                    {
+                        Card newCard = CreateCard(cardsPulled[i], player.cardPos[cardPos].transform.position, player.cardPos[cardPos].transform.rotation);
+                        Table.instance.playerCards[player.SeatPos].Add(newCard);
+                    }
+                    //Debug.Log("player we're trying to check is + " + player);
+                    //Debug.Log("firstPlayer = " + Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count]);
+                    //Debug.Log("cardCount after replacing" + Table.instance.playerCards[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].Count);
+                }
+            }
+        }
     }
 
     public void CorrectMistakes()
