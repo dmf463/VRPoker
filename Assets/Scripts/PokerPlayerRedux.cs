@@ -300,7 +300,7 @@ public class PokerPlayerRedux : MonoBehaviour{
         }
         chipCountBeforeAllIn = chipCount;
         playerIsAllIn = true;
-		Debug.Log("getting ready to go all in");
+		//Debug.Log("getting ready to go all in");
         Bet(chipCount);
         //similar to fold, when we go all in, we want to see if we're the last person to go all in
         //if so, then we want to flip the cards
@@ -635,7 +635,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             if ((chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && HandStrength < 0.5) Fold();
             else if (returnRate < lowReturnRate)
             {
-                Debug.Log("lowReturnRate");
+                //Debug.Log("lowReturnRate");
                 //95% chance fold, 5% bluff (raise)
                 float randomNumber = Random.Range(0, 100);
                 if (randomNumber < foldChanceLow)
@@ -658,7 +658,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             }
             else if (returnRate < decentReturnRate)
             {
-                Debug.Log("decentReturnRate");
+                //Debug.Log("decentReturnRate");
                 //80% chance fold, 5% call, 15% bluff(raise)
                 float randomNumber = Random.Range(0, 100);
                 if (randomNumber < foldChanceDecent)
@@ -680,7 +680,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             }
             else if (returnRate < highReturnRate)
             {
-                Debug.Log("highReturnRate");
+                //Debug.Log("highReturnRate");
                 //60% chance call, 40% raise
                 float randomNumber = Random.Range(0, 100);
                 if (randomNumber < foldChanceHigh)
@@ -702,7 +702,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             }
             else if (returnRate >= highReturnRate)
             {
-                Debug.Log("superHighReturnRate");
+                //Debug.Log("superHighReturnRate");
                 //70% chance raise, 30% call
                 float randomNumber = Random.Range(0, 100);
                 if (randomNumber < foldChanceVeryHigh)
@@ -922,7 +922,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 	{
 		if(Table.gameState == GameState.PreFlop)
 		{
-			DeterminePreFlopHandStrength(myCard1, myCard2);
+			Services.Dealer.StartCoroutine(DeterminePreFlopHandStrength(1, myCard1, myCard2));
 		}
 		else
 		{
@@ -934,8 +934,9 @@ public class PokerPlayerRedux : MonoBehaviour{
 	//but I don't have the FCR decision set up to accomodate these handStrengths
 	//shouldn't be too hard
 	//this is essentially why they're always calling preflop
-	public void DeterminePreFlopHandStrength(CardType myCard1, CardType myCard2)
+	IEnumerator DeterminePreFlopHandStrength(float time, CardType myCard1, CardType myCard2)
 	{
+        yield return new WaitForSeconds(time);
         HandStrength = Hand.HandValues.Total;
         rateOfReturn = FindRateOfReturn();
 		FoldCallRaiseDecision(rateOfReturn);
