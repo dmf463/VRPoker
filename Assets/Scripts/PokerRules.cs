@@ -194,37 +194,43 @@ public class PokerRules : MonoBehaviour {
         {
             if (cardsPulled.Count == burnCard1)
             {
-                Behaviour newHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
-                newHalo.enabled = true;
+                cardIndicators[5].SetActive(true);
+                //newHalo.enabled = true;
             }
             else if (cardsPulled.Count == flopCards - 2)
             {
-                Behaviour oldHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
-                oldHalo.enabled = false;
-
-                Behaviour newHalo = (Behaviour)cardIndicators[0].GetComponent("Halo");
-                newHalo.enabled = true;
+                //Behaviour oldHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
+                //oldHalo.enabled = false;
+                cardIndicators[5].SetActive(false);
+                cardIndicators[0].SetActive(true);
+                //Behaviour newHalo = (Behaviour)cardIndicators[0].GetComponent("Halo");
+                //newHalo.enabled = true;
             }
             else if(cardsPulled.Count == flopCards - 1)
             {
-                Behaviour oldHalo = (Behaviour)cardIndicators[0].GetComponent("Halo");
-                oldHalo.enabled = false;
+                //Behaviour oldHalo = (Behaviour)cardIndicators[0].GetComponent("Halo");
+                //oldHalo.enabled = false;
 
-                Behaviour newHalo = (Behaviour)cardIndicators[1].GetComponent("Halo");
-                newHalo.enabled = true;
+                //Behaviour newHalo = (Behaviour)cardIndicators[1].GetComponent("Halo");
+                //newHalo.enabled = true;
+                cardIndicators[0].SetActive(false);
+                cardIndicators[1].SetActive(true);
             }
             else if (cardsPulled.Count == flopCards)
             {
-                Behaviour oldHalo = (Behaviour)cardIndicators[1].GetComponent("Halo");
-                oldHalo.enabled = false;
+                //Behaviour oldHalo = (Behaviour)cardIndicators[1].GetComponent("Halo");
+                //oldHalo.enabled = false;
 
-                Behaviour newHalo = (Behaviour)cardIndicators[2].GetComponent("Halo");
-                newHalo.enabled = true;
+                //Behaviour newHalo = (Behaviour)cardIndicators[2].GetComponent("Halo");
+                //newHalo.enabled = true;
+                cardIndicators[1].SetActive(false);
+                cardIndicators[2].SetActive(true);
             }
             else
             {
-                Behaviour oldHalo = (Behaviour)cardIndicators[2].GetComponent("Halo");
-                oldHalo.enabled = false;
+                //Behaviour oldHalo = (Behaviour)cardIndicators[2].GetComponent("Halo");
+                //oldHalo.enabled = false;
+                cardIndicators[2].SetActive(false);
             }
 
         }
@@ -232,42 +238,50 @@ public class PokerRules : MonoBehaviour {
         {
             if(cardsPulled.Count == burnCard2)
             {
-                Behaviour newHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
-                newHalo.enabled = true;
+                //Behaviour newHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
+                //newHalo.enabled = true;
+                cardIndicators[5].SetActive(true);
             }
             else if(cardsPulled.Count == turnCard)
             {
-                Behaviour oldHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
-                oldHalo.enabled = false;
+                //Behaviour oldHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
+                //oldHalo.enabled = false;
 
-                Behaviour newHalo = (Behaviour)cardIndicators[3].GetComponent("Halo");
-                newHalo.enabled = true;
+                //Behaviour newHalo = (Behaviour)cardIndicators[3].GetComponent("Halo");
+                //newHalo.enabled = true;
+                cardIndicators[5].SetActive(false);
+                cardIndicators[3].SetActive(true);
             }
             else
             {
-                Behaviour oldHalo = (Behaviour)cardIndicators[3].GetComponent("Halo");
-                oldHalo.enabled = false;
+                //Behaviour oldHalo = (Behaviour)cardIndicators[3].GetComponent("Halo");
+                //oldHalo.enabled = false;
+                cardIndicators[3].SetActive(false);
             }
         }
         else if(Table.gameState == GameState.Turn)
         {
             if (cardsPulled.Count == burnCard3)
             {
-                Behaviour newHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
-                newHalo.enabled = true;
+                //Behaviour newHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
+                //newHalo.enabled = true;
+                cardIndicators[5].SetActive(true);
             }
             else if (cardsPulled.Count == riverCard)
             {
-                Behaviour oldHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
-                oldHalo.enabled = false;
+                //Behaviour oldHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
+                //oldHalo.enabled = false;
 
-                Behaviour newHalo = (Behaviour)cardIndicators[4].GetComponent("Halo");
-                newHalo.enabled = true;
+                //Behaviour newHalo = (Behaviour)cardIndicators[4].GetComponent("Halo");
+                //newHalo.enabled = true;
+                cardIndicators[5].SetActive(false);
+                cardIndicators[4].SetActive(true);
             }
             else
             {
-                Behaviour oldHalo = (Behaviour)cardIndicators[4].GetComponent("Halo");
-                oldHalo.enabled = false;
+                //Behaviour oldHalo = (Behaviour)cardIndicators[4].GetComponent("Halo");
+                //oldHalo.enabled = false;
+                cardIndicators[4].SetActive(false);
             }
         }
         else if(Table.gameState == GameState.River)
@@ -280,8 +294,7 @@ public class PokerRules : MonoBehaviour {
     {
         for (int i = 0; i < cardIndicators.Length; i++)
         {
-            Behaviour halo = (Behaviour)cardIndicators[i].GetComponent("Halo");
-            halo.enabled = false;
+            cardIndicators[i].SetActive(false);
         }
     }
 
