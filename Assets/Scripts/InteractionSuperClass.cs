@@ -122,6 +122,7 @@ public class InteractionSuperClass : MonoBehaviour {
     //and we add whatever force to it as we had when we released it
     public virtual void OnDetachedFromHand(Hand hand)
     {
+        Services.Dealer.handIsOccupied = false;
         handTouchingDeck = false;
         GetComponent<Rigidbody>().isKinematic = false; //turns on physics
         hand.HoverUnlock(interactableObject);

@@ -77,9 +77,9 @@ public class PokerRules : MonoBehaviour {
         checkedForCorrections = true;
         yield return new WaitForSeconds(time);
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-        Debug.Log("playersAtTableCount = " + Services.Dealer.PlayerAtTableCount());
-        Debug.Log("in the preflop, checking the flop: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and flopCard = " + flopCards);
-        Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
+        //Debug.Log("playersAtTableCount = " + Services.Dealer.PlayerAtTableCount());
+        //Debug.Log("in the preflop, checking the flop: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and flopCard = " + flopCards);
+        //Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
         if (cardsPulled.Count - 1 > flopCards && !Services.Dealer.OutsideVR)
         {
             Debug.Log("MISDEAL ON THE FLOP");
@@ -117,8 +117,8 @@ public class PokerRules : MonoBehaviour {
         checkedForCorrections = true;
         yield return new WaitForSeconds(time);
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-        Debug.Log("in the flop, checking the turn: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and turnCard = " + turnCard);
-        Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
+        //Debug.Log("in the flop, checking the turn: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and turnCard = " + turnCard);
+        //Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
         if (cardsPulled.Count - 1 > turnCard && !Services.Dealer.OutsideVR)
         {
             Debug.Log("MISDEAL ON THE TURN");
@@ -156,8 +156,8 @@ public class PokerRules : MonoBehaviour {
         checkedForCorrections = true;
         yield return new WaitForSeconds(time);
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-        Debug.Log("in the turn, checking the river: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and riverCard = " + riverCard);
-        Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
+        //Debug.Log("in the turn, checking the river: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and riverCard = " + riverCard);
+        //Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
         if (cardsPulled.Count - 1 > riverCard && !Services.Dealer.OutsideVR)
         {
             Debug.Log("MISDEAL ON THE RIVER");
@@ -493,13 +493,16 @@ public class PokerRules : MonoBehaviour {
                 Chip chip = chipGroup[i];
                 if (chip.chipStack != null)
                 {
-                    if (chip.chipStack.chips.Count == 1)
+                    for (int chipToCheck = 0; chipToCheck < chipGroup.Count; chipToCheck++)
                     {
-                        for (int chipToCheck = 0; chipToCheck < chipGroup.Count; chipToCheck++)
+                        if (chipToCheck != i)
                         {
                             if (chipGroup[chipToCheck].chipStack != null && chipGroup[chipToCheck].chipData.ChipValue == chip.chipData.ChipValue)
                             {
-                                chipGroup[chipToCheck].chipStack.AddToStackInHand(chip.chipData);
+                                for (int chipsToAdd = 0; chipsToAdd < chip.chipStack.chips.Count; chipsToAdd++)
+                                {
+                                    chipGroup[chipToCheck].chipStack.AddToStackInHand(chip.chipStack.chips[chipsToAdd]);
+                                }
                                 chipGroup.Remove(chip);
                                 Destroy(chip.gameObject);
                                 break;
@@ -511,19 +514,22 @@ public class PokerRules : MonoBehaviour {
                 {
                     for (int chipToCheck = 0; chipToCheck < chipGroup.Count; chipToCheck++)
                     {
-                        if (chipGroup[chipToCheck].chipStack != null)
+                        if (chipToCheck != i)
                         {
-                            if (chipGroup[chipToCheck].chipData.ChipValue == chip.chipData.ChipValue)
+                            if (chipGroup[chipToCheck].chipStack != null)
                             {
-                                chipGroup[chipToCheck].chipStack.AddToStackInHand(chip.chipData);
-                                chipGroup.Remove(chip);
-                                Destroy(chip.gameObject);
-                                break;
+                                if (chipGroup[chipToCheck].chipData.ChipValue == chip.chipData.ChipValue)
+                                {
+                                    chipGroup[chipToCheck].chipStack.AddToStackInHand(chip.chipData);
+                                    chipGroup.Remove(chip);
+                                    Destroy(chip.gameObject);
+                                    break;
+                                }
                             }
-                        }
-                        else
-                        {
-                            chipGroup[chipToCheck].chipStack = new ChipStack(chipGroup[chipToCheck]);
+                            else
+                            {
+                                chipGroup[chipToCheck].chipStack = new ChipStack(chipGroup[chipToCheck]);
+                            }
                         }
                     }
                 }
