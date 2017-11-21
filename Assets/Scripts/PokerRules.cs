@@ -486,21 +486,51 @@ public class PokerRules : MonoBehaviour {
 
     public void ConsolidateStack()
     {
-        for (int i = 0; i < chipGroup.Count; i++)
+        if (chipGroup.Count > 1)
         {
-            Chip chip = chipGroup[i];
-            if (chip.chipStack.chips.Count == 1)
+            for (int i = 0; i < chipGroup.Count; i++)
             {
-                for (int chipToCheck = 0; chipToCheck < chipGroup.Count; chipToCheck++)
+                Chip chip = chipGroup[i];
+                if (chip.chipStack != null)
                 {
-                    if (chipGroup[chipToCheck].chipStack != null && chipGroup[chipToCheck].chipData.ChipValue == chip.chipData.ChipValue)
+                    if (chip.chipStack.chips.Count == 1)
                     {
-                        chipGroup[chipToCheck].chipStack.AddToStackInHand(chip.chipData);
-                        chipGroup.Remove(chip);
-                        Destroy(chip.gameObject);
-                        break;
+                        for (int chipToCheck = 0; chipToCheck < chipGroup.Count; chipToCheck++)
+                        {
+                            if (chipGroup[chipToCheck].chipStack != null && chipGroup[chipToCheck].chipData.ChipValue == chip.chipData.ChipValue)
+                            {
+                                chipGroup[chipToCheck].chipStack.AddToStackInHand(chip.chipData);
+                                chipGroup.Remove(chip);
+                                Destroy(chip.gameObject);
+                                break;
+                            }
+                        }
                     }
                 }
+                else if (chip.chipStack == null)
+                {
+                    for (int chipToCheck = 0; chipToCheck < chipGroup.Count; chipToCheck++)
+                    {
+                        if (chipGroup[chipToCheck].chipStack != null)
+                        {
+                            if (chipGroup[chipToCheck].chipData.ChipValue == chip.chipData.ChipValue)
+                            {
+                                chipGroup[chipToCheck].chipStack.AddToStackInHand(chip.chipData);
+                                chipGroup.Remove(chip);
+                                Destroy(chip.gameObject);
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            chipGroup[chipToCheck].chipStack = new ChipStack(chipGroup[chipToCheck]);
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < chipGroup.Count; i++)
+            {
+                chipGroup[i].spotIndex = i;
             }
         }
     }
