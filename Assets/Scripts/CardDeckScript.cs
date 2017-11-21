@@ -125,7 +125,7 @@ public class CardDeckScript : InteractionSuperClass {
     {
         //if (Table.dealerState == DealerState.ShufflingState)
         //{
-            if (Table.gameState == GameState.CleanUp || Table.gameState == GameState.PostHand)
+            if ((Table.gameState == GameState.CleanUp || Table.gameState == GameState.PostHand) && Services.Dealer.winnersPaid == Services.Dealer.numberOfWinners)
             {
                 if (other.gameObject.tag == "PlayingCard")
                 {

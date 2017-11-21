@@ -35,7 +35,7 @@ public class PokerRules : MonoBehaviour {
         boardPos.Add(GameObject.Find("Flop4"));
         boardPos.Add(GameObject.Find("Flop5"));
         playerDestinations = Table.instance.playerDestinations;
-        chipPositionWhenPushing = CreateChipPositions(chipPositionWhenPushing[0], 0.05f, 0.075f, 5, 25);
+        chipPositionWhenPushing = CreateChipPositions(chipPositionWhenPushing[0], 0.06f, 0.075f, 5, 25);
     }
 
     void Update()
@@ -91,6 +91,7 @@ public class PokerRules : MonoBehaviour {
             {
                 Debug.Log("CORRECTING MISTAKES BECAUSE OF BURN");
                 CorrectMistakes();
+                checkedForCorrections = false;
             }
             else
             {
@@ -129,6 +130,7 @@ public class PokerRules : MonoBehaviour {
             {
                 Debug.Log("CORRECTING MISTAKES BECAUSE OF BURN");
                 CorrectMistakes();
+                checkedForCorrections = false;
             }
             else
             {
@@ -167,6 +169,7 @@ public class PokerRules : MonoBehaviour {
             {
                 Debug.Log("CORRECTING MISTAKES BECAUSE OF BURN");
                 CorrectMistakes();
+                checkedForCorrections = false;
             }
             else
             {
@@ -195,96 +198,62 @@ public class PokerRules : MonoBehaviour {
             if (cardsPulled.Count == burnCard1)
             {
                 cardIndicators[5].SetActive(true);
-                //newHalo.enabled = true;
             }
             else if (cardsPulled.Count == flopCards - 2)
             {
-                //Behaviour oldHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
-                //oldHalo.enabled = false;
                 cardIndicators[5].SetActive(false);
                 cardIndicators[0].SetActive(true);
-                //Behaviour newHalo = (Behaviour)cardIndicators[0].GetComponent("Halo");
-                //newHalo.enabled = true;
             }
-            else if(cardsPulled.Count == flopCards - 1)
+            else if (cardsPulled.Count == flopCards - 1)
             {
-                //Behaviour oldHalo = (Behaviour)cardIndicators[0].GetComponent("Halo");
-                //oldHalo.enabled = false;
 
-                //Behaviour newHalo = (Behaviour)cardIndicators[1].GetComponent("Halo");
-                //newHalo.enabled = true;
                 cardIndicators[0].SetActive(false);
                 cardIndicators[1].SetActive(true);
             }
             else if (cardsPulled.Count == flopCards)
             {
-                //Behaviour oldHalo = (Behaviour)cardIndicators[1].GetComponent("Halo");
-                //oldHalo.enabled = false;
-
-                //Behaviour newHalo = (Behaviour)cardIndicators[2].GetComponent("Halo");
-                //newHalo.enabled = true;
                 cardIndicators[1].SetActive(false);
                 cardIndicators[2].SetActive(true);
             }
             else
             {
-                //Behaviour oldHalo = (Behaviour)cardIndicators[2].GetComponent("Halo");
-                //oldHalo.enabled = false;
                 cardIndicators[2].SetActive(false);
             }
 
         }
-        else if(Table.gameState == GameState.Flop)
+        else if (Table.gameState == GameState.Flop)
         {
-            if(cardsPulled.Count == burnCard2)
+            if (cardsPulled.Count == burnCard2)
             {
-                //Behaviour newHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
-                //newHalo.enabled = true;
                 cardIndicators[5].SetActive(true);
             }
-            else if(cardsPulled.Count == turnCard)
+            else if (cardsPulled.Count == turnCard)
             {
-                //Behaviour oldHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
-                //oldHalo.enabled = false;
-
-                //Behaviour newHalo = (Behaviour)cardIndicators[3].GetComponent("Halo");
-                //newHalo.enabled = true;
                 cardIndicators[5].SetActive(false);
                 cardIndicators[3].SetActive(true);
             }
             else
             {
-                //Behaviour oldHalo = (Behaviour)cardIndicators[3].GetComponent("Halo");
-                //oldHalo.enabled = false;
                 cardIndicators[3].SetActive(false);
             }
         }
-        else if(Table.gameState == GameState.Turn)
+        else if (Table.gameState == GameState.Turn)
         {
             if (cardsPulled.Count == burnCard3)
             {
-                //Behaviour newHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
-                //newHalo.enabled = true;
                 cardIndicators[5].SetActive(true);
             }
             else if (cardsPulled.Count == riverCard)
             {
-                //Behaviour oldHalo = (Behaviour)cardIndicators[5].GetComponent("Halo");
-                //oldHalo.enabled = false;
-
-                //Behaviour newHalo = (Behaviour)cardIndicators[4].GetComponent("Halo");
-                //newHalo.enabled = true;
                 cardIndicators[5].SetActive(false);
                 cardIndicators[4].SetActive(true);
             }
             else
             {
-                //Behaviour oldHalo = (Behaviour)cardIndicators[4].GetComponent("Halo");
-                //oldHalo.enabled = false;
                 cardIndicators[4].SetActive(false);
             }
         }
-        else if(Table.gameState == GameState.River)
+        else if (Table.gameState == GameState.River)
         {
             TurnOffAllIndicators();
         }
@@ -300,7 +269,7 @@ public class PokerRules : MonoBehaviour {
 
     public void IndicateCardPlacement(int cardPlace)
     {
-        if(cardsPulled.Count < Services.Dealer.PlayerAtTableCount() * 2)
+        if (cardsPulled.Count < Services.Dealer.PlayerAtTableCount() * 2)
         {
             GameObject oldIndicator = Services.Dealer.players[Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardPlace)].playerCardIndicator;
             oldIndicator.SetActive(false);
@@ -391,7 +360,7 @@ public class PokerRules : MonoBehaviour {
 
     public void CorrectMistakes()
     {
-       // Debug.Log("CorrectingMistakes");
+        // Debug.Log("CorrectingMistakes");
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
         cardsLogged.Clear();
         ClearAndDestroyAllLists();
@@ -408,7 +377,7 @@ public class PokerRules : MonoBehaviour {
                 //Debug.Log("player we're trying to check is + " + player);
                 if (player.PlayerState == PlayerState.Playing)
                 {
-                    if(!player.playerIsAllIn)
+                    if (!player.playerIsAllIn)
                     {
                         Card newCard = CreateCard(cardsPulled[i], player.cardPos[cardPos].transform.position, player.cardPos[cardPos].transform.rotation);
                         Table.instance.playerCards[player.SeatPos].Add(newCard);
@@ -471,7 +440,7 @@ public class PokerRules : MonoBehaviour {
     public Card CreateCard(CardType cardType, Vector3 position, Quaternion rotation)
     {
         GameObject playingCard = Instantiate(Services.PrefabDB.Card, position, rotation);
-        playingCard.GetComponent<MeshFilter>().mesh = 
+        playingCard.GetComponent<MeshFilter>().mesh =
             GameObject.FindGameObjectWithTag("CardDeck").GetComponent<CardDeckScript>().cardMeshes[(int)cardType.suit][(int)cardType.rank - 2];
         playingCard.GetComponent<Card>().cardType = cardType;
         playingCard.gameObject.name = (cardType.rank + " of " + cardType.suit);
@@ -508,12 +477,32 @@ public class PokerRules : MonoBehaviour {
             Rigidbody rb = chipGroup[i].gameObject.GetComponent<Rigidbody>();
             int chipSpotIndex = chipGroup[i].spotIndex;
             Vector3 dest = chipGroup[i].handPushingChip.GetAttachmentTransform("PushChip").transform.TransformPoint(chipPositionWhenPushing[chipSpotIndex]);
-            if(rb != null)
+            if (rb != null)
             {
                 rb.MovePosition(new Vector3(dest.x, chipGroup[i].gameObject.transform.position.y, dest.z));
-                RigidbodyConstraints constraints = rb.constraints;
-                constraints = RigidbodyConstraints.FreezeRotation;
+            }
+        }
+    }
+
+    public void ConsolidateStack()
+    {
+        for (int i = 0; i < chipGroup.Count; i++)
+        {
+            Chip chip = chipGroup[i];
+            if (chip.chipStack.chips.Count == 1)
+            {
+                for (int chipToCheck = 0; chipToCheck < chipGroup.Count; chipToCheck++)
+                {
+                    if (chipGroup[chipToCheck].chipStack != null && chipGroup[chipToCheck].chipData.ChipValue == chip.chipData.ChipValue)
+                    {
+                        chipGroup[chipToCheck].chipStack.AddToStackInHand(chip.chipData);
+                        chipGroup.Remove(chip);
+                        Destroy(chip.gameObject);
+                        break;
+                    }
+                }
             }
         }
     }
 }
+

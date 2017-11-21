@@ -361,7 +361,7 @@ public class Card : InteractionSuperClass {
         //{
             if (((cardOnTable == true && CardIsDead(this)) || 
                   Table.gameState == GameState.CleanUp || Table.gameState == GameState.PostHand) && 
-                  other.gameObject.tag == "Hand")
+                  other.gameObject.tag == "Hand" && !Services.Dealer.handIsOccupied)
             {
                 transform.position = new Vector3 (other.transform.position.x, transform.position.y, other.transform.position.z);
             }
