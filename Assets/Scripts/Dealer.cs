@@ -361,7 +361,7 @@ public class Dealer : MonoBehaviour
 
     public void StartRound()
     {
-        Debug.Log("Starting round " + Table.gameState);
+        //Debug.Log("Starting round " + Table.gameState);
         SetCurrentAndLastBet();
         if (Table.gameState == GameState.PreFlop)
         {

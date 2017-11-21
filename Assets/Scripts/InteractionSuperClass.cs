@@ -226,6 +226,12 @@ public class InteractionSuperClass : MonoBehaviour {
         }
     }
 
+    public virtual void UnlockDeck()
+    {
+        throwingHand.HoverUnlock(interactableObject);
+        deckHand.HoverUnlock(interactableObject);
+    }
+
 
     //the functions below are basically what we can call when we swipe or press in a certain direction
     public virtual void OnSwipeLeft()

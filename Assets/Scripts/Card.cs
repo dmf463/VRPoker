@@ -11,6 +11,7 @@ public class Card : InteractionSuperClass {
 
     //this is the actual information for the card
     public CardType cardType;
+    private CardRaycast cardRay;
 
     //if the card is touching the table, this is true
     bool cardOnTable;
@@ -95,6 +96,7 @@ public class Card : InteractionSuperClass {
         //lalalalalala setting shit in start lalalalalalalala
         cardDeck = GameObject.FindGameObjectWithTag("CardDeck"); //DEF will need to change this for recoupling purposes.
         deckScript = cardDeck.GetComponent<CardDeckScript>();  //gonna need to rework A LOT
+        cardRay = GetComponent<CardRaycast>();
         rb = GetComponent<Rigidbody>();
         elapsedTimeForCardFlip = 0;
         //playerHand = GameObject.Find("Hand1").GetComponent<Hand>();
@@ -464,12 +466,12 @@ public class Card : InteractionSuperClass {
             {
                 rb = GetComponent<Rigidbody>();
             }
-            if (rb.transform.rotation.eulerAngles.x > 290 || rb.transform.rotation.eulerAngles.x < 250 && cardIsFlipped == false)
-            {
-                //Debug.Log(this.gameObject.name + " card is facing the wrong way");
-                cardThrownWrong = true;
-            }
-            Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cards);
+        if (rb.transform.rotation.eulerAngles.x > 290 || rb.transform.rotation.eulerAngles.x < 250 && cardIsFlipped == false)
+        {
+            //Debug.Log(this.gameObject.name + " card is facing the wrong way");
+            cardThrownWrong = true;
+        }
+        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cards);
             StartCoroutine(CheckVelocity(.025f));
         //}
         base.OnDetachedFromHand(hand);
