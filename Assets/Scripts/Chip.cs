@@ -102,15 +102,6 @@ public class Chip : InteractionSuperClass {
 	
 	// Update is called once per frame
 	void Update () {
-        //if the chip can't be grabbed, start the coroutine that sets it back to being grabbable
-        //if (!canBeGrabbed)
-        //{
-        //    if (!regrabCoroutineActive)
-        //    {
-        //        regrabCoroutineActive = true;
-        //        StartCoroutine(ReadyToBeGrabbed(1.5f));
-        //    }
-        //}
 
         if (chipStack != null) stackValue = chipStack.stackValue;
     }
@@ -143,13 +134,20 @@ public class Chip : InteractionSuperClass {
 	                        }
 
 	                        Vector3 dest = hand.transform.TransformPoint(Services.PokerRules.chipPositionWhenPushing[spotIndex]);
-	                        if (!pushingChip && Services.PokerRules.chipGroup.Count <= 25)
+	                        if (!pushingChip && Services.PokerRules.chipGroup.Count <= 10)
 	                        {
 	                            Services.PokerRules.chipGroup.Add(this);
+                                GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
+                                foreach(GameObject chip in allChips)
+                                {
+                                    Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), chip.GetComponent<Collider>(), true);
+                                }
 	                            handPushingChip = hand;
 	                            pushingChip = true;
+                                Services.Dealer.handIsOccupied = true;
 	                            spotIndex = Services.PokerRules.chipsBeingPushed;
 	                            Services.PokerRules.chipsBeingPushed += 1;
+                                Services.PokerRules.ConsolidateStack();
 	                            //Debug.Log(Services.PokerRules.chipsBeingPushed);
 	                        }
 	                    }
@@ -160,9 +158,15 @@ public class Chip : InteractionSuperClass {
 	                    if (pushingChip && !handPushingChip.controller.GetTouch(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
 	                    {
 	                        Services.PokerRules.chipGroup.Clear();
-	                        timesToSplit = 0;
+                            GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
+                            foreach (GameObject chip in allChips)
+                            {
+                                Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), chip.GetComponent<Collider>(), false);
+                            }
+                            timesToSplit = 0;
 	                        handPushingChip = null;
 	                        pushingChip = false;
+                            Services.Dealer.handIsOccupied = false;
 	                        spotIndex = 0;
 	                        Services.PokerRules.chipsBeingPushed = 0;
 	                    }
@@ -171,35 +175,6 @@ public class Chip : InteractionSuperClass {
 	        }
 	    }
 	}
-
-    //we're making a function for Destroy Chip, rather than calling Destroy on the gameObject at a given moment
-    //this is happening because there are certain situations that apply to certain chips in certain times when destroyed
-    //by having a function to destroy the chip, we can make sure we're never accidentally forgetting to write some line of code
-    //public void DestroyChip()
-    //{
-    //    markedForDestruction = true;
-    //    if (inAStack)
-    //    {
-    //        Chip[] groupedChips = GetComponentsInParent<Chip>();
-    //        for (int i = 0; i < groupedChips.Length; i++)
-    //        {
-    //            if(groupedChips[i] != this)
-    //            {
-    //                groupedChips[i].chipStack.chips.Remove(this.gameObject);
-    //            }
-    //        }
-    //    }
-    //    Destroy(gameObject);
-    //}
-
-    //the chip can be grabbed again soon
-    //IEnumerator ReadyToBeGrabbed(float time)
-    //{
-    //    yield return new WaitForSeconds(time);
-    //    canBeGrabbed = true;
-    //    regrabCoroutineActive = false;
-    //    //Debug.Log("coroutine finished at time " + Time.time);
-    //}
 
     //on collision, we want to check:
     //a) is the object a chip?
@@ -282,31 +257,6 @@ public class Chip : InteractionSuperClass {
                 incomingStack = null;
             }
         }
-        //else
-        //{
-            //if(stackToHold != null)
-            //{
-            //    GameObject firstStack = attachedHand.AttachedObjects[0].attachedObject;
-            //    float xOffSet = firstStack.GetComponent<Collider>().bounds.size.x;
-            //    //Debug.Log("xOffSet = " + xOffSet + " and hand is holding " + attachedHand.AttachedObjects.Count + " objects.");
-            //    Chip chipToGrab = null;
-            //    foreach (Chip chip in stackToHold)
-            //    {
-            //        if (chip.chipStack != null)
-            //        {
-            //            chipToGrab = chip;
-            //        }
-            //    }
-                //if (chipToGrab != null)
-                //{
-                //    //attachedHand.AttachObject(chipToGrab.gameObject, Hand.AttachmentFlags.ParentToHand);
-                //    //chipToGrab.gameObject.transform.localPosition = new Vector3(firstStack.transform.localPosition.x + (xOffSet * attachedHand.AttachedObjects.Count), 
-                //    //                                                            firstStack.transform.localPosition.y, 
-                //    //                                                            firstStack.transform.localPosition.z);
-                //}
-                //stackToHold = null;
-            //}
-        //}
         if (chipStack != null)
         {
             CheckPressPosition(attachedHand);
@@ -395,43 +345,12 @@ public class Chip : InteractionSuperClass {
         base.OnAttachedToHand(attachedHand);
     }
 
-    //if we're holding a chip and we press on the bottom
-    //then it drops a chip
-    //public override void OnPressBottom()
-    //{
-    //    if(chipStack != null)
-    //    {
-    //        if (chipStack.chips.Count > 1) chipStack.TakeFromStackInHand();
-    //    }
-    //    base.OnPressBottom();
-    //}
-
-    //if the velocity of the chipStack is greater than the threshold
-    //then set all the chips back to their original state and destroy the chipStack
-    //this allows them to go flying, it's nice, I like
     IEnumerator CheckVelocityForChipThrowing(float time, Hand hand)
     {
         yield return new WaitForSeconds(time);
         //Debug.Log("rb.velocity.magnitude = " + rb.velocity.magnitude);
         if (GetComponent<Rigidbody>().velocity.magnitude > MAGNITUDE_THRESHOLD)
         {
-            //if(gameObject.transform.childCount != 0)
-            //{
-            //    foreach (Chip chip in chipStack.chips)
-            //    {
-            //        chip.gameObject.AddComponent<Rigidbody>();
-            //        //chip.gameObject.transform.parent = null;
-            //        chip.inAStack = false;
-            //        chip.gameObject.GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity() * CHIP_FORCE_MODIFIER, ForceMode.Impulse);
-            //        chip.gameObject.GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);
-            //        if (chip.chipStack != null)
-            //        {
-            //            chip.chipStack = null;
-            //        }
-            //    }
-            //}
-            //else
-            //{
             if (chipStack.chips.Count != 0)
             {
                 float chipSpawnOffset = 0.07f;

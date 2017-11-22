@@ -101,7 +101,7 @@ public class LogCards : MonoBehaviour
                 }
                 else if (Services.Dealer.deadCardsList.Contains(other.GetComponent<Card>()))
                 {
-                    Debug.Log(other.gameObject.name + "card is dead");
+                    //Debug.Log(other.gameObject.name + "card is dead");
                 }
                 else
                 {
@@ -121,21 +121,21 @@ public class LogCards : MonoBehaviour
                 //{
                 if (Table.instance._burn.Contains(other.GetComponent<Card>()))
                 {
-                    Debug.Log(other.gameObject.name + " is already in the burn");
+                    //Debug.Log(other.gameObject.name + " is already in the burn");
                 }
                 else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
                 {
-                    Debug.Log(other.gameObject.name + "card is already logged");
+                    //Debug.Log(other.gameObject.name + "card is already logged");
                 }
                 else if (Services.Dealer.deadCardsList.Contains(other.GetComponent<Card>()))
                 {
-                    Debug.Log(other.gameObject.name + "card is dead");
+                   // Debug.Log(other.gameObject.name + "card is dead");
                 }
                 else
                 {
                     Table.instance.AddCardTo(Destination.burn, other.GetComponent<Card>());
                     Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
-                    Debug.Log(other.gameObject.name + "Card went into " + this.gameObject.name);
+                    //Debug.Log(other.gameObject.name + "Card went into " + this.gameObject.name);
                 }
                 //}
             }

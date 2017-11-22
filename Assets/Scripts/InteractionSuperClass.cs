@@ -98,6 +98,7 @@ public class InteractionSuperClass : MonoBehaviour {
     //so basically, when we attach something to our hand we want to make it kinematic so that it moves as if it's in our hand
     public virtual void OnAttachedToHand(Hand attachedHand)
     {
+        Services.Dealer.handIsOccupied = true;
         if(GetComponent<Rigidbody>() != null)
         {
             GetComponent<Rigidbody>().isKinematic = true; //turn off the physics, we we can hold it
@@ -121,6 +122,7 @@ public class InteractionSuperClass : MonoBehaviour {
     //and we add whatever force to it as we had when we released it
     public virtual void OnDetachedFromHand(Hand hand)
     {
+        Services.Dealer.handIsOccupied = false;
         handTouchingDeck = false;
         GetComponent<Rigidbody>().isKinematic = false; //turns on physics
         hand.HoverUnlock(interactableObject);
@@ -222,6 +224,12 @@ public class InteractionSuperClass : MonoBehaviour {
                 }
             }
         }
+    }
+
+    public virtual void UnlockDeck()
+    {
+        throwingHand.HoverUnlock(interactableObject);
+        deckHand.HoverUnlock(interactableObject);
     }
 
 

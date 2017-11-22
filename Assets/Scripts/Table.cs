@@ -147,12 +147,14 @@ public class Table {
                 //Debug.Log("Could not find CardDeck, instantiating new one");
                 GameObject shuffleArea = GameObject.Find("ShufflingArea");
                 GameObject newCardDeck = GameObject.Instantiate(Services.PrefabDB.CardDeck, shuffleArea.transform.position, Quaternion.identity) as GameObject;
+                newCardDeck.GetComponent<CardDeckScript>().UnlockDeck();
             }
             else
             {
                 GameObject.Destroy(GameObject.FindGameObjectWithTag("CardDeck"));
                 GameObject shuffleArea = GameObject.Find("ShufflingArea");
                 GameObject newCardDeck = GameObject.Instantiate(Services.PrefabDB.CardDeck, shuffleArea.transform.position, Quaternion.identity) as GameObject;
+                newCardDeck.GetComponent<CardDeckScript>().UnlockDeck();
             }
 
             for (int i = 0; i < playerCards.Length; i++)

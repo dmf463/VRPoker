@@ -29,6 +29,9 @@ public class Dealer : MonoBehaviour
     public GameObject MessageBoard;
     public TextMesh messageText;
 
+    [HideInInspector]
+    public bool handIsOccupied;
+
     //these are references to the two players hands
     //we need these in order to know which hand is which
     public Hand hand1;
@@ -149,8 +152,8 @@ public class Dealer : MonoBehaviour
         #region Players evaluate their hands based on the gamestate
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            //Table.instance.DebugHandsAndChips();
-            Table.instance.RestartRound();
+            Table.instance.DebugHandsAndChips();
+            //Table.instance.RestartRound();
         }
         if (Input.GetKeyDown(KeyCode.X))
         {
@@ -283,7 +286,11 @@ public class Dealer : MonoBehaviour
                     if (players[i].Hand != null)
                     {
                         if(!players[i].flippedCards) players[i].FlipCards();
-                        Debug.Log("player" + players[i].SeatPos + "is the " + players[i].PlayerState + " with (a) " + players[i].Hand.HandValues.PokerHand + " with a highCard of " + players[i].Hand.HandValues.HighCard + " and a handTotal of " + players[i].Hand.HandValues.Total);
+                        Debug.Log("player" + players[i].SeatPos + 
+                                  "is the " + players[i].PlayerState + 
+                                  " with (a) " + players[i].Hand.HandValues.PokerHand + 
+                                  " with a highCard of " + players[i].Hand.HandValues.HighCard + 
+                                  " and a handTotal of " + players[i].Hand.HandValues.Total);
                     }
                 }
                 //sortedPlayers.Clear();
@@ -354,7 +361,7 @@ public class Dealer : MonoBehaviour
 
     public void StartRound()
     {
-        Debug.Log("Starting round " + Table.gameState);
+        //Debug.Log("Starting round " + Table.gameState);
         SetCurrentAndLastBet();
         if (Table.gameState == GameState.PreFlop)
         {
@@ -667,7 +674,8 @@ public class Dealer : MonoBehaviour
         {
             foreach (Chip chip in chipsInPot)
             {
-                Destroy(chip.gameObject);
+                if (chip != null) Destroy(chip.gameObject);
+                else Debug.Log("You are trying to Destroy a chip that is alread DEAD");
             }
             for (int i = 0; i < winningPlayers.Count; i++)
             {

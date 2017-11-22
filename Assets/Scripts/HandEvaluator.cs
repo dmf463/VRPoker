@@ -173,7 +173,11 @@ public class HandEvaluator {
             return PokerHand.OnePair;
         }
         //if the hand is nothing, than the player with highest card wins
-        handValue.HighCard = (int)incomingCards[4].rank;
+        handValue.HighCard =  ((int)incomingCards[4].rank * (int)Mathf.Pow(16, 5)) +
+                              ((int)incomingCards[3].rank * (int)Mathf.Pow(16, 4)) +
+                              ((int)incomingCards[2].rank * (int)Mathf.Pow(16, 3)) +
+                              ((int)incomingCards[1].rank * (int)Mathf.Pow(16, 2)) +
+                              ((int)incomingCards[0].rank * (int)Mathf.Pow(16, 1));
         handValue.PokerHand = PokerHand.HighCard;
         return PokerHand.HighCard;
     }
@@ -215,7 +219,11 @@ public class HandEvaluator {
             return PokerHand.OnePair;
         }
         //if the hand is nothing, than the player with highest card wins
-        handValue.HighCard = (int)incomingCards[5].rank;
+        handValue.HighCard = ((int)incomingCards[5].rank * (int)Mathf.Pow(16, 5)) +
+                             ((int)incomingCards[4].rank * (int)Mathf.Pow(16, 4)) +
+                             ((int)incomingCards[3].rank * (int)Mathf.Pow(16, 3)) +
+                             ((int)incomingCards[2].rank * (int)Mathf.Pow(16, 2)) +
+                             ((int)incomingCards[1].rank * (int)Mathf.Pow(16, 1));
         handValue.PokerHand = PokerHand.HighCard;
         return PokerHand.HighCard;
     }
@@ -257,7 +265,11 @@ public class HandEvaluator {
             return PokerHand.OnePair;
         }
         //if the hand is nothing, than the player with highest card wins
-        handValue.HighCard = (int)incomingCards[6].rank;
+        handValue.HighCard = ((int)incomingCards[6].rank * (int)Mathf.Pow(16, 5)) +
+                             ((int)incomingCards[5].rank * (int)Mathf.Pow(16, 4)) +
+                             ((int)incomingCards[4].rank * (int)Mathf.Pow(16, 3)) +
+                             ((int)incomingCards[3].rank * (int)Mathf.Pow(16, 2)) +
+                             ((int)incomingCards[2].rank * (int)Mathf.Pow(16, 1));
         handValue.PokerHand = PokerHand.HighCard;
         return PokerHand.HighCard;
 
