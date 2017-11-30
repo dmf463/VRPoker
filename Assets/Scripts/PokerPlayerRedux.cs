@@ -123,16 +123,23 @@ public class PokerPlayerRedux : MonoBehaviour{
 	[Header("Voice Lines")]
 	public AudioSource playerAudioSource;
 	public bool playerIsInConversation = false;
-	public AudioClip checkAudio;
-	public AudioClip foldAudio;
-	public AudioClip raiseAudio;
+	public AudioClip fiftyTwoAudio;
+	public AudioClip allInAudio;
 	public AudioClip betAudio;
 	public AudioClip callAudio;
-	public AudioClip allInAudio;
-	public AudioClip winAudio;
-	public AudioClip loseAudio;
-	public AudioClip fiftyTwoAudio;
 	public AudioClip cardHitAudio;
+	public AudioClip checkAudio;
+	public AudioClip foldAudio;
+	public AudioClip misdealAudio;
+	public AudioClip raiseAudio;
+	public AudioClip tipAudio;
+	public AudioClip tip2Audio;
+	public AudioClip winAudio;
+	public AudioClip wrongCardAudio;
+	public AudioClip wrongChipsAudio;
+	//public AudioClip loseAudio;
+
+
 
 
 
