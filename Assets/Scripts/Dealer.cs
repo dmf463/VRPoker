@@ -391,7 +391,7 @@ public class Dealer : MonoBehaviour
         //StartCoroutine(playerAction(playerToAct));
         if (!Services.SoundManager.conversationIsPlaying)
         {
-            Services.SoundManager.PlayConversation(UnityEngine.Random.Range(0, 2));
+            Services.SoundManager.PlayAsideConversation(UnityEngine.Random.Range(0, 5));
         }
     }
 
