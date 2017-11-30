@@ -147,14 +147,12 @@ public class Table {
                 //Debug.Log("Could not find CardDeck, instantiating new one");
                 GameObject shuffleArea = GameObject.Find("ShufflingArea");
                 GameObject newCardDeck = GameObject.Instantiate(Services.PrefabDB.CardDeck, shuffleArea.transform.position, Quaternion.identity) as GameObject;
-                newCardDeck.GetComponent<CardDeckScript>().UnlockDeck();
             }
             else
             {
                 GameObject.Destroy(GameObject.FindGameObjectWithTag("CardDeck"));
                 GameObject shuffleArea = GameObject.Find("ShufflingArea");
                 GameObject newCardDeck = GameObject.Instantiate(Services.PrefabDB.CardDeck, shuffleArea.transform.position, Quaternion.identity) as GameObject;
-                newCardDeck.GetComponent<CardDeckScript>().UnlockDeck();
             }
 
             for (int i = 0; i < playerCards.Length; i++)
@@ -166,6 +164,8 @@ public class Table {
             potChips = 0;
             Services.Dealer.ResetGameState();
             gameState = GameState.NewRound;
+            GameObject deck = GameObject.FindGameObjectWithTag("CardDeck");
+            deck.GetComponent<CardDeckScript>().UnlockDeck();
             Services.PokerRules.TurnOffAllIndicators();
             DealerPosition = gameData.DealerPosition; //this does not account for a dead dealer
             SetDealerButtonPos(DealerPosition);

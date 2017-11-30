@@ -62,10 +62,6 @@ public class LogCards : MonoBehaviour
                     {
                         Debug.Log(other.gameObject.name + " has already been logged by something else");
                     }
-                    else if (other.GetComponent<CardRaycast>().cardIsFaceUp)
-                    {
-                        Table.gameState = GameState.Misdeal;
-                    }
                     else
                     {
                         Table.instance.AddCardTo(playerDestinations[i], other.GetComponent<Card>());
@@ -141,32 +137,32 @@ public class LogCards : MonoBehaviour
                 }
                 //}
             }
-            else if (this.gameObject.name == "ShufflingArea")
-            {
-                if (GameObject.FindGameObjectWithTag("CardDeck") == null)
-                {
-                    //Debug.Log("Could not find CardDeck, instantiating new one");
-                    newCardDeck = Instantiate(Services.PrefabDB.CardDeck, transform.position, Quaternion.identity) as GameObject;
-                    newCardDeck.GetComponent<CardDeckScript>().BuildDeckFromOneCard(newCardDeck);
-                    madeNewDeck = true;
-                }
-                if (/*Table.dealerState == DealerState.ShufflingState &&*/ madeNewDeck == true)
-                {
-                    Destroy(other.gameObject);
-                    //Debug.Log("destroying cards");
-                    newCardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
-                    if (newCardDeck.GetComponent<CardDeckScript>().currentCardDeckScale.y > newCardDeck.GetComponent<CardDeckScript>().newCardDeckScale.y)
-                    {
-                        madeNewDeck = false;
-                        GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
-                        foreach (GameObject card in deadCards)
-                        {
-                            Destroy(card);
-                        }
-                        Table.dealerState = DealerState.DealingState;
-                    }
-                }
-            }
+            //else if (this.gameObject.name == "ShufflingArea")
+            //{
+            //    if (GameObject.FindGameObjectWithTag("CardDeck") == null)
+            //    {
+            //        //Debug.Log("Could not find CardDeck, instantiating new one");
+            //        newCardDeck = Instantiate(Services.PrefabDB.CardDeck, transform.position, Quaternion.identity) as GameObject;
+            //        newCardDeck.GetComponent<CardDeckScript>().BuildDeckFromOneCard(newCardDeck);
+            //        madeNewDeck = true;
+            //    }
+            //    if (/*Table.dealerState == DealerState.ShufflingState &&*/ madeNewDeck == true)
+            //    {
+            //        Destroy(other.gameObject);
+            //        //Debug.Log("destroying cards");
+            //        newCardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
+            //        if (newCardDeck.GetComponent<CardDeckScript>().currentCardDeckScale.y > newCardDeck.GetComponent<CardDeckScript>().newCardDeckScale.y)
+            //        {
+            //            madeNewDeck = false;
+            //            GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
+            //            foreach (GameObject card in deadCards)
+            //            {
+            //                Destroy(card);
+            //            }
+            //            Table.dealerState = DealerState.DealingState;
+            //        }
+            //    }
+            //}
 
         }
         #endregion

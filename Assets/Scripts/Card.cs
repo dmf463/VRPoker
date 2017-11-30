@@ -126,7 +126,6 @@ public class Card : InteractionSuperClass {
     //so this is literally the update function
     public void CardForDealingMode()
     {
-
         //this is one of those inputs used during playtesting. 
         //though we should PROBABLY have a way for the player to get a new deck
         //without having to pick up every card
@@ -325,6 +324,12 @@ public class Card : InteractionSuperClass {
             gameObject.GetComponent<ConstantForce>().enabled = false;
             cardThrownWrong = false;
         }
+
+        if(other.gameObject.tag == "Table")
+        {
+            Services.Dealer.cardsTouchingTable.Add(this);
+            StartCoroutine(CheckCardRotation(1));
+        }
 		
         //if(Table.dealerState == DealerState.ShufflingState)
         //{
@@ -349,7 +354,18 @@ public class Card : InteractionSuperClass {
 
     void OnCollisionExit(Collision other)
     {
-        cardOnTable = false;
+        if (other.gameObject.tag == "Table")
+        {
+            cardOnTable = false;
+            Services.Dealer.cardsTouchingTable.Remove(this);
+        }
+    }
+
+    IEnumerator CheckCardRotation(float time)
+    {
+        yield return new WaitForSeconds(time);
+        if (GetComponent<CardRaycast>().cardIsFaceUp) Table.gameState = GameState.Misdeal;
+        Debug.Log("misdeal for dealing face up");
     }
 
     //so this is where we can drag the cards
