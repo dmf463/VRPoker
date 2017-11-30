@@ -501,25 +501,6 @@ public class Card : InteractionSuperClass {
         base.CheckSwipeDirection();
     }
 
-    //part of the interaction class this derives from.
-    //public override void OnSwipeTop()
-    //{
-    //    RotateCard();
-    //    base.OnSwipeTop();
-    //}
-
-    //public override void OnSwipeLeft()
-    //{
-    //    RotateCard();
-    //    base.OnSwipeTop();
-    //}
-
-    //public override void OnSwipeRight()
-    //{
-    //    RotateCard();
-    //    base.OnSwipeTop();
-    //}
-
     public override void TouchingTrackPad()
     {
         RotateCard();

@@ -9,6 +9,7 @@ public class CardRaycast : MonoBehaviour {
 	float timeRaycastIsHitting = 0f;
 	public float rayDistance = 100f;
     public bool hittingTable;
+    public bool cardIsFaceUp;
 
 
 	//public LayerMask mask;
@@ -23,13 +24,20 @@ public class CardRaycast : MonoBehaviour {
 
 		if(Physics.Raycast(ray, out rayHit, rayDistance))
 		{
-			//if(rayHit.collider.gameObject.layer == 10 || rayHit.collider.gameObject.layer == 11)
-			//{
-			//	if(debugHits == true)
-			//	{
-			//		Debug.Log("DEAR GOD, " + rayHit.collider.gameObject.name + " CAN SEE ME!");
-			//	}
-			//}
+            //if(rayHit.collider.gameObject.layer == 10 || rayHit.collider.gameObject.layer == 11)
+            //{
+            //	if(debugHits == true)
+            //	{
+            //		Debug.Log("DEAR GOD, " + rayHit.collider.gameObject.name + " CAN SEE ME!");
+            //	}
+            //}
+            if (rayHit.collider.gameObject.tag == "Roof")
+            {
+                cardIsFaceUp = true;
+                Debug.Log("card is face up");
+            }
+            else cardIsFaceUp = false;
+
             if (rayHit.collider.gameObject.layer == 12)
             {
                 hittingTable = true;

@@ -62,8 +62,10 @@ public class LogCards : MonoBehaviour
                     {
                         Debug.Log(other.gameObject.name + " has already been logged by something else");
                     }
-                    //add the card to the right players
-                    //add it to the cardsDealt to keep track
+                    else if (other.GetComponent<CardRaycast>().cardIsFaceUp)
+                    {
+                        Table.gameState = GameState.Misdeal;
+                    }
                     else
                     {
                         Table.instance.AddCardTo(playerDestinations[i], other.GetComponent<Card>());
