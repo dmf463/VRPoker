@@ -328,7 +328,7 @@ public class Card : InteractionSuperClass {
         if(other.gameObject.tag == "Table")
         {
             Services.Dealer.cardsTouchingTable.Add(this);
-            StartCoroutine(CheckCardRotation(1));
+            //StartCoroutine(CheckCardRotation(1));
         }
 		
         //if(Table.dealerState == DealerState.ShufflingState)

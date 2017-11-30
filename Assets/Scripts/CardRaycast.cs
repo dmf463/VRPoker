@@ -9,46 +9,35 @@ public class CardRaycast : MonoBehaviour {
 	float timeRaycastIsHitting = 0f;
 	public float rayDistance = 100f;
     public bool hittingTable;
-    public bool cardIsFaceUp;
+    public bool cardIsFaceUp = false;
+    public LayerMask mask;
 
 
-	//public LayerMask mask;
-
-
-	// Update is called once per frame
-	void Update () 
+    // Update is called once per frame
+    void Update () 
 	{
 		Ray ray = new Ray (transform.position, -transform.forward);
 		 
 		RaycastHit rayHit;
 
-		if(Physics.Raycast(ray, out rayHit, rayDistance, 13))
+		if(Physics.Raycast(ray, out rayHit, rayDistance))
 		{
-            cardIsFaceUp = true;
-            //if(rayHit.collider.gameObject.layer == 10 || rayHit.collider.gameObject.layer == 11)
-            //{
-            //	if(debugHits == true)
-            //	{
-            //		Debug.Log("DEAR GOD, " + rayHit.collider.gameObject.name + " CAN SEE ME!");
-            //	}
-            //}
-            //if (rayHit.collider.gameObject.layer != 12)
-            //{
-            //    cardIsFaceUp = true;
-            //    //Debug.Log("card is face up");
-            //}
-            //else cardIsFaceUp = false;
-
-            //if (rayHit.collider.gameObject.layer == 12)
-            //{
-            //    hittingTable = true;
-            //}
+			//if(rayHit.collider.gameObject.layer == 10 || rayHit.collider.gameObject.layer == 11)
+			//{
+			//	if(debugHits == true)
+			//	{
+			//		Debug.Log("DEAR GOD, " + rayHit.collider.gameObject.name + " CAN SEE ME!");
+			//	}
+			//}
+            if (rayHit.collider.gameObject.layer == mask)
+            {
+                cardIsFaceUp = true;
+            }
             //else hittingTable = false;
-			//Debug.DrawLine(ray.origin, rayHit.point, Color.green);
+			Debug.DrawLine(ray.origin, rayHit.point, Color.green);
 		}
 		else
 		{
-            cardIsFaceUp = false;
 			//Debug.DrawLine(ray.origin, ray.origin + ray.direction * 100, Color.red);
 		}
 	}
