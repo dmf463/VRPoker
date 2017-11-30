@@ -1445,7 +1445,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
                     for (int colorCount = 0; colorCount < colorChipCount[colorListIndex]; colorCount++)
                     {
-                        Vector3 offSet = new Vector3(Random.Range(0, .03f), .1f, Random.Range(0, .03f));
+                        Vector3 offSet = new Vector3(Random.Range(0, .1f), .1f, Random.Range(0, .1f));
                         GameObject newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
                         newChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
                         Services.Dealer.chipsInPot.Add(newChip.GetComponent<Chip>());

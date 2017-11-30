@@ -468,7 +468,7 @@ public class CardDeckScript : InteractionSuperClass {
             playingCard.GetComponent<Rigidbody>().AddForce(deckHand.GetTrackedObjectVelocity(), ForceMode.Impulse);
             playingCard.GetComponent<Rigidbody>().AddTorque(deckHand.GetTrackedObjectAngularVelocity() * FORCE_MULTIPLIER, ForceMode.Impulse);
         }
-        StartCoroutine(WaitToDestroyDeck(0.25f));
+        StartCoroutine(WaitToDestroyDeck(0.05f));
         
 		PokerPlayerRedux randomPlayer = Services.Dealer.players[Random.Range(0,5)];
 		Services.SoundManager.GenerateSourceAndPlay(randomPlayer.fiftyTwoAudio);

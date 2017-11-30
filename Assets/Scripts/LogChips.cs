@@ -40,7 +40,9 @@ public class LogChips : MonoBehaviour
             {
                 for (int i = 0; i < playerNames.Count; i++)
                 {
-                    if (gameObject.name == playerNames[i])
+                    if (gameObject.name == playerNames[i] &&
+                        Services.Dealer.players[i].PlayerState == PlayerState.Winner &&
+                        Services.Dealer.players[i].chipCount != Services.Dealer.players[i].chipsWon + Services.Dealer.players[i].ChipCountToCheckWhenWinning)
                     {
                         if (other.GetComponent<Chip>().chipStack == null)
                         {
@@ -67,7 +69,9 @@ public class LogChips : MonoBehaviour
             {
                 for (int i = 0; i < playerNames.Count; i++)
                 {
-                    if (gameObject.name == playerNames[i])
+                    if (gameObject.name == playerNames[i] && 
+                        Services.Dealer.players[i].PlayerState == PlayerState.Winner &&
+                        Services.Dealer.players[i].chipCount != Services.Dealer.players[i].chipsWon + Services.Dealer.players[i].ChipCountToCheckWhenWinning)
                     {
                         if (other.GetComponent<Chip>().chipStack == null)
                         {

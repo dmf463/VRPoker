@@ -18,6 +18,9 @@ public class Dealer : MonoBehaviour
     //we set this to true if we're outside VR so we can text
     public bool OutsideVR = false;
 
+    [HideInInspector]
+    public List<Card> cardsTouchingTable = new List<Card>();
+
 	public List<PokerPlayerRedux> players = new List<PokerPlayerRedux>();
 
     public PokerPlayerRedux playerToAct;
@@ -93,7 +96,7 @@ public class Dealer : MonoBehaviour
     {
         if (Table.gameState == GameState.NewRound)
         {
-            messageText.text = "Shuffle Up and Deal!";
+            messageText.text = "";
             if (Services.PokerRules.cardsPulled.Count == PlayerAtTableCount() * 2 && !checkedPreFlopCardCount)
             {
                 checkedPreFlopCardCount = true;
@@ -102,7 +105,7 @@ public class Dealer : MonoBehaviour
         }
         else if (Table.gameState == GameState.CleanUp)
         {
-            messageText.text = "I guess everyone folded, woohoo!";
+            //messageText.text = "I guess everyone folded, woohoo!";
         }
         else if(Table.gameState == GameState.Misdeal)
         {
@@ -115,7 +118,7 @@ public class Dealer : MonoBehaviour
         }
         else if (Table.gameState == GameState.PostHand)
         {
-            messageText.text = "'Thanks dealer, here's a tip!' (you got a tip)";
+            //messageText.text = "'Thanks dealer, here's a tip!' (you got a tip)";
         }
         else if (Table.gameState != GameState.ShowDown)
         {
@@ -317,7 +320,12 @@ public class Dealer : MonoBehaviour
                 cardCountForPreFlop++;
             }
         }
-        if (cardCountForPreFlop == Services.PokerRules.cardsPulled.Count)
+        if(Services.Dealer.cardsTouchingTable.Count <= 5)
+        {
+            Debug.Log("Misdeal for there being less than 5 cards on the table");
+            Table.gameState = GameState.Misdeal;
+        }
+        else if (cardCountForPreFlop == Services.PokerRules.cardsPulled.Count)
         {
             Table.gameState = GameState.PreFlop;
         }
@@ -768,11 +776,11 @@ public class Dealer : MonoBehaviour
                 winnerChipStack = player.ChipCountToCheckWhenWinning + potAmountToGiveWinner;
                 if(player.chipCount == winnerChipStack)
                 {
-                    messageText.text = "I think you messed up, I didn't win this money.";
+                    //messageText.text = "I think you messed up, I didn't win this money.";
                 }
                 else
                 {
-                    messageText.text = "Give the winner(s) their winnings. the pot size is " + Table.instance.potChips + " and there is/are " + numberOfWinners + " winner(s)";
+                    //messageText.text = "Give the winner(s) their winnings. the pot size is " + Table.instance.potChips + " and there is/are " + numberOfWinners + " winner(s)";
                 }
             }
         }
@@ -803,6 +811,7 @@ public class Dealer : MonoBehaviour
         }
         Services.PokerRules.cardsPulled.Clear();
         Services.PokerRules.cardsLogged.Clear();
+        cardsTouchingTable.Clear();
         Table.gameState = GameState.NewRound;
         playersHaveBeenEvaluated = false;
         winnersHaveBeenPaid = false;
@@ -849,6 +858,7 @@ public class Dealer : MonoBehaviour
         foreach (GameObject card in cardsOnTable) Destroy(card);
         Services.PokerRules.cardsPulled.Clear();
         Services.PokerRules.cardsLogged.Clear();
+        cardsTouchingTable.Clear();
         Table.gameState = GameState.NewRound;
         playersHaveBeenEvaluated = false;
         winnersHaveBeenPaid = false;
