@@ -67,6 +67,9 @@ public class Dealer : MonoBehaviour
     [HideInInspector]
     public List<Chip> chipsInPot = new List<Chip>();
 
+
+	bool misdealAudioPlayed =false;
+
     void Awake()
     {
         //just the message board stuff
@@ -109,7 +112,14 @@ public class Dealer : MonoBehaviour
         }
         else if(Table.gameState == GameState.Misdeal)
         {
-            messageText.text = "You misdealt the hand, click both triggers to restart the round.";
+			if(!misdealAudioPlayed){
+				int i = UnityEngine.Random.Range(0, players.Count);
+				if(!players[i].playerAudioSource.isPlaying && !players[i].playerIsInConversation){
+					Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].misdealAudio);
+				}
+			}
+            //messageText.text = "You misdealt the hand, click both triggers to restart the round.";
+
             if(hand1.GetStandardInteractionButton() && hand2.GetStandardInteractionButton())
             {
                 Debug.Log("Beginning to restart round");
@@ -790,6 +800,14 @@ public class Dealer : MonoBehaviour
             winnersHaveBeenPaid = true;
             winnersPaid = 0;
             numberOfWinners = 0;
+
+			for (int i = 0; i < players.Count; i++) {
+				if(players[i].PlayerState == PlayerState.Winner){
+					if(!players[i].playerAudioSource.isPlaying && !players[i].playerIsInConversation){
+						Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].tipAudio);
+					}
+				}
+			}
         }
     }
 
