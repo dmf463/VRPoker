@@ -42,12 +42,30 @@ public class SoundManager : MonoBehaviour
 //    public List<AudioClip> goodResponseP2 = new List<AudioClip>();
 
 
-	public AudioClip[] convo1Index;
-	public AudioClip[] convo2Index;
+	public AudioClip[] aside1Index;
+	public AudioClip[] aside2Index;
+	public AudioClip[] aside3Index;
+	public AudioClip[] aside5Index;
+	public AudioClip[] aside6Index;
+
+	public AudioClip[] lowAside1Index;
+	public AudioClip[] lowAside2Index;
+	public AudioClip[] lowAside3Index;
+	public AudioClip[] lowAside4Index;
+
+
 
     public bool conversationIsPlaying;
-    public bool convo1Played;
-    public bool convo2Played;
+    public bool aside1Played;
+    public bool aside2Played;
+	public bool aside3Played;
+	public bool aside5Played;
+	public bool aside6Played;
+
+	public bool lowAside1Played;
+	public bool lowAside2Played;
+	public bool lowAside3Played;
+	public bool lowAside4Played;
 
     [Header("SoundEffects")]
     public AudioClip chips;
@@ -90,10 +108,10 @@ public class SoundManager : MonoBehaviour
 	public void PlayConversation(int convo)
 	{
 		if(convo == 0){
-            if(!convo1Played) StartCoroutine("Conversation1");
+            if(!aside1Played) StartCoroutine("Conversation1");
 		}
 		if(convo == 1){
-            if(!convo2Played) StartCoroutine("Conversation2");
+            if(!aside2Played) StartCoroutine("Conversation2");
 		}
 	}
 
@@ -104,25 +122,25 @@ public class SoundManager : MonoBehaviour
 		player2.playerIsInConversation = true;
 		player4.playerIsInConversation = true;
 
-		p4Source.clip = convo1Index[0];
+		p4Source.clip = aside1Index[0];
 		p4Source.Play();
 		yield return new WaitForSeconds(p4Source.clip.length);
-		p2Source.clip = convo1Index[1];
+		p2Source.clip = aside1Index[1];
 		p2Source.Play();
 		yield return new WaitForSeconds(p2Source.clip.length);
-		p4Source.clip = convo1Index[2];
+		p4Source.clip = aside1Index[2];
 		p4Source.Play();
 		yield return new WaitForSeconds(p4Source.clip.length);
-		p2Source.clip = convo1Index[3];
+		p2Source.clip = aside1Index[3];
 		p2Source.Play();
 		yield return new WaitForSeconds(p2Source.clip.length);
-		p4Source.clip = convo1Index[4];
+		p4Source.clip = aside1Index[4];
 		p4Source.Play();
 		yield return new WaitForSeconds(p4Source.clip.length);
 
 		player2.playerIsInConversation = false;
 		player4.playerIsInConversation = false;
-        convo1Played = true;
+        aside1Played = true;
         conversationIsPlaying = false;
 
 	}
@@ -134,23 +152,23 @@ public class SoundManager : MonoBehaviour
 		player3.playerIsInConversation = true;
 		player4.playerIsInConversation = true;
 
-		p3Source.clip = convo2Index[0];
+		p3Source.clip = aside2Index[0];
 		p3Source.Play();
 		yield return new WaitForSeconds(p3Source.clip.length);
-		p4Source.clip = convo2Index[1];
+		p4Source.clip = aside2Index[1];
 		p4Source.Play();
 		yield return new WaitForSeconds(p4Source.clip.length);
-		p2Source.clip = convo2Index[2];
+		p2Source.clip = aside2Index[2];
 		p2Source.Play();
 		yield return new WaitForSeconds(p2Source.clip.length);
-		p4Source.clip = convo2Index[3];
+		p4Source.clip = aside2Index[3];
 		p4Source.Play();
 		yield return new WaitForSeconds(p4Source.clip.length);
 
 		player2.playerIsInConversation = false;
 		player3.playerIsInConversation = false;
 		player4.playerIsInConversation = false;
-        convo2Played = true;
+        aside2Played = true;
         conversationIsPlaying = false;
 	}
 
