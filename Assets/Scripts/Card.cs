@@ -14,6 +14,7 @@ public class Card : InteractionSuperClass {
     private CardRaycast cardRay;
 
     //if the card is touching the table, this is true
+    bool cardHitPlayer;
     bool cardOnTable;
 
     public bool cardMarkedForDestruction;
@@ -310,8 +311,9 @@ public class Card : InteractionSuperClass {
     //but this doesn't always work. if I grab cards multiple times
     void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.tag == "PokerPlayer")
+        if (other.gameObject.tag == "PokerPlayer" && !cardHitPlayer)
         {
+            cardHitPlayer = true;
             Debug.Log("WE HIT SOMETHING");
             AudioClip hitSound = other.gameObject.GetComponentInParent<PokerPlayerRedux>().cardHitAudio;
             Services.SoundManager.GenerateSourceAndPlay(hitSound);
