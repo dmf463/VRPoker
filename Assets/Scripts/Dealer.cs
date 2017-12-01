@@ -113,6 +113,7 @@ public class Dealer : MonoBehaviour
         else if(Table.gameState == GameState.Misdeal)
         {
 			if(!misdealAudioPlayed){
+				misdealAudioPlayed = true;
 				int i = UnityEngine.Random.Range(0, players.Count);
 				if(!players[i].playerAudioSource.isPlaying && !players[i].playerIsInConversation){
 					Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].misdealAudio);
@@ -835,6 +836,7 @@ public class Dealer : MonoBehaviour
         winnersHaveBeenPaid = false;
         readyToAwardPlayers = false;
         finalHandEvaluation = false;
+		misdealAudioPlayed = false;
         chipsInPot.Clear();
         deadCardsList.Clear();
         GameObject[] chipsOnTable = GameObject.FindGameObjectsWithTag("Chip");
@@ -881,6 +883,7 @@ public class Dealer : MonoBehaviour
         playersHaveBeenEvaluated = false;
         winnersHaveBeenPaid = false;
         readyToAwardPlayers = false;
+		misdealAudioPlayed = false;
         finalHandEvaluation = false;
         chipsInPot.Clear();
         deadCardsList.Clear();
