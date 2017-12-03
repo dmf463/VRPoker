@@ -182,6 +182,12 @@ public class PokerPlayerRedux : MonoBehaviour{
         //}
     }
 
+    void Update()
+    {
+        if (playerAudioSource.isPlaying) playerSpotlight.SetActive(true);
+        else playerSpotlight.SetActive(false);
+    }
+
 	public void Fold()
 	{
 		SayFold();
