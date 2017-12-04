@@ -83,7 +83,7 @@ public class PokerRules : MonoBehaviour {
         //Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
         for (int i = 0; i < Services.Dealer.cardsTouchingTable.Count; i++)
         {
-            if (Services.Dealer.cardsTouchingTable[i].cardFacingUp) misdeal = true;
+            if (!Services.Dealer.cardsTouchingTable[i].cardFacingUp) misdeal = true;
         }
         if (cardsPulled.Count - 1 > flopCards && !Services.Dealer.OutsideVR)
         {
@@ -131,7 +131,7 @@ public class PokerRules : MonoBehaviour {
         //Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
         for (int i = 0; i < Services.Dealer.cardsTouchingTable.Count; i++)
         {
-            if (Services.Dealer.cardsTouchingTable[i].cardFacingUp) misdeal = true;
+            if (!Services.Dealer.cardsTouchingTable[i].cardFacingUp) misdeal = true;
         }
         if (cardsPulled.Count - 1 > turnCard && !Services.Dealer.OutsideVR)
         {
@@ -179,7 +179,7 @@ public class PokerRules : MonoBehaviour {
         //Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
         for (int i = 0; i < Services.Dealer.cardsTouchingTable.Count; i++)
         {
-            if (Services.Dealer.cardsTouchingTable[i].cardFacingUp) misdeal = true;
+            if (!Services.Dealer.cardsTouchingTable[i].cardFacingUp) misdeal = true;
         }
         if (cardsPulled.Count - 1 > riverCard && !Services.Dealer.OutsideVR)
         {

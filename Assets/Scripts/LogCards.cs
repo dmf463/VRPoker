@@ -44,10 +44,6 @@ public class LogCards : MonoBehaviour
                 //when we get to the match, we know which place to put this into
                 if (gameObject.name == playerNames[i] && Table.gameState == GameState.NewRound)
                 {
-                    //if we're dealing
-                    //if (Table.dealerState == DealerState.DealingState)
-                    //{
-                    //and the card has not already been logged
                     if (Table.instance.playerCards[i].Contains(other.GetComponent<Card>()))
                     {
                         //Debug.Log(other.gameObject.name + " is already in play.");
@@ -68,7 +64,6 @@ public class LogCards : MonoBehaviour
                         Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
                         //Debug.Log(other.gameObject.name + " went into " + playerNames[i]);
                     }
-                    //}
                 }
 
             }

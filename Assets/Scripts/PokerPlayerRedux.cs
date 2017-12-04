@@ -174,12 +174,6 @@ public class PokerPlayerRedux : MonoBehaviour{
         lowReturnRate = 0.8f;
         decentReturnRate = 1f;
         highReturnRate = 1.3f;
-        //Debug.Log("lowReturn Rate: " + lowReturnRate + ", decentReturnRate: " + decentReturnRate + ", highReturnRate: " + highReturnRate);
-        //Debug.Log(playerDestinations.Count); 
-        //playerDestinations = //Table.instance.playerDestinations;
-        //for (int i = 0; i < playerDestinations.Count; i++) {
-        //    Debug.Log("Slot " + i + " in list contains: " + playerDestinations[i]);
-        //}
     }
 
     void Update()
@@ -1458,7 +1452,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
                     for (int colorCount = 0; colorCount < colorChipCount[colorListIndex]; colorCount++)
                     {
-                        Vector3 offSet = new Vector3(Random.Range(0, .1f), .1f, Random.Range(0, .1f));
+                        Vector3 offSet = new Vector3(Random.Range(0, .5f), .5f, Random.Range(0, .5f));
                         GameObject newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
                         newChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
                         Services.Dealer.chipsInPot.Add(newChip.GetComponent<Chip>());
