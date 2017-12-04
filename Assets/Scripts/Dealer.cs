@@ -334,7 +334,10 @@ public class Dealer : MonoBehaviour
         }
         for (int i = 0; i < cardsTouchingTable.Count; i++)
         {
-            if (cardsTouchingTable[i].cardFacingUp) misdeal = true;
+            if (!OutsideVR)
+            {
+                if (cardsTouchingTable[i].cardFacingUp) misdeal = true;
+            }
         }
         if(Services.Dealer.cardsTouchingTable.Count <= 5)
         {
