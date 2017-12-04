@@ -43,6 +43,11 @@ public class Table {
     {
        GameObject.Find("P0BetZone"), GameObject.Find("P1BetZone"), GameObject.Find("P2BetZone"), GameObject.Find("P3BetZone"), GameObject.Find("P4BetZone")
     };
+
+    public List<GameObject> playerFoldZones = new List<GameObject>
+    {
+        GameObject.Find("P0FoldZone"), GameObject.Find("P1FoldZone"), GameObject.Find("P2FoldZone"), GameObject.Find("P3FoldZone"), GameObject.Find("P4FoldZone")
+    };
     //this is the list that holds each players "hole cards"
     public List<Card>[] playerCards = new List<Card>[5]
     {

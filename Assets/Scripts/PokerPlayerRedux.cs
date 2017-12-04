@@ -193,7 +193,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 		SayFold();
 		foreach(Card card in Table.instance.playerCards[SeatPos])
 		{
-			card.transform.position = Table.instance.playerBetZones[SeatPos].transform.position;
+			card.transform.position = Table.instance.playerFoldZones[SeatPos].transform.position;
             card.cardMarkedForDestruction = false;
             Services.Dealer.deadCardsList.Add(card);
 		}
