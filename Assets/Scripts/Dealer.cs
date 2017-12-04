@@ -324,6 +324,7 @@ public class Dealer : MonoBehaviour
     {
         yield return new WaitForSeconds(time);
         int cardCountForPreFlop = 0;
+        bool misdeal = false;
         for (int playerCardIndex = 0; playerCardIndex < Table.instance.playerCards.Length; playerCardIndex++)
         {
             for (int cardTotal = 0; cardTotal < Table.instance.playerCards[playerCardIndex].Count; cardTotal++)
@@ -331,9 +332,17 @@ public class Dealer : MonoBehaviour
                 cardCountForPreFlop++;
             }
         }
+        for (int i = 0; i < cardsTouchingTable.Count; i++)
+        {
+            if (cardsTouchingTable[i].cardFacingUp) misdeal = true;
+        }
         if(Services.Dealer.cardsTouchingTable.Count <= 5)
         {
             Debug.Log("Misdeal for there being less than 5 cards on the table");
+            Table.gameState = GameState.Misdeal;
+        }
+        else if(misdeal == true)
+        {
             Table.gameState = GameState.Misdeal;
         }
         else if (cardCountForPreFlop == Services.PokerRules.cardsPulled.Count)

@@ -79,7 +79,7 @@ public class Card : InteractionSuperClass {
     //and we have "cardFacingUp" which checks the roation of the card
     //we have this so that if we pick up a card that is facing up, it stays facing up when we pick it up
     //it used to turn down because of the way pickups work in VR
-    bool cardFacingUp = false;
+    public bool cardFacingUp = false;
 
     //this is one of those super awkward things that I have that I got CLOSE to right, but never quite right
     //it's supposed to keep track of how many cards I'm currently holding in hand
@@ -144,25 +144,15 @@ public class Card : InteractionSuperClass {
             }
         }
 
-        //this is basically one of the control things
-        //while you're squeezing either grip, the player is in shuffleMode
-        if (!Services.Dealer.OutsideVR)
-        {
-            //if(deckScript.cardsInDeck.Count > 0)
-            //{
-            //    if (throwingHand.controller.GetPress(EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPress(EVRButtonId.k_EButton_Grip))
-            //    {
-            //        Table.dealerState = DealerState.ShufflingState;
-            //    }
-            //    else Table.dealerState = DealerState.DealingState;
-            //}
-        }
-
         //this is where we're checking whether the card is facing up or not
         //see those "magic numbers"?
         //we want to get rid of those
         //hence my desire for a raycast
-        if (transform.eulerAngles.x > 89 && transform.eulerAngles.x < 92) cardFacingUp = true;
+        if (transform.eulerAngles.x > 89 && transform.eulerAngles.x < 92)
+        {
+            cardFacingUp = true;
+            //Debug.Log("Card is facing up");
+        }
         else cardFacingUp = false;
 
         //this is the function that flips the card in your hand
@@ -330,19 +320,7 @@ public class Card : InteractionSuperClass {
         if(other.gameObject.tag == "Table")
         {
             Services.Dealer.cardsTouchingTable.Add(this);
-            //StartCoroutine(CheckCardRotation(1));
         }
-		
-        //if(Table.dealerState == DealerState.ShufflingState)
-        //{
-        //    if (other.gameObject.tag == "PlayingCard")
-        //    {
-        //        if (cardsInHand > 5)
-        //        {
-        //            Physics.IgnoreCollision(GetComponent<Collider>(), other.gameObject.GetComponent<Collider>(), true);
-        //        }
-        //    }
-        //}
     }
 
     //so this is how we check if the card is on the table
@@ -361,13 +339,6 @@ public class Card : InteractionSuperClass {
             cardOnTable = false;
             Services.Dealer.cardsTouchingTable.Remove(this);
         }
-    }
-
-    IEnumerator CheckCardRotation(float time)
-    {
-        yield return new WaitForSeconds(time);
-        if (GetComponent<CardRaycast>().cardIsFaceUp) Table.gameState = GameState.Misdeal;
-        Debug.Log("misdeal for dealing face up");
     }
 
     //so this is where we can drag the cards
