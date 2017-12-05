@@ -146,7 +146,7 @@ public class Table {
         }
         else
         {
-            Debug.Log("RestartingRound");
+            //Debug.Log("RestartingRound");
             if (GameObject.FindGameObjectWithTag("CardDeck") == null)
             {
                 //Debug.Log("Could not find CardDeck, instantiating new one");

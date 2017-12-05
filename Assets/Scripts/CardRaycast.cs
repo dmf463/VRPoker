@@ -7,7 +7,7 @@ public class CardRaycast : MonoBehaviour {
 	public bool debugHits = false;
 
 	float timeRaycastIsHitting = 0f;
-	public float rayDistance = 100f;
+	public float rayDistance = 1000f;
     public bool hittingTable;
     public bool cardIsFaceUp = false;
     public LayerMask mask;
@@ -22,19 +22,16 @@ public class CardRaycast : MonoBehaviour {
 
 		if(Physics.Raycast(ray, out rayHit, rayDistance))
 		{
-			//if(rayHit.collider.gameObject.layer == 10 || rayHit.collider.gameObject.layer == 11)
-			//{
-			//	if(debugHits == true)
-			//	{
-			//		Debug.Log("DEAR GOD, " + rayHit.collider.gameObject.name + " CAN SEE ME!");
-			//	}
-			//}
-            if (rayHit.collider.gameObject.layer == mask)
+            //Debug.Log(rayHit.collider.gameObject.name);
+            //Debug.Log(mask + " is what I want to hit");
+            //Debug.Log(rayHit.collider.gameObject.layer + " is what I'm hitting");
+            if (rayHit.collider.gameObject.layer == 12 || rayHit.collider.gameObject.layer == 8)
             {
-                cardIsFaceUp = true;
+                cardIsFaceUp = false;
             }
-            //else hittingTable = false;
-			Debug.DrawLine(ray.origin, rayHit.point, Color.green);
+            else cardIsFaceUp = true;
+            //Debug.Log(rayHit.collider.gameObject.layer + " is being hit by " + gameObject.name);
+			//Debug.DrawLine(ray.origin, rayHit.point, Color.green);
 		}
 		else
 		{

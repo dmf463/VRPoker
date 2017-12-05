@@ -148,7 +148,7 @@ public class Card : InteractionSuperClass {
         //see those "magic numbers"?
         //we want to get rid of those
         //hence my desire for a raycast
-        if (transform.eulerAngles.x > 89 && transform.eulerAngles.x < 92)
+        if (cardRay.cardIsFaceUp)
         {
             cardFacingUp = true;
             //Debug.Log("Card is facing up");

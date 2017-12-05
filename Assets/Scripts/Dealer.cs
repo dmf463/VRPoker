@@ -123,7 +123,7 @@ public class Dealer : MonoBehaviour
 
             if(hand1.GetStandardInteractionButton() && hand2.GetStandardInteractionButton())
             {
-                Debug.Log("Beginning to restart round");
+                //Debug.Log("Beginning to restart round");
                 Table.instance.RestartRound();
             }
         }
@@ -872,7 +872,7 @@ public class Dealer : MonoBehaviour
 
     public void ResetGameState()
     {
-        Debug.Log("ResettingGameStatus");
+        //Debug.Log("ResettingGameStatus");
         for (int i = 0; i < players.Count; i++)
         {
             Table.instance.playerChipStacks[i] = Table.instance.gameData.PlayerChipStacks[i];

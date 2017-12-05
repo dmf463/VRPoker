@@ -12,6 +12,7 @@ public class PlayerGazeTrigger : MonoBehaviour
 	public LayerMask mask;
     public UnityEvent onGazeComplete;
     PokerPlayerRedux pokerPlayer;
+    public Image progressImage;
 
     // Use this for initialization
     void Start()
@@ -38,11 +39,13 @@ public class PlayerGazeTrigger : MonoBehaviour
                 {
                     //Debug.Log("Hitting: " + this.gameObject.name);
                     timeLookedAt = Mathf.Clamp01(timeLookedAt + Time.deltaTime); //after 1 second, this variable will be 1f;
+                    progressImage.fillAmount = timeLookedAt;
                     if (timeLookedAt / 2 == 0.5f && pokerPlayer == Services.Dealer.playerToAct && !pokerPlayer.playerLookedAt)
                     {
                         pokerPlayer.playerLookedAt = true;
                         //Debug.Log("Ready to invoke");
                         timeLookedAt = 0f;
+                        progressImage.fillAmount = 0;
                         onGazeComplete.Invoke();
                         //Debug.Log("player that just invoked was " + pokerPlayer);
                         //Debug.Log("next player to act is " + Services.Dealer.playerToAct);
@@ -51,7 +54,8 @@ public class PlayerGazeTrigger : MonoBehaviour
             }
 
             //update our UI image
-            //progressImage.fillAmount = timeLookedAt; //fillAmount is a float from 0-1;
+            if (pokerPlayer != Services.Dealer.playerToAct) progressImage.fillAmount = 0;
+            //else progressImage.fillAmount = timeLookedAt * 2; //fillAmount is a float from 0-1;
         }
     }
 }
