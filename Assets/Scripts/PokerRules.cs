@@ -622,7 +622,7 @@ public class PokerRules : MonoBehaviour {
                 {
                     if (Table.instance.playerCards[player.SeatPos].Count == (cardPos + 1))
                     {
-                        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[toneCount]);
+                        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[toneCount], 0.15f);
                         toneCount++;
                     }
                     else

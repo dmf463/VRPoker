@@ -16,7 +16,7 @@ public class PlayerHit : MonoBehaviour
             {
                 Debug.Log("WE HIT SOMETHING");
                 AudioClip hitSound = GetComponentInParent<PokerPlayerRedux>().cardHitAudio;
-                Services.SoundManager.GenerateSourceAndPlay(hitSound);
+                Services.SoundManager.GenerateSourceAndPlay(hitSound, 0.5f);
             }
         }
     }

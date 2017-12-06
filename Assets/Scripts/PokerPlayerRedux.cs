@@ -1371,7 +1371,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public void Bet(int betAmount)
     {
-        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.chips);
+        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.chips, 0.5f);
         int oldChipStackValue = chipCount;
         List<GameObject> playerBetZones = new List<GameObject>
         {

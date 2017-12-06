@@ -65,13 +65,13 @@ public class SoundManager : MonoBehaviour
     //then destroy the object after the clip is over
     //this works for sound effects and random things
     //but will not be ideal for the final version
-	public void GenerateSourceAndPlay(AudioClip clip)
+	public void GenerateSourceAndPlay(AudioClip clip, float volume)
     {
         GameObject specialAudioSource = Instantiate(Services.PrefabDB.GenericAudioSource);
         AudioSource source = specialAudioSource.GetComponent<AudioSource>();
         source.clip = clip;
         if (conversationIsPlaying) source.volume = 0.25f;
-        else source.volume = 0.5f;
+        else source.volume = volume;
         source.Play();
         Destroy(specialAudioSource, clip.length);
     }
