@@ -26,6 +26,7 @@ public class PokerRules : MonoBehaviour {
     private int turnCard;
     private int riverCard;
     bool checkedForCorrections;
+    private int toneCount;
 
     // Use this for initialization
     void Start() {
@@ -70,6 +71,8 @@ public class PokerRules : MonoBehaviour {
                 StartCoroutine(CheckRiverMistakes(1));
             }
         }
+
+        if (Table.gameState != GameState.NewRound) toneCount = 0;
     }
 
     IEnumerator CheckFlopMistakes(float time)
@@ -592,6 +595,41 @@ public class PokerRules : MonoBehaviour {
             for (int i = 0; i < chipGroup.Count; i++)
             {
                 chipGroup[i].spotIndex = i;
+            }
+        }
+    }
+
+    public void PlayTone()
+    {
+        if (Table.gameState == GameState.NewRound)
+        {
+            SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+            int cardPos;
+
+            if ((cardsPulled.Count - 1) <= playerCards) //playerCards = 9
+            {
+                if ((cardsPulled.Count - 1) >= (Services.Dealer.PlayerAtTableCount())) cardPos = 1;
+                else cardPos = 0;
+                int playerIndex = Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardsPulled.Count);
+                PokerPlayerRedux player = Services.Dealer.players[playerIndex];
+                //Debug.Log("player we're trying to check is + " + player);
+                if (player.PlayerState == PlayerState.Playing)
+                {
+                    if (Table.instance.playerCards[player.SeatPos].Count == (cardPos + 1))
+                    {
+                        Debug.Log("player " + player.SeatPos + " has this many cards: " + Table.instance.playerCards[player.SeatPos].Count);
+                        Debug.Log("cardPos = " + cardPos);
+                        Debug.Log("cardPos + 1  = " + (cardPos + 1));
+                        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[toneCount]);
+                        toneCount++;
+                        Debug.Log("toneCount = " + toneCount);
+                    }
+                    else
+                    {
+                        Debug.Log("resetting tone count");
+                        toneCount = 0;
+                    }
+                }
             }
         }
     }

@@ -17,29 +17,6 @@ public class SoundManager : MonoBehaviour
 	public AudioSource p2Source;
 	public AudioSource p3Source;
 	public AudioSource p4Source;
-//    [Header("Floyd Lines")]
-//    public AudioClip checkP1;
-//    public AudioClip callP1;
-//    public AudioClip raiseP1;
-//    public AudioClip foldP1;
-//    public AudioClip allInP1;
-//    public List<AudioClip> genericBadP1 = new List<AudioClip>();
-//    public List<AudioClip> badBeatP1 = new List<AudioClip>();
-//    public List<AudioClip> incredulousP1 = new List<AudioClip>();
-//    public List<AudioClip> respectP1 = new List<AudioClip>();
-//    public List<AudioClip> goodResponseP1 = new List<AudioClip>();
-//
-//    [Header("Willy Lines")]
-//    public AudioClip checkP2;
-//    public AudioClip callP2;
-//    public AudioClip raiseP2;
-//    public AudioClip foldP2;
-//    public AudioClip allInP2;
-//    public List<AudioClip> genericBadP2 = new List<AudioClip>();
-//    public List<AudioClip> badBeatP2 = new List<AudioClip>();
-//    public List<AudioClip> incredulousP2 = new List<AudioClip>();
-//    public List<AudioClip> respectP2 = new List<AudioClip>();
-//    public List<AudioClip> goodResponseP2 = new List<AudioClip>();
 
 
 	public AudioClip[] aside1Index;
@@ -70,6 +47,7 @@ public class SoundManager : MonoBehaviour
     [Header("SoundEffects")]
     public AudioClip chips;
     public AudioClip cards;
+    public AudioClip[] cardTones;
 
     void Start()
     {

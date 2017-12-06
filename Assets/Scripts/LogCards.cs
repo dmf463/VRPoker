@@ -8,6 +8,7 @@ public class LogCards : MonoBehaviour
     public float cardCount;
     private GameObject newCardDeck;
     private bool madeNewDeck;
+    private int cardCountForTones;
     private List<string> playerNames = new List<string>
     {
         "P0Cards", "P1Cards", "P2Cards", "P3Cards", "P4Cards"
@@ -62,6 +63,7 @@ public class LogCards : MonoBehaviour
                     {
                         Table.instance.AddCardTo(playerDestinations[i], other.GetComponent<Card>());
                         Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
+                        Services.PokerRules.PlayTone();
                         //Debug.Log(other.gameObject.name + " went into " + playerNames[i]);
                     }
                 }

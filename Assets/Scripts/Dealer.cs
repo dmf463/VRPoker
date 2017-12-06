@@ -899,6 +899,7 @@ public class Dealer : MonoBehaviour
         finalHandEvaluation = false;
         chipsInPot.Clear();
         deadCardsList.Clear();
+        Services.PokerRules.TurnOffAllIndicators();
         GameObject[] chipsOnTable = GameObject.FindGameObjectsWithTag("Chip");
         if (chipsOnTable.Length > 0)
         {
