@@ -52,6 +52,7 @@ public class PokerRules : MonoBehaviour {
 
         if (Table.gameState == GameState.PreFlop)
         {
+
             if ((cardsPulled.Count - 1 == flopCards || Table.instance._board.Count == 3) && !checkedForCorrections)
             {
                 StartCoroutine(CheckFlopMistakes(1));
@@ -322,6 +323,10 @@ public class PokerRules : MonoBehaviour {
         for (int i = 0; i < cardIndicators.Length; i++)
         {
             cardIndicators[i].SetActive(false);
+        }
+        for (int i = 0; i < Services.Dealer.players.Count; i++)
+        {
+            Services.Dealer.players[i].playerSpotlight.SetActive(false);
         }
     }
 
@@ -617,17 +622,16 @@ public class PokerRules : MonoBehaviour {
                 {
                     if (Table.instance.playerCards[player.SeatPos].Count == (cardPos + 1))
                     {
-                        Debug.Log("player " + player.SeatPos + " has this many cards: " + Table.instance.playerCards[player.SeatPos].Count);
-                        Debug.Log("cardPos = " + cardPos);
-                        Debug.Log("cardPos + 1  = " + (cardPos + 1));
                         Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[toneCount]);
                         toneCount++;
-                        Debug.Log("toneCount = " + toneCount);
                     }
                     else
                     {
-                        Debug.Log("resetting tone count");
-                        toneCount = 0;
+                        if(toneCount == 0)
+                        {
+                            Table.gameState = GameState.Misdeal;
+                        }
+                        else toneCount = 0;
                     }
                 }
             }

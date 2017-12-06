@@ -99,6 +99,7 @@ public class Dealer : MonoBehaviour
     {
         if (Table.gameState == GameState.NewRound)
         {
+            //Debug.Log("newRound");
             messageText.text = "";
             if (Services.PokerRules.cardsPulled.Count == PlayerAtTableCount() * 2 && !checkedPreFlopCardCount)
             {
@@ -112,6 +113,7 @@ public class Dealer : MonoBehaviour
         }
         else if(Table.gameState == GameState.Misdeal)
         {
+            //Debug.Log("misdeal");
 			if(!misdealAudioPlayed){
 				misdealAudioPlayed = true;
 				int i = UnityEngine.Random.Range(0, players.Count);
@@ -137,7 +139,7 @@ public class Dealer : MonoBehaviour
             {
                 case GameState.PreFlop:
                     //Debug.Log("PREFLOP!");
-                    if (OutsideVR)
+                    if (!OutsideVR)
                     {
                         messageText.text = "player0 chipCount is " + players[0].chipCount +
                                            "\nplayer1 chipCount is " + players[1].chipCount +
@@ -184,6 +186,7 @@ public class Dealer : MonoBehaviour
         //once both of these are true, then the next round will start
         if (playersReady && Table.gameState != lastGameState)
         {
+            Debug.Log("starting round");
             roundStarted = false;
             playersReady = false;
         }
@@ -198,6 +201,7 @@ public class Dealer : MonoBehaviour
                 if (!OnlyAllInPlayersLeft()) StartRound();
                 else playersReady = true;
             }
+            //else Debug.Log("Round is already registered as having started");
         }
         
         //starts next round
@@ -322,6 +326,7 @@ public class Dealer : MonoBehaviour
 
     IEnumerator CheckForMistakesPreFlop(float time)
     {
+        Debug.Log("CheckingPreFlopMistakes");
         yield return new WaitForSeconds(time);
         int cardCountForPreFlop = 0;
         bool misdeal = false;
@@ -344,17 +349,19 @@ public class Dealer : MonoBehaviour
             Debug.Log("Misdeal for there being less than 5 cards on the table");
             Table.gameState = GameState.Misdeal;
         }
-        else if(misdeal == true)
+        else if(misdeal)
         {
+            Debug.Log("misdeal");
             Table.gameState = GameState.Misdeal;
         }
         else if (cardCountForPreFlop == Services.PokerRules.cardsPulled.Count)
         {
+            Debug.Log("got all the right cards");
             Table.gameState = GameState.PreFlop;
         }
         else if(Services.PokerRules.cardsPulled.Count > players.Count * 2 && !Services.Dealer.OutsideVR)
         {
-            Debug.Log("Dealt to many cards");
+            Debug.Log("Dealt too many cards");
             Table.gameState = GameState.Misdeal;
         }
         else
@@ -363,6 +370,7 @@ public class Dealer : MonoBehaviour
             Services.PokerRules.CorrectMistakesPreFlop();
             Table.gameState = GameState.PreFlop;
         }
+        Debug.Log("ending the check");
         checkedPreFlopCardCount = false;
     }
 
@@ -395,7 +403,7 @@ public class Dealer : MonoBehaviour
 
     public void StartRound()
     {
-        //Debug.Log("Starting round " + Table.gameState);
+        Debug.Log("Starting round " + Table.gameState);
         SetCurrentAndLastBet();
         if (Table.gameState == GameState.PreFlop)
         {
@@ -404,6 +412,7 @@ public class Dealer : MonoBehaviour
                 playerToAct = FindFirstPlayerToAct(0);
             }
             else playerToAct = FindFirstPlayerToAct(3);
+            Debug.Log("player to act = " + playerToAct);
         }
         else
         {
@@ -420,6 +429,7 @@ public class Dealer : MonoBehaviour
 
     public PokerPlayerRedux FindFirstPlayerToAct(int distance)
     {
+        Debug.Log("FindingFirstPlayerToAct");
         PokerPlayerRedux player;
         player = PlayerSeatsAwayFromDealerAmongstLivePlayers(distance);
         if(player.PlayerState == PlayerState.NotPlaying || player.playerIsAllIn || player.PlayerState == PlayerState.Eliminated || player.currentBet > 0)
@@ -892,11 +902,14 @@ public class Dealer : MonoBehaviour
         Services.PokerRules.cardsLogged.Clear();
         cardsTouchingTable.Clear();
         Table.gameState = GameState.NewRound;
+        Services.Dealer.playerToAct = null;
+        Services.Dealer.previousPlayerToAct = null;
         playersHaveBeenEvaluated = false;
         winnersHaveBeenPaid = false;
         readyToAwardPlayers = false;
 		misdealAudioPlayed = false;
         finalHandEvaluation = false;
+        roundStarted = false;
         chipsInPot.Clear();
         deadCardsList.Clear();
         Services.PokerRules.TurnOffAllIndicators();

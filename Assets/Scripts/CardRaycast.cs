@@ -25,7 +25,10 @@ public class CardRaycast : MonoBehaviour {
             //Debug.Log(rayHit.collider.gameObject.name);
             //Debug.Log(mask + " is what I want to hit");
             //Debug.Log(rayHit.collider.gameObject.layer + " is what I'm hitting");
-            if (rayHit.collider.gameObject.layer == 12 || rayHit.collider.gameObject.layer == 8)
+            if (rayHit.collider.gameObject.layer == 12 || 
+                rayHit.collider.gameObject.layer == 8 || 
+                rayHit.collider.gameObject.layer == 14 || 
+                rayHit.collider.gameObject.layer == 9)
             {
                 cardIsFaceUp = false;
             }

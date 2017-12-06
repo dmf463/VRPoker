@@ -43,7 +43,7 @@ public class PlayerGazeTrigger : MonoBehaviour
                     if (timeLookedAt / 2 == 0.5f && pokerPlayer == Services.Dealer.playerToAct && !pokerPlayer.playerLookedAt)
                     {
                         pokerPlayer.playerLookedAt = true;
-                        //Debug.Log("Ready to invoke");
+                        Debug.Log("Ready to invoke");
                         timeLookedAt = 0f;
                         progressImage.fillAmount = 0;
                         onGazeComplete.Invoke();
