@@ -306,7 +306,8 @@ public class Card : InteractionSuperClass {
             cardHitPlayer = true;
             Debug.Log("WE HIT SOMETHING");
             AudioClip hitSound = other.gameObject.GetComponentInParent<PokerPlayerRedux>().cardHitAudio;
-            Services.SoundManager.GenerateSourceAndPlay(hitSound);
+			AudioSource hitSource = other.gameObject.GetComponentInParent<AudioSource>();
+            Services.SoundManager.GetSourceAndPlay(hitSource, hitSound);
         }
 
         startLerping = true;

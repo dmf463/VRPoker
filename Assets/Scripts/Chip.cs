@@ -185,7 +185,8 @@ public class Chip : InteractionSuperClass {
     {
 		if (other.gameObject.tag == "PokerPlayerFace"){
 			AudioClip hitSound = other.gameObject.GetComponentInParent<PokerPlayerRedux>().cardHitAudio;
-			Services.SoundManager.GenerateSourceAndPlay(hitSound);
+			AudioSource hitSource = other.gameObject.GetComponentInParent<AudioSource>();
+			Services.SoundManager.GetSourceAndPlay(hitSource, hitSound);
 		}
         //Debug.Log("hitting " + other.gameObject.name);
         if (other.gameObject.tag == "Chip" && other.gameObject.GetComponent<Chip>().chipStack == null)
