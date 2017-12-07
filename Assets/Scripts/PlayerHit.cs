@@ -14,9 +14,9 @@ public class PlayerHit : MonoBehaviour
             deckScript = cardDeck.GetComponent<CardDeckScript>();
             if ((other.gameObject.tag == "PlayingCard" && !deckScript.deckWasThrown) || other.gameObject.tag == "Chip")
             {
-                Debug.Log("WE HIT SOMETHING");
+                //Debug.Log("WE HIT SOMETHING");
                 AudioClip hitSound = GetComponentInParent<PokerPlayerRedux>().cardHitAudio;
-                Services.SoundManager.GenerateSourceAndPlay(hitSound, 0.5f);
+                Services.SoundManager.GenerateSourceAndPlay(hitSound, 0.25f);
             }
         }
     }

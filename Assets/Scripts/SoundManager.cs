@@ -70,8 +70,8 @@ public class SoundManager : MonoBehaviour
         GameObject specialAudioSource = Instantiate(Services.PrefabDB.GenericAudioSource);
         AudioSource source = specialAudioSource.GetComponent<AudioSource>();
         source.clip = clip;
-        if (conversationIsPlaying) source.volume = 0.25f;
-        else source.volume = volume;
+        //if (conversationIsPlaying) source.volume = 0.25f;
+        /*else */source.volume = volume;
         source.Play();
         Destroy(specialAudioSource, clip.length);
     }

@@ -461,7 +461,7 @@ public class Card : InteractionSuperClass {
             //Debug.Log(this.gameObject.name + " card is facing the wrong way");
             cardThrownWrong = true;
         }
-        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cards, 0.5f);
+        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cards, 0.25f);
             StartCoroutine(CheckVelocity(.025f));
         //}
         base.OnDetachedFromHand(hand);
