@@ -190,8 +190,10 @@ public class Dealer : MonoBehaviour
             roundStarted = false;
             playersReady = false;
         }
-        if(playersReady) Services.PokerRules.SetCardIndicator();
-
+        if (playersReady)
+        {
+            Services.PokerRules.SetCardIndicator();
+        }
         //starts the round for pre-flop
         if (Table.gameState == GameState.PreFlop)
         {
@@ -419,7 +421,7 @@ public class Dealer : MonoBehaviour
             playerToAct = FindFirstPlayerToAct(1);
             Debug.Log("player to act = " + playerToAct);
         }
-        if(playerToAct != null) playerToAct.playerSpotlight.SetActive(true);
+        //(playerToAct != null) playerToAct.
         //StartCoroutine(playerAction(playerToAct));
         if (!Services.SoundManager.conversationIsPlaying)
         {
@@ -527,7 +529,6 @@ public class Dealer : MonoBehaviour
                     roundFinished = false;
                     previousPlayerToAct = playerToAct;
                     playerToAct = nextPlayer;
-                    playerToAct.playerSpotlight.SetActive(true);
                     Debug.Log("nextPlayer to act is player " + playerToAct);
                     break;
                 }

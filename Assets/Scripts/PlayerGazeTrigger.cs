@@ -7,12 +7,14 @@ using UnityEngine.UI;
 public class PlayerGazeTrigger : MonoBehaviour
 {
 
-    float timeLookedAt = 0f;
+    float timeLookedAt = 1f;
     public float rayDistance;
 	public LayerMask mask;
     public UnityEvent onGazeComplete;
     PokerPlayerRedux pokerPlayer;
     public Image progressImage;
+    public Image progressImageBackground;
+    bool activated = false;
 
     // Use this for initialization
     void Start()
@@ -38,13 +40,12 @@ public class PlayerGazeTrigger : MonoBehaviour
                 if (rayHit.transform == this.transform) //are we looking at this thing
                 {
                     //Debug.Log("Hitting: " + this.gameObject.name);
-                    timeLookedAt = Mathf.Clamp01(timeLookedAt + Time.deltaTime); //after 1 second, this variable will be 1f;
-                    progressImage.fillAmount = timeLookedAt;
-                    if (timeLookedAt / 2 == 0.5f && pokerPlayer == Services.Dealer.playerToAct && !pokerPlayer.playerLookedAt)
+                    timeLookedAt = Mathf.Clamp01(timeLookedAt - Time.deltaTime); //after 1 second, this variable will be 0f;
+                    if (timeLookedAt == 0 && pokerPlayer == Services.Dealer.playerToAct && !pokerPlayer.playerLookedAt)
                     {
                         pokerPlayer.playerLookedAt = true;
                         Debug.Log("Ready to invoke");
-                        timeLookedAt = 0f;
+                        timeLookedAt = 1f;
                         progressImage.fillAmount = 0;
                         onGazeComplete.Invoke();
                         //Debug.Log("player that just invoked was " + pokerPlayer);
@@ -54,7 +55,21 @@ public class PlayerGazeTrigger : MonoBehaviour
             }
 
             //update our UI image
-            if (pokerPlayer != Services.Dealer.playerToAct) progressImage.fillAmount = 0;
+            progressImage.fillAmount = timeLookedAt;
+            if (pokerPlayer != Services.Dealer.playerToAct)
+            {
+                progressImage.fillAmount = 0;
+                activated = false;
+                progressImage.GetComponent<CardIndicatorLerp>().enabled = false;
+                progressImageBackground.GetComponent<CardIndicatorLerp>().enabled = false;
+            }
+            else if (!activated)
+            {
+                activated = true;
+                progressImage.GetComponent<CardIndicatorLerp>().enabled = true;
+                progressImageBackground.GetComponent<CardIndicatorLerp>().enabled = true;
+                progressImage.fillAmount = 1;
+            }
             //else progressImage.fillAmount = timeLookedAt * 2; //fillAmount is a float from 0-1;
         }
     }

@@ -43,7 +43,7 @@ public class LogCards : MonoBehaviour
             for (int i = 0; i < playerNames.Count; i++)
             {
                 //when we get to the match, we know which place to put this into
-                if (gameObject.name == playerNames[i] && Table.gameState == GameState.NewRound)
+                if (gameObject.name == playerNames[i] && Table.gameState == GameState.NewRound && Services.Dealer.players[i].PlayerState != PlayerState.Eliminated)
                 {
                     if (Table.instance.playerCards[i].Contains(other.GetComponent<Card>()))
                     {

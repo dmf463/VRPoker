@@ -328,6 +328,7 @@ public class PokerRules : MonoBehaviour {
         for (int i = 0; i < Services.Dealer.players.Count; i++)
         {
             Services.Dealer.players[i].playerSpotlight.SetActive(false);
+            Services.Dealer.players[i].playerCardIndicator.SetActive(false);
         }
     }
 
