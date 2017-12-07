@@ -27,6 +27,7 @@ public class PokerRules : MonoBehaviour {
     private int riverCard;
     bool checkedForCorrections;
     private int toneCount;
+    public float cardToneVolume;
 
     // Use this for initialization
     void Start() {
@@ -622,7 +623,7 @@ public class PokerRules : MonoBehaviour {
                 {
                     if (Table.instance.playerCards[player.SeatPos].Count == (cardPos + 1))
                     {
-                        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[toneCount], 0.15f);
+                        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[toneCount], cardToneVolume);
                         toneCount++;
                     }
                     else

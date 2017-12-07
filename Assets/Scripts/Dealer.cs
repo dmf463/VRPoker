@@ -139,7 +139,7 @@ public class Dealer : MonoBehaviour
             {
                 case GameState.PreFlop:
                     //Debug.Log("PREFLOP!");
-                    if (!OutsideVR)
+                    if (OutsideVR)
                     {
                         messageText.text = "player0 chipCount is " + players[0].chipCount +
                                            "\nplayer1 chipCount is " + players[1].chipCount +
@@ -344,7 +344,7 @@ public class Dealer : MonoBehaviour
                 if (cardsTouchingTable[i].cardFacingUp) misdeal = true;
             }
         }
-        if(Services.Dealer.cardsTouchingTable.Count <= 5)
+        if(Services.Dealer.cardsTouchingTable.Count <= (PlayerAtTableCount()/2))
         {
             Debug.Log("Misdeal for there being less than 5 cards on the table");
             Table.gameState = GameState.Misdeal;
