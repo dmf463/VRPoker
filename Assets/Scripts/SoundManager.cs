@@ -45,8 +45,8 @@ public class SoundManager : MonoBehaviour
 	public bool lowAside4Played;
 
     [Header("SoundEffects")]
-    public AudioClip chips;
-    public AudioClip cards;
+	public AudioClip[] chips;
+    public AudioClip[] cards;
     public AudioClip[] cardTones;
 
     void Start()
@@ -60,18 +60,26 @@ public class SoundManager : MonoBehaviour
 
     }
 		
+
+	public void GenerateSourceAndPlay(AudioClip clip, float volume, float pitch = 1)
+	{
+		GenerateSourceAndPlay(clip, volume, pitch, transform.position);
+	}
+
     //so basically when we want to play a sound we generate a prefab object with an audiosource
     //play the clip
     //then destroy the object after the clip is over
     //this works for sound effects and random things
     //but will not be ideal for the final version
-	public void GenerateSourceAndPlay(AudioClip clip, float volume)
+	public void GenerateSourceAndPlay(AudioClip clip, float volume, float pitch, Vector3 position)
     {
         GameObject specialAudioSource = Instantiate(Services.PrefabDB.GenericAudioSource);
         AudioSource source = specialAudioSource.GetComponent<AudioSource>();
+		specialAudioSource.transform.position = position;
         source.clip = clip;
         //if (conversationIsPlaying) source.volume = 0.25f;
         /*else */source.volume = volume;
+		source.pitch = pitch;
         source.Play();
         Destroy(specialAudioSource, clip.length);
     }
