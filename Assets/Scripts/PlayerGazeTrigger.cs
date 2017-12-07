@@ -41,6 +41,7 @@ public class PlayerGazeTrigger : MonoBehaviour
                 {
                     //Debug.Log("Hitting: " + this.gameObject.name);
                     timeLookedAt = Mathf.Clamp01(timeLookedAt - Time.deltaTime); //after 1 second, this variable will be 0f;
+                    progressImage.fillAmount = timeLookedAt;
                     if (timeLookedAt == 0 && pokerPlayer == Services.Dealer.playerToAct && !pokerPlayer.playerLookedAt)
                     {
                         pokerPlayer.playerLookedAt = true;
@@ -55,7 +56,6 @@ public class PlayerGazeTrigger : MonoBehaviour
             }
 
             //update our UI image
-            progressImage.fillAmount = timeLookedAt;
             if (pokerPlayer != Services.Dealer.playerToAct)
             {
                 progressImage.fillAmount = 0;
@@ -63,12 +63,15 @@ public class PlayerGazeTrigger : MonoBehaviour
                 progressImage.GetComponent<CardIndicatorLerp>().enabled = false;
                 progressImageBackground.GetComponent<CardIndicatorLerp>().enabled = false;
             }
-            else if (!activated)
+            else
             {
-                activated = true;
-                progressImage.GetComponent<CardIndicatorLerp>().enabled = true;
-                progressImageBackground.GetComponent<CardIndicatorLerp>().enabled = true;
-                progressImage.fillAmount = 1;
+                if (!activated)
+                {
+                    activated = true;
+                    progressImage.GetComponent<CardIndicatorLerp>().enabled = true;
+                    progressImageBackground.GetComponent<CardIndicatorLerp>().enabled = true;
+                    progressImage.fillAmount = 1;
+                }
             }
             //else progressImage.fillAmount = timeLookedAt * 2; //fillAmount is a float from 0-1;
         }
