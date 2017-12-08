@@ -80,6 +80,7 @@ public class Dealer : MonoBehaviour
         Services.SoundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
         Services.Dealer = this;
         Services.PokerRules = GameObject.Find("PokerRules").GetComponent<PokerRules>();
+        Services.SpiritManager = GameObject.Find("SpiritAIManager").GetComponent<SpiritAIManager>();
     }
 
     // Use this for initialization
