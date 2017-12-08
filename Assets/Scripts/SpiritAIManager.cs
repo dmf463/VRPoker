@@ -2,6 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using SpiritAI.CharacterEngine;
+using SpiritAI.CharacterEngine.Logging;
+using SpiritAI.CharacterEngine.MachineLearning;
+using SpiritAI.CharacterEngine.Messages;
+using SpiritAI.CharacterEngine.Integrations;
+
+
 
 public class SpiritAIManager : MonoBehaviour {
 
