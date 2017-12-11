@@ -46,19 +46,26 @@ public class LogChips : MonoBehaviour
 							Services.SoundManager.GetSourceAndPlay(Services.Dealer.players[i].playerAudioSource, Services.Dealer.players[i].wrongChipsAudio);
 						}
 					}
-                    if (gameObject.name == playerNames[i] &&
-                        Services.Dealer.players[i].PlayerState == PlayerState.Winner &&
-                        Services.Dealer.players[i].chipCount != Services.Dealer.players[i].chipsWon + Services.Dealer.players[i].ChipCountToCheckWhenWinning)
+                    if (gameObject.name == playerNames[i])
                     {
-                        if (other.GetComponent<Chip>().chipStack == null)
+                        if (Services.Dealer.players[i].PlayerState == PlayerState.Winner)
                         {
-                            Table.instance.AddChipTo(playerDestinations[i], other.GetComponent<Chip>().chipData.ChipValue);
-                        }
-                        else if (other.GetComponent<Chip>().chipStack != null)
-                        {
-                            ChipStack chipStack;
-                            chipStack = other.GetComponent<Chip>().chipStack;
-                            Table.instance.AddChipTo(playerDestinations[i], chipStack.stackValue);
+                            if (Services.Dealer.players[i].chipCount != Services.Dealer.players[i].chipsWon + Services.Dealer.players[i].ChipCountToCheckWhenWinning)
+                            {
+                                if (other.GetComponent<Chip>().chipStack == null)
+                                {
+                                    Debug.Log("adding a chip of " + other.GetComponent<Chip>().chipData.ChipValue);
+                                    Table.instance.AddChipTo(playerDestinations[i], other.GetComponent<Chip>().chipData.ChipValue);
+                                }
+                                else if (other.GetComponent<Chip>().chipStack != null)
+                                {
+                                    ChipStack chipStack;
+                                    chipStack = other.GetComponent<Chip>().chipStack;
+                                    Debug.Log("adding chipStack of " + chipStack.stackValue);
+                                    Table.instance.AddChipTo(playerDestinations[i], chipStack.stackValue);
+                                }
+                            }
+                            else Debug.Log("Player already has all their chips");
                         }
                     }
                 }
