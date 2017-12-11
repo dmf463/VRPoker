@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Avatars xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <Avatar>
+        <Name>jared</Name>
+        <Width>128</Width>
+        <Height>128</Height>
+    </Avatar>
+    <Avatar>
+        <Name>visitor</Name>
+        <Width>128</Width>
+        <Height>128</Height>
+    </Avatar>
+</Avatars>

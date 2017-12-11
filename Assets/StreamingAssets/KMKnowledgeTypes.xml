@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<KnowledgeTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <KnowledgeType id="topic">
+        <Plural>topics</Plural>
+        <Synonyms>
+            <string>concept</string>
+            <string>idea</string>
+        </Synonyms>
+        <Fields />
+    </KnowledgeType>
+    <KnowledgeType id="person">
+        <Plural>people</Plural>
+        <Synonyms>
+            <string>anyone</string>
+            <string>someone</string>
+            <string>individual</string>
+        </Synonyms>
+        <Fields>
+            <string>firstname</string>
+            <string>lastname</string>
+            <string>title</string>
+            <string>traits</string>
+            <string>gender</string>
+            <string>age</string>
+        </Fields>
+    </KnowledgeType>
+    <KnowledgeType id="event">
+        <Plural>events</Plural>
+        <Synonyms>
+            <string>occurance</string>
+            <string>occurrence</string>
+            <string>incident</string>
+            <string>happening</string>
+        </Synonyms>
+        <Fields>
+            <string>timestamp</string>
+            <string>duration</string>
+            <string>duration_in_minutes</string>
+            <string>involved_people</string>
+        </Fields>
+    </KnowledgeType>
+</KnowledgeTypes>

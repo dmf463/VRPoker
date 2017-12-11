@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ItemDictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <Items>
+        <Item><key>STORY_START_TIME</key><value>1995/07/01/1400</value></Item>
+        <Item><key>KM_RECORD_PLAYER</key><value>lester</value></Item>
+        <Item><key>KM_RECORD_NPC</key><value>minnie</value></Item>
+        <Item><key>INITIAL_SCENE</key><value>introduction</value></Item>
+        <Item><key>CLASSIFIERS</key><value></value></Item>
+        <Item><key>INTERACTION_STYLE</key><value>menu</value></Item>
+        <Item><key>MENU_GENERATION_TYPE</key><value>trait</value></Item>
+        <Item><key>MENU_GENERATION_COUNT</key><value>3</value></Item>
+    </Items>
+</ItemDictionary>
