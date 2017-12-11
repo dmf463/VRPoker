@@ -1,0 +1,167 @@
+fileFormatVersion: 2
+guid: f9fd91c6e928a481eb4b2c709865035f
+timeCreated: 1509032904
+licenseType: Free
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: group13_group8_pCube21
+    100004: group13_group8_pCube24
+    100006: group13_group8_pCube29
+    100008: group13_group8_pCube30
+    100010: group13_group8_pCube31
+    100012: group13_group8_polySurface2
+    100014: group13_group8_polySurface3
+    100016: pCube20_group13_group8
+    400000: //RootNode
+    400002: group13_group8_pCube21
+    400004: group13_group8_pCube24
+    400006: group13_group8_pCube29
+    400008: group13_group8_pCube30
+    400010: group13_group8_pCube31
+    400012: group13_group8_polySurface2
+    400014: group13_group8_polySurface3
+    400016: pCube20_group13_group8
+    2300000: group13_group8_pCube21
+    2300002: group13_group8_pCube24
+    2300004: group13_group8_pCube29
+    2300006: group13_group8_pCube30
+    2300008: group13_group8_pCube31
+    2300010: group13_group8_polySurface2
+    2300012: group13_group8_polySurface3
+    2300014: pCube20_group13_group8
+    3300000: group13_group8_pCube21
+    3300002: group13_group8_pCube24
+    3300004: group13_group8_pCube29
+    3300006: group13_group8_pCube30
+    3300008: group13_group8_pCube31
+    3300010: group13_group8_polySurface2
+    3300012: group13_group8_polySurface3
+    3300014: pCube20_group13_group8
+    4300000: group13_group8_pCube21
+    4300002: group13_group8_pCube24
+    4300004: group13_group8_pCube29
+    4300006: group13_group8_pCube30
+    4300008: group13_group8_pCube31
+    4300010: group13_group8_polySurface2
+    4300012: group13_group8_polySurface3
+    4300014: pCube20_group13_group8
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: group13_group8_pCube21Mat
+    second: {fileID: 2100000, guid: 2212033c991ad41c2a6b883ab301283b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: group13_group8_pCube24Mat
+    second: {fileID: 2100000, guid: dfa31bc98d7354f51baf4f92d6c28933, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: group13_group8_pCube29Mat
+    second: {fileID: 2100000, guid: aa137c0334c1141faa121b8979b570b2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: group13_group8_pCube30Mat
+    second: {fileID: 2100000, guid: 2dc94ffbf76c8452eac77da93d3b4a7c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: group13_group8_pCube31Mat
+    second: {fileID: 2100000, guid: 6fc602426f2a54f61ab65c8900247f5f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: group13_group8_polySurface2Mat
+    second: {fileID: 2100000, guid: d3bee663d3222413c9c13c9b887fccd9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: group13_group8_polySurface3Mat
+    second: {fileID: 2100000, guid: 0a32868945f2a47faa46e660a3542202, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pCube20_group13_group8Mat
+    second: {fileID: 2100000, guid: 81f71682a65c147f6bbc66e167ce4d87, type: 2}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 0
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 0
+    importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 0
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
