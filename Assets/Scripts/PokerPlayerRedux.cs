@@ -319,14 +319,14 @@ public class PokerPlayerRedux : MonoBehaviour{
 	//def gonna need to refactor
 	public void SayCheck()
 	{
-		if(!playerAudioSource.isPlaying && !playerIsInConversation){
+		if(!playerAudioSource.isPlaying && !playerIsInConversation && !Services.SoundManager.conversationIsPlaying){
 			Services.SoundManager.GetSourceAndPlay(playerAudioSource, checkAudio);
 		}
 	}
 
 	public void SayFold()
 	{
-		if(!playerAudioSource.isPlaying && !playerIsInConversation){
+		if(!playerAudioSource.isPlaying && !playerIsInConversation && !Services.SoundManager.conversationIsPlaying){
 			//Services.SoundManager.GetSourceAndPlay(playerAudioSource, foldAudio);
 			float chanceOfConvo = Random.Range(0,100);
 			if(chanceOfConvo < 25f) {
@@ -345,27 +345,27 @@ public class PokerPlayerRedux : MonoBehaviour{
 
 	public void SayRaise()
 	{
-		if(!playerAudioSource.isPlaying && !playerIsInConversation){
+		if(!playerAudioSource.isPlaying && !playerIsInConversation && !Services.SoundManager.conversationIsPlaying){
 			Services.SoundManager.GetSourceAndPlay(playerAudioSource, raiseAudio);
 		}
 	}
 
 	public void SayBet(){
-		if(!playerAudioSource.isPlaying && !playerIsInConversation){
+		if(!playerAudioSource.isPlaying && !playerIsInConversation && !Services.SoundManager.conversationIsPlaying){
 			Services.SoundManager.GetSourceAndPlay(playerAudioSource, betAudio);
 		}
 	}
 
 	public void SayCall()
 	{
-		if(!playerAudioSource.isPlaying && !playerIsInConversation){
+		if(!playerAudioSource.isPlaying && !playerIsInConversation && !Services.SoundManager.conversationIsPlaying){
 			Services.SoundManager.GetSourceAndPlay(playerAudioSource, callAudio);
 		}
 	}
 
 	public void SayAllIn()
 	{
-		if(!playerAudioSource.isPlaying && !playerIsInConversation){
+		if(!playerAudioSource.isPlaying && !playerIsInConversation && !Services.SoundManager.conversationIsPlaying){
 			Services.SoundManager.GetSourceAndPlay(playerAudioSource, allInAudio);
 		}
 	}
@@ -373,7 +373,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 	//determines which reaction to have
 	public void WinnerReactions()
 	{
-		if(!playerAudioSource.isPlaying && !playerIsInConversation){
+		if(!playerAudioSource.isPlaying && !playerIsInConversation && !Services.SoundManager.conversationIsPlaying){
 			Services.SoundManager.GetSourceAndPlay(playerAudioSource, winAudio);
 		}
 
