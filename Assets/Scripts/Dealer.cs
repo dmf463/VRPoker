@@ -424,10 +424,10 @@ public class Dealer : MonoBehaviour
         }
         //(playerToAct != null) playerToAct.
         //StartCoroutine(playerAction(playerToAct));
-        if (!Services.SoundManager.conversationIsPlaying)
-        {
-            Services.SoundManager.PlayAsideConversation(UnityEngine.Random.Range(0, 5));
-        }
+//        if (!Services.SoundManager.conversationIsPlaying)
+//        {
+//            Services.SoundManager.PlayAsideConversation(UnityEngine.Random.Range(0, 5));
+//        }
     }
 
     public PokerPlayerRedux FindFirstPlayerToAct(int distance)
@@ -826,9 +826,12 @@ public class Dealer : MonoBehaviour
             winnersPaid = 0;
             numberOfWinners = 0;
 
-			for (int i = 0; i < players.Count; i++) {
-				if(players[i].PlayerState == PlayerState.Winner && numberOfWinners < 2){
-					if(!players[i].playerAudioSource.isPlaying && !players[i].playerIsInConversation){
+			for (int i = 0; i < players.Count; i++) 
+			{
+				if(players[i].PlayerState == PlayerState.Winner && numberOfWinners < 2)
+				{
+					if(!players[i].playerAudioSource.isPlaying && !players[i].playerIsInConversation)
+					{
 						Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].tipAudio);
 					}
 				}

@@ -193,6 +193,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 		}
 		PlayerState = PlayerState.NotPlaying;
 		Hand = null;
+
 		//Debug.Log("Player " + SeatPos + " folded!");
 		if(Services.Dealer.GetActivePlayerCount() == 1)
 		{
@@ -326,8 +327,20 @@ public class PokerPlayerRedux : MonoBehaviour{
 	public void SayFold()
 	{
 		if(!playerAudioSource.isPlaying && !playerIsInConversation){
-			Services.SoundManager.GetSourceAndPlay(playerAudioSource, foldAudio);
+			//Services.SoundManager.GetSourceAndPlay(playerAudioSource, foldAudio);
+			float chanceOfConvo = Random.Range(0,100);
+			if(chanceOfConvo < 25f) {
+				if (!Services.SoundManager.conversationIsPlaying)
+				{
+					//Services.SoundManager.PlayAsideConversation(UnityEngine.Random.Range(0, 5));
+					Services.SoundManager.PlayAsideConversation(this);
+				}
+			}else {
+				Services.SoundManager.GetSourceAndPlay(playerAudioSource, foldAudio);
+			}
+
 		}
+
 	}
 
 	public void SayRaise()

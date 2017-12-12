@@ -5,18 +5,18 @@ using UnityEngine;
 //controls all the sounds
 public class SoundManager : MonoBehaviour
 {
-	public PokerPlayerRedux player0;
-	public PokerPlayerRedux player1;
-	public PokerPlayerRedux player2;
-	public PokerPlayerRedux player3;
-	public PokerPlayerRedux player4;
+	public PokerPlayerRedux rosa;// rosa
+	public PokerPlayerRedux gonzalo;// gonzalo
+	public PokerPlayerRedux minnie;// minnie
+	public PokerPlayerRedux lester;// lester
+	public PokerPlayerRedux floyd;// floyd
 
 
-	public AudioSource p0Source;
-	public AudioSource p1Source;
-	public AudioSource p2Source;
-	public AudioSource p3Source;
-	public AudioSource p4Source;
+	public AudioSource rosaSource; 
+	public AudioSource gonzaloSource;
+	public AudioSource minnieSource;
+	public AudioSource lesterSource;
+	public AudioSource floydSource;
 
 
 	public AudioClip[] aside1Index;
@@ -110,178 +110,240 @@ public class SoundManager : MonoBehaviour
 		}
 	}
 
-	IEnumerator Aside1 (){
+	public void PlayAsideConversation(PokerPlayerRedux player)
+	{
+		if (player == rosa){
+			int convo = UnityEngine.Random.Range(0, 2);
+
+			if(convo == 0){
+				if(!aside3Played) StartCoroutine("Aside3");
+			}
+			if(convo == 1){
+				if(!aside5Played) StartCoroutine("Aside5");
+			}
+			if(convo == 2){
+				if(!aside6Played) StartCoroutine("Aside6");
+			}
+		}
+		if (player == gonzalo){
+			int convo = UnityEngine.Random.Range(0, 1);
+			if(convo == 0){
+				if(!aside5Played) StartCoroutine("Aside5");
+			}
+			if(convo == 1){
+				if(!aside6Played) StartCoroutine("Aside6");
+			}
+		}
+		if (player == minnie){
+			int convo = UnityEngine.Random.Range(0, 2);
+			if(convo == 0){
+				if(!aside1Played) StartCoroutine("Aside1");
+			}
+			if(convo == 1){
+				if(!aside5Played) StartCoroutine("Aside5");
+			}
+			if(convo == 2){
+				if(!aside6Played) StartCoroutine("Aside6");
+			}
+		}
+		if (player == lester){
+			int convo = UnityEngine.Random.Range(0, 2);
+			if(convo == 0){
+				if(!aside2Played) StartCoroutine("Aside2");
+			}
+			if(convo == 1){
+				if(!aside3Played) StartCoroutine("Aside3");
+			}
+			if(convo == 2){
+				if(!aside5Played) StartCoroutine("Aside5");
+			}
+		}
+		if (player == floyd){
+			int convo = UnityEngine.Random.Range(0, 2);
+			if(convo == 0){
+				if(!aside1Played) StartCoroutine("Aside1");
+			}
+			if(convo == 1){
+				if(!aside2Played) StartCoroutine("Aside2");
+			}
+			if(convo == 2){
+				if(!aside5Played) StartCoroutine("Aside5");
+			}
+		}
+	}
+
+	IEnumerator Aside1 (){ //floyd initiates toward minnie
 
         conversationIsPlaying = true;
         
-		player2.playerIsInConversation = true;
-		player4.playerIsInConversation = true;
+		minnie.playerIsInConversation = true;
+		floyd.playerIsInConversation = true;
 
-		p4Source.clip = aside1Index[0];
-			p4Source.Play();
-				yield return new WaitForSeconds(p4Source.clip.length);
-		p2Source.clip = aside1Index[1];
-			p2Source.Play();
-				yield return new WaitForSeconds(p2Source.clip.length);
-		p4Source.clip = aside1Index[2];
-			p4Source.Play();
-				yield return new WaitForSeconds(p4Source.clip.length);
-		p2Source.clip = aside1Index[3];
-			p2Source.Play();
-				yield return new WaitForSeconds(p2Source.clip.length);
-		p4Source.clip = aside1Index[4];
-			p4Source.Play();
-				yield return new WaitForSeconds(p4Source.clip.length);
+		floydSource.clip = aside1Index[0];
+			floydSource.Play();
+				yield return new WaitForSeconds(floydSource.clip.length);
+		minnieSource.clip = aside1Index[1];
+			minnieSource.Play();
+				yield return new WaitForSeconds(minnieSource.clip.length);
+		floydSource.clip = aside1Index[2];
+			floydSource.Play();
+				yield return new WaitForSeconds(floydSource.clip.length);
+		minnieSource.clip = aside1Index[3];
+			minnieSource.Play();
+				yield return new WaitForSeconds(minnieSource.clip.length);
+		floydSource.clip = aside1Index[4];
+			floydSource.Play();
+				yield return new WaitForSeconds(floydSource.clip.length);
 
-		player2.playerIsInConversation = false;
-		player4.playerIsInConversation = false;
+		minnie.playerIsInConversation = false;
+		floyd.playerIsInConversation = false;
         aside1Played = true;
         conversationIsPlaying = false;
 
 	}
 
-	IEnumerator Aside2 (){
+	IEnumerator Aside2 (){ //lester initiates towards floyd
 
         conversationIsPlaying = true;
-		player2.playerIsInConversation = true;
-		player3.playerIsInConversation = true;
-		player4.playerIsInConversation = true;
+		minnie.playerIsInConversation = true;
+		lester.playerIsInConversation = true;
+		floyd.playerIsInConversation = true;
 
-		p3Source.clip = aside2Index[0];
-			p3Source.Play();
-				yield return new WaitForSeconds(p3Source.clip.length);
-		p4Source.clip = aside2Index[1];
-			p4Source.Play();
-				yield return new WaitForSeconds(p4Source.clip.length);
-		p2Source.clip = aside2Index[2];
-			p2Source.Play();
-				yield return new WaitForSeconds(p2Source.clip.length);
-		p4Source.clip = aside2Index[3];
-			p4Source.Play();
-				yield return new WaitForSeconds(p4Source.clip.length);
+		lesterSource.clip = aside2Index[0];
+			lesterSource.Play();
+				yield return new WaitForSeconds(lesterSource.clip.length);
+		floydSource.clip = aside2Index[1];
+			floydSource.Play();
+				yield return new WaitForSeconds(floydSource.clip.length);
+		minnieSource.clip = aside2Index[2];
+			minnieSource.Play();
+				yield return new WaitForSeconds(minnieSource.clip.length);
+		floydSource.clip = aside2Index[3];
+			floydSource.Play();
+				yield return new WaitForSeconds(floydSource.clip.length);
 
-		player2.playerIsInConversation = false;
-		player3.playerIsInConversation = false;
-		player4.playerIsInConversation = false;
+		minnie.playerIsInConversation = false;
+		lester.playerIsInConversation = false;
+		floyd.playerIsInConversation = false;
         aside2Played = true;
         conversationIsPlaying = false;
 	}
 
-	IEnumerator Aside3 (){
+	IEnumerator Aside3 (){ //rosa initiates toward lester
 
 		conversationIsPlaying = true;
-		player0.playerIsInConversation = true;
-		player3.playerIsInConversation = true;
-		player4.playerIsInConversation = true;
+		rosa.playerIsInConversation = true;
+		lester.playerIsInConversation = true;
+		floyd.playerIsInConversation = true;
 
-		p0Source.clip = aside3Index[0];
-			p0Source.Play();
-				yield return new WaitForSeconds(p0Source.clip.length);
-		p3Source.clip = aside3Index[1];
-			p3Source.Play();
-				yield return new WaitForSeconds(p3Source.clip.length);
-		p0Source.clip = aside3Index[2];
-			p0Source.Play();
-				yield return new WaitForSeconds(p0Source.clip.length);
-		p4Source.clip = aside3Index[3];
-			p4Source.Play();
-				yield return new WaitForSeconds(p4Source.clip.length);
-		p0Source.clip = aside3Index[4];
-			p0Source.Play();
-				yield return new WaitForSeconds(p0Source.clip.length);
-		p4Source.clip = aside3Index[5];
-			p4Source.Play();
-				yield return new WaitForSeconds(p4Source.clip.length);
+		rosaSource.clip = aside3Index[0];
+			rosaSource.Play();
+				yield return new WaitForSeconds(rosaSource.clip.length);
+		lesterSource.clip = aside3Index[1];
+			lesterSource.Play();
+				yield return new WaitForSeconds(lesterSource.clip.length);
+		rosaSource.clip = aside3Index[2];
+			rosaSource.Play();
+				yield return new WaitForSeconds(rosaSource.clip.length);
+		floydSource.clip = aside3Index[3];
+			floydSource.Play();
+				yield return new WaitForSeconds(floydSource.clip.length);
+		rosaSource.clip = aside3Index[4];
+			rosaSource.Play();
+				yield return new WaitForSeconds(rosaSource.clip.length);
+		floydSource.clip = aside3Index[5];
+			floydSource.Play();
+				yield return new WaitForSeconds(floydSource.clip.length);
 
-		player0.playerIsInConversation = false;
-		player3.playerIsInConversation = false;
-		player4.playerIsInConversation = false;
+		rosa.playerIsInConversation = false;
+		lester.playerIsInConversation = false;
+		floyd.playerIsInConversation = false;
 		aside3Played = true;
 		conversationIsPlaying = false;
 	}
 
-	IEnumerator Aside5 (){
+	IEnumerator Aside5 (){ // minnie initiates towards everyone
 
 		conversationIsPlaying = true;
-		player2.playerIsInConversation = true;
-		player3.playerIsInConversation = true;
-		player4.playerIsInConversation = true;
+		minnie.playerIsInConversation = true;
+		lester.playerIsInConversation = true;
+		floyd.playerIsInConversation = true;
 
 
-		p2Source.clip = aside5Index[0];
-			p2Source.Play();
-				yield return new WaitForSeconds(p2Source.clip.length);
-		p4Source.clip = aside5Index[1];
-			p4Source.Play();
-				yield return new WaitForSeconds(p4Source.clip.length);
-		p3Source.clip = aside5Index[2];
-			p3Source.Play();
-				yield return new WaitForSeconds(p3Source.clip.length);
-		p4Source.clip = aside5Index[3];
-			p4Source.Play();
-				yield return new WaitForSeconds(p4Source.clip.length);
-		p3Source.clip = aside5Index[4];
-			p3Source.Play();
-				yield return new WaitForSeconds(p3Source.clip.length);
-		p4Source.clip = aside5Index[5];
-			p4Source.Play();
-				yield return new WaitForSeconds(p4Source.clip.length);
-		p3Source.clip = aside5Index[6];
-			p3Source.Play();
-				yield return new WaitForSeconds(p3Source.clip.length);
+		minnieSource.clip = aside5Index[0];
+			minnieSource.Play();
+				yield return new WaitForSeconds(minnieSource.clip.length);
+		floydSource.clip = aside5Index[1];
+			floydSource.Play();
+				yield return new WaitForSeconds(floydSource.clip.length);
+		lesterSource.clip = aside5Index[2];
+			lesterSource.Play();
+				yield return new WaitForSeconds(lesterSource.clip.length);
+		floydSource.clip = aside5Index[3];
+			floydSource.Play();
+				yield return new WaitForSeconds(floydSource.clip.length);
+		lesterSource.clip = aside5Index[4];
+			lesterSource.Play();
+				yield return new WaitForSeconds(lesterSource.clip.length);
+		floydSource.clip = aside5Index[5];
+			floydSource.Play();
+				yield return new WaitForSeconds(floydSource.clip.length);
+		lesterSource.clip = aside5Index[6];
+			lesterSource.Play();
+				yield return new WaitForSeconds(lesterSource.clip.length);
 
-		player2.playerIsInConversation = false;
-		player3.playerIsInConversation = false;
-		player4.playerIsInConversation = false;
+		minnie.playerIsInConversation = false;
+		lester.playerIsInConversation = false;
+		floyd.playerIsInConversation = false;
 		aside5Played = true;
 		conversationIsPlaying = false;
 	}
 
-	IEnumerator Aside6 (){
+	IEnumerator Aside6 (){ // minnie initiates toward rosa or gonzalo
 
 		conversationIsPlaying = true;
-		player0.playerIsInConversation = true;
-		player1.playerIsInConversation = true;
-		player2.playerIsInConversation = true;
-		player3.playerIsInConversation = true;
+		rosa.playerIsInConversation = true;
+		gonzalo.playerIsInConversation = true;
+		minnie.playerIsInConversation = true;
+		lester.playerIsInConversation = true;
 
-		p2Source.clip = aside6Index[0];
-			p2Source.Play();
-				yield return new WaitForSeconds(p2Source.clip.length);
-		p0Source.clip = aside6Index[1];
-			p0Source.Play();
-				yield return new WaitForSeconds(p0Source.clip.length);
-		p1Source.clip = aside6Index[2];
-			p1Source.Play();
-				yield return new WaitForSeconds(p1Source.clip.length);
-		p2Source.clip = aside6Index[3];
-			p2Source.Play();
-				yield return new WaitForSeconds(p2Source.clip.length);
-		p0Source.clip = aside6Index[4];
-			p0Source.Play();
-				yield return new WaitForSeconds(p0Source.clip.length);
-		p3Source.clip = aside6Index[5];
-			p3Source.Play();
-				yield return new WaitForSeconds(p3Source.clip.length);
-		p2Source.clip = aside6Index[6];
-			p2Source.Play();
-				yield return new WaitForSeconds(p2Source.clip.length);
-		p0Source.clip = aside6Index[7];
-			p0Source.Play();
-				yield return new WaitForSeconds(p0Source.clip.length);
-		p1Source.clip = aside6Index[8];
-			p1Source.Play();
-				yield return new WaitForSeconds(p1Source.clip.length);
-		p0Source.clip = aside6Index[9];
-			p0Source.Play();
-				yield return new WaitForSeconds(p0Source.clip.length);
+		minnieSource.clip = aside6Index[0];
+			minnieSource.Play();
+				yield return new WaitForSeconds(minnieSource.clip.length);
+		rosaSource.clip = aside6Index[1];
+			rosaSource.Play();
+				yield return new WaitForSeconds(rosaSource.clip.length);
+		gonzaloSource.clip = aside6Index[2];
+			gonzaloSource.Play();
+				yield return new WaitForSeconds(gonzaloSource.clip.length);
+		minnieSource.clip = aside6Index[3];
+			minnieSource.Play();
+				yield return new WaitForSeconds(minnieSource.clip.length);
+		rosaSource.clip = aside6Index[4];
+			rosaSource.Play();
+				yield return new WaitForSeconds(rosaSource.clip.length);
+		lesterSource.clip = aside6Index[5];
+			lesterSource.Play();
+				yield return new WaitForSeconds(lesterSource.clip.length);
+		minnieSource.clip = aside6Index[6];
+			minnieSource.Play();
+				yield return new WaitForSeconds(minnieSource.clip.length);
+		rosaSource.clip = aside6Index[7];
+			rosaSource.Play();
+				yield return new WaitForSeconds(rosaSource.clip.length);
+		gonzaloSource.clip = aside6Index[8];
+			gonzaloSource.Play();
+				yield return new WaitForSeconds(gonzaloSource.clip.length);
+		rosaSource.clip = aside6Index[9];
+			rosaSource.Play();
+				yield return new WaitForSeconds(rosaSource.clip.length);
 
 
 
-		player0.playerIsInConversation = true;
-		player1.playerIsInConversation = true;
-		player2.playerIsInConversation = false;
-		player3.playerIsInConversation = false;
+		rosa.playerIsInConversation = true;
+		gonzalo.playerIsInConversation = true;
+		minnie.playerIsInConversation = false;
+		lester.playerIsInConversation = false;
 
 		aside6Played = true;
 		conversationIsPlaying = false;
