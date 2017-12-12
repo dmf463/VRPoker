@@ -113,7 +113,7 @@ public class SoundManager : MonoBehaviour
 	public void PlayAsideConversation(PokerPlayerRedux player)
 	{
 		if (player == rosa){
-			int convo = UnityEngine.Random.Range(0, 2);
+			int convo = UnityEngine.Random.Range(0, 3);
 
 			if(convo == 0){
 				if(!aside3Played) StartCoroutine("Aside3");
@@ -123,6 +123,9 @@ public class SoundManager : MonoBehaviour
 			}
 			if(convo == 2){
 				if(!aside6Played) StartCoroutine("Aside6");
+			}
+			if(convo == 3){
+				if(!lowAside3Played) StartCoroutine("lowAside3");
 			}
 		}
 		if (player == gonzalo){
@@ -135,7 +138,7 @@ public class SoundManager : MonoBehaviour
 			}
 		}
 		if (player == minnie){
-			int convo = UnityEngine.Random.Range(0, 2);
+			int convo = UnityEngine.Random.Range(0, 3);
 			if(convo == 0){
 				if(!aside1Played) StartCoroutine("Aside1");
 			}
@@ -145,9 +148,12 @@ public class SoundManager : MonoBehaviour
 			if(convo == 2){
 				if(!aside6Played) StartCoroutine("Aside6");
 			}
+			if(convo == 3){
+				if(!lowAside3Played) StartCoroutine("lowAside3");
+			}
 		}
 		if (player == lester){
-			int convo = UnityEngine.Random.Range(0, 2);
+			int convo = UnityEngine.Random.Range(0, 4);
 			if(convo == 0){
 				if(!aside2Played) StartCoroutine("Aside2");
 			}
@@ -157,9 +163,15 @@ public class SoundManager : MonoBehaviour
 			if(convo == 2){
 				if(!aside5Played) StartCoroutine("Aside5");
 			}
+			if(convo == 3){
+				if(!lowAside1Played) StartCoroutine("LowAside1");
+			}
+			if(convo == 4){
+				if(!lowAside4Played) StartCoroutine("LowAside4");
+			}
 		}
 		if (player == floyd){
-			int convo = UnityEngine.Random.Range(0, 2);
+			int convo = UnityEngine.Random.Range(0, 3);
 			if(convo == 0){
 				if(!aside1Played) StartCoroutine("Aside1");
 			}
@@ -168,6 +180,9 @@ public class SoundManager : MonoBehaviour
 			}
 			if(convo == 2){
 				if(!aside5Played) StartCoroutine("Aside5");
+			}
+			if(convo == 3){
+				if(!lowAside2Played) StartCoroutine("lowAside2");
 			}
 		}
 	}
@@ -348,4 +363,107 @@ public class SoundManager : MonoBehaviour
 		aside6Played = true;
 		conversationIsPlaying = false;
 	}
+
+	IEnumerator LowAside1 (){ //lester initiates
+
+		conversationIsPlaying = true;
+		minnie.playerIsInConversation = true;
+		lester.playerIsInConversation = true;
+		floyd.playerIsInConversation = true;
+
+		lesterSource.clip = lowAside1Index[0];
+		lesterSource.Play();
+		yield return new WaitForSeconds(lesterSource.clip.length);
+		floydSource.clip = lowAside1Index[1];
+		floydSource.Play();
+		yield return new WaitForSeconds(floydSource.clip.length);
+		minnieSource.clip = lowAside1Index[2];
+		minnieSource.Play();
+		yield return new WaitForSeconds(minnieSource.clip.length);
+
+
+		minnie.playerIsInConversation = false;
+		lester.playerIsInConversation = false;
+		floyd.playerIsInConversation = false;
+		lowAside1Played = true;
+		conversationIsPlaying = false;
+	}
+
+	IEnumerator LowAside2 (){ //floyd initiates
+
+		conversationIsPlaying = true;
+		lester.playerIsInConversation = true;
+		floyd.playerIsInConversation = true;
+
+
+		floydSource.clip = lowAside1Index[0];
+		floydSource.Play();
+		yield return new WaitForSeconds(floydSource.clip.length);
+		lesterSource.clip = lowAside1Index[1];
+		lesterSource.Play();
+		yield return new WaitForSeconds(lesterSource.clip.length);
+		floydSource.clip = lowAside1Index[2];
+		floydSource.Play();
+		yield return new WaitForSeconds(floydSource.clip.length);
+
+
+		lester.playerIsInConversation = false;
+		floyd.playerIsInConversation = false;
+		lowAside2Played = true;
+		conversationIsPlaying = false;
+	}
+
+	IEnumerator LowAside3 (){ //rosa initiates toward minnie
+		
+		conversationIsPlaying = true;
+		minnie.playerIsInConversation = true;
+		rosa.playerIsInConversation = true;
+
+
+		rosaSource.clip = lowAside3Index[0];
+		rosaSource.Play();
+		yield return new WaitForSeconds(rosaSource.clip.length);
+		minnieSource.clip = lowAside3Index[1];
+		minnieSource.Play();
+		yield return new WaitForSeconds(minnieSource.clip.length);
+		rosaSource.clip = lowAside3Index[2];
+		rosaSource.Play();
+		yield return new WaitForSeconds(rosaSource.clip.length);
+
+
+		minnie.playerIsInConversation = false;
+		rosa.playerIsInConversation = false;
+		lowAside3Played = true;
+		conversationIsPlaying = false;
+	}
+
+	IEnumerator LowAside4 (){ //lester initiates
+
+		conversationIsPlaying = true;
+		minnie.playerIsInConversation = true;
+		lester.playerIsInConversation = true;
+		floyd.playerIsInConversation = true;
+
+		lesterSource.clip = lowAside4Index[0];
+		lesterSource.Play();
+		yield return new WaitForSeconds(lesterSource.clip.length);
+		floydSource.clip = lowAside4Index[1];
+		floydSource.Play();
+		yield return new WaitForSeconds(floydSource.clip.length);
+		lesterSource.clip = lowAside4Index[2];
+		lesterSource.Play();
+		yield return new WaitForSeconds(lesterSource.clip.length);
+		minnieSource.clip = lowAside4Index[3];
+		minnieSource.Play();
+		yield return new WaitForSeconds(minnieSource.clip.length);
+
+
+		minnie.playerIsInConversation = false;
+		lester.playerIsInConversation = false;
+		floyd.playerIsInConversation = false;
+		lowAside4Played = true;
+		conversationIsPlaying = false;
+	}
+
+
 }
