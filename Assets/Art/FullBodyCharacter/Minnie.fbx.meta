@@ -1,51 +1,51 @@
 fileFormatVersion: 2
 guid: 0d4c6744e856545a88219822cd6d62e5
-timeCreated: 1513011512
+timeCreated: 1513129350
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
-    100000: Body_M_GeoRndr
+    100000: Body_M_GeoRndr2
     100002: //RootNode
-    100004: polySurface22
-    100006: polySurface32
-    100008: pPlane3
-    100010: transform23
-    100012: transform24
-    100014: transform25
-    400000: Body_M_GeoRndr
+    100004: polySurface31
+    100006: pPlane15
+    100008: pPlane21
+    100010: transform52
+    100012: transform53
+    100014: transform54
+    400000: Body_M_GeoRndr2
     400002: //RootNode
-    400004: polySurface22
-    400006: polySurface32
-    400008: pPlane3
-    400010: transform23
-    400012: transform24
-    400014: transform25
-    2300000: polySurface32
-    3300000: polySurface32
-    4300000: polySurface32
+    400004: polySurface31
+    400006: pPlane15
+    400008: pPlane21
+    400010: transform52
+    400012: transform53
+    400014: transform54
+    2300000: pPlane21
+    3300000: pPlane21
+    4300000: pPlane21
     9500000: //RootNode
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: bfbfbf
-    second: {fileID: 2100000, guid: 4ef9dd31f4bd94eefbbac3c32ab84392, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
       name: lambert1
-    second: {fileID: 2100000, guid: 70a0a322147009246893c3566533e0f4, type: 2}
+    second: {fileID: 2100000, guid: d8943c2408e3d451c8bbf119d12e702f, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: lambert2
-    second: {fileID: 2100000, guid: 4eadf2ffb1b03435ba930a095b4c8402, type: 2}
+      name: lambert10
+    second: {fileID: 2100000, guid: 1fffa73c3726a41579f8ead9aeffcce7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lambert5
+    second: {fileID: 2100000, guid: 36f7f9c5e348a47fdb2243ca26c6ecee, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
-    materialSearch: 1
-    materialLocation: 0
+    materialSearch: 0
+    materialLocation: 1
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0

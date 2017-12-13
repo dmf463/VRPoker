@@ -1,102 +1,102 @@
 fileFormatVersion: 2
 guid: 5e287bf7be0d94184b76c6e1e1744744
-timeCreated: 1513011439
+timeCreated: 1513130536
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
     100000: Body_M_GeoRndr1
-    100002: GM:pCylinder4
-    100004: //RootNode
-    100006: pCube2
-    100008: pCylinder13
-    100010: pCylinder14
-    100012: pCylinder15
-    100014: pCylinder16
-    100016: pCylinder17
+    100002: //RootNode
+    100004: pCube4
+    100006: pCylinder23
+    100008: pCylinder24
+    100010: pCylinder25
+    100012: pCylinder26
+    100014: pCylinder27
+    100016: pCylinder35
     100018: pCylinder7
     100020: pCylinder8
-    100022: polySurface10
-    100024: polySurface11
-    100026: pPlane8
-    100028: pPlane9
-    100030: pSphere2
-    100032: pSphere3
-    100034: pSphere4
-    100036: pSphere5
-    100038: pSphere6
-    100040: pSphere7
-    100042: pSphere8
-    100044: transform14
-    100046: transform15
-    100048: transform16
-    100050: transform17
-    100052: transform18
-    100054: transform19
-    100056: transform20
-    100058: transform21
-    100060: transform22
-    100062: transform23
-    100064: transform24
-    100066: transform25
-    100068: transform26
-    100070: transform27
-    100072: transform28
-    100074: transform29
-    100076: transform30
-    100078: transform31
-    100080: transform32
+    100022: polySurface29
+    100024: polySurface30
+    100026: pPlane13
+    100028: pPlane14
+    100030: pSphere16
+    100032: pSphere17
+    100034: pSphere18
+    100036: pSphere19
+    100038: pSphere20
+    100040: pSphere21
+    100042: pSphere22
+    100044: transform52
+    100046: transform53
+    100048: transform54
+    100050: transform55
+    100052: transform56
+    100054: transform57
+    100056: transform58
+    100058: transform59
+    100060: transform60
+    100062: transform61
+    100064: transform62
+    100066: transform63
+    100068: transform64
+    100070: transform65
+    100072: transform66
+    100074: transform67
+    100076: transform68
+    100078: transform69
+    100080: transform70
     400000: Body_M_GeoRndr1
-    400002: GM:pCylinder4
-    400004: //RootNode
-    400006: pCube2
-    400008: pCylinder13
-    400010: pCylinder14
-    400012: pCylinder15
-    400014: pCylinder16
-    400016: pCylinder17
+    400002: //RootNode
+    400004: pCube4
+    400006: pCylinder23
+    400008: pCylinder24
+    400010: pCylinder25
+    400012: pCylinder26
+    400014: pCylinder27
+    400016: pCylinder35
     400018: pCylinder7
     400020: pCylinder8
-    400022: polySurface10
-    400024: polySurface11
-    400026: pPlane8
-    400028: pPlane9
-    400030: pSphere2
-    400032: pSphere3
-    400034: pSphere4
-    400036: pSphere5
-    400038: pSphere6
-    400040: pSphere7
-    400042: pSphere8
-    400044: transform14
-    400046: transform15
-    400048: transform16
-    400050: transform17
-    400052: transform18
-    400054: transform19
-    400056: transform20
-    400058: transform21
-    400060: transform22
-    400062: transform23
-    400064: transform24
-    400066: transform25
-    400068: transform26
-    400070: transform27
-    400072: transform28
-    400074: transform29
-    400076: transform30
-    400078: transform31
-    400080: transform32
-    2300000: pCylinder17
-    3300000: pCylinder17
-    4300000: pCylinder17
+    400022: polySurface29
+    400024: polySurface30
+    400026: pPlane13
+    400028: pPlane14
+    400030: pSphere16
+    400032: pSphere17
+    400034: pSphere18
+    400036: pSphere19
+    400038: pSphere20
+    400040: pSphere21
+    400042: pSphere22
+    400044: transform52
+    400046: transform53
+    400048: transform54
+    400050: transform55
+    400052: transform56
+    400054: transform57
+    400056: transform58
+    400058: transform59
+    400060: transform60
+    400062: transform61
+    400064: transform62
+    400066: transform63
+    400068: transform64
+    400070: transform65
+    400072: transform66
+    400074: transform67
+    400076: transform68
+    400078: transform69
+    400080: transform70
+    2300000: pCylinder35
+    3300000: pCylinder35
+    4300000: pCylinder35
     9500000: //RootNode
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: bfbfbf
-    second: {fileID: 2100000, guid: 4ef9dd31f4bd94eefbbac3c32ab84392, type: 2}
+      name: lambert2
+    second: {fileID: 2100000, guid: 4eadf2ffb1b03435ba930a095b4c8402, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -121,7 +121,7 @@ ModelImporter:
     importMaterials: 1
     materialName: 0
     materialSearch: 1
-    materialLocation: 0
+    materialLocation: 1
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0

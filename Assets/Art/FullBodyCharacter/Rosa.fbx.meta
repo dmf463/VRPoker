@@ -1,120 +1,68 @@
 fileFormatVersion: 2
 guid: 576832bc9467e413dad46aea6eb53ae7
-timeCreated: 1513011528
+timeCreated: 1513130090
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
-    100000: Body_M_GeoRndr1
-    100002: pCylinder9
-    100004: polySurface1
-    100006: polySurface10
-    100008: polySurface11
-    100010: polySurface17
-    100012: polySurface18
-    100014: polySurface19
-    100016: polySurface2
-    100018: polySurface20
-    100020: polySurface21
-    100022: polySurface3
-    100024: polySurface3 1
-    100026: polySurface4
-    100028: polySurface7
-    100030: polySurface8
-    100032: polySurface9
-    100034: pPlane10
-    100036: pPlane11
-    100038: pPlane4
-    100040: pPlane5
-    100042: pPlane6
-    100044: pPlane7
-    100046: pPlane8
-    100048: pPlane9
-    100050: //RootNode
-    100052: transform1
-    100054: transform2
-    100056: transform23
-    100058: transform24
-    100060: transform25
-    100062: transform26
-    100064: transform27
-    100066: transform28
-    100068: transform29
-    100070: transform3
-    100072: transform30
-    100074: transform31
-    100076: transform32
-    100078: transform33
-    100080: transform34
-    100082: transform35
-    100084: transform36
-    100086: transform37
-    100088: transform4
-    100090: transform5
-    100092: transform6
-    100094: transform7
-    100096: transform8
-    100098: transform9
-    400000: Body_M_GeoRndr1
-    400002: pCylinder9
-    400004: polySurface1
-    400006: polySurface10
-    400008: polySurface11
-    400010: polySurface17
-    400012: polySurface18
-    400014: polySurface19
-    400016: polySurface2
-    400018: polySurface20
-    400020: polySurface21
-    400022: polySurface3
-    400024: polySurface3 1
-    400026: polySurface4
-    400028: polySurface7
-    400030: polySurface8
-    400032: polySurface9
-    400034: pPlane10
-    400036: pPlane11
-    400038: pPlane4
-    400040: pPlane5
-    400042: pPlane6
-    400044: pPlane7
-    400046: pPlane8
-    400048: pPlane9
-    400050: //RootNode
-    400052: transform1
-    400054: transform2
-    400056: transform23
-    400058: transform24
-    400060: transform25
-    400062: transform26
-    400064: transform27
-    400066: transform28
-    400068: transform29
-    400070: transform3
-    400072: transform30
-    400074: transform31
-    400076: transform32
-    400078: transform33
-    400080: transform34
-    400082: transform35
-    400084: transform36
-    400086: transform37
-    400088: transform4
-    400090: transform5
-    400092: transform6
-    400094: transform7
-    400096: transform8
-    400098: transform9
-    2300000: polySurface3
-    3300000: polySurface3
-    4300000: polySurface3
+    100000: //RootNode
+    100002: test_maya:Body_M_GeoRndr1
+    100004: test_maya:pCylinder9
+    100006: test_maya:polySurface10
+    100008: test_maya:polySurface11
+    100010: test_maya:polySurface3
+    100012: test_maya:polySurface4
+    100014: test_maya:polySurface7
+    100016: test_maya:polySurface7 1
+    100018: test_maya:polySurface8
+    100020: test_maya:polySurface9
+    100022: test_maya:pPlane11
+    100024: test_maya:pPlane6
+    100026: test_maya:pPlane7
+    100028: test_maya:transform14
+    100030: test_maya:transform15
+    100032: test_maya:transform16
+    100034: test_maya:transform17
+    100036: test_maya:transform18
+    100038: test_maya:transform19
+    100040: test_maya:transform20
+    100042: test_maya:transform21
+    100044: test_maya:transform22
+    100046: test_maya:transform23
+    400000: //RootNode
+    400002: test_maya:Body_M_GeoRndr1
+    400004: test_maya:pCylinder9
+    400006: test_maya:polySurface10
+    400008: test_maya:polySurface11
+    400010: test_maya:polySurface3
+    400012: test_maya:polySurface4
+    400014: test_maya:polySurface7
+    400016: test_maya:polySurface7 1
+    400018: test_maya:polySurface8
+    400020: test_maya:polySurface9
+    400022: test_maya:pPlane11
+    400024: test_maya:pPlane6
+    400026: test_maya:pPlane7
+    400028: test_maya:transform14
+    400030: test_maya:transform15
+    400032: test_maya:transform16
+    400034: test_maya:transform17
+    400036: test_maya:transform18
+    400038: test_maya:transform19
+    400040: test_maya:transform20
+    400042: test_maya:transform21
+    400044: test_maya:transform22
+    400046: test_maya:transform23
+    2300000: test_maya:polySurface7
+    3300000: test_maya:polySurface7
+    4300000: test_maya:polySurface7
     9500000: //RootNode
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: bfbfbf
-    second: {fileID: 2100000, guid: 4ef9dd31f4bd94eefbbac3c32ab84392, type: 2}
+      name: Default_Material
+    second: {fileID: 2100000, guid: ccbc1261e872549e9a144b7ed6153948, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -123,8 +71,18 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: lambert1
-    second: {fileID: 2100000, guid: 70a0a322147009246893c3566533e0f4, type: 2}
+      name: blinn2
+    second: {fileID: 2100000, guid: 84de4a86fa7a14902b321be05d90aa54, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lambert2
+    second: {fileID: 2100000, guid: 4eadf2ffb1b03435ba930a095b4c8402, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lambert5
+    second: {fileID: 2100000, guid: 7469a477fbddc46f685c9528f6fa77e2, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -133,8 +91,18 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: lambert7
-    second: {fileID: 2100000, guid: 7d4efb3c1132349258ccb3e2beb7299c, type: 2}
+      name: lambert8
+    second: {fileID: 2100000, guid: e8da42e86bb184a06972329f21bb81bf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lambert9
+    second: {fileID: 2100000, guid: 647ebb657fab64adaaec32ced43b06ce, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: test_maya_lambert9
+    second: {fileID: 2100000, guid: 5b164e474b6de406aa4b5d2b02e978d9, type: 2}
   materials:
     importMaterials: 1
     materialName: 0

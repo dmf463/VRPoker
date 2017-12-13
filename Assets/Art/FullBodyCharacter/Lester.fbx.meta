@@ -1,88 +1,84 @@
 fileFormatVersion: 2
 guid: 1b368f49b2b6c4a1a88d143fd4638501
-timeCreated: 1513011499
+timeCreated: 1513132524
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
     100000: Body_M_GeoRndr1
     100002: //RootNode
-    100004: pCylinder10
-    100006: pCylinder12
-    100008: pCylinder6
-    100010: pCylinder7
-    100012: pCylinder8
-    100014: pCylinder9
-    100016: polySurface10
-    100018: polySurface11
-    100020: polySurface11 1
-    100022: pPlane4
-    100024: pPlane5
-    100026: pPlane6
-    100028: pPlane7
-    100030: transform14
-    100032: transform15
-    100034: transform16
-    100036: transform17
-    100038: transform18
-    100040: transform19
-    100042: transform20
-    100044: transform21
-    100046: transform22
-    100048: transform23
-    100050: transform24
-    100052: transform25
-    100054: transform26
-    100056: WrappedGuy:pCube17
+    100004: pCube17
+    100006: pCylinder28
+    100008: pCylinder29
+    100010: pCylinder30
+    100012: pCylinder31
+    100014: pCylinder35
+    100016: pCylinder7
+    100018: pCylinder8
+    100020: polySurface32
+    100022: polySurface33
+    100024: pPlane16
+    100026: pPlane17
+    100028: pPlane18
+    100030: pPlane19
+    100032: transform52
+    100034: transform53
+    100036: transform54
+    100038: transform55
+    100040: transform56
+    100042: transform57
+    100044: transform58
+    100046: transform59
+    100048: transform60
+    100050: transform61
+    100052: transform62
+    100054: transform63
+    100056: transform64
     400000: Body_M_GeoRndr1
     400002: //RootNode
-    400004: pCylinder10
-    400006: pCylinder12
-    400008: pCylinder6
-    400010: pCylinder7
-    400012: pCylinder8
-    400014: pCylinder9
-    400016: polySurface10
-    400018: polySurface11
-    400020: polySurface11 1
-    400022: pPlane4
-    400024: pPlane5
-    400026: pPlane6
-    400028: pPlane7
-    400030: transform14
-    400032: transform15
-    400034: transform16
-    400036: transform17
-    400038: transform18
-    400040: transform19
-    400042: transform20
-    400044: transform21
-    400046: transform22
-    400048: transform23
-    400050: transform24
-    400052: transform25
-    400054: transform26
-    400056: WrappedGuy:pCube17
-    2300000: polySurface11
-    3300000: polySurface11
-    4300000: polySurface11
+    400004: pCube17
+    400006: pCylinder28
+    400008: pCylinder29
+    400010: pCylinder30
+    400012: pCylinder31
+    400014: pCylinder35
+    400016: pCylinder7
+    400018: pCylinder8
+    400020: polySurface32
+    400022: polySurface33
+    400024: pPlane16
+    400026: pPlane17
+    400028: pPlane18
+    400030: pPlane19
+    400032: transform52
+    400034: transform53
+    400036: transform54
+    400038: transform55
+    400040: transform56
+    400042: transform57
+    400044: transform58
+    400046: transform59
+    400048: transform60
+    400050: transform61
+    400052: transform62
+    400054: transform63
+    400056: transform64
+    2300000: pCylinder35
+    3300000: pCylinder35
+    4300000: pCylinder35
+    7400000: Take 001
     9500000: //RootNode
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: bfbfbf
-    second: {fileID: 2100000, guid: 4ef9dd31f4bd94eefbbac3c32ab84392, type: 2}
+      name: lambert10
+    second: {fileID: 2100000, guid: 6a14ff555cd804021b79ad52406a7ff9, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: lambert2
     second: {fileID: 2100000, guid: 4eadf2ffb1b03435ba930a095b4c8402, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: lambert4
-    second: {fileID: 2100000, guid: e06546db3f64441709aa305a11fd1781, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
