@@ -59,6 +59,10 @@ public class LogCards : MonoBehaviour
                     {
                         Debug.Log(other.gameObject.name + " has already been logged by something else");
                     }
+                    else if (other.gameObject.GetComponent<Rigidbody>().isKinematic == true)
+                    {
+                        Debug.Log(other.gameObject.name + " hasn't been let go of yet");
+                    }
                     else
                     {
                         Table.instance.AddCardTo(playerDestinations[i], other.GetComponent<Card>());

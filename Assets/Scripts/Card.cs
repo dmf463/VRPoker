@@ -443,8 +443,6 @@ public class Card : InteractionSuperClass {
     //notice the giant bug alert? this could probably be fixed with a RayCast
     public override void OnDetachedFromHand(Hand hand)
     {
-        //if(Table.dealerState == DealerState.DealingState)
-        //{
             if (!Services.PokerRules.cardsPulled.Contains(cardType))
             {
                 Services.PokerRules.cardsPulled.Add(cardType);
@@ -463,10 +461,18 @@ public class Card : InteractionSuperClass {
         }
 		Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cards[Random.Range(0,Services.SoundManager.cards.Length)], 0.25f, Random.Range(0.95f, 1.05f), transform.position);
             StartCoroutine(CheckVelocity(.025f));
-        //}
+        if (Table.gameState == GameState.NewRound)
+        {
+            StartCoroutine(CheckIfFaceUpPreFlop(2, this));
+        }
         base.OnDetachedFromHand(hand);
     }
 
+    IEnumerator CheckIfFaceUpPreFlop(float time, Card card)
+    {
+        yield return new WaitForSeconds(time);
+        if (card.cardFacingUp) Table.gameState = GameState.Misdeal;
+    }
 
     //basically we want to give some time for the card to actually LEAVE the hand before we check the velocity
     //it's this that lets us know whether the card was thrown hard or soft

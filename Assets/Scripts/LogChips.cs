@@ -52,12 +52,12 @@ public class LogChips : MonoBehaviour
                         {
                             if (Services.Dealer.players[i].chipCount != Services.Dealer.players[i].chipsWon + Services.Dealer.players[i].ChipCountToCheckWhenWinning)
                             {
-                                if (other.GetComponent<Chip>().chipStack == null)
-                                {
-                                    Debug.Log("adding a chip of " + other.GetComponent<Chip>().chipData.ChipValue);
-                                    Table.instance.AddChipTo(playerDestinations[i], other.GetComponent<Chip>().chipData.ChipValue);
-                                }
-                                else if (other.GetComponent<Chip>().chipStack != null)
+                                //if (other.GetComponent<Chip>().chipStack == null)
+                                //{
+                                //    Debug.Log("adding a chip of " + other.GetComponent<Chip>().chipData.ChipValue);
+                                //    Table.instance.AddChipTo(playerDestinations[i], other.GetComponent<Chip>().chipData.ChipValue);
+                                //}
+                                /*else */if (other.GetComponent<Chip>().chipStack != null)
                                 {
                                     ChipStack chipStack;
                                     chipStack = other.GetComponent<Chip>().chipStack;
@@ -86,11 +86,11 @@ public class LogChips : MonoBehaviour
                         Services.Dealer.players[i].PlayerState == PlayerState.Winner &&
                         Services.Dealer.players[i].chipCount != Services.Dealer.players[i].chipsWon + Services.Dealer.players[i].ChipCountToCheckWhenWinning)
                     {
-                        if (other.GetComponent<Chip>().chipStack == null)
-                        {
-                            Table.instance.RemoveChipFrom(playerDestinations[i], other.GetComponent<Chip>().chipData.ChipValue);
-                        }
-                        else if (other.GetComponent<Chip>().chipStack != null)
+                        //if (other.GetComponent<Chip>().chipStack == null)
+                        //{
+                        //    Table.instance.RemoveChipFrom(playerDestinations[i], other.GetComponent<Chip>().chipData.ChipValue);
+                        //}
+                        /*else */if (other.GetComponent<Chip>().chipStack != null)
                         {
                             ChipStack chipStack;
                             chipStack = other.GetComponent<Chip>().chipStack;
