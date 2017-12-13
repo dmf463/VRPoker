@@ -116,74 +116,93 @@ public class SoundManager : MonoBehaviour
 			int convo = UnityEngine.Random.Range(0, 3);
 
 			if(convo == 0){
-				if(!aside3Played) StartCoroutine("Aside3");
+                if (!aside3Played) StartCoroutine("Aside3");
+                else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
 			}
 			if(convo == 1){
 				if(!aside5Played) StartCoroutine("Aside5");
-			}
+                else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
+            }
 			if(convo == 2){
 				if(!aside6Played) StartCoroutine("Aside6");
-			}
+                else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
+            }
 			if(convo == 3){
 				if(!lowAside3Played) StartCoroutine("lowAside3");
-			}
+                else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
+            }
 		}
 		if (player == gonzalo){
 			int convo = UnityEngine.Random.Range(0, 1);
 			if(convo == 0){
 				if(!aside5Played) StartCoroutine("Aside5");
-			}
+                else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
+            }
 			if(convo == 1){
 				if(!aside6Played) StartCoroutine("Aside6");
-			}
+                else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
+            }
 		}
 		if (player == minnie){
 			int convo = UnityEngine.Random.Range(0, 3);
 			if(convo == 0){
 				if(!aside1Played) StartCoroutine("Aside1");
-			}
+                else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
+            }
 			if(convo == 1){
 				if(!aside5Played) StartCoroutine("Aside5");
-			}
+                else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
+            }
 			if(convo == 2){
 				if(!aside6Played) StartCoroutine("Aside6");
-			}
+                else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
+            }
 			if(convo == 3){
 				if(!lowAside3Played) StartCoroutine("lowAside3");
-			}
+                else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
+            }
 		}
 		if (player == lester){
 			int convo = UnityEngine.Random.Range(0, 4);
 			if(convo == 0){
 				if(!aside2Played) StartCoroutine("Aside2");
-			}
+                else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
+            }
 			if(convo == 1){
 				if(!aside3Played) StartCoroutine("Aside3");
-			}
+                else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
+            }
 			if(convo == 2){
 				if(!aside5Played) StartCoroutine("Aside5");
-			}
+                else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
+            }
 			if(convo == 3){
 				if(!lowAside1Played) StartCoroutine("LowAside1");
-			}
+                else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
+            }
 			if(convo == 4){
 				if(!lowAside4Played) StartCoroutine("LowAside4");
-			}
+                else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
+            }
 		}
 		if (player == floyd){
 			int convo = UnityEngine.Random.Range(0, 3);
 			if(convo == 0){
 				if(!aside1Played) StartCoroutine("Aside1");
-			}
+                else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
+            }
 			if(convo == 1){
 				if(!aside2Played) StartCoroutine("Aside2");
-			}
+                else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
+            }
 			if(convo == 2){
 				if(!aside5Played) StartCoroutine("Aside5");
-			}
+                else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
+            }
 			if(convo == 3){
 				if(!lowAside2Played) StartCoroutine("lowAside2");
-			}
+                else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
+            }
 		}
 	}
 
