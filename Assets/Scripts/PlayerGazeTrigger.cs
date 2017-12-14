@@ -61,7 +61,7 @@ public class PlayerGazeTrigger : MonoBehaviour
                 progressImage.fillAmount = 0;
                 activated = false;
                 progressImage.GetComponent<CardIndicatorLerp>().enabled = false;
-               
+                progressImageBackground.GetComponent<CardIndicatorLerp>().enabled = false;
             }
             else
             {
