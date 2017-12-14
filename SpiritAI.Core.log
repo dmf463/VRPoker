@@ -1,19 +1,20 @@
 Log Initialized
-[TextGen/P] Loading C:/Users/gcgod/Desktop/TheDealer/VRPoker/Assets/StreamingAssets/productionist/Fragments.grammar
-[TextGen/PG] Loading grammar: C:/Users/gcgod/Desktop/TheDealer/VRPoker/Assets/StreamingAssets/productionist/Fragments.grammar
+[TextGen/P] Loading C:/Users/dmf46/Desktop/MyProjects/VRPoker/Assets/StreamingAssets/productionist/Fragments.grammar
+[TextGen/PG] Loading grammar: C:/Users/dmf46/Desktop/MyProjects/VRPoker/Assets/StreamingAssets/productionist/Fragments.grammar
 [TextGen/PG] Loaded 131 Tag Id -> Tag Mappings
 [TextGen/PG] Loaded 131 Tag -> Tag Ids Mappings
 [TextGen/PG] Loaded 132 Nonterminal Symbols
 [TextGen/PG] Compiling Tags...
-[TextGen/P] Loading C:/Users/gcgod/Desktop/TheDealer/VRPoker/Assets/StreamingAssets/productionist/Fragments.meanings
-[TextGen/PM] Loading expressible meanings: C:/Users/gcgod/Desktop/TheDealer/VRPoker/Assets/StreamingAssets/productionist/Fragments.meanings
+[TextGen/P] Loading C:/Users/dmf46/Desktop/MyProjects/VRPoker/Assets/StreamingAssets/productionist/Fragments.meanings
+[TextGen/PM] Loading expressible meanings: C:/Users/dmf46/Desktop/MyProjects/VRPoker/Assets/StreamingAssets/productionist/Fragments.meanings
 [TextGen/PM] Loaded 331 Meanings
-[TextGen/P] Loading C:/Users/gcgod/Desktop/TheDealer/VRPoker/Assets/StreamingAssets/productionist-km/Fragments.grammar
-[TextGen/PG] Loading grammar: C:/Users/gcgod/Desktop/TheDealer/VRPoker/Assets/StreamingAssets/productionist-km/Fragments.grammar
+[TextGen/P] Loading C:/Users/dmf46/Desktop/MyProjects/VRPoker/Assets/StreamingAssets/productionist-km/Fragments.grammar
+[TextGen/PG] Loading grammar: C:/Users/dmf46/Desktop/MyProjects/VRPoker/Assets/StreamingAssets/productionist-km/Fragments.grammar
 [TextGen/PG] Loaded 134 Tag Id -> Tag Mappings
 [TextGen/PG] Loaded 134 Tag -> Tag Ids Mappings
 [TextGen/PG] Loaded 132 Nonterminal Symbols
 [TextGen/PG] Compiling Tags...
+<<<<<<< HEAD
 [TextGen/P] Loading C:/Users/gcgod/Desktop/TheDealer/VRPoker/Assets/StreamingAssets/productionist-km/Fragments.meanings
 [TextGen/PM] Loading expressible meanings: C:/Users/gcgod/Desktop/TheDealer/VRPoker/Assets/StreamingAssets/productionist-km/Fragments.meanings
 [TextGen/PM] Loaded 4 Meanings
@@ -961,6 +962,10 @@ START
 [TextGen/PG] Compiling Tags...
 [TextGen/P] Loading C:/Users/gcgod/Desktop/TheDealer/VRPoker/Assets/StreamingAssets/productionist-km/Fragments.meanings
 [TextGen/PM] Loading expressible meanings: C:/Users/gcgod/Desktop/TheDealer/VRPoker/Assets/StreamingAssets/productionist-km/Fragments.meanings
+=======
+[TextGen/P] Loading C:/Users/dmf46/Desktop/MyProjects/VRPoker/Assets/StreamingAssets/productionist-km/Fragments.meanings
+[TextGen/PM] Loading expressible meanings: C:/Users/dmf46/Desktop/MyProjects/VRPoker/Assets/StreamingAssets/productionist-km/Fragments.meanings
+>>>>>>> master
 [TextGen/PM] Loaded 4 Meanings
 [TextGen/P] Received Content Request
 [TextGen/P] Performing Normal Content Request
