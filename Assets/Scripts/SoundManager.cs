@@ -229,6 +229,7 @@ public class SoundManager : MonoBehaviour
 			floydSource.Play();
 				yield return new WaitForSeconds(floydSource.clip.length);
 
+		yield return new WaitForSeconds (2);
 		minnie.playerIsInConversation = false;
 		floyd.playerIsInConversation = false;
         aside1Played = true;
@@ -256,6 +257,7 @@ public class SoundManager : MonoBehaviour
 			floydSource.Play();
 				yield return new WaitForSeconds(floydSource.clip.length);
 
+		yield return new WaitForSeconds (2);
 		minnie.playerIsInConversation = false;
 		lester.playerIsInConversation = false;
 		floyd.playerIsInConversation = false;
@@ -289,6 +291,7 @@ public class SoundManager : MonoBehaviour
 			floydSource.Play();
 				yield return new WaitForSeconds(floydSource.clip.length);
 
+		yield return new WaitForSeconds (2);
 		rosa.playerIsInConversation = false;
 		lester.playerIsInConversation = false;
 		floyd.playerIsInConversation = false;
@@ -326,6 +329,7 @@ public class SoundManager : MonoBehaviour
 			lesterSource.Play();
 				yield return new WaitForSeconds(lesterSource.clip.length);
 
+		yield return new WaitForSeconds (2);
 		minnie.playerIsInConversation = false;
 		lester.playerIsInConversation = false;
 		floyd.playerIsInConversation = false;
@@ -373,7 +377,7 @@ public class SoundManager : MonoBehaviour
 				yield return new WaitForSeconds(rosaSource.clip.length);
 
 
-
+		yield return new WaitForSeconds (2);
 		rosa.playerIsInConversation = true;
 		gonzalo.playerIsInConversation = true;
 		minnie.playerIsInConversation = false;
@@ -400,7 +404,7 @@ public class SoundManager : MonoBehaviour
 		minnieSource.Play();
 		yield return new WaitForSeconds(minnieSource.clip.length);
 
-
+		yield return new WaitForSeconds (2);
 		minnie.playerIsInConversation = false;
 		lester.playerIsInConversation = false;
 		floyd.playerIsInConversation = false;
@@ -425,7 +429,7 @@ public class SoundManager : MonoBehaviour
 		floydSource.Play();
 		yield return new WaitForSeconds(floydSource.clip.length);
 
-
+		yield return new WaitForSeconds (2);
 		lester.playerIsInConversation = false;
 		floyd.playerIsInConversation = false;
 		lowAside2Played = true;
@@ -449,7 +453,7 @@ public class SoundManager : MonoBehaviour
 		rosaSource.Play();
 		yield return new WaitForSeconds(rosaSource.clip.length);
 
-
+		yield return new WaitForSeconds (2);
 		minnie.playerIsInConversation = false;
 		rosa.playerIsInConversation = false;
 		lowAside3Played = true;
@@ -476,7 +480,7 @@ public class SoundManager : MonoBehaviour
 		minnieSource.Play();
 		yield return new WaitForSeconds(minnieSource.clip.length);
 
-
+		yield return new WaitForSeconds (2);
 		minnie.playerIsInConversation = false;
 		lester.playerIsInConversation = false;
 		floyd.playerIsInConversation = false;

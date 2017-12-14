@@ -105,7 +105,7 @@ public class Dealer : MonoBehaviour
             if (Services.PokerRules.cardsPulled.Count == PlayerAtTableCount() * 2 && !checkedPreFlopCardCount)
             {
                 checkedPreFlopCardCount = true;
-                StartCoroutine(CheckForMistakesPreFlop(1));
+                StartCoroutine(CheckForMistakesPreFlop(1.5f));
             }
         }
         else if (Table.gameState == GameState.CleanUp)

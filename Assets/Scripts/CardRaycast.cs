@@ -16,6 +16,7 @@ public class CardRaycast : MonoBehaviour {
     private int floor = 14;
     private int chip = 9;
     private int player = 11;
+	private int roof = 13;
 
 
     // Update is called once per frame
@@ -30,17 +31,19 @@ public class CardRaycast : MonoBehaviour {
             //Debug.Log(rayHit.collider.gameObject.name);
             //Debug.Log(mask + " is what I want to hit");
             //Debug.Log(rayHit.collider.gameObject.layer + " is what I'm hitting");
-            if (rayHit.collider.gameObject.layer == table || 
-                rayHit.collider.gameObject.layer == card || 
-                rayHit.collider.gameObject.layer == floor ||
-                rayHit.collider.gameObject.layer == player ||
-                rayHit.collider.gameObject.layer == chip)
+//            if (rayHit.collider.gameObject.layer == table || 
+//                rayHit.collider.gameObject.layer == card || 
+//                rayHit.collider.gameObject.layer == floor ||
+//                rayHit.collider.gameObject.layer == player ||
+//                rayHit.collider.gameObject.layer == chip)
+			if(rayHit.collider.gameObject.layer != roof)
             {
                 cardIsFaceUp = false;
+				Debug.DrawLine (ray.origin, rayHit.point, Color.red);
             }
             else cardIsFaceUp = true;
             //Debug.Log(rayHit.collider.gameObject.layer + " is being hit by " + gameObject.name);
-			//Debug.DrawLine(ray.origin, rayHit.point, Color.green);
+			Debug.DrawLine(ray.origin, rayHit.point, Color.green);
 		}
 		else
 		{
