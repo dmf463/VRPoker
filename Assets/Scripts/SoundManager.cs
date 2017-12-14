@@ -378,8 +378,8 @@ public class SoundManager : MonoBehaviour
 
 
 		yield return new WaitForSeconds (2);
-		rosa.playerIsInConversation = true;
-		gonzalo.playerIsInConversation = true;
+		rosa.playerIsInConversation = false;
+		gonzalo.playerIsInConversation = false;
 		minnie.playerIsInConversation = false;
 		lester.playerIsInConversation = false;
 
