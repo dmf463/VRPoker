@@ -320,6 +320,13 @@ public class PokerPlayerRedux : MonoBehaviour{
 	public void SayCheck()
 	{
 		if(!playerAudioSource.isPlaying && !playerIsInConversation){
+			if (Services.SoundManager.conversationIsPlaying) {
+				playerAudioSource.volume = 0.25f;
+			} 
+			else
+			{
+				playerAudioSource.volume = 1f;
+			}
 			Services.SoundManager.GetSourceAndPlay(playerAudioSource, checkAudio);
 		}
 	}
@@ -359,12 +366,26 @@ public class PokerPlayerRedux : MonoBehaviour{
 	public void SayRaise()
 	{
 		if(!playerAudioSource.isPlaying && !playerIsInConversation){
+			if (Services.SoundManager.conversationIsPlaying) {
+				playerAudioSource.volume = 0.25f;
+			} 
+			else
+			{
+				playerAudioSource.volume = 1f;
+			}
 			Services.SoundManager.GetSourceAndPlay(playerAudioSource, raiseAudio);
 		}
 	}
 
 	public void SayBet(){
 		if(!playerAudioSource.isPlaying && !playerIsInConversation){
+			if (Services.SoundManager.conversationIsPlaying) {
+				playerAudioSource.volume = 0.25f;
+			} 
+			else
+			{
+				playerAudioSource.volume = 1f;
+			}
 			Services.SoundManager.GetSourceAndPlay(playerAudioSource, betAudio);
 		}
 	}
@@ -372,6 +393,13 @@ public class PokerPlayerRedux : MonoBehaviour{
 	public void SayCall()
 	{
 		if(!playerAudioSource.isPlaying && !playerIsInConversation){
+			if (Services.SoundManager.conversationIsPlaying) {
+				playerAudioSource.volume = 0.25f;
+			} 
+			else
+			{
+				playerAudioSource.volume = 1f;
+			}
 			Services.SoundManager.GetSourceAndPlay(playerAudioSource, callAudio);
 		}
 	}
@@ -379,6 +407,13 @@ public class PokerPlayerRedux : MonoBehaviour{
 	public void SayAllIn()
 	{
 		if(!playerAudioSource.isPlaying && !playerIsInConversation){
+			if (Services.SoundManager.conversationIsPlaying) {
+				playerAudioSource.volume = 0.25f;
+			} 
+			else
+			{
+				playerAudioSource.volume = 1f;
+			}
 			Services.SoundManager.GetSourceAndPlay(playerAudioSource, allInAudio);
 		}
 	}
