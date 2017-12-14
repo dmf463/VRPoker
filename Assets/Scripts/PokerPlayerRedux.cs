@@ -341,7 +341,14 @@ public class PokerPlayerRedux : MonoBehaviour{
             }
             else
             {
-                Services.SoundManager.GetSourceAndPlay(playerAudioSource, foldAudio);
+				if (Services.SoundManager.conversationIsPlaying) {
+					playerAudioSource.volume = 0.25f;
+				} 
+				else
+				{
+					playerAudioSource.volume = 1f;
+				}
+				Services.SoundManager.GetSourceAndPlay (playerAudioSource, foldAudio);
 				Debug.Log (gameObject + " said fold.");
             }
 
