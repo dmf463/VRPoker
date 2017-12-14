@@ -729,6 +729,49 @@ START
         "You, sir! You, sir! Would you care to behold the delights and terrors of the natural world?"
 [TextGen/P] Generated Text: You, sir! You, sir! Would you care to behold the delights and terrors of the natural world?
 [TextGen/P] Is Valid: true
+Log Initialized
+[TextGen/P] Loading C:/Users/gcgod/Desktop/TheDealer/VRPoker/Assets/StreamingAssets/productionist/Fragments.grammar
+[TextGen/PG] Loading grammar: C:/Users/gcgod/Desktop/TheDealer/VRPoker/Assets/StreamingAssets/productionist/Fragments.grammar
+[TextGen/PG] Loaded 131 Tag Id -> Tag Mappings
+[TextGen/PG] Loaded 131 Tag -> Tag Ids Mappings
+[TextGen/PG] Loaded 132 Nonterminal Symbols
+[TextGen/PG] Compiling Tags...
+[TextGen/P] Loading C:/Users/gcgod/Desktop/TheDealer/VRPoker/Assets/StreamingAssets/productionist/Fragments.meanings
+[TextGen/PM] Loading expressible meanings: C:/Users/gcgod/Desktop/TheDealer/VRPoker/Assets/StreamingAssets/productionist/Fragments.meanings
+[TextGen/PM] Loaded 331 Meanings
+[TextGen/P] Loading C:/Users/gcgod/Desktop/TheDealer/VRPoker/Assets/StreamingAssets/productionist-km/Fragments.grammar
+[TextGen/PG] Loading grammar: C:/Users/gcgod/Desktop/TheDealer/VRPoker/Assets/StreamingAssets/productionist-km/Fragments.grammar
+[TextGen/PG] Loaded 134 Tag Id -> Tag Mappings
+[TextGen/PG] Loaded 134 Tag -> Tag Ids Mappings
+[TextGen/PG] Loaded 132 Nonterminal Symbols
+[TextGen/PG] Compiling Tags...
+[TextGen/P] Loading C:/Users/gcgod/Desktop/TheDealer/VRPoker/Assets/StreamingAssets/productionist-km/Fragments.meanings
+[TextGen/PM] Loading expressible meanings: C:/Users/gcgod/Desktop/TheDealer/VRPoker/Assets/StreamingAssets/productionist-km/Fragments.meanings
+[TextGen/PM] Loaded 4 Meanings
+[TextGen/P] Received Content Request
+[TextGen/P] Performing Normal Content Request
+[TextGen/P] Selected Rule: 131
+[TextGen/P] Building Content Package
+[TextGen/P] Performance Tags:
+[TextGen/P]   Control:RestrictedByContext
+[TextGen/P]   Trait:WhileNot introduced
+[TextGen/P]   ScriptLine:Line 4c082f60-c440-406a-8759-b7de2314427e
+[TextGen/P]   Usage:OpeningLine
+[TextGen/P]   Scene:WhileScene introduction
+[TextGen/P]   Speaker:Speaker jared
+[TextGen/P]   Effect:SetTrait jared:introduced true
+[TextGen/P] Bracketed Expression:
+  START[60cc1c93-2ea2-4b63-ab95-60924923d3e4 <Control:RestrictedByContext, Scene:WhileScene introduction, Speaker:Speaker jared, Usage:OpeningLine, ScriptLine:Line 4c082f60-c440-406a-8759-b7de2314427e, Effect:SetTrait jared:introduced true, Trait:WhileNot introduced>["You, sir! You, sir! Would you care to behold the delights and terrors of the natural world?"]]
+[TextGen/P] Tree Expression:
+START
+    60cc1c93-2ea2-4b63-ab95-60924923d3e4
+        "You, sir! You, sir! Would you care to behold the delights and terrors of the natural world?"
+[TextGen/P] Tree Expression with Tags:
+START
+    60cc1c93-2ea2-4b63-ab95-60924923d3e4 <Control:RestrictedByContext, Scene:WhileScene introduction, Speaker:Speaker jared, Usage:OpeningLine, ScriptLine:Line 4c082f60-c440-406a-8759-b7de2314427e, Effect:SetTrait jared:introduced true, Trait:WhileNot introduced>
+        "You, sir! You, sir! Would you care to behold the delights and terrors of the natural world?"
+[TextGen/P] Generated Text: You, sir! You, sir! Would you care to behold the delights and terrors of the natural world?
+[TextGen/P] Is Valid: true
                  [TextGen/P] Loading C:/Users/gcgod/Desktop/TheDealer/VRPoker/Assets/StreamingAssets/productionist/Fragments.grammar
 [TextGen/PG] Loading grammar: C:/Users/gcgod/Desktop/TheDealer/VRPoker/Assets/StreamingAssets/productionist/Fragments.grammar
 [TextGen/PG] Loaded 131 Tag Id -> Tag Mappings
