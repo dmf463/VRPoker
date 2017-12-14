@@ -118,7 +118,7 @@ public class Dealer : MonoBehaviour
 			if(!misdealAudioPlayed){
 				misdealAudioPlayed = true;
 				int i = UnityEngine.Random.Range(0, players.Count);
-				if(!players[i].playerAudioSource.isPlaying && !players[i].playerIsInConversation){
+				if(!players[i].playerAudioSource.isPlaying && !players[i].playerIsInConversation && !Services.SoundManager.conversationIsPlaying){
 					Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].misdealAudio);
 				}
 			}
@@ -830,7 +830,7 @@ public class Dealer : MonoBehaviour
 			{
 				if(players[i].PlayerState == PlayerState.Winner && numberOfWinners < 2)
 				{
-					if(!players[i].playerAudioSource.isPlaying && !players[i].playerIsInConversation)
+					if(!players[i].playerAudioSource.isPlaying && !players[i].playerIsInConversation && !Services.SoundManager.conversationIsPlaying)
 					{
 						Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].tipAudio);
 					}

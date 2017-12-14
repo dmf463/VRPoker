@@ -421,7 +421,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 	//determines which reaction to have
 	public void WinnerReactions()
 	{
-		if(!playerAudioSource.isPlaying && !playerIsInConversation){
+		if(!playerAudioSource.isPlaying && !playerIsInConversation && !Services.SoundManager.conversationIsPlaying){
 			Services.SoundManager.GetSourceAndPlay(playerAudioSource, winAudio);
 		}
 
