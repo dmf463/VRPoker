@@ -73,8 +73,8 @@ public class Dealer : MonoBehaviour
     private int bufferPeriod = 10;
 
 
-
-	bool misdealAudioPlayed =false;
+    [HideInInspector]
+	public bool misdealAudioPlayed =false;
 
     void Awake()
     {
@@ -124,13 +124,17 @@ public class Dealer : MonoBehaviour
         else if(Table.gameState == GameState.Misdeal)
         {
             //Debug.Log("misdeal");
-			if(!misdealAudioPlayed){
-				misdealAudioPlayed = true;
-				int i = UnityEngine.Random.Range(0, players.Count);
-				if(!players[i].playerAudioSource.isPlaying && !players[i].playerIsInConversation && !Services.SoundManager.conversationIsPlaying){
-					Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].misdealAudio);
-				}
-			}
+            if (!misdealAudioPlayed)
+            {
+                misdealAudioPlayed = true;
+                int i = UnityEngine.Random.Range(0, players.Count);
+                if (!players[i].playerAudioSource.isPlaying &&
+                    !players[i].playerIsInConversation &&
+                    !Services.SoundManager.conversationIsPlaying)
+                {
+                    Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].misdealAudio);
+                }
+            }
             //messageText.text = "You misdealt the hand, click both triggers to restart the round.";
 
             if(hand1.GetStandardInteractionButtonDown()) buttonATimer = bufferPeriod;

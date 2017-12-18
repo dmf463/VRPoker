@@ -469,18 +469,18 @@ public class CardDeckScript : InteractionSuperClass {
             playingCard.GetComponent<Rigidbody>().AddTorque(deckHand.GetTrackedObjectAngularVelocity() * FORCE_MULTIPLIER, ForceMode.Impulse);
         }
         StartCoroutine(WaitToDestroyDeck(0.05f));
-        
-		PokerPlayerRedux randomPlayer = Services.Dealer.players[Random.Range(0,5)];
-		if (!randomPlayer.playerAudioSource.isPlaying && !randomPlayer.playerIsInConversation && !Services.SoundManager.conversationIsPlaying)
-		{
-			Services.SoundManager.GetSourceAndPlay (randomPlayer.playerAudioSource, randomPlayer.fiftyTwoAudio);
-		}
     }
 
     //destroys the deck and sets us to shuffling mode
     IEnumerator WaitToDestroyDeck(float time)
     {
         yield return new WaitForSeconds(time);
+        PokerPlayerRedux randomPlayer = Services.Dealer.players[Random.Range(0, Services.Dealer.players.Count)];
+        if (!randomPlayer.playerAudioSource.isPlaying && !randomPlayer.playerIsInConversation && !Services.SoundManager.conversationIsPlaying)
+        {
+            Services.Dealer.misdealAudioPlayed = true;
+            Services.SoundManager.GetSourceAndPlay(randomPlayer.playerAudioSource, randomPlayer.fiftyTwoAudio);
+        }
         Destroy(cardDeck);
         Table.gameState = GameState.Misdeal;
         //Table.dealerState = DealerState.ShufflingState;
