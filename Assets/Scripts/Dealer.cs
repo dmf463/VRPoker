@@ -844,9 +844,20 @@ public class Dealer : MonoBehaviour
 
 			for (int i = 0; i < players.Count; i++) 
 			{
-				if(players[i].PlayerState == PlayerState.Winner && numberOfWinners < 2)
+                int winnerCount = 0;
+				if(players[i].PlayerState == PlayerState.Winner)
 				{
-					if(!players[i].playerAudioSource.isPlaying && !players[i].playerIsInConversation && !Services.SoundManager.conversationIsPlaying)
+                    for (int playersChecked = 0; playersChecked < players.Count; playersChecked++)
+                    {
+                        if(players[playersChecked].PlayerState == PlayerState.Winner)
+                        {
+                            winnerCount++;
+                        }
+                    }
+					if(!players[i].playerAudioSource.isPlaying && 
+                       !players[i].playerIsInConversation && 
+                       !Services.SoundManager.conversationIsPlaying &&
+                       winnerCount < 2)
 					{
 						Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].tipAudio);
 					}
