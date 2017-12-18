@@ -301,14 +301,6 @@ public class Card : InteractionSuperClass {
     //but this doesn't always work. if I grab cards multiple times
     void OnCollisionEnter(Collision other)
     {
-   //     if (other.gameObject.tag == "PlayerFace" && !cardHitPlayer)
-   //     {
-   //         cardHitPlayer = true;
-   //         Debug.Log("WE HIT SOMETHING");
-   //         AudioClip hitSound = other.gameObject.GetComponentInParent<PokerPlayerRedux>().cardHitAudio;
-			//AudioSource hitSource = other.gameObject.GetComponentInParent<AudioSource>();
-   //         Services.SoundManager.GetSourceAndPlay(hitSource, hitSound);
-   //     }
 
         startLerping = true;
         elapsedTimeForThrowTorque = 0;
@@ -430,11 +422,11 @@ public class Card : InteractionSuperClass {
     //also added in that if layCardsDown is equal to true we can let go of the card
     public override void HandAttachedUpdate(Hand attachedHand)
     {
+        if(Table.gameState == GameState.NewRound)
+        {
+            if (cardRay.cardIsFaceUp == true) Table.gameState = GameState.Misdeal;
+        }
         base.HandAttachedUpdate(attachedHand);
-        //if (layingCardsDown)
-        //{
-        //    attachedHand.DetachObject(gameObject);
-        //}
     }
 
     //part of the interaction class this derives from.
@@ -497,9 +489,27 @@ public class Card : InteractionSuperClass {
         base.CheckSwipeDirection();
     }
 
-    public override void TouchingTrackPad()
+    public override void OnSwipeTop()
     {
         RotateCard();
+        base.OnSwipeTop();
+    }
+
+    public override void OnSwipeLeft()
+    {
+        RotateCard();
+        base.OnSwipeLeft();
+    }
+
+    public override void OnSwipeRight()
+    {
+        RotateCard();
+        base.OnSwipeRight();
+    }
+
+    public override void TouchingTrackPad()
+    {
+        //RotateCard();
         base.TouchingTrackPad();
     }
 

@@ -183,11 +183,6 @@ public class Chip : InteractionSuperClass {
     //if it IS in a stack, then we want to set it up to be added to the stack it hit
     void OnCollisionEnter(Collision other)
     {
-		//if (other.gameObject.tag == "PlayerFace"){
-		//	AudioClip hitSound = other.gameObject.GetComponentInParent<PokerPlayerRedux>().cardHitAudio;
-		//	AudioSource hitSource = other.gameObject.GetComponentInParent<AudioSource>();
-		//	Services.SoundManager.GetSourceAndPlay(hitSource, hitSound);
-		//}
         //Debug.Log("hitting " + other.gameObject.name);
         if (other.gameObject.tag == "Chip" && other.gameObject.GetComponent<Chip>().chipStack == null)
         {
