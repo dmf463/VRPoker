@@ -77,8 +77,7 @@ public class SoundManager : MonoBehaviour
         AudioSource source = specialAudioSource.GetComponent<AudioSource>();
 		specialAudioSource.transform.position = position;
         source.clip = clip;
-        //if (conversationIsPlaying) source.volume = 0.25f;
-        /*else */source.volume = volume;
+        source.volume = volume;
 		source.pitch = pitch;
         source.Play();
         Destroy(specialAudioSource, clip.length);
@@ -86,8 +85,11 @@ public class SoundManager : MonoBehaviour
 
 	public void GetSourceAndPlay(AudioSource source, AudioClip clip)
 	{
+        PokerPlayerRedux player = source.gameObject.GetComponentInParent<PokerPlayerRedux>();
+        player.playerIsInConversation = true;
 		source.clip = clip;
 		source.Play();
+        StartCoroutine(PlayerStopsTalking(clip.length, player));
 	}
 
 
@@ -205,6 +207,12 @@ public class SoundManager : MonoBehaviour
             }
 		}
 	}
+
+    IEnumerator PlayerStopsTalking(float time, PokerPlayerRedux player)
+    {
+        yield return new WaitForSeconds(time);
+        player.playerIsInConversation = false;
+    }
 
 	IEnumerator Aside1 (){ //floyd initiates toward minnie
 

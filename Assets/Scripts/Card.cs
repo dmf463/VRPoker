@@ -301,14 +301,14 @@ public class Card : InteractionSuperClass {
     //but this doesn't always work. if I grab cards multiple times
     void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.tag == "PokerPlayer" && !cardHitPlayer)
-        {
-            cardHitPlayer = true;
-            Debug.Log("WE HIT SOMETHING");
-            AudioClip hitSound = other.gameObject.GetComponentInParent<PokerPlayerRedux>().cardHitAudio;
-			AudioSource hitSource = other.gameObject.GetComponentInParent<AudioSource>();
-            Services.SoundManager.GetSourceAndPlay(hitSource, hitSound);
-        }
+   //     if (other.gameObject.tag == "PlayerFace" && !cardHitPlayer)
+   //     {
+   //         cardHitPlayer = true;
+   //         Debug.Log("WE HIT SOMETHING");
+   //         AudioClip hitSound = other.gameObject.GetComponentInParent<PokerPlayerRedux>().cardHitAudio;
+			//AudioSource hitSource = other.gameObject.GetComponentInParent<AudioSource>();
+   //         Services.SoundManager.GetSourceAndPlay(hitSource, hitSound);
+   //     }
 
         startLerping = true;
         elapsedTimeForThrowTorque = 0;

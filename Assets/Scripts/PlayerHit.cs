@@ -4,19 +4,19 @@ using UnityEngine;
 
 public class PlayerHit : MonoBehaviour
 {
-    public CardDeckScript deckScript;
 
     private void OnTriggerEnter(Collider other)
     {
         GameObject cardDeck = GameObject.FindGameObjectWithTag("CardDeck");
         if(cardDeck != null)
         {
-            deckScript = cardDeck.GetComponent<CardDeckScript>();
+            CardDeckScript deckScript = cardDeck.GetComponent<CardDeckScript>();
             if ((other.gameObject.tag == "PlayingCard" && !deckScript.deckWasThrown) || other.gameObject.tag == "Chip")
             {
+                PokerPlayerRedux player = GetComponentInParent<PokerPlayerRedux>();
                 //Debug.Log("WE HIT SOMETHING");
-                AudioClip hitSound = GetComponentInParent<PokerPlayerRedux>().cardHitAudio;
-                Services.SoundManager.GenerateSourceAndPlay(hitSound, 0.25f);
+                AudioClip hitSound = player.cardHitAudio;
+                Services.SoundManager.GetSourceAndPlay(player.playerAudioSource, hitSound);
             }
         }
     }
