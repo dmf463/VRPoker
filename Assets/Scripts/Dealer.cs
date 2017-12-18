@@ -67,6 +67,12 @@ public class Dealer : MonoBehaviour
     [HideInInspector]
     public List<Chip> chipsInPot = new List<Chip>();
 
+    //ints and bools for a test
+    private float buttonATimer = 0;
+    private float buttonBTimer = 0;
+    private int bufferPeriod = 10;
+
+
 
 	bool misdealAudioPlayed =false;
 
@@ -98,6 +104,9 @@ public class Dealer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        buttonATimer--;
+        buttonBTimer--;
+
         if (Table.gameState == GameState.NewRound)
         {
             //Debug.Log("newRound");
@@ -124,7 +133,10 @@ public class Dealer : MonoBehaviour
 			}
             //messageText.text = "You misdealt the hand, click both triggers to restart the round.";
 
-            if(hand1.GetStandardInteractionButton() && hand2.GetStandardInteractionButton())
+            if(hand1.GetStandardInteractionButtonDown()) buttonATimer = bufferPeriod;
+            if(hand2.GetStandardInteractionButtonDown()) buttonBTimer = bufferPeriod;
+            if(hand1.GetStandardInteractionButtonDown() && buttonBTimer > 0 ||
+                hand2.GetStandardInteractionButtonDown() && buttonATimer > 0)
             {
                 //Debug.Log("Beginning to restart round");
                 Table.instance.RestartRound();
@@ -864,6 +876,7 @@ public class Dealer : MonoBehaviour
         readyToAwardPlayers = false;
         finalHandEvaluation = false;
 		misdealAudioPlayed = false;
+        Services.PokerRules.checkedForCorrections = false;
         chipsInPot.Clear();
         deadCardsList.Clear();
         GameObject[] chipsOnTable = GameObject.FindGameObjectsWithTag("Chip");
@@ -895,6 +908,8 @@ public class Dealer : MonoBehaviour
             if (players[i].PlayerState != PlayerState.Eliminated)
             {
                 players[i].PlayerState = PlayerState.Playing;
+                players[i].actedThisRound = false;
+                players[i].turnComplete = false;
             }
             players[i].HasBeenPaid = false;
             players[i].playerIsAllIn = false;
@@ -903,20 +918,16 @@ public class Dealer : MonoBehaviour
         }
         GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
         foreach (GameObject card in cardsOnTable) Destroy(card);
-        Services.PokerRules.cardsPulled.Clear();
-        Services.PokerRules.cardsLogged.Clear();
-        cardsTouchingTable.Clear();
         Table.gameState = GameState.NewRound;
         Services.Dealer.playerToAct = null;
         Services.Dealer.previousPlayerToAct = null;
+        Services.PokerRules.checkedForCorrections = false;
         playersHaveBeenEvaluated = false;
         winnersHaveBeenPaid = false;
         readyToAwardPlayers = false;
 		misdealAudioPlayed = false;
         finalHandEvaluation = false;
         roundStarted = false;
-        chipsInPot.Clear();
-        deadCardsList.Clear();
         Services.PokerRules.TurnOffAllIndicators();
         GameObject[] chipsOnTable = GameObject.FindGameObjectsWithTag("Chip");
         if (chipsOnTable.Length > 0)
@@ -940,7 +951,7 @@ public class Dealer : MonoBehaviour
     //this is an ease of life function to find how far away from the dealer button a given player is
     public int SeatsAwayFromDealer(int distance)
     {
-        return (Table.instance.DealerPosition + distance) % players.Count();
+        return (Table.instance.gameData.DealerPosition + distance) % players.Count();
     }
 
     public int SeatsAwayFromDealerAmongstLivePlayers(int distance)

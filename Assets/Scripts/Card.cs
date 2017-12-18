@@ -443,7 +443,7 @@ public class Card : InteractionSuperClass {
     //notice the giant bug alert? this could probably be fixed with a RayCast
     public override void OnDetachedFromHand(Hand hand)
     {
-            if (!Services.PokerRules.cardsPulled.Contains(cardType))
+            if (!Services.PokerRules.cardsPulled.Contains(cardType) && Table.gameState != GameState.Misdeal)
             {
                 Services.PokerRules.cardsPulled.Add(cardType);
             }

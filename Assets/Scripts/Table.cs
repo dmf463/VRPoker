@@ -125,9 +125,9 @@ public class Table {
 
     public void RestartRound()
     {
-        if (gameState == GameState.ShowDown)
+        if (gameState == GameState.ShowDown || gameState == GameState.PostHand || gameState == GameState.CleanUp)
         {
-            Debug.Log("Restarting Round in ShowDown");
+            Debug.Log("Restarting Round in " + Table.gameState);
             List<PokerPlayerRedux> winningPlayers = new List<PokerPlayerRedux>();
             for (int i = 0; i < Services.Dealer.players.Count; i++)
             {
@@ -146,7 +146,7 @@ public class Table {
         }
         else
         {
-            //Debug.Log("RestartingRound");
+            Debug.Log("RestartingRound in " + Table.gameState);
             if (GameObject.FindGameObjectWithTag("CardDeck") == null)
             {
                 //Debug.Log("Could not find CardDeck, instantiating new one");
@@ -164,14 +164,19 @@ public class Table {
             {
                 playerCards[i].Clear();
             }
+            Services.Dealer.ResetGameState();
             _board.Clear();
             _burn.Clear();
+            Services.PokerRules.cardsPulled.Clear();
+            Services.PokerRules.cardsLogged.Clear();
+            Services.Dealer.cardsTouchingTable.Clear();
+            Services.Dealer.chipsInPot.Clear();
+            Services.Dealer.deadCardsList.Clear();
+
             potChips = 0;
-            Services.Dealer.ResetGameState();
             gameState = GameState.NewRound;
             GameObject deck = GameObject.FindGameObjectWithTag("CardDeck");
             deck.GetComponent<CardDeckScript>().UnlockDeck();
-            Services.PokerRules.TurnOffAllIndicators();
             DealerPosition = gameData.DealerPosition; //this does not account for a dead dealer
             SetDealerButtonPos(DealerPosition);
             Services.Dealer.StartCoroutine(Services.Dealer.WaitToPostBlinds(.25f));

@@ -84,23 +84,23 @@ public class LogCards : MonoBehaviour
                 //{
                 if (Table.instance._board.Contains(other.GetComponent<Card>()))
                 {
-                    //Debug.Log(other.gameObject.name + " is already in the board");
+                    Debug.Log(other.gameObject.name + " is already in the board");
                 }
                 else if (Table.instance._board.Count == 5)
                 {
-                    //Debug.Log(other.gameObject.name + "cannot be added to the board");
+                    Debug.Log(other.gameObject.name + "cannot be added to the board");
                 }
                 else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
                 {
-                    //Debug.Log(other.gameObject.name + " is already logged");
+                    Debug.Log(other.gameObject.name + " is already logged");
                 }
                 else if (other.gameObject.GetComponent<Rigidbody>().isKinematic)
                 {
-                    //Debug.Log("is Kinematic");
+                    Debug.Log("is Kinematic");
                 }
                 else if (Services.Dealer.deadCardsList.Contains(other.GetComponent<Card>()))
                 {
-                    //Debug.Log(other.gameObject.name + "card is dead");
+                    Debug.Log(other.gameObject.name + "card is dead");
                 }
                 else
                 {

@@ -25,7 +25,7 @@ public class PokerRules : MonoBehaviour {
     private int flopCards;
     private int turnCard;
     private int riverCard;
-    bool checkedForCorrections;
+    public bool checkedForCorrections;
     private int toneCount;
     public float cardToneVolume;
 
