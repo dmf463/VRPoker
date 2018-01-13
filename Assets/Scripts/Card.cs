@@ -424,7 +424,7 @@ public class Card : InteractionSuperClass {
     {
         if(Table.gameState == GameState.NewRound)
         {
-            if (cardRay.cardIsFaceUp == true) Table.gameState = GameState.Misdeal;
+            if (cardFacingUp == true) Table.gameState = GameState.Misdeal;
         }
         base.HandAttachedUpdate(attachedHand);
     }
