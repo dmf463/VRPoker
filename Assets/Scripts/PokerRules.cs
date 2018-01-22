@@ -54,21 +54,21 @@ public class PokerRules : MonoBehaviour {
         if (Table.gameState == GameState.PreFlop)
         {
 
-            if ((cardsPulled.Count - 1 == flopCards || Table.instance._board.Count == 3) && !checkedForCorrections)
+            if ((cardsPulled.Count - 1 == flopCards || Table.instance._board.Count == 3) && !checkedForCorrections && CardsAreFaceUp())
             {
                 StartCoroutine(CheckFlopMistakes(1));
             }
         }
         else if (Table.gameState == GameState.Flop)
         {
-            if ((cardsPulled.Count - 1 == turnCard || Table.instance._board.Count == 4) && !checkedForCorrections)
+            if ((cardsPulled.Count - 1 == turnCard || Table.instance._board.Count == 4) && !checkedForCorrections && CardsAreFaceUp())
             {
                 StartCoroutine(CheckTurnMistakes(1));
             }
         }
         else if (Table.gameState == GameState.Turn)
         {
-            if ((cardsPulled.Count - 1 == riverCard || Table.instance._board.Count == 5) && !checkedForCorrections)
+            if ((cardsPulled.Count - 1 == riverCard || Table.instance._board.Count == 5) && !checkedForCorrections && CardsAreFaceUp())
             {
                 StartCoroutine(CheckRiverMistakes(1));
             }
@@ -77,34 +77,32 @@ public class PokerRules : MonoBehaviour {
         if (Table.gameState != GameState.NewRound) toneCount = 0;
     }
 
+    public bool CardsAreFaceUp()
+    {
+        for (int i = 0; i < Table.instance._board.Count; i++)
+        {
+            if (!Services.Dealer.OutsideVR)
+            {
+                if (!Table.instance._board[i].cardFacingUp)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     IEnumerator CheckFlopMistakes(float time)
     {
         checkedForCorrections = true;
         yield return new WaitForSeconds(time);
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-        bool misdeal = false;
         //Debug.Log("playersAtTableCount = " + Services.Dealer.PlayerAtTableCount());
         //Debug.Log("in the preflop, checking the flop: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and flopCard = " + flopCards);
         //Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
-        for (int i = 0; i < Table.instance._board.Count; i++)
-        {
-            if (!Services.Dealer.OutsideVR)
-            {
-                if (Table.instance._board[i].cardFacingUp)
-                {
-                    misdeal = false;
-                }
-                else misdeal = true;
-            }
-        }
         if (cardsPulled.Count - 1 > flopCards && !Services.Dealer.OutsideVR)
         {
             Debug.Log("MISDEAL ON THE FLOP");
-            Table.gameState = GameState.Misdeal;
-        }
-        else if (misdeal)
-        {
-            Debug.Log("A card is facedown");
             Table.gameState = GameState.Misdeal;
         }
         else if (Table.instance._board.Count + playerCards + 1 == flopCards)
@@ -139,29 +137,11 @@ public class PokerRules : MonoBehaviour {
         checkedForCorrections = true;
         yield return new WaitForSeconds(time);
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-        bool misdeal = false;
         //Debug.Log("in the flop, checking the turn: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and turnCard = " + turnCard);
         //Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
-        for (int i = 0; i < Table.instance._board.Count; i++)
-        {
-            if (!Services.Dealer.OutsideVR)
-            {
-                if (Table.instance._board[i].cardFacingUp)
-                {
-                    misdeal = false;
-                }
-                else misdeal = true;
-            }
-        }
         if (cardsPulled.Count - 1 > turnCard && !Services.Dealer.OutsideVR)
         {
             Debug.Log("MISDEAL ON THE TURN");
-            Table.gameState = GameState.Misdeal;
-        }
-        else if (misdeal)
-        {
-            Debug.Log("A card is facedown");
-
             Table.gameState = GameState.Misdeal;
         }
         else if (Table.instance._board.Count + playerCards + 2 == turnCard)
@@ -196,31 +176,11 @@ public class PokerRules : MonoBehaviour {
         checkedForCorrections = true;
         yield return new WaitForSeconds(time);
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-        bool misdeal = false;
         //Debug.Log("in the turn, checking the river: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and riverCard = " + riverCard);
         //Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
-        for (int i = 0; i < Table.instance._board.Count; i++)
-        {
-            if (!Services.Dealer.OutsideVR)
-            {
-                if (!Services.Dealer.OutsideVR)
-                {
-                    if (Table.instance._board[i].cardFacingUp)
-                    {
-                        misdeal = false;
-                    }
-                    else misdeal = true;
-                }
-            }
-        }
         if (cardsPulled.Count - 1 > riverCard && !Services.Dealer.OutsideVR)
         {
             Debug.Log("MISDEAL ON THE RIVER");
-            Table.gameState = GameState.Misdeal;
-        }
-        else if (misdeal)
-        {
-            Debug.Log("A card is facedown");
             Table.gameState = GameState.Misdeal;
         }
         else if (Table.instance._board.Count + playerCards + 3 == riverCard)
