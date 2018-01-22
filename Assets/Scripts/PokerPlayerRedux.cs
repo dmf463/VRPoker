@@ -566,7 +566,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 				{
 					if (Services.Dealer.LastBet == Services.Dealer.BigBlind)
 					{
-						raise = Services.Dealer.BigBlind * 3;
+						raise = Services.Dealer.BigBlind * (3 + Services.Dealer.GetActivePlayerCount());
 					}
 					else raise = Services.Dealer.LastBet * 2;
 				}

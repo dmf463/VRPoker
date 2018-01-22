@@ -87,6 +87,7 @@ public class Dealer : MonoBehaviour
         Services.Dealer = this;
         Services.PokerRules = GameObject.Find("PokerRules").GetComponent<PokerRules>();
         Services.SpiritManager = GameObject.Find("SpiritAIManager").GetComponent<SpiritAIManager>();
+        Services.TESTSCRIPT = GameObject.Find("HASHTEST").GetComponent<TESTSCRIPT>();
     }
 
     // Use this for initialization
@@ -98,6 +99,7 @@ public class Dealer : MonoBehaviour
 		Debug.Log("Gamestate = " + Table.gameState);
         Table.dealerState = DealerState.DealingState;
         lastGameState = GameState.NewRound;
+        Services.TESTSCRIPT.TESTFUNCTION();
         //OutsideVR = true;
     }
 
@@ -189,7 +191,7 @@ public class Dealer : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Table.instance.DebugHandsAndChips();
-            //Table.instance.RestartRound();
+            Table.instance.RestartRound();
         }
         if (Input.GetKeyDown(KeyCode.X))
         {
