@@ -10,7 +10,5 @@ public static class Services {
     public static Dealer Dealer { get; set; }
     public static SoundManager SoundManager { get; set; }
     public static PokerRules PokerRules { get; set; }
-   // public static SpiritAIManager SpiritManager { get; set; }
-    public static TESTSCRIPT TESTSCRIPT { get; set; }
 
 }

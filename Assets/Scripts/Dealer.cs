@@ -99,7 +99,6 @@ public class Dealer : MonoBehaviour
 		Debug.Log("Gamestate = " + Table.gameState);
         Table.dealerState = DealerState.DealingState;
         lastGameState = GameState.NewRound;
-        Services.TESTSCRIPT.TESTFUNCTION();
         //OutsideVR = true;
     }
 
