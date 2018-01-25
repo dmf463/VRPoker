@@ -16,6 +16,7 @@ public class PokerPlayerRedux : MonoBehaviour{
     private List<GameObject> parentChips;
     public GameObject[] cardPos;
     public int cardsReplaced = 0;
+    public bool isAggressor = false; 
 
 	//what position they are at the table, this is set in Dealer and is massively important
 	//this is the current means by which we differentiate between which instance of PokerPlayerRedux we're currently working with
@@ -257,6 +258,16 @@ public class PokerPlayerRedux : MonoBehaviour{
 	//again, the amount to raise probably needs more refiguring and balancing
 	public void Raise()
 	{
+        Services.Dealer.raisesInRound++;
+        int aggressors = 0;
+        for (int i = 0; i < Services.Dealer.players.Count; i++)
+        {
+            if (Services.Dealer.players[i].isAggressor)
+            {
+                aggressors++;
+            }
+            if (aggressors == 0) isAggressor = true;
+        }
 		if (chipCount > 0)
 		{
 			int raiseAmount = amountToRaise; 
@@ -418,122 +429,14 @@ public class PokerPlayerRedux : MonoBehaviour{
 		}
 	}
 
-	//determines which reaction to have
-	public void WinnerReactions()
-	{
-		if(!playerAudioSource.isPlaying && !playerIsInConversation && !Services.SoundManager.conversationIsPlaying){
-			Services.SoundManager.GetSourceAndPlay(playerAudioSource, winAudio);
-		}
-
-//				PokerPlayerRedux losingPlayer = Services.Dealer.players[i];
-//				if (losingPlayer.HandStrength < 0.25) IncredulousReaction();
-//				else if (losingPlayer.HandStrength < 0.5) RespectfulReaction();
-//				else GoodReaction();
-	}
-
-	//determines which loser reaction there is
-//	public void LoserReactions()
-//	{
-//		if (HandStrength < 0.75) BadBeat();
-//		else GenericLoss();
-//	}
-
-	//these are all the different reactions
-//	public void BadBeat()
-//	{
-//		if(SeatPos == 0)
-//		{
-//			if(Services.SoundManager.badBeatP1.Count != 0)
-//			{
-//				float randomNumber = Random.Range(0, 100);
-//				if(randomNumber < 100)
-//				{
-////					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.badBeatP1[0]);
-////					Services.SoundManager.badBeatP1.Remove(Services.SoundManager.badBeatP1[0]);
-//				}
-//			}
-//		}
-//		else if(SeatPos == 1)
-//		{
-//			if (Services.SoundManager.badBeatP2.Count != 0)
-//			{
-//				float randomNumber = Random.Range(0, 100);
-//				if (randomNumber < 100)
-//				{
-////					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.badBeatP2[0]);
-////					Services.SoundManager.badBeatP2.Remove(Services.SoundManager.badBeatP2[0]);
-//				}
-//			}
-//		}
-//	}
-//
-//	public void GenericLoss()
-//	{
-//		if (SeatPos == 0)
-//		{
-//			if (Services.SoundManager.genericBadP1.Count != 0)
-//			{
-//				float randomNumber = Random.Range(0, 100);
-//				if (randomNumber < 100)
-//				{
-////					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.genericBadP1[0]);
-////					Services.SoundManager.genericBadP1.Remove(Services.SoundManager.badBeatP1[0]);
-//				}
-//			}
-//		}
-//		else if (SeatPos == 1)
-//		{
-//			if (Services.SoundManager.genericBadP2.Count != 0)
-//			{
-//				float randomNumber = Random.Range(0, 100);
-//				if (randomNumber < 100)
-//				{
-////					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.genericBadP2[0]);
-////					Services.SoundManager.genericBadP2.Remove(Services.SoundManager.genericBadP2[0]);
-//				}
-//			}
-//		}
-//	}
-//
-//	public void IncredulousReaction()
-//	{
-//		if (SeatPos == 0)
-//		{
-//			if (Services.SoundManager.incredulousP1.Count != 0)
-//			{
-//				float randomNumber = Random.Range(0, 100);
-//				if (randomNumber < 100)
-//				{
-////					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.incredulousP1[0]);
-////					Services.SoundManager.incredulousP1.Remove(Services.SoundManager.incredulousP1[0]);
-//				}
-//			}
-//		}
-//		else if (SeatPos == 1)
-//		{
-//			if (Services.SoundManager.incredulousP2.Count != 0)
-//			{
-//				float randomNumber = Random.Range(0, 100);
-//				if (randomNumber < 100)
-//				{
-////					Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.incredulousP2[0]);
-////					Services.SoundManager.incredulousP2.Remove(Services.SoundManager.incredulousP2[0]);
-//				}
-//			}
-//		}
-//	}
-
-//	public void RespectfulReaction()
-//	{
-//
-//		Services.SoundManager.GetSourceAndPlay(playerAudioSource, winAudio);
-//	}
-//
-//	public void GoodReaction()
-//	{
-//		Services.SoundManager.GetSourceAndPlay(playerAudioSource, winAudio);
-//	}
-
+    //determines which reaction to have
+    public void WinnerReactions()
+    {
+        if (!playerAudioSource.isPlaying && !playerIsInConversation && !Services.SoundManager.conversationIsPlaying)
+        {
+            Services.SoundManager.GetSourceAndPlay(playerAudioSource, winAudio);
+        }
+    }
 
 	//this finds the rate of return
 	//first we find the amount to raise by calling the DetermineRaiseAmount function
@@ -545,140 +448,203 @@ public class PokerPlayerRedux : MonoBehaviour{
 		amountToRaise = DetermineRaiseAmount();
 		float potSize = Table.instance.potChips;
 		float potOdds = amountToRaise / (amountToRaise + potSize);
-		float returnRate = HandStrength / potOdds;
+        Debug.Log(gameObject.name + " has an HS of " + HandStrength + " and pot odds of " + potOdds);
+        float returnRate = (HandStrength / potOdds) - PossibleOpponentHS();
+        Debug.Log(gameObject.name + " has a return rate of " + returnRate);
 		return returnRate;
 	}
 
-	//basically this is a KEY function. right now it's using primarily handStrength to determine how much to raise
-	//but as we continue I'll need to actually add in a TON of factors when considering how much to raise
-	public int DetermineRaiseAmount()
-	{
-		int raise = 0;
+    public float PossibleOpponentHS()
+    {
+        float opponentHS = 0;
 
-		if (Table.gameState == GameState.PreFlop)
-		{
-			#region pre-flop raises
-			if (HandStrength > .8)
-			{
-				//95% chance to raise big, 5% to go all in
-				float randomNum = Random.Range(0, 100);
-				if (randomNum < 95)
-				{
-					if (Services.Dealer.LastBet == Services.Dealer.BigBlind)
-					{
-						raise = Services.Dealer.BigBlind * (3 + Services.Dealer.GetActivePlayerCount());
-					}
-					else raise = Services.Dealer.LastBet * 2;
-				}
-				else raise = chipCount;
-			}
-			else if (HandStrength > .5)
-			{
-				//98% chance to raise big, 2% to go all in 
-				float randomNum = Random.Range(0, 100);
-				if (randomNum < 98)
-				{
-					if (Services.Dealer.LastBet == Services.Dealer.BigBlind)
-					{
-						raise = Services.Dealer.BigBlind * 3;
-					}
-					else raise = Services.Dealer.LastBet * 2;
-				}
-				else raise = chipCount;
-			}
-			else if (HandStrength > .3)
-			{
-				//70% chance to raise big 30% chance to min raise 
-				float randomNum = Random.Range(0, 100);
-				if (randomNum < 70)
-				{
-					if (Services.Dealer.LastBet == Services.Dealer.BigBlind)
-					{
-						raise = Services.Dealer.BigBlind * 3;
-					}
-					else raise = Services.Dealer.LastBet;
-				}
-			}
-			else raise = Services.Dealer.LastBet;
-			#endregion
-		}
-		else
-		{
-			#region post-flop raises
-			if (HandStrength > .8)
-			{
-				//95% chance to raise pot, 5% to go all in
-				float randomNum = Random.Range(0, 100);
-				if (randomNum < 95)
-				{
-					raise = Table.instance.potChips;
-				}
-				else raise = chipCount;
-			}
-			else if (HandStrength > .5)
-			{
-				//50% to raise pot, 35% to half pot, 10% 2x lastBet (or 3x big blind), 5% all in
-				float randomNum = Random.Range(0, 100);
-				if (randomNum < 50)
-				{
-					raise = Table.instance.potChips;
-				}
-				else if(randomNum - 50 < 35)
-				{
-					int remainder = (Table.instance.potChips / 2) % ChipConfig.RED_CHIP_VALUE;
-					if (remainder > 0) raise = ((Table.instance.potChips / 2) - remainder) + ChipConfig.RED_CHIP_VALUE;
-					else raise = Table.instance.potChips / 2;
-				}
-				else if(randomNum - 50 < 10)
-				{
-					if (Services.Dealer.LastBet == 0)
-					{
-						raise = Services.Dealer.BigBlind * 3;
-					}
-					else raise = Services.Dealer.LastBet * 2;
-				}
-				else if(randomNum - 50 < 5)
-				{
-					raise = chipCount;
-				}
-			}
-			else if (HandStrength > .3)
-			{
-				//70% raise half pot, 30% 2x lastbest (or 3x big blind)
-				float randomNum = Random.Range(0, 100);
-				if (randomNum < 70)
-				{
-					int remainder = (Table.instance.potChips / 2) % ChipConfig.RED_CHIP_VALUE;
-					if (remainder > 0) raise = ((Table.instance.potChips / 2) - remainder) + ChipConfig.RED_CHIP_VALUE;
-					else raise = Table.instance.potChips / 2;
-				}
-				else
-				{
-					if (Services.Dealer.LastBet == 0)
-					{
-						raise = Services.Dealer.BigBlind * 3;
-					}
-					else raise = Services.Dealer.LastBet * 2;
-				}
-			}
-			else
-			{
-				if (Services.Dealer.LastBet == 0)
-				{
-					raise = Services.Dealer.BigBlind * 3;
-				}
-				else raise = Services.Dealer.LastBet;
-			}
-			#endregion
-		}
-		if(raise % ChipConfig.RED_CHIP_VALUE > 0)
-		{
-			Debug.Log("Invalid Raise Amount");
-			return 0;
-		}
-		if(raise == 0) raise = Services.Dealer.BigBlind * 3;
-		return raise;
-	}
+        if(Services.Dealer.LastBet != Services.Dealer.BigBlind || Services.Dealer.LastBet != 0)
+        {
+            Debug.Log("lastBet = " + Services.Dealer.LastBet + " and pot = " + Table.instance.potChips + " and raisesInRound = " + Services.Dealer.raisesInRound);
+            opponentHS = (Services.Dealer.LastBet / (Table.instance.potChips - Services.Dealer.LastBet)) / (2 + Services.Dealer.raisesInRound);
+            Debug.Log("possibleOpponentHS = " + opponentHS);
+        }
+        return opponentHS;
+    }
+
+    //basically this is a KEY function. right now it's using primarily handStrength to determine how much to raise
+    //but as we continue I'll need to actually add in a TON of factors when considering how much to raise
+    //MUST REWRITE THIS TO ACCOUNT FOR A WHOLE LOT
+    public int DetermineRaiseAmount()
+    {
+        int raise = 0;
+        int minimumRaise = Services.Dealer.LastBet;
+        int modifier = 0;
+
+        if (minimumRaise == 0) minimumRaise = Services.Dealer.BigBlind;
+
+        if (Table.gameState == GameState.PreFlop)
+        {
+            if (((chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4)) && HandStrength > 12f)
+            {
+                raise = chipCount;
+            }
+            else
+            {
+                if (Services.Dealer.LastBet == Services.Dealer.BigBlind)
+                {
+                    raise = Services.Dealer.BigBlind * (3 + Services.Dealer.GetActivePlayerCount());
+                }
+                else raise = Services.Dealer.LastBet * 2;
+            }
+            if (raise > chipCount) raise = chipCount;
+        }
+        else
+        {
+            //so we want a modifer that is a culmination of different factors:
+            //Position
+            //Players In Hand - if players > 1, add 1
+            //PotSize - if potSize > chipcount / 2, add 1
+            //ChipStack - if chipstack
+            //Motivation
+            //PlayStyle
+            //HandStrength
+            //we use that modifier to as a multiplier
+            //if the bet would be greater than your chipStack, go all in.
+            modifier += Services.Dealer.GetActivePlayerCount();
+            if ((chipCount - Services.Dealer.LastBet) > (Services.Dealer.BigBlind * 4)) modifier += 1;
+            else modifier -= 1;
+            if (HandStrength > .7 && Hand.HandValues.PokerHand < PokerHand.OnePair) modifier += 3;
+            else if (HandStrength > .7 && Hand.HandValues.PokerHand > PokerHand.Flush) modifier = 1;
+            if (HandStrength > .6) modifier += 1;
+            else modifier -= 1;
+
+            if (modifier == 0) modifier = 1;
+            raise = minimumRaise * modifier;
+            Debug.Log(gameObject.name + " is raising " + raise + " because of a modifier = " + modifier);
+            if (raise > chipCount) raise = chipCount;
+        }
+        #region old Raise code
+        //if (Table.gameState == GameState.PreFlop)
+        //{
+        //    #region pre-flop raises
+        //    if (HandStrength > .8)
+        //    {
+        //        //95% chance to raise big, 5% to go all in
+        //        float randomNum = Random.Range(0, 100);
+        //        if (randomNum < 95)
+        //        {
+        //            if (Services.Dealer.LastBet == Services.Dealer.BigBlind)
+        //            {
+        //                raise = Services.Dealer.BigBlind * (3 + Services.Dealer.GetActivePlayerCount());
+        //            }
+        //            else raise = Services.Dealer.LastBet * 2;
+        //        }
+        //        else raise = chipCount;
+        //    }
+        //    else if (HandStrength > .5)
+        //    {
+        //        //98% chance to raise big, 2% to go all in 
+        //        float randomNum = Random.Range(0, 100);
+        //        if (randomNum < 98)
+        //        {
+        //            if (Services.Dealer.LastBet == Services.Dealer.BigBlind)
+        //            {
+        //                raise = Services.Dealer.BigBlind * (3 + Services.Dealer.GetActivePlayerCount());
+        //            }
+        //            else raise = Services.Dealer.LastBet * 2;
+        //        }
+        //        else raise = chipCount;
+        //    }
+        //    else if (HandStrength > .3)
+        //    {
+        //        //70% chance to raise big 30% chance to min raise 
+        //        float randomNum = Random.Range(0, 100);
+        //        if (randomNum < 70)
+        //        {
+        //            if (Services.Dealer.LastBet == Services.Dealer.BigBlind)
+        //            {
+        //                raise = Services.Dealer.BigBlind * (3 + Services.Dealer.GetActivePlayerCount());
+        //            }
+        //            else raise = Services.Dealer.LastBet;
+        //        }
+        //    }
+        //    else raise = Services.Dealer.LastBet;
+        //    #endregion
+        //}
+        //else
+        //{
+        //    #region post-flop raises
+        //    if (HandStrength > .8)
+        //    {
+        //        //95% chance to raise pot, 5% to go all in
+        //        float randomNum = Random.Range(0, 100);
+        //        if (randomNum < 95)
+        //        {
+        //            raise = Table.instance.potChips;
+        //        }
+        //        else raise = chipCount;
+        //    }
+        //    else if (HandStrength > .5)
+        //    {
+        //        //50% to raise pot, 35% to half pot, 10% 2x lastBet (or 3x big blind), 5% all in
+        //        float randomNum = Random.Range(0, 100);
+        //        if (randomNum < 50)
+        //        {
+        //            raise = Table.instance.potChips;
+        //        }
+        //        else if (randomNum - 50 < 35)
+        //        {
+        //            int remainder = (Table.instance.potChips / 2) % ChipConfig.RED_CHIP_VALUE;
+        //            if (remainder > 0) raise = ((Table.instance.potChips / 2) - remainder) + ChipConfig.RED_CHIP_VALUE;
+        //            else raise = Table.instance.potChips / 2;
+        //        }
+        //        else if (randomNum - 50 < 10)
+        //        {
+        //            if (Services.Dealer.LastBet == 0)
+        //            {
+        //                raise = Services.Dealer.BigBlind * 3;
+        //            }
+        //            else raise = Services.Dealer.LastBet * 2;
+        //        }
+        //        else if (randomNum - 50 < 5)
+        //        {
+        //            raise = chipCount;
+        //        }
+        //    }
+        //    else if (HandStrength > .3)
+        //    {
+        //        //70% raise half pot, 30% 2x lastbest (or 3x big blind)
+        //        float randomNum = Random.Range(0, 100);
+        //        if (randomNum < 70)
+        //        {
+        //            int remainder = (Table.instance.potChips / 2) % ChipConfig.RED_CHIP_VALUE;
+        //            if (remainder > 0) raise = ((Table.instance.potChips / 2) - remainder) + ChipConfig.RED_CHIP_VALUE;
+        //            else raise = Table.instance.potChips / 2;
+        //        }
+        //        else
+        //        {
+        //            if (Services.Dealer.LastBet == 0)
+        //            {
+        //                raise = Services.Dealer.BigBlind * 3;
+        //            }
+        //            else raise = Services.Dealer.LastBet * 2;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (Services.Dealer.LastBet == 0)
+        //        {
+        //            raise = Services.Dealer.BigBlind * 3;
+        //        }
+        //        else raise = Services.Dealer.LastBet;
+        //    }
+        //    #endregion
+        //}
+        //if (raise % ChipConfig.RED_CHIP_VALUE > 0)
+        //{
+        //    Debug.Log("Invalid Raise Amount");
+        //    return 0;
+        //}
+        //if (raise == 0) raise = Services.Dealer.BigBlind * 3;
+        #endregion
+        return raise;
+    }
 
     //this is the FCR decision and this is where we can adjust player types
     //we should go back to the generic one and make percentage variables that we can adjust in individual players
@@ -687,10 +653,17 @@ public class PokerPlayerRedux : MonoBehaviour{
         //Debug.Log("Player " + SeatPos + " has a HS " + HandStrength);
         if (Table.gameState == GameState.PreFlop)
         {
-            if (HandStrength > 12) Raise();
+            if (((chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4)) && HandStrength > 12)
+            {
+                AllIn();
+            }
+            else if (HandStrength > 12) Raise();
             else if (HandStrength < 5)
             {
-                if (Services.Dealer.LastBet - currentBet == 0) Call();
+                if ((Services.Dealer.LastBet - currentBet == 0) ||
+                    ((Services.Dealer.LastBet - currentBet == Services.Dealer.SmallBlind) &&
+                       Services.Dealer.GetActivePlayerCount() == 2) &&
+                       ((chipCount - Services.Dealer.LastBet) > (Services.Dealer.BigBlind * 4))) Call();
                 else Fold();
             }
             else Call();
@@ -700,97 +673,132 @@ public class PokerPlayerRedux : MonoBehaviour{
         }
         else
         {
+            float aggressorCount = 0;
+            for (int i = 0; i < Services.Dealer.players.Count; i++)
+            {
+                if (Services.Dealer.players[i].isAggressor) aggressorCount++;
+            }
             if ((chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && HandStrength < 0.5) Fold();
-            else if (returnRate < lowReturnRate)
+            else if (!isAggressor && aggressorCount == 1)
             {
-                //Debug.Log("lowReturnRate");
-                //95% chance fold, 5% bluff (raise)
-                float randomNumber = Random.Range(0, 100);
-                if (randomNumber < foldChanceLow)
+                PokerPlayerRedux aggressor = null;
+                for (int i = 0; i < Services.Dealer.players.Count; i++)
                 {
-                    //if there's not bet, don't fold, just call for free.
-                    if (Services.Dealer.LastBet > 0) Fold();
-                    else Call();
-                }
-                else if (randomNumber - foldChanceLow < callChanceLow) Call();
-                else
-                {
-                    if (Services.Dealer.previousPlayerToAct != null)
+                    if (Services.Dealer.players[i].isAggressor)
                     {
-                        if (Services.Dealer.previousPlayerToAct.playerIsAllIn) Call();
-                        else Raise();
+                        aggressor = Services.Dealer.players[i];
+                        break;
                     }
-                    else Raise();
                 }
-
+                if (aggressor.PlayerState == PlayerState.Playing && aggressor.currentBet > Table.instance.potChips / 2)
+                {
+                    if (Hand.HandValues.PokerHand < PokerHand.OnePair && HandStrength < .5f) Fold();
+                    else if (Hand.HandValues.PokerHand > PokerHand.OnePair && HandStrength > .5f) Call();
+                    else DetermineAction(returnRate);
+                }
+                else DetermineAction(returnRate);
             }
-            else if (returnRate < decentReturnRate)
+            else if(Services.Dealer.raisesInRound >= 2 && Hand.HandValues.PokerHand < PokerHand.OnePair && HandStrength < .6f)
             {
-                //Debug.Log("decentReturnRate");
-                //80% chance fold, 5% call, 15% bluff(raise)
-                float randomNumber = Random.Range(0, 100);
-                if (randomNumber < foldChanceDecent)
-                {
-                    if (Services.Dealer.LastBet > 0) Fold();
-                    else Call();
-                }
-                else if (randomNumber - foldChanceDecent < callChanceDecent) Call();
-                else
-                {
-                    if (Services.Dealer.previousPlayerToAct != null)
-                    {
-                        if (Services.Dealer.previousPlayerToAct.playerIsAllIn) Call();
-                        else Raise();
-                    }
-                    else Raise();
-                }
-
+                float randomNum = Random.Range(0, 100);
+                if (randomNum > 70) Call();
+                else Fold();
             }
-            else if (returnRate < highReturnRate)
-            {
-                //Debug.Log("highReturnRate");
-                //60% chance call, 40% raise
-                float randomNumber = Random.Range(0, 100);
-                if (randomNumber < foldChanceHigh)
-                {
-                    if (Services.Dealer.LastBet > 0) Fold();
-                    else Call();
-                }
-                else if (randomNumber - foldChanceHigh < callChanceHigh) Call();
-                else
-                {
-                    if (Services.Dealer.previousPlayerToAct != null)
-                    {
-                        if (Services.Dealer.previousPlayerToAct.playerIsAllIn) Call();
-                        else Raise();
-                    }
-                    else Raise();
-                }
-
-            }
-            else if (returnRate >= highReturnRate)
-            {
-                //Debug.Log("superHighReturnRate");
-                //70% chance raise, 30% call
-                float randomNumber = Random.Range(0, 100);
-                if (randomNumber < foldChanceVeryHigh)
-                {
-                    if (Services.Dealer.LastBet > 0) Fold();
-                    else Call();
-                }
-                else if (randomNumber - foldChanceVeryHigh < callChanceVeryHigh) Call();
-                else
-                {
-                    if (Services.Dealer.previousPlayerToAct != null)
-                    {
-                        if (Services.Dealer.previousPlayerToAct.playerIsAllIn) Call();
-                        else Raise();
-                    }
-                    else Raise();
-                }
-            }
+            else DetermineAction(returnRate);
             turnComplete = true;
             actedThisRound = true;
+        }
+    }
+
+    public void DetermineAction(float returnRate)
+    {
+        if (returnRate < lowReturnRate)
+        {
+            //Debug.Log("lowReturnRate");
+            //95% chance fold, 5% bluff (raise)
+            float randomNumber = Random.Range(0, 100);
+            if (randomNumber < foldChanceLow)
+            {
+                //if there's not bet, don't fold, just call for free.
+                if (Services.Dealer.LastBet > 0) Fold();
+                else Call();
+            }
+            else if (randomNumber - foldChanceLow < callChanceLow) Call();
+            else
+            {
+                if (Services.Dealer.previousPlayerToAct != null)
+                {
+                    if (Services.Dealer.previousPlayerToAct.playerIsAllIn) Call();
+                    else Raise();
+                }
+                else Raise();
+            }
+
+        }
+        else if (returnRate < decentReturnRate)
+        {
+            //Debug.Log("decentReturnRate");
+            //80% chance fold, 5% call, 15% bluff(raise)
+            float randomNumber = Random.Range(0, 100);
+            if (randomNumber < foldChanceDecent)
+            {
+                if (Services.Dealer.LastBet > 0) Fold();
+                else Call();
+            }
+            else if (randomNumber - foldChanceDecent < callChanceDecent) Call();
+            else
+            {
+                if (Services.Dealer.previousPlayerToAct != null)
+                {
+                    if (Services.Dealer.previousPlayerToAct.playerIsAllIn) Call();
+                    else Raise();
+                }
+                else Raise();
+            }
+
+        }
+        else if (returnRate < highReturnRate)
+        {
+            //Debug.Log("highReturnRate");
+            //60% chance call, 40% raise
+            float randomNumber = Random.Range(0, 100);
+            if (randomNumber < foldChanceHigh)
+            {
+                if (Services.Dealer.LastBet > 0) Fold();
+                else Call();
+            }
+            else if (randomNumber - foldChanceHigh < callChanceHigh) Call();
+            else
+            {
+                if (Services.Dealer.previousPlayerToAct != null)
+                {
+                    if (Services.Dealer.previousPlayerToAct.playerIsAllIn) Call();
+                    else Raise();
+                }
+                else Raise();
+            }
+
+        }
+        else if (returnRate >= highReturnRate)
+        {
+            //Debug.Log("superHighReturnRate");
+            //70% chance raise, 30% call
+            float randomNumber = Random.Range(0, 100);
+            if (randomNumber < foldChanceVeryHigh)
+            {
+                if (Services.Dealer.LastBet > 0) Fold();
+                else Call();
+            }
+            else if (randomNumber - foldChanceVeryHigh < callChanceVeryHigh) Call();
+            else
+            {
+                if (Services.Dealer.previousPlayerToAct != null)
+                {
+                    if (Services.Dealer.previousPlayerToAct.playerIsAllIn) Call();
+                    else Raise();
+                }
+                else Raise();
+            }
         }
     }
 
@@ -1159,16 +1167,21 @@ public class PokerPlayerRedux : MonoBehaviour{
 				playerCards[0].Add(myCard1);
 				playerCards[0].Add(myCard2);
 				//give two cards two each other testPlayer, and then remove those cards from the deck
-				//also give them a seat number
 				for (int i = 1; i < testPlayers.Count; i++)
 				{
-					for (int j = 0; j < 2; j++)
-					{
-						int cardPos = Random.Range(0, testDeck.Count);
-						CardType cardType = testDeck[cardPos];
-						playerCards[i].Add(cardType);
-						testDeck.Remove(cardType);
-					}
+                    //for (int j = 0; j < 2; j++)
+                    //{
+                    //	int cardPos = Random.Range(0, testDeck.Count);
+                    //	CardType cardType = testDeck[cardPos];
+                    //	playerCards[i].Add(cardType);
+                    //	testDeck.Remove(cardType);
+                    //}
+                    List<CardType> holeCards = GetPreFlopHand(testDeck);
+                    foreach(CardType card in holeCards)
+                    {
+                        playerCards[i].Add(card);
+                        testDeck.Remove(card);
+                    }
 				}
 				//if we're on the flop, deal out two more card to the board
 				//and take those from the deck
@@ -1236,9 +1249,38 @@ public class PokerPlayerRedux : MonoBehaviour{
 		yield break;
 	}
 
-    //okay so we essentially use this function in order to organize whatever list of chips we're passing it into lists by color
-    //we can use this function then to create chip stacks and make bets
-    //basically we go through the chips that were passed, look at the value, and add them to the proper list
+    public List<CardType> GetPreFlopHand(List<CardType> testDeck)
+    {
+        List<CardType> deck = testDeck;
+        List<CardType> holeCards = new List<CardType>();
+        /*
+         * so we take two cards at random from the testDeck
+         * we evaluate that hand
+         * if it's good return those two cards
+         * if it's not, then return those two cards into the deck and do it again until you do
+         */
+        for (int i = 0; i < 2; i++)
+        {
+            int cardPos = Random.Range(0, testDeck.Count);
+            CardType cardType = deck[cardPos];
+            holeCards.Add(cardType);
+        }
+        holeCards.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
+        HandEvaluator eval = new HandEvaluator();
+        eval.isTesting = true;
+        eval.SetHandEvalutor(holeCards);
+        eval.EvaluateHandAtPreFlop();
+
+        if (eval.HandValues.Total < 5)
+        {
+           return GetPreFlopHand(testDeck);
+        }
+        else
+        {
+            eval.isTesting = false;
+            return holeCards;
+        }
+    }
 
 
     //this is LIKE create and organize chipStacks, except is used only during intialization

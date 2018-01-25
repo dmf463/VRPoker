@@ -72,6 +72,7 @@ public class Dealer : MonoBehaviour
     private float buttonBTimer = 0;
     private int bufferPeriod = 10;
 
+    public float raisesInRound; 
 
     [HideInInspector]
 	public bool misdealAudioPlayed =false;
@@ -815,7 +816,15 @@ public class Dealer : MonoBehaviour
             {
                 //Debug.Log("chipCountToCheckWhenWinning = " + player.ChipCountToCheckWhenWinning + " and potAmountToGiveWinner = " + potAmountToGiveWinner);
                 winnerChipStack = player.ChipCountToCheckWhenWinning + player.chipsWon;
-                Debug.Log("for player" + player.SeatPos + " the winnerChipStack = " + winnerChipStack + " and the Player has" + player.chipCount);
+                ////
+                //
+                //
+                //IMPORTANT DEBUG
+                //Debug.Log("for player" + player.SeatPos + " the winnerChipStack = " + winnerChipStack + " and the Player has" + player.chipCount);
+                //
+                ///
+                ///
+                //
                 if (player.chipCount == winnerChipStack && player.HasBeenPaid == false)
                 {
                     winnersPaid++;
@@ -880,6 +889,7 @@ public class Dealer : MonoBehaviour
             players[i].HasBeenPaid = false;
             players[i].playerIsAllIn = false;
             players[i].flippedCards = false;
+            players[i].isAggressor = false;
             //players[i].checkedHandStrength = false;
         }
         Services.PokerRules.cardsPulled.Clear();
@@ -891,6 +901,7 @@ public class Dealer : MonoBehaviour
         readyToAwardPlayers = false;
         finalHandEvaluation = false;
 		misdealAudioPlayed = false;
+        raisesInRound = 0;
         Services.PokerRules.checkedForCorrections = false;
         chipsInPot.Clear();
         deadCardsList.Clear();
@@ -929,6 +940,7 @@ public class Dealer : MonoBehaviour
             players[i].HasBeenPaid = false;
             players[i].playerIsAllIn = false;
             players[i].flippedCards = false;
+            players[i].isAggressor = false;
             //players[i].checkedHandStrength = false;
         }
         GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
@@ -943,6 +955,7 @@ public class Dealer : MonoBehaviour
 		misdealAudioPlayed = false;
         finalHandEvaluation = false;
         roundStarted = false;
+        raisesInRound = 0;
         Services.PokerRules.TurnOffAllIndicators();
         GameObject[] chipsOnTable = GameObject.FindGameObjectsWithTag("Chip");
         if (chipsOnTable.Length > 0)

@@ -125,6 +125,19 @@ public class Table {
 
     public void RestartRound()
     {
+        if (GameObject.FindGameObjectWithTag("CardDeck") == null)
+        {
+            //Debug.Log("Could not find CardDeck, instantiating new one");
+            GameObject shuffleArea = GameObject.Find("ShufflingArea");
+            GameObject newCardDeck = GameObject.Instantiate(Services.PrefabDB.CardDeck, shuffleArea.transform.position, Quaternion.identity) as GameObject;
+        }
+        else
+        {
+            GameObject.Destroy(GameObject.FindGameObjectWithTag("CardDeck"));
+            GameObject shuffleArea = GameObject.Find("ShufflingArea");
+            GameObject newCardDeck = GameObject.Instantiate(Services.PrefabDB.CardDeck, shuffleArea.transform.position, Quaternion.identity) as GameObject;
+        }
+
         if (gameState == GameState.ShowDown || gameState == GameState.PostHand || gameState == GameState.CleanUp)
         {
             Debug.Log("Restarting Round in " + Table.gameState);
@@ -147,19 +160,6 @@ public class Table {
         else
         {
             Debug.Log("RestartingRound in " + Table.gameState);
-            if (GameObject.FindGameObjectWithTag("CardDeck") == null)
-            {
-                //Debug.Log("Could not find CardDeck, instantiating new one");
-                GameObject shuffleArea = GameObject.Find("ShufflingArea");
-                GameObject newCardDeck = GameObject.Instantiate(Services.PrefabDB.CardDeck, shuffleArea.transform.position, Quaternion.identity) as GameObject;
-            }
-            else
-            {
-                GameObject.Destroy(GameObject.FindGameObjectWithTag("CardDeck"));
-                GameObject shuffleArea = GameObject.Find("ShufflingArea");
-                GameObject newCardDeck = GameObject.Instantiate(Services.PrefabDB.CardDeck, shuffleArea.transform.position, Quaternion.identity) as GameObject;
-            }
-
             for (int i = 0; i < playerCards.Length; i++)
             {
                 playerCards[i].Clear();

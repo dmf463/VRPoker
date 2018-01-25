@@ -25,6 +25,7 @@ public class HandEvaluator {
     private int straightFlushCount;
     private List<CardType> incomingCards;
     private HandValue handValue;
+    public bool isTesting;
 
     public HandEvaluator(List<CardType> sortedCards)
     {
@@ -53,6 +54,7 @@ public class HandEvaluator {
         incomingCards = sortedCards;
         Cards = sortedCards;
     }
+
     public void ResetHandEvaluator()
     {
         spadeSum = 0;
@@ -75,10 +77,11 @@ public class HandEvaluator {
         set
         {
             GameState _gameState = Table.gameState;
-            if(_gameState == GameState.PreFlop)
+            if (_gameState == GameState.PreFlop || isTesting == true)
             {
                 incomingCards[0] = value[0];
                 incomingCards[1] = value[1];
+                isTesting = false;
             }
 
             else if(_gameState == GameState.Flop)
@@ -115,24 +118,6 @@ public class HandEvaluator {
 
     public void EvaluateHandAtPreFlop()
     {
-        ////get number of suit in each hand
-        //getNumberOfSuit();
-        //if (PocketPair())
-        //{
-        //    return PokerHand.OnePair;
-        //}
-        ////else if (SuitedConnectors())
-        ////{
-        ////    return PokerHand.SuitedConnectors;
-        ////}
-        ////else if (Connectors())
-        ////{
-        ////    return PokerHand.Connectors;
-        ////}
-        //handValue.HighCard = (int)incomingCards[1].rank;
-        //handValue.Total = (int)incomingCards[0].rank + (int)incomingCards[1].rank;
-        //handValue.PokerHand = PokerHand.HighCard;
-        //return PokerHand.HighCard;
         DeterminePreFlopHandScore();
     }
 
@@ -381,7 +366,8 @@ public class HandEvaluator {
         handValue.HighCard = (int)incomingCards[1].rank;
             
     }
-    
+
+   
     //public bool PocketPair()
     //{
 
@@ -423,11 +409,11 @@ public class HandEvaluator {
     //}
 
 
-/*
-* 
-* Everything below here is the logic for FLOP hand evaluation 
-* 
-*/
+    /*
+    * 
+    * Everything below here is the logic for FLOP hand evaluation 
+    * 
+    */
 
 
     public bool OnePairAtFlop()
