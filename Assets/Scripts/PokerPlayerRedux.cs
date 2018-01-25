@@ -16,7 +16,8 @@ public class PokerPlayerRedux : MonoBehaviour{
     private List<GameObject> parentChips;
     public GameObject[] cardPos;
     public int cardsReplaced = 0;
-    public bool isAggressor = false; 
+    public bool isAggressor = false;
+    public int timesRaisedThisRound = 0;
 
 	//what position they are at the table, this is set in Dealer and is massively important
 	//this is the current means by which we differentiate between which instance of PokerPlayerRedux we're currently working with
@@ -260,6 +261,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 	{
         Services.Dealer.raisesInRound++;
         int aggressors = 0;
+        timesRaisedThisRound++;
         for (int i = 0; i < Services.Dealer.players.Count; i++)
         {
             if (Services.Dealer.players[i].isAggressor)
@@ -496,26 +498,29 @@ public class PokerPlayerRedux : MonoBehaviour{
         }
         else
         {
-            //so we want a modifer that is a culmination of different factors:
-            //Position
-            //Players In Hand - if players > 1, add 1
-            //PotSize - if potSize > chipcount / 2, add 1
-            //ChipStack - if chipstack
-            //Motivation
-            //PlayStyle
-            //HandStrength
-            //we use that modifier to as a multiplier
-            //if the bet would be greater than your chipStack, go all in.
-            modifier += Services.Dealer.GetActivePlayerCount();
-            if ((chipCount - Services.Dealer.LastBet) > (Services.Dealer.BigBlind * 4)) modifier += 1;
-            else modifier -= 1;
-            if (HandStrength > .7 && Hand.HandValues.PokerHand < PokerHand.OnePair) modifier += 3;
-            else if (HandStrength > .7 && Hand.HandValues.PokerHand > PokerHand.Flush) modifier = 1;
-            if (HandStrength > .6) modifier += 1;
-            else modifier -= 1;
-            modifier -= Services.Dealer.raisesInRound;
-            if (modifier == 0) modifier = 1;
-            raise = minimumRaise * modifier;
+            modifier += Services.Dealer.GetActivePlayerCount(); //the more players there are the more unsafe your hand is, so bet bigger
+            if (Services.Dealer.GetActivePlayerCount() > 2) 
+            {
+                if (Table.instance.DealerPosition == SeatPos) modifier += 2; //if you're not heads up and you're the dealer, you're in good position
+            }
+            else
+            {
+                if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(SeatPos) == 1) modifier = 0; //if you're first to act you're in a terrible position
+                else if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(SeatPos) == 2) modifier = 1; //still pretty bad position
+                else if (Services.Dealer.GetActivePlayerCount() - Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(SeatPos) == 1 && Services.Dealer.GetActivePlayerCount() >= 3) modifier += 2; //good position
+            }
+            if ((chipCount - Services.Dealer.LastBet) > (Services.Dealer.BigBlind * 4)) modifier += 1; //if you can cover the next few hands thats good
+            else modifier -= 1; //if you can't that's bad.
+
+            if (HandStrength > .7 && Hand.HandValues.PokerHand < PokerHand.OnePair) modifier += 3; //if you have a good HS but have less than OnePair, you're probably on a draw, so bet bigger
+            else if (HandStrength > .7 && Hand.HandValues.PokerHand > PokerHand.Flush) modifier = 1; //if you have a good HS and you have better than a flush, slow play it 
+
+            if (HandStrength > .6) modifier += 1; //if you have a decent hand
+            else modifier -= 1; //if you have a "meh" hand
+
+            modifier -= Services.Dealer.raisesInRound; //cut down on how much you're betting based on betting history
+            if (modifier <= 0) modifier = 1; //if it's less than zero, make it 1
+            raise = minimumRaise * Mathf.Abs(modifier);
             Debug.Log(gameObject.name + " is raising " + raise + " because of a modifier = " + modifier);
             if (raise > chipCount) raise = chipCount;
         }
@@ -673,42 +678,40 @@ public class PokerPlayerRedux : MonoBehaviour{
         }
         else
         {
-            float aggressorCount = 0;
+            PokerPlayerRedux aggressor = null;
             for (int i = 0; i < Services.Dealer.players.Count; i++)
             {
-                if (Services.Dealer.players[i].isAggressor) aggressorCount++;
+                if (Services.Dealer.players[i].isAggressor)
+                {
+                    aggressor = Services.Dealer.players[i];
+                    break;
+                }
             }
-            if ((chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && HandStrength < 0.5) Fold();
-            else if (!isAggressor && aggressorCount == 1)
-            {
-                PokerPlayerRedux aggressor = null;
-                for (int i = 0; i < Services.Dealer.players.Count; i++)
-                {
-                    if (Services.Dealer.players[i].isAggressor)
-                    {
-                        aggressor = Services.Dealer.players[i];
-                        break;
-                    }
-                }
-                if (aggressor.PlayerState == PlayerState.Playing && aggressor.currentBet > Table.instance.potChips / 2)
-                {
-                    if (Hand.HandValues.PokerHand < PokerHand.OnePair && HandStrength < .5f) Fold();
-                    else if (Hand.HandValues.PokerHand > PokerHand.OnePair && HandStrength > .5f) Call();
-                    else DetermineAction(returnRate);
-                }
-                else if (Services.Dealer.raisesInRound >= 2 && Hand.HandValues.PokerHand < PokerHand.OnePair && HandStrength < .6f)
-                {
-                    float randomNum = Random.Range(0, 100);
-                    if (randomNum > 70) Call();
-                    else Fold();
-                }
-                else DetermineAction(returnRate);
-            }
-            else if(Table.gameState == GameState.River && Services.Dealer.LastBet == 0)
+            if (Table.gameState == GameState.River && Services.Dealer.LastBet == 0)
             {
                 float randomNum = Random.Range(0, 100);
                 if (randomNum > 50) Raise();
                 else Call();
+            }
+            else if (aggressor != null)
+            {
+                if (aggressor.timesRaisedThisRound > 2 && timesRaisedThisRound > 1 && HandStrength > .85f) AllIn();
+                else if (aggressor.PlayerState == PlayerState.Playing && aggressor.currentBet > Table.instance.potChips / Services.Dealer.raisesInRound)
+                {
+                    if (Hand.HandValues.PokerHand < PokerHand.OnePair && HandStrength < .5f) Fold();
+                    else Call();
+                }
+                else DetermineAction(returnRate);
+            }
+            else if ((chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && HandStrength < 0.5) Fold();
+            else if (amountToRaise > chipCount / 4 && HandStrength < .75f || Services.Dealer.LastBet > chipCount / 4 && HandStrength < .75f) Fold();
+            else if (amountToRaise > chipCount / 4 && HandStrength < .85f || Services.Dealer.LastBet > chipCount / 4 && HandStrength < .85f) Call();
+            else if (amountToRaise > chipCount / 4 && HandStrength > .85f || Services.Dealer.LastBet > chipCount / 4 && HandStrength > .85f) AllIn();
+            else if (Services.Dealer.raisesInRound >= 2 && Hand.HandValues.PokerHand >= PokerHand.OnePair && HandStrength < .6f)
+            {
+                float randomNum = Random.Range(0, 100);
+                if (randomNum > 70) Call();
+                else Fold();
             }
             else DetermineAction(returnRate);
             turnComplete = true;

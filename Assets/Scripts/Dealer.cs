@@ -425,6 +425,7 @@ public class Dealer : MonoBehaviour
     {
         Debug.Log("Starting round " + Table.gameState);
         SetCurrentAndLastBet();
+        foreach (PokerPlayerRedux player in players) player.timesRaisedThisRound = 0;
         if (Table.gameState == GameState.PreFlop)
         {
             if(GetActivePlayerCount() == 2)
@@ -890,6 +891,7 @@ public class Dealer : MonoBehaviour
             players[i].playerIsAllIn = false;
             players[i].flippedCards = false;
             players[i].isAggressor = false;
+            players[i].timesRaisedThisRound = 0;
             //players[i].checkedHandStrength = false;
         }
         Services.PokerRules.cardsPulled.Clear();
@@ -941,6 +943,7 @@ public class Dealer : MonoBehaviour
             players[i].playerIsAllIn = false;
             players[i].flippedCards = false;
             players[i].isAggressor = false;
+            players[i].timesRaisedThisRound = 0;
             //players[i].checkedHandStrength = false;
         }
         GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
