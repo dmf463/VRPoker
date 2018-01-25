@@ -513,7 +513,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             else if (HandStrength > .7 && Hand.HandValues.PokerHand > PokerHand.Flush) modifier = 1;
             if (HandStrength > .6) modifier += 1;
             else modifier -= 1;
-
+            modifier -= Services.Dealer.raisesInRound;
             if (modifier == 0) modifier = 1;
             raise = minimumRaise * modifier;
             Debug.Log(gameObject.name + " is raising " + raise + " because of a modifier = " + modifier);
@@ -696,13 +696,19 @@ public class PokerPlayerRedux : MonoBehaviour{
                     else if (Hand.HandValues.PokerHand > PokerHand.OnePair && HandStrength > .5f) Call();
                     else DetermineAction(returnRate);
                 }
+                else if (Services.Dealer.raisesInRound >= 2 && Hand.HandValues.PokerHand < PokerHand.OnePair && HandStrength < .6f)
+                {
+                    float randomNum = Random.Range(0, 100);
+                    if (randomNum > 70) Call();
+                    else Fold();
+                }
                 else DetermineAction(returnRate);
             }
-            else if(Services.Dealer.raisesInRound >= 2 && Hand.HandValues.PokerHand < PokerHand.OnePair && HandStrength < .6f)
+            else if(Table.gameState == GameState.River && Services.Dealer.LastBet == 0)
             {
                 float randomNum = Random.Range(0, 100);
-                if (randomNum > 70) Call();
-                else Fold();
+                if (randomNum > 50) Raise();
+                else Call();
             }
             else DetermineAction(returnRate);
             turnComplete = true;

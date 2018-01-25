@@ -72,7 +72,7 @@ public class Dealer : MonoBehaviour
     private float buttonBTimer = 0;
     private int bufferPeriod = 10;
 
-    public float raisesInRound; 
+    public int raisesInRound; 
 
     [HideInInspector]
 	public bool misdealAudioPlayed =false;
