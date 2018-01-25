@@ -687,7 +687,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                     break;
                 }
             }
-            if (Table.gameState == GameState.River && Services.Dealer.LastBet == 0)
+            if (Table.gameState == GameState.River && Services.Dealer.LastBet == 0) //if you're on the river and no one has bet, take a stab at it.
             {
                 float randomNum = Random.Range(0, 100);
                 if (randomNum > 50) Raise();
@@ -695,19 +695,19 @@ public class PokerPlayerRedux : MonoBehaviour{
             }
             else if (aggressor != null)
             {
-                if (aggressor.timesRaisedThisRound > 2 && timesRaisedThisRound > 1 && HandStrength > .85f) AllIn();
-                else if (aggressor.PlayerState == PlayerState.Playing && aggressor.currentBet > Table.instance.potChips / Services.Dealer.raisesInRound)
+                if (aggressor.timesRaisedThisRound > 2 && timesRaisedThisRound > 1 && HandStrength > .85f) AllIn(); //if you're in a raise war, and you have a great hand just go all in
+                else if (aggressor.PlayerState == PlayerState.Playing && aggressor.currentBet > Table.instance.potChips / Services.Dealer.raisesInRound) //if an aggressor has bet a huuge chunk of the pot
                 {
-                    if (Hand.HandValues.PokerHand < PokerHand.OnePair && HandStrength < .5f) Fold();
-                    else Call();
+                    if (Hand.HandValues.PokerHand < PokerHand.OnePair && HandStrength < .5f) Fold(); //if you have a bad hand, fold
+                    else Call(); //else just call
                 }
                 else DetermineAction(returnRate);
             }
-            else if ((chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && HandStrength < 0.5) Fold();
-            else if (amountToRaise > chipCount / 4 && HandStrength < .75f || Services.Dealer.LastBet > chipCount / 4 && HandStrength < .75f) Fold();
-            else if (amountToRaise > chipCount / 4 && HandStrength < .85f || Services.Dealer.LastBet > chipCount / 4 && HandStrength < .85f) Call();
-            else if (amountToRaise > chipCount / 4 && HandStrength > .85f || Services.Dealer.LastBet > chipCount / 4 && HandStrength > .85f) AllIn();
-            else if (Services.Dealer.raisesInRound >= 2 && Hand.HandValues.PokerHand >= PokerHand.OnePair && HandStrength < .6f)
+            else if ((chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && HandStrength < 0.5) Fold(); //if betting would take the majority of your stack and you have a bad hand fold.
+            else if (amountToRaise > chipCount / 4 && HandStrength < .75f || Services.Dealer.LastBet > chipCount / 4 && HandStrength < .75f) Fold(); //if you would bet 1/4 of your stack, and only a 75% chance of winning, fold
+            else if (amountToRaise > chipCount / 4 && HandStrength < .85f || Services.Dealer.LastBet > chipCount / 4 && HandStrength < .85f) Call(); //75% - 85% chance of winning, call
+            else if (amountToRaise > chipCount / 4 && HandStrength > .85f || Services.Dealer.LastBet > chipCount / 4 && HandStrength > .85f) AllIn(); //more than 85% go all in
+            else if (Services.Dealer.raisesInRound >= 2 && Hand.HandValues.PokerHand >= PokerHand.OnePair && HandStrength < .6f) //if there are more than two raises and you have a decent hand, call or fold.
             {
                 float randomNum = Random.Range(0, 100);
                 if (randomNum > 70) Call();
