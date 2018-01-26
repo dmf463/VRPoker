@@ -13,6 +13,8 @@ using Valve.VR.InteractionSystem;
 //PokerPlayerRedux handles all the functions and info that a poker player would need to play
 public class Dealer : MonoBehaviour
 {
+    public int startingChipCount;
+
     [HideInInspector]
     public List<Card> deadCardsList = new List<Card>();
     //we set this to true if we're outside VR so we can text
@@ -95,7 +97,7 @@ public class Dealer : MonoBehaviour
     void Start()
     {
         playerDestinations = Table.instance.playerDestinations;
-        InitializePlayers(3500);
+        InitializePlayers(startingChipCount);
         Table.gameState = GameState.NewRound;
 		Debug.Log("Gamestate = " + Table.gameState);
         Table.dealerState = DealerState.DealingState;
