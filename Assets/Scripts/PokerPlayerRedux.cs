@@ -482,19 +482,19 @@ public class PokerPlayerRedux : MonoBehaviour{
         switch (playerName)
         {
             case PlayerName.Casey:
-                raise = Services.PlayerBehaviour.MINNIE_DetermineRaiseAmount(player);
+                raise = Services.PlayerBehaviour.CASEY_DetermineRaiseAmount(player);
                 break;
             case PlayerName.Zombie:
-                raise = Services.PlayerBehaviour.MINNIE_DetermineRaiseAmount(player);
+                raise = Services.PlayerBehaviour.ZOMBIE_DetermineRaiseAmount(player);
                 break;
             case PlayerName.Minnie:
                 raise = Services.PlayerBehaviour.MINNIE_DetermineRaiseAmount(player);
                 break;
             case PlayerName.Nathaniel:
-                raise = Services.PlayerBehaviour.MINNIE_DetermineRaiseAmount(player);
+                raise = Services.PlayerBehaviour.NATHANIEL_DetermineRaiseAmount(player);
                 break;
             case PlayerName.Floyd:
-                raise = Services.PlayerBehaviour.MINNIE_DetermineRaiseAmount(player);
+                raise = Services.PlayerBehaviour.FLOYD_DetermineRaiseAmount(player);
                 break;
             default:
                 break;
@@ -509,19 +509,19 @@ public class PokerPlayerRedux : MonoBehaviour{
         switch (playerName)
         {
             case PlayerName.Casey:
-                Services.PlayerBehaviour.MINNIE_FoldCallRaiseDecision(returnRate, player);
+                Services.PlayerBehaviour.CASEY_FoldCallRaiseDecision(returnRate, player);
                 break;
             case PlayerName.Zombie:
-                Services.PlayerBehaviour.MINNIE_FoldCallRaiseDecision(returnRate, player);
+                Services.PlayerBehaviour.ZOMBIE_FoldCallRaiseDecision(returnRate, player);
                 break;
             case PlayerName.Minnie:
                 Services.PlayerBehaviour.MINNIE_FoldCallRaiseDecision(returnRate, player);
                 break;
             case PlayerName.Nathaniel:
-                Services.PlayerBehaviour.MINNIE_FoldCallRaiseDecision(returnRate, player);
+                Services.PlayerBehaviour.NATHANIEL_FoldCallRaiseDecision(returnRate, player);
                 break;
             case PlayerName.Floyd:
-                Services.PlayerBehaviour.MINNIE_FoldCallRaiseDecision(returnRate, player);
+                Services.PlayerBehaviour.FLOYD_FoldCallRaiseDecision(returnRate, player);
                 break;
             default:
                 break;
@@ -533,19 +533,19 @@ public class PokerPlayerRedux : MonoBehaviour{
         switch (playerName)
         {
             case PlayerName.Casey:
-                Services.PlayerBehaviour.MINNIE_DetermineAction(returnRate, player);
+                Services.PlayerBehaviour.CASEY_DetermineAction(returnRate, player);
                 break;
             case PlayerName.Zombie:
-                Services.PlayerBehaviour.MINNIE_DetermineAction(returnRate, player);
+                Services.PlayerBehaviour.ZOMBIE_DetermineAction(returnRate, player);
                 break;
             case PlayerName.Minnie:
                 Services.PlayerBehaviour.MINNIE_DetermineAction(returnRate, player);
                 break;
             case PlayerName.Nathaniel:
-                Services.PlayerBehaviour.MINNIE_DetermineAction(returnRate, player);
+                Services.PlayerBehaviour.NATHANIEL_DetermineAction(returnRate, player);
                 break;
             case PlayerName.Floyd:
-                Services.PlayerBehaviour.MINNIE_DetermineAction(returnRate, player);
+                Services.PlayerBehaviour.FLOYD_DetermineAction(returnRate, player);
                 break;
             default:
                 break;
