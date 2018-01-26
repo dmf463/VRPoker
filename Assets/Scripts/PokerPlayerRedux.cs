@@ -107,23 +107,23 @@ public class PokerPlayerRedux : MonoBehaviour{
 	public float decentReturnRate;
 	public float highReturnRate;
 
-	[Header("Player Behavior")]
-	[Header("Low RR (<)")]
-	public float foldChanceLow = 95f;
-	public float callChanceLow = 5f;
-	public float raiseChanceLow = 0f;
-	[Header("Decent RR (<)")]
-	public float foldChanceDecent = 80f;
-	public float callChanceDecent = 5f;
-	public float raiseChanceDecent = 0f;
-	[Header("High RR (<)")]
-	public float foldChanceHigh = 0f;
-	public float callChanceHigh = 60f;
-	public float raiseChanceHigh = 40f;
-	[Header("Very High RR (>=)")]
-	public float foldChanceVeryHigh = 0f;
-	public float callChanceVeryHigh = 30f;
-	public float raiseChanceVeryHigh = 70f;
+    [Header("Player Behavior")]
+    [Header("Low RR (<)")]
+    public float foldChanceLow;// = 95f;
+    public float callChanceLow;// = 5f;
+    public float raiseChanceLow;// = 0f;
+    [Header("Decent RR (<)")]
+    public float foldChanceDecent;// = 80f;
+    public float callChanceDecent;// = 5f;
+    public float raiseChanceDecent;// = 0f;
+    [Header("High RR (<)")]
+    public float foldChanceHigh;// = 0f;
+    public float callChanceHigh;// = 60f;
+    public float raiseChanceHigh;// = 40f;
+    [Header("Very High RR (>=)")]
+    public float foldChanceVeryHigh;// = 0f;
+    public float callChanceVeryHigh;// = 30f;
+    public float raiseChanceVeryHigh;// = 70f;
 
 
 	[Header("Voice Lines")]
