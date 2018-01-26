@@ -453,7 +453,9 @@ public class PokerPlayerRedux : MonoBehaviour{
 		//else, we need to write another function that determines what the possible bet will be
 		amountToRaise = DetermineRaiseAmount(this);
 		float potSize = Table.instance.potChips;
-		float potOdds = amountToRaise / (amountToRaise + potSize);
+        int lastBet = Services.Dealer.LastBet;
+        if (lastBet == 0) lastBet = Services.Dealer.BigBlind; 
+		float potOdds = lastBet/ (lastBet + potSize);
         Debug.Log(gameObject.name + " has an HS of " + HandStrength + " and pot odds of " + potOdds);
         float returnRate = (HandStrength / potOdds) - PossibleOpponentHS();
         Debug.Log(gameObject.name + " has a return rate of " + returnRate);
