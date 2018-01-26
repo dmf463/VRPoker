@@ -5,8 +5,10 @@ using UnityEngine;
 //controls all the sounds
 public class SoundManager : MonoBehaviour
 {
-	public PokerPlayerRedux rosa;// rosa
-	public PokerPlayerRedux gonzalo;// gonzalo
+	public TextAsset dialogueFile;
+
+	public PokerPlayerRedux Casey;// rosa
+	public PokerPlayerRedux Zombie;// gonzalo
 	public PokerPlayerRedux minnie;// minnie
 	public PokerPlayerRedux Nathaniel;// Nathaniel
 	public PokerPlayerRedux floyd;// floyd

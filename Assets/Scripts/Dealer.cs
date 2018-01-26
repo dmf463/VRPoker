@@ -88,7 +88,8 @@ public class Dealer : MonoBehaviour
 		Services.DialogueDataManager = new DialogueDataManager();
         Services.Dealer = this;
         Services.PokerRules = GameObject.Find("PokerRules").GetComponent<PokerRules>();
-        //Services.SpiritManager = GameObject.Find("SpiritAIManager").GetComponent<SpiritAIManager>();
+		Services.PlayerBehaviour = new PlayerBehaviour();
+		//Services.SpiritManager = GameObject.Find("SpiritAIManager").GetComponent<SpiritAIManager>();   
     }
 
     // Use this for initialization
@@ -1212,5 +1213,4 @@ public class Dealer : MonoBehaviour
     }
 }
 
-        Services.PlayerBehaviour = new PlayerBehaviour();
-        //Services.SpiritManager = GameObject.Find("SpiritAIManager").GetComponent<SpiritAIManager>();
+       
