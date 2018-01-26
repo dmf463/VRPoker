@@ -6,19 +6,19 @@ using UnityEngine.UI;
 
 public class DialogueDataManager
 {
+	private Dictionary<string[], List<Dialogue>> dialogueDict;
+
 	public void Awake()
 	{
-		ParseDialogueFile();
+		ParseDialogueFile(Services.SoundManager.dialogueFile);
 	}
 
 
 	public void ParseDialogueFile(TextAsset dialogueFile)
 	{
-		
+		dialogueDict = new Dictionary<string[], List<Dialogue>>();
+		string fileFullString = dialogueFile.text;
 	}
-
-	 
-
 
 }
 
