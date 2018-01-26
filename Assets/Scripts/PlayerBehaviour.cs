@@ -39,12 +39,12 @@ public class PlayerBehaviour {
             if (Services.Dealer.GetActivePlayerCount() > 2)
             {
                 if (Table.instance.DealerPosition == player.SeatPos) modifier += 2; //if you're not heads up and you're the dealer, you're in good position
-            }
-            else
-            {
-                if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1) modifier = 0; //if you're first to act you're in a terrible position
-                else if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 2) modifier = 1; //still pretty bad position
-                else if (Services.Dealer.GetActivePlayerCount() - Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1 && Services.Dealer.GetActivePlayerCount() >= 3) modifier += 2; //good position
+                else
+                {
+                    if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1) modifier = 0; //if you're first to act you're in a terrible position
+                    else if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 2) modifier = 1; //still pretty bad position
+                    else if (Services.Dealer.GetActivePlayerCount() - Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1 && Services.Dealer.GetActivePlayerCount() >= 3) modifier += 2; //good position
+                }
             }
             if ((player.chipCount - Services.Dealer.LastBet) > (Services.Dealer.BigBlind * 4)) modifier += 1; //if you can cover the next few hands thats good
             else modifier -= 1; //if you can't that's bad.
@@ -257,24 +257,32 @@ public class PlayerBehaviour {
         else
         {
             modifier += Services.Dealer.GetActivePlayerCount(); //the more players there are the more unsafe your hand is, so bet bigger
-            if (Services.Dealer.GetActivePlayerCount() > 2)
+            if (Services.Dealer.GetActivePlayerCount() > 2) //as long as you're not heads up
             {
-                if (Table.instance.DealerPosition == player.SeatPos) modifier += 2; //if you're not heads up and you're the dealer, you're in good position
-            }
-            else
-            {
-                if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1) modifier = 0; //if you're first to act you're in a terrible position
-                else if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 2) modifier = 1; //still pretty bad position
-                else if (Services.Dealer.GetActivePlayerCount() - Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1 && Services.Dealer.GetActivePlayerCount() >= 3) modifier += 2; //good position
+
+                if (Table.instance.DealerPosition == player.SeatPos)
+                {
+                    if (Services.Dealer.raisesInRound == 0) modifier += 4;
+                    else modifier += 2; //if you're not heads up and you're the dealer, you're in good position
+                }
+                else
+                {
+                    if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1) modifier = 0; //if you're first to act you're in a terrible position
+                    else if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 2) modifier = 1; //still pretty bad position
+                    else if (Services.Dealer.GetActivePlayerCount() - Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1 && Services.Dealer.GetActivePlayerCount() >= 3) modifier += 3; //good position
+                }
             }
             if ((player.chipCount - Services.Dealer.LastBet) > (Services.Dealer.BigBlind * 4)) modifier += 1; //if you can cover the next few hands thats good
-            else modifier -= 1; //if you can't that's bad.
+            else modifier = 0; //if you can't that's bad.
 
-            if (player.HandStrength > .7 && player.Hand.HandValues.PokerHand < PokerHand.OnePair) modifier += 3; //if you have a good HS but have less than OnePair, you're probably on a draw, so bet bigger
-            else if (player.HandStrength > .7 && player.Hand.HandValues.PokerHand > PokerHand.Flush) modifier = 1; //if you have a good HS and you have better than a flush, slow play it 
+            if (player.HandStrength > .75 && player.Hand.HandValues.PokerHand < PokerHand.OnePair) modifier += 3; //if you have a good HS but have less than OnePair, you're probably on a draw, so bet bigger
+            else if (player.HandStrength > .7 && player.Hand.HandValues.PokerHand > PokerHand.Flush) modifier = 0; //if you have a good HS and you have better than a flush, slow play it 
 
-            if (player.HandStrength > .6) modifier += 1; //if you have a decent hand
+            if (player.HandStrength > .5) modifier += 1; //if you have a decent hand
             else modifier -= 1; //if you have a "meh" hand
+
+            if (player.chipCount > Services.Dealer.startingChipCount) modifier += Random.Range(2, 5);
+            else if (player.chipCount < Services.Dealer.startingChipCount) modifier -= Random.Range(2, 5);
 
             modifier -= Services.Dealer.raisesInRound; //cut down on how much you're betting based on betting history
             if (modifier <= 0) modifier = 1; //if it's less than zero, make it 1
@@ -292,21 +300,30 @@ public class PlayerBehaviour {
         //Debug.Log("Player " + SeatPos + " has a HS " + HandStrength);
         if (Table.gameState == GameState.PreFlop)
         {
-            if (((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4)) && player.HandStrength > 12)
+            if (((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4)) && player.HandStrength > 10) //if you're close to losing and have a good hand, go all in
             {
                 player.AllIn();
             }
-            else if (player.HandStrength > 12 && player.timesRaisedThisRound == 0) player.Raise();
-            else if (player.HandStrength < 5)
+            else if (player.HandStrength > 10 && player.timesRaisedThisRound == 0) player.Raise(); //if you have a good hand
+            else if (player.HandStrength < 5) //if you have a shit hand
             {
                 if ((Services.Dealer.LastBet - player.currentBet == 0) ||
                     ((Services.Dealer.LastBet - player.currentBet == Services.Dealer.SmallBlind) &&
                        Services.Dealer.GetActivePlayerCount() == 2) &&
-                       ((player.chipCount - Services.Dealer.LastBet) > (Services.Dealer.BigBlind * 4))) player.Call();
+                       ((player.chipCount - Services.Dealer.LastBet) > (Services.Dealer.BigBlind * 4))) //if the call is zero, or you're small blind and there are only 2 players
+                {
+                    float randomNum = Random.Range(0, 100);
+                    if (player.chipCount > Services.Dealer.startingChipCount && randomNum > 90) player.Raise(); //bluff it
+                    else player.Call(); //else just call
+                }
                 else player.Fold();
             }
-            else player.Call();
-
+            else
+            {
+                float randomNum = Random.Range(0, 100);
+                if (player.chipCount > Services.Dealer.startingChipCount && randomNum > 80) player.Raise(); //bluff it
+                else player.Call(); //else just call
+            }
             player.turnComplete = true;
             player.actedThisRound = true;
         }
@@ -324,7 +341,7 @@ public class PlayerBehaviour {
             if (Table.gameState == GameState.River && Services.Dealer.LastBet == 0) //if you're on the river and no one has bet, take a stab at it.
             {
                 float randomNum = Random.Range(0, 100);
-                if (randomNum > 50) player.Raise();
+                if (randomNum > 20) player.Raise();
                 else player.Call();
             }
             else if (aggressor != null)
@@ -344,7 +361,7 @@ public class PlayerBehaviour {
             else if (Services.Dealer.raisesInRound >= 2 && player.Hand.HandValues.PokerHand >= PokerHand.OnePair && player.HandStrength < .6f) //if there are more than two raises and you have a decent hand, call or fold.
             {
                 float randomNum = Random.Range(0, 100);
-                if (randomNum > 70) player.Call();
+                if (randomNum > 60) player.Call();
                 else player.Fold();
             }
             else player.DetermineAction(returnRate, player);
@@ -366,22 +383,23 @@ public class PlayerBehaviour {
                 if (Services.Dealer.LastBet > 0) player.Fold();
                 else player.Call();
             }
-            else if (randomNumber - player.foldChanceLow < player.callChanceLow) player.Call();
+            //else if (randomNumber - player.foldChanceLow < player.callChanceLow) player.Call();
             else
             {
                 if (Services.Dealer.previousPlayerToAct != null)
                 {
-                    if (Services.Dealer.previousPlayerToAct.playerIsAllIn) player.Call();
-                    else player.Raise();
+                    if (!Services.Dealer.previousPlayerToAct.playerIsAllIn && player.chipCount > Services.Dealer.startingChipCount) player.Raise();
+                    else player.Fold();
                 }
-                else player.Raise();
+                else if (!Services.Dealer.previousPlayerToAct.playerIsAllIn && player.chipCount > Services.Dealer.startingChipCount) player.Raise();
+                else player.Fold();
             }
 
         }
         else if (returnRate < player.decentReturnRate)
         {
             //Debug.Log("decentReturnRate");
-            //80% chance fold, 5% call, 15% bluff(raise)
+            //80% chance fold, 10% call, 10% bluff(raise)
             float randomNumber = Random.Range(0, 100);
             if (randomNumber < player.foldChanceDecent)
             {
@@ -393,17 +411,18 @@ public class PlayerBehaviour {
             {
                 if (Services.Dealer.previousPlayerToAct != null)
                 {
-                    if (Services.Dealer.previousPlayerToAct.playerIsAllIn) player.Call();
-                    else player.Raise();
+                    if (!Services.Dealer.previousPlayerToAct.playerIsAllIn && player.chipCount > Services.Dealer.startingChipCount) player.Raise();
+                    else player.Fold();
                 }
-                else player.Raise();
+                else if (!Services.Dealer.previousPlayerToAct.playerIsAllIn && player.chipCount > Services.Dealer.startingChipCount) player.Raise();
+                else player.Fold();
             }
 
         }
         else if (returnRate < player.highReturnRate)
         {
             //Debug.Log("highReturnRate");
-            //60% chance call, 40% raise
+            //50% chance call, 50% raise
             float randomNumber = Random.Range(0, 100);
             if (randomNumber < player.foldChanceHigh)
             {
@@ -425,7 +444,7 @@ public class PlayerBehaviour {
         else if (returnRate >= player.highReturnRate)
         {
             //Debug.Log("superHighReturnRate");
-            //70% chance raise, 30% call
+            //80% chance raise, 20% call
             float randomNumber = Random.Range(0, 100);
             if (randomNumber < player.foldChanceVeryHigh)
             {
@@ -481,12 +500,12 @@ public class PlayerBehaviour {
             if (Services.Dealer.GetActivePlayerCount() > 2)
             {
                 if (Table.instance.DealerPosition == player.SeatPos) modifier += 2; //if you're not heads up and you're the dealer, you're in good position
-            }
-            else
-            {
-                if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1) modifier = 0; //if you're first to act you're in a terrible position
-                else if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 2) modifier = 1; //still pretty bad position
-                else if (Services.Dealer.GetActivePlayerCount() - Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1 && Services.Dealer.GetActivePlayerCount() >= 3) modifier += 2; //good position
+                else
+                {
+                    if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1) modifier = 0; //if you're first to act you're in a terrible position
+                    else if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 2) modifier = 1; //still pretty bad position
+                    else if (Services.Dealer.GetActivePlayerCount() - Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1 && Services.Dealer.GetActivePlayerCount() >= 3) modifier += 2; //good position
+                }
             }
             if ((player.chipCount - Services.Dealer.LastBet) > (Services.Dealer.BigBlind * 4)) modifier += 1; //if you can cover the next few hands thats good
             else modifier -= 1; //if you can't that's bad.
@@ -702,12 +721,12 @@ public class PlayerBehaviour {
             if (Services.Dealer.GetActivePlayerCount() > 2)
             {
                 if (Table.instance.DealerPosition == player.SeatPos) modifier += 2; //if you're not heads up and you're the dealer, you're in good position
-            }
-            else
-            {
-                if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1) modifier = 0; //if you're first to act you're in a terrible position
-                else if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 2) modifier = 1; //still pretty bad position
-                else if (Services.Dealer.GetActivePlayerCount() - Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1 && Services.Dealer.GetActivePlayerCount() >= 3) modifier += 2; //good position
+                else
+                {
+                    if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1) modifier = 0; //if you're first to act you're in a terrible position
+                    else if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 2) modifier = 1; //still pretty bad position
+                    else if (Services.Dealer.GetActivePlayerCount() - Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1 && Services.Dealer.GetActivePlayerCount() >= 3) modifier += 2; //good position
+                }
             }
             if ((player.chipCount - Services.Dealer.LastBet) > (Services.Dealer.BigBlind * 4)) modifier += 1; //if you can cover the next few hands thats good
             else modifier -= 1; //if you can't that's bad.
@@ -923,12 +942,12 @@ public class PlayerBehaviour {
             if (Services.Dealer.GetActivePlayerCount() > 2)
             {
                 if (Table.instance.DealerPosition == player.SeatPos) modifier += 2; //if you're not heads up and you're the dealer, you're in good position
-            }
-            else
-            {
-                if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1) modifier = 0; //if you're first to act you're in a terrible position
-                else if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 2) modifier = 1; //still pretty bad position
-                else if (Services.Dealer.GetActivePlayerCount() - Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1 && Services.Dealer.GetActivePlayerCount() >= 3) modifier += 2; //good position
+                else
+                {
+                    if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1) modifier = 0; //if you're first to act you're in a terrible position
+                    else if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 2) modifier = 1; //still pretty bad position
+                    else if (Services.Dealer.GetActivePlayerCount() - Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1 && Services.Dealer.GetActivePlayerCount() >= 3) modifier += 2; //good position
+                }
             }
             if ((player.chipCount - Services.Dealer.LastBet) > (Services.Dealer.BigBlind * 4)) modifier += 1; //if you can cover the next few hands thats good
             else modifier -= 1; //if you can't that's bad.
