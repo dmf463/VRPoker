@@ -5,6 +5,8 @@ using UnityEngine;
 //controls all the sounds
 public class SoundManager : MonoBehaviour
 {
+	public TextAsset dialogueFile;
+
 	public PokerPlayerRedux rosa;// rosa
 	public PokerPlayerRedux gonzalo;// gonzalo
 	public PokerPlayerRedux minnie;// minnie
@@ -48,6 +50,11 @@ public class SoundManager : MonoBehaviour
 	public AudioClip[] chips;
     public AudioClip[] cards;
     public AudioClip[] cardTones;
+
+	void Awake()
+	{
+		
+	}
 
     void Start()
     {

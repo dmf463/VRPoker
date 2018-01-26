@@ -85,9 +85,11 @@ public class Dealer : MonoBehaviour
         //this is where we intialize all our services stuff
         Services.PrefabDB = Resources.Load<PrefabDB>("Prefabs/PrefabDB");
         Services.SoundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
+		Services.DialogueDataManager = new DialogueDataManager();
         Services.Dealer = this;
         Services.PokerRules = GameObject.Find("PokerRules").GetComponent<PokerRules>();
-        //Services.SpiritManager = GameObject.Find("SpiritAIManager").GetComponent<SpiritAIManager>();
+		//Services.SpiritManager = GameObject.Find("SpiritAIManager").GetComponent<SpiritAIManager>();
+
     }
 
     // Use this for initialization
