@@ -5,17 +5,17 @@ using UnityEngine;
 //controls all the sounds
 public class SoundManager : MonoBehaviour
 {
-	public PokerPlayerRedux rosa;// rosa
-	public PokerPlayerRedux gonzalo;// gonzalo
+	public PokerPlayerRedux Casey;// Casey
+	public PokerPlayerRedux Zombie;// Zombie
 	public PokerPlayerRedux minnie;// minnie
-	public PokerPlayerRedux lester;// lester
+	public PokerPlayerRedux Nathaniel;// Nathaniel
 	public PokerPlayerRedux floyd;// floyd
 
 
-	public AudioSource rosaSource; 
-	public AudioSource gonzaloSource;
+	public AudioSource CaseySource; 
+	public AudioSource ZombieSource;
 	public AudioSource minnieSource;
-	public AudioSource lesterSource;
+	public AudioSource NathanielSource;
 	public AudioSource floydSource;
 
 
@@ -114,7 +114,7 @@ public class SoundManager : MonoBehaviour
 
 	public void PlayAsideConversation(PokerPlayerRedux player)
 	{
-		if (player == rosa){
+		if (player == Casey){
 			int convo = UnityEngine.Random.Range(0, 3);
 
 			if(convo == 0){
@@ -134,7 +134,7 @@ public class SoundManager : MonoBehaviour
                 else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
             }
 		}
-		if (player == gonzalo){
+		if (player == Zombie){
 			int convo = UnityEngine.Random.Range(0, 1);
 			if(convo == 0){
 				if(!aside5Played) StartCoroutine("Aside5");
@@ -164,7 +164,7 @@ public class SoundManager : MonoBehaviour
                 else GetSourceAndPlay(player.playerAudioSource, player.foldAudio);
             }
 		}
-		if (player == lester){
+		if (player == Nathaniel){
 			int convo = UnityEngine.Random.Range(0, 4);
 			if(convo == 0){
 				if(!aside2Played) StartCoroutine("Aside2");
@@ -245,16 +245,16 @@ public class SoundManager : MonoBehaviour
 
 	}
 
-	IEnumerator Aside2 (){ //lester initiates towards floyd
+	IEnumerator Aside2 (){ //Nathaniel initiates towards floyd
 
         conversationIsPlaying = true;
 		minnie.playerIsInConversation = true;
-		lester.playerIsInConversation = true;
+		Nathaniel.playerIsInConversation = true;
 		floyd.playerIsInConversation = true;
 
-		lesterSource.clip = aside2Index[0];
-			lesterSource.Play();
-				yield return new WaitForSeconds(lesterSource.clip.length);
+		NathanielSource.clip = aside2Index[0];
+			NathanielSource.Play();
+				yield return new WaitForSeconds(NathanielSource.clip.length);
 		floydSource.clip = aside2Index[1];
 			floydSource.Play();
 				yield return new WaitForSeconds(floydSource.clip.length);
@@ -267,41 +267,41 @@ public class SoundManager : MonoBehaviour
 
 		yield return new WaitForSeconds (2);
 		minnie.playerIsInConversation = false;
-		lester.playerIsInConversation = false;
+		Nathaniel.playerIsInConversation = false;
 		floyd.playerIsInConversation = false;
         aside2Played = true;
         conversationIsPlaying = false;
 	}
 
-	IEnumerator Aside3 (){ //rosa initiates toward lester
+	IEnumerator Aside3 (){ //Casey initiates toward Nathaniel
 
 		conversationIsPlaying = true;
-		rosa.playerIsInConversation = true;
-		lester.playerIsInConversation = true;
+		Casey.playerIsInConversation = true;
+		Nathaniel.playerIsInConversation = true;
 		floyd.playerIsInConversation = true;
 
-		rosaSource.clip = aside3Index[0];
-			rosaSource.Play();
-				yield return new WaitForSeconds(rosaSource.clip.length);
-		lesterSource.clip = aside3Index[1];
-			lesterSource.Play();
-				yield return new WaitForSeconds(lesterSource.clip.length);
-		rosaSource.clip = aside3Index[2];
-			rosaSource.Play();
-				yield return new WaitForSeconds(rosaSource.clip.length);
+		CaseySource.clip = aside3Index[0];
+			CaseySource.Play();
+				yield return new WaitForSeconds(CaseySource.clip.length);
+		NathanielSource.clip = aside3Index[1];
+			NathanielSource.Play();
+				yield return new WaitForSeconds(NathanielSource.clip.length);
+		CaseySource.clip = aside3Index[2];
+			CaseySource.Play();
+				yield return new WaitForSeconds(CaseySource.clip.length);
 		floydSource.clip = aside3Index[3];
 			floydSource.Play();
 				yield return new WaitForSeconds(floydSource.clip.length);
-		rosaSource.clip = aside3Index[4];
-			rosaSource.Play();
-				yield return new WaitForSeconds(rosaSource.clip.length);
+		CaseySource.clip = aside3Index[4];
+			CaseySource.Play();
+				yield return new WaitForSeconds(CaseySource.clip.length);
 		floydSource.clip = aside3Index[5];
 			floydSource.Play();
 				yield return new WaitForSeconds(floydSource.clip.length);
 
 		yield return new WaitForSeconds (2);
-		rosa.playerIsInConversation = false;
-		lester.playerIsInConversation = false;
+		Casey.playerIsInConversation = false;
+		Nathaniel.playerIsInConversation = false;
 		floyd.playerIsInConversation = false;
 		aside3Played = true;
 		conversationIsPlaying = false;
@@ -311,7 +311,7 @@ public class SoundManager : MonoBehaviour
 
 		conversationIsPlaying = true;
 		minnie.playerIsInConversation = true;
-		lester.playerIsInConversation = true;
+		Nathaniel.playerIsInConversation = true;
 		floyd.playerIsInConversation = true;
 
 
@@ -321,90 +321,90 @@ public class SoundManager : MonoBehaviour
 		floydSource.clip = aside5Index[1];
 			floydSource.Play();
 				yield return new WaitForSeconds(floydSource.clip.length);
-		lesterSource.clip = aside5Index[2];
-			lesterSource.Play();
-				yield return new WaitForSeconds(lesterSource.clip.length);
+		NathanielSource.clip = aside5Index[2];
+			NathanielSource.Play();
+				yield return new WaitForSeconds(NathanielSource.clip.length);
 		floydSource.clip = aside5Index[3];
 			floydSource.Play();
 				yield return new WaitForSeconds(floydSource.clip.length);
-		lesterSource.clip = aside5Index[4];
-			lesterSource.Play();
-				yield return new WaitForSeconds(lesterSource.clip.length);
+		NathanielSource.clip = aside5Index[4];
+			NathanielSource.Play();
+				yield return new WaitForSeconds(NathanielSource.clip.length);
 		floydSource.clip = aside5Index[5];
 			floydSource.Play();
 				yield return new WaitForSeconds(floydSource.clip.length);
-		lesterSource.clip = aside5Index[6];
-			lesterSource.Play();
-				yield return new WaitForSeconds(lesterSource.clip.length);
+		NathanielSource.clip = aside5Index[6];
+			NathanielSource.Play();
+				yield return new WaitForSeconds(NathanielSource.clip.length);
 
 		yield return new WaitForSeconds (2);
 		minnie.playerIsInConversation = false;
-		lester.playerIsInConversation = false;
+		Nathaniel.playerIsInConversation = false;
 		floyd.playerIsInConversation = false;
 		aside5Played = true;
 		conversationIsPlaying = false;
 	}
 
-	IEnumerator Aside6 (){ // minnie initiates toward rosa or gonzalo
+	IEnumerator Aside6 (){ // minnie initiates toward Casey or Zombie
 
 		conversationIsPlaying = true;
-		rosa.playerIsInConversation = true;
-		gonzalo.playerIsInConversation = true;
+		Casey.playerIsInConversation = true;
+		Zombie.playerIsInConversation = true;
 		minnie.playerIsInConversation = true;
-		lester.playerIsInConversation = true;
+		Nathaniel.playerIsInConversation = true;
 
 		minnieSource.clip = aside6Index[0];
 			minnieSource.Play();
 				yield return new WaitForSeconds(minnieSource.clip.length);
-		rosaSource.clip = aside6Index[1];
-			rosaSource.Play();
-				yield return new WaitForSeconds(rosaSource.clip.length);
-		gonzaloSource.clip = aside6Index[2];
-			gonzaloSource.Play();
-				yield return new WaitForSeconds(gonzaloSource.clip.length);
+		CaseySource.clip = aside6Index[1];
+			CaseySource.Play();
+				yield return new WaitForSeconds(CaseySource.clip.length);
+		ZombieSource.clip = aside6Index[2];
+			ZombieSource.Play();
+				yield return new WaitForSeconds(ZombieSource.clip.length);
 		minnieSource.clip = aside6Index[3];
 			minnieSource.Play();
 				yield return new WaitForSeconds(minnieSource.clip.length);
-		rosaSource.clip = aside6Index[4];
-			rosaSource.Play();
-				yield return new WaitForSeconds(rosaSource.clip.length);
-		lesterSource.clip = aside6Index[5];
-			lesterSource.Play();
-				yield return new WaitForSeconds(lesterSource.clip.length);
+		CaseySource.clip = aside6Index[4];
+			CaseySource.Play();
+				yield return new WaitForSeconds(CaseySource.clip.length);
+		NathanielSource.clip = aside6Index[5];
+			NathanielSource.Play();
+				yield return new WaitForSeconds(NathanielSource.clip.length);
 		minnieSource.clip = aside6Index[6];
 			minnieSource.Play();
 				yield return new WaitForSeconds(minnieSource.clip.length);
-		rosaSource.clip = aside6Index[7];
-			rosaSource.Play();
-				yield return new WaitForSeconds(rosaSource.clip.length);
-		gonzaloSource.clip = aside6Index[8];
-			gonzaloSource.Play();
-				yield return new WaitForSeconds(gonzaloSource.clip.length);
-		rosaSource.clip = aside6Index[9];
-			rosaSource.Play();
-				yield return new WaitForSeconds(rosaSource.clip.length);
+		CaseySource.clip = aside6Index[7];
+			CaseySource.Play();
+				yield return new WaitForSeconds(CaseySource.clip.length);
+		ZombieSource.clip = aside6Index[8];
+			ZombieSource.Play();
+				yield return new WaitForSeconds(ZombieSource.clip.length);
+		CaseySource.clip = aside6Index[9];
+			CaseySource.Play();
+				yield return new WaitForSeconds(CaseySource.clip.length);
 
 
 		yield return new WaitForSeconds (2);
-		rosa.playerIsInConversation = false;
-		gonzalo.playerIsInConversation = false;
+		Casey.playerIsInConversation = false;
+		Zombie.playerIsInConversation = false;
 		minnie.playerIsInConversation = false;
-		lester.playerIsInConversation = false;
+		Nathaniel.playerIsInConversation = false;
 
 		aside6Played = true;
 		conversationIsPlaying = false;
 	}
 
-	IEnumerator LowAside1 (){ //lester initiates
+	IEnumerator LowAside1 (){ //Nathaniel initiates
 
 		conversationIsPlaying = true;
 		minnie.playerIsInConversation = true;
-		lester.playerIsInConversation = true;
+		Nathaniel.playerIsInConversation = true;
 		floyd.playerIsInConversation = true;
 
-		lesterSource.clip = lowAside1Index[0];
-		lesterSource.Play();
-		yield return new WaitForSeconds(lesterSource.clip.length);
+		NathanielSource.clip = lowAside1Index[0];
+		NathanielSource.Play();
+		yield return new WaitForSeconds(NathanielSource.clip.length);
 		floydSource.clip = lowAside1Index[1];
 		floydSource.Play();
 		yield return new WaitForSeconds(floydSource.clip.length);
@@ -414,7 +414,7 @@ public class SoundManager : MonoBehaviour
 
 		yield return new WaitForSeconds (2);
 		minnie.playerIsInConversation = false;
-		lester.playerIsInConversation = false;
+		Nathaniel.playerIsInConversation = false;
 		floyd.playerIsInConversation = false;
 		lowAside1Played = true;
 		conversationIsPlaying = false;
@@ -423,74 +423,74 @@ public class SoundManager : MonoBehaviour
 	IEnumerator LowAside2 (){ //floyd initiates
 
 		conversationIsPlaying = true;
-		lester.playerIsInConversation = true;
+		Nathaniel.playerIsInConversation = true;
 		floyd.playerIsInConversation = true;
 
 
 		floydSource.clip = lowAside1Index[0];
 		floydSource.Play();
 		yield return new WaitForSeconds(floydSource.clip.length);
-		lesterSource.clip = lowAside1Index[1];
-		lesterSource.Play();
-		yield return new WaitForSeconds(lesterSource.clip.length);
+		NathanielSource.clip = lowAside1Index[1];
+		NathanielSource.Play();
+		yield return new WaitForSeconds(NathanielSource.clip.length);
 		floydSource.clip = lowAside1Index[2];
 		floydSource.Play();
 		yield return new WaitForSeconds(floydSource.clip.length);
 
 		yield return new WaitForSeconds (2);
-		lester.playerIsInConversation = false;
+		Nathaniel.playerIsInConversation = false;
 		floyd.playerIsInConversation = false;
 		lowAside2Played = true;
 		conversationIsPlaying = false;
 	}
 
-	IEnumerator LowAside3 (){ //rosa initiates toward minnie
+	IEnumerator LowAside3 (){ //Casey initiates toward minnie
 		
 		conversationIsPlaying = true;
 		minnie.playerIsInConversation = true;
-		rosa.playerIsInConversation = true;
+		Casey.playerIsInConversation = true;
 
 
-		rosaSource.clip = lowAside3Index[0];
-		rosaSource.Play();
-		yield return new WaitForSeconds(rosaSource.clip.length);
+		CaseySource.clip = lowAside3Index[0];
+		CaseySource.Play();
+		yield return new WaitForSeconds(CaseySource.clip.length);
 		minnieSource.clip = lowAside3Index[1];
 		minnieSource.Play();
 		yield return new WaitForSeconds(minnieSource.clip.length);
-		rosaSource.clip = lowAside3Index[2];
-		rosaSource.Play();
-		yield return new WaitForSeconds(rosaSource.clip.length);
+		CaseySource.clip = lowAside3Index[2];
+		CaseySource.Play();
+		yield return new WaitForSeconds(CaseySource.clip.length);
 
 		yield return new WaitForSeconds (2);
 		minnie.playerIsInConversation = false;
-		rosa.playerIsInConversation = false;
+		Casey.playerIsInConversation = false;
 		lowAside3Played = true;
 		conversationIsPlaying = false;
 	}
 
-	IEnumerator LowAside4 (){ //lester initiates
+	IEnumerator LowAside4 (){ //Nathaniel initiates
 
 		conversationIsPlaying = true;
 		minnie.playerIsInConversation = true;
-		lester.playerIsInConversation = true;
+		Nathaniel.playerIsInConversation = true;
 		floyd.playerIsInConversation = true;
 
-		lesterSource.clip = lowAside4Index[0];
-		lesterSource.Play();
-		yield return new WaitForSeconds(lesterSource.clip.length);
+		NathanielSource.clip = lowAside4Index[0];
+		NathanielSource.Play();
+		yield return new WaitForSeconds(NathanielSource.clip.length);
 		floydSource.clip = lowAside4Index[1];
 		floydSource.Play();
 		yield return new WaitForSeconds(floydSource.clip.length);
-		lesterSource.clip = lowAside4Index[2];
-		lesterSource.Play();
-		yield return new WaitForSeconds(lesterSource.clip.length);
+		NathanielSource.clip = lowAside4Index[2];
+		NathanielSource.Play();
+		yield return new WaitForSeconds(NathanielSource.clip.length);
 		minnieSource.clip = lowAside4Index[3];
 		minnieSource.Play();
 		yield return new WaitForSeconds(minnieSource.clip.length);
 
 		yield return new WaitForSeconds (2);
 		minnie.playerIsInConversation = false;
-		lester.playerIsInConversation = false;
+		Nathaniel.playerIsInConversation = false;
 		floyd.playerIsInConversation = false;
 		lowAside4Played = true;
 		conversationIsPlaying = false;
