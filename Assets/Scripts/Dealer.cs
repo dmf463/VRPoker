@@ -87,10 +87,11 @@ public class Dealer : MonoBehaviour
         //this is where we intialize all our services stuff
         Services.PrefabDB = Resources.Load<PrefabDB>("Prefabs/PrefabDB");
         Services.SoundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
+		Services.DialogueDataManager = new DialogueDataManager();
         Services.Dealer = this;
         Services.PokerRules = GameObject.Find("PokerRules").GetComponent<PokerRules>();
-        Services.PlayerBehaviour = new PlayerBehaviour();
-        //Services.SpiritManager = GameObject.Find("SpiritAIManager").GetComponent<SpiritAIManager>();
+		Services.PlayerBehaviour = new PlayerBehaviour();
+		//Services.SpiritManager = GameObject.Find("SpiritAIManager").GetComponent<SpiritAIManager>();   
     }
 
     // Use this for initialization
@@ -1213,3 +1214,5 @@ public class Dealer : MonoBehaviour
         return chipPrefab;
     }
 }
+
+       
