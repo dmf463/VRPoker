@@ -11,5 +11,6 @@ public static class Services {
     public static SoundManager SoundManager { get; set; }
 	public static DialogueDataManager DialogueDataManager { get; set; }
     public static PokerRules PokerRules { get; set; }
+    public static PlayerBehaviour PlayerBehaviour { get; set; }
 
 }
