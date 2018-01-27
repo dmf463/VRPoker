@@ -209,245 +209,66 @@ public class PokerPlayerRedux : MonoBehaviour{
         else playerSpotlight.SetActive(false);
     }
 
-	public void Fold()
-	{
-		SayFold();
-		foreach(Card card in Table.instance.playerCards[SeatPos])
-		{
-			card.transform.position = Table.instance.playerFoldZones[SeatPos].transform.position;
-            card.cardMarkedForDestruction = false;
-            Services.Dealer.deadCardsList.Add(card);
-		}
-		PlayerState = PlayerState.NotPlaying;
-		Hand = null;
-
-		//Debug.Log("Player " + SeatPos + " folded!");
-		if(Services.Dealer.GetActivePlayerCount() == 1)
-		{
-			Table.gameState = GameState.CleanUp;
-			for (int i = 0; i < Services.Dealer.players.Count; i++)
-			{
-				if(Services.Dealer.players[i].PlayerState == PlayerState.Playing)
-				{
-					Services.Dealer.players[i].PlayerState = PlayerState.Winner;
-					Services.Dealer.numberOfWinners = 1;
-					//Debug.Log("current chip stack is at " + chipCount);
-					Services.Dealer.players[i].ChipCountToCheckWhenWinning = Services.Dealer.players[i].chipCount;
-					//Debug.Log("We are getting into the fold and the chipCountToCheckWhenWinning = " + ChipCountToCheckWhenWinning);
-					Services.Dealer.playersReady = true;
-                    Services.Dealer.playersHaveBeenEvaluated = true;
-					Services.Dealer.StartCoroutine(Services.Dealer.WaitForWinnersToGetPaid());
-                    Services.Dealer.players[i].FlipCards();
-				}
-			}
-		}
-	}
-	public void Call()
-	{
-		if(chipCount > 0)
-		{
-			//Debug.Log("currentBet = " + currentBet);
-			int betToCall = Services.Dealer.LastBet - currentBet;
-			if(chipCount - betToCall <= 0)
-			{
-				AllIn();
-				//Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
-			}
-			else
-			{
-			    //Debug.Log("betToCall = " + betToCall);
-				if(betToCall == 0) SayCheck();
-				else SayCall();
-				Bet(betToCall);
-				currentBet = betToCall + currentBet;
-				Services.Dealer.LastBet = currentBet;
-				//Debug.Log("Player " + SeatPos + " called " + betToCall);
-				//Debug.Log("and the pot is now at " + Table.instance.potChips);
-			}
-		}
-	}
-
-	public void Raise()
-	{
-        Services.Dealer.raisesInRound++;
-        int aggressors = 0;
-        timesRaisedThisRound++;
-        for (int i = 0; i < Services.Dealer.players.Count; i++)
-        {
-            if (Services.Dealer.players[i].isAggressor)
-            {
-                aggressors++;
-            }
-            if (aggressors == 0) isAggressor = true;
-        }
-		if (chipCount > 0)
-		{
-			int raiseAmount = amountToRaise; 
-			int betToRaise = Services.Dealer.LastBet + (raiseAmount - currentBet);
-			if (chipCount - betToRaise <= 0)
-			{
-				AllIn();
-				//Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
-				currentBet = betToRaise + currentBet;
-				Services.Dealer.LastBet = currentBet;
-				//Debug.Log("player " + SeatPos + " raises " + betToRaise);
-				//Debug.Log("Player " + SeatPos + " raised!");
-				//Debug.Log("and the pot is now at " + Table.instance.potChips);
-				//Debug.Log("and player " + SeatPos + " is now at " + chipCount);
-			}
-			else
-			{
-				if(Services.Dealer.LastBet == 0)
-				{
-					SayBet();
-				} 
-				else 
-				{ 
-					SayRaise();
-				}
-				Bet(betToRaise);
-				currentBet = betToRaise + currentBet;
-				Services.Dealer.LastBet = currentBet;
-				//Debug.Log("player " + SeatPos + " raises " + betToRaise);
-				//Debug.Log("Player " + SeatPos + " raised!");
-				//Debug.Log("and the pot is now at " + Table.instance.potChips);
-				//Debug.Log("and player " + SeatPos + " is now at " + chipCount);
-			}
-		}
-	}
-
-	public void AllIn()
-	{
-		SayAllIn();
-        foreach(Card card in Table.instance.playerCards[SeatPos])
-        {
-            card.cardMarkedForDestruction = false;
-        }
-        chipCountBeforeAllIn = chipCount;
-        playerIsAllIn = true;
-		//Debug.Log("getting ready to go all in");
-        Bet(chipCount);
-        //similar to fold, when we go all in, we want to see if we're the last person to go all in
-        //if so, then we want to flip the cards
-        Services.Dealer.CheckAllInPlayers();
-    }
-
-	//audio cue functuions for each decision
-	//def gonna need to refactor
-	public void SayCheck()
-	{
-		if(!playerAudioSource.isPlaying && !playerIsInConversation){
-			if (Services.SoundManager.conversationIsPlaying) {
-				playerAudioSource.volume = 0.25f;
-			} 
-			else
-			{
-				playerAudioSource.volume = 1f;
-			}
-			Services.SoundManager.GetSourceAndPlay(playerAudioSource, checkAudio);
-		}
-	}
-
-    public void SayFold()
+    //so this is the function that calls all the organization functions, evaluation functions, and handStrength
+    //basically this is what happens on each players turn no matter what if they are playing
+    //first we check if they are playing
+    //then we check what gamestate we're in, so we can call the right functions (this might be a good place for delegates)
+    //we get the sorted cards from the Table
+    //we make a new handEvaluator with those sorted cards
+    //then we evaluate that hand
+    //and set the evaluater as the player's hand.
+    //then we Determine the hand strength of the player, which decides whether they Fold Call or Raise
+    public void EvaluateHand()
     {
-        if (!playerAudioSource.isPlaying && !playerIsInConversation)
+        if (PlayerState == PlayerState.Playing)
         {
-            //Services.SoundManager.GetSourceAndPlay(playerAudioSource, foldAudio);
-            float chanceOfConvo = Random.Range(0, 100);
-            if (chanceOfConvo < 25f)
+            if (Table.gameState == GameState.PreFlop)
             {
-                if (!Services.SoundManager.conversationIsPlaying)
-                {
-                    //Services.SoundManager.PlayAsideConversation(UnityEngine.Random.Range(0, 5));
-                    Services.SoundManager.PlayAsideConversation(this);
-					Debug.Log (gameObject + " started a conversation.");
-                }
+                turnComplete = false;
+                List<CardType> sortedCards = Table.instance.SortPlayerCardsPreFlop(SeatPos);
+                HandEvaluator playerHand = new HandEvaluator(sortedCards);
+                playerHand.EvaluateHandAtPreFlop();
+                Hand = playerHand;
+                DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
+                StartCoroutine(SetNextPlayer());
             }
-            else
+            else if (Table.gameState == GameState.Flop)
             {
-				if (Services.SoundManager.conversationIsPlaying) {
-					playerAudioSource.volume = 0.25f;
-				} 
-				else
-				{
-					playerAudioSource.volume = 1f;
-				}
-				Services.SoundManager.GetSourceAndPlay (playerAudioSource, foldAudio);
-				Debug.Log (gameObject + " said fold.");
+                turnComplete = false;
+                List<CardType> sortedCards = Table.instance.SortPlayerCardsAtFlop(SeatPos);
+                HandEvaluator playerHand = new HandEvaluator(sortedCards);
+                playerHand.EvaluateHandAtFlop();
+                Hand = playerHand;
+                DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
+                StartCoroutine(SetNextPlayer());
             }
-
-        }
-
-    }
-
-	public void SayRaise()
-	{
-		if(!playerAudioSource.isPlaying && !playerIsInConversation){
-			if (Services.SoundManager.conversationIsPlaying) {
-				playerAudioSource.volume = 0.25f;
-			} 
-			else
-			{
-				playerAudioSource.volume = 1f;
-			}
-			Services.SoundManager.GetSourceAndPlay(playerAudioSource, raiseAudio);
-		}
-	}
-
-	public void SayBet(){
-		if(!playerAudioSource.isPlaying && !playerIsInConversation){
-			if (Services.SoundManager.conversationIsPlaying) {
-				playerAudioSource.volume = 0.25f;
-			} 
-			else
-			{
-				playerAudioSource.volume = 1f;
-			}
-			Services.SoundManager.GetSourceAndPlay(playerAudioSource, betAudio);
-		}
-	}
-
-	public void SayCall()
-	{
-		if(!playerAudioSource.isPlaying && !playerIsInConversation){
-			if (Services.SoundManager.conversationIsPlaying) {
-				playerAudioSource.volume = 0.25f;
-			} 
-			else
-			{
-				playerAudioSource.volume = 1f;
-			}
-			Services.SoundManager.GetSourceAndPlay(playerAudioSource, callAudio);
-		}
-	}
-
-	public void SayAllIn()
-	{
-		if(!playerAudioSource.isPlaying && !playerIsInConversation){
-			if (Services.SoundManager.conversationIsPlaying) {
-				playerAudioSource.volume = 0.25f;
-			} 
-			else
-			{
-				playerAudioSource.volume = 1f;
-			}
-			Services.SoundManager.GetSourceAndPlay(playerAudioSource, allInAudio);
-		}
-	}
-
-    //determines which reaction to have
-    public void WinnerReactions()
-    {
-        if (!playerAudioSource.isPlaying && !playerIsInConversation && !Services.SoundManager.conversationIsPlaying)
-        {
-            Services.SoundManager.GetSourceAndPlay(playerAudioSource, winAudio);
+            else if (Table.gameState == GameState.Turn)
+            {
+                turnComplete = false;
+                List<CardType> sortedCards = Table.instance.SortPlayerCardsAtTurn(SeatPos);
+                HandEvaluator playerHand = new HandEvaluator(sortedCards);
+                playerHand.EvaluateHandAtTurn();
+                Hand = playerHand;
+                DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
+                StartCoroutine(SetNextPlayer());
+            }
+            else if (Table.gameState == GameState.River)
+            {
+                turnComplete = false;
+                List<CardType> sortedCards = Table.instance.SortPlayerCardsAtRiver(SeatPos);
+                HandEvaluator playerHand = new HandEvaluator(sortedCards);
+                playerHand.EvaluateHandAtRiver();
+                Hand = playerHand;
+                DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
+                StartCoroutine(SetNextPlayer());
+            }
         }
     }
 
-	//this finds the rate of return
-	//first we find the amount to raise by calling the DetermineRaiseAmount function
-	//then we find each necessary variable, and do the equations
-	public float FindRateOfReturn()
+    //this finds the rate of return
+    //first we find the amount to raise by calling the DetermineRaiseAmount function
+    //then we find each necessary variable, and do the equations
+    public float FindRateOfReturn()
 	{
 		//in this case, since we're going to do limit, the bet will always be the bigBlind;
 		//else, we need to write another function that determines what the possible bet will be
@@ -455,9 +276,10 @@ public class PokerPlayerRedux : MonoBehaviour{
 		float potSize = Table.instance.potChips;
         int lastBet = Services.Dealer.LastBet;
         if (lastBet == 0) lastBet = Services.Dealer.BigBlind; 
-		float potOdds = lastBet/ (lastBet + potSize);
-        Debug.Log(gameObject.name + " has an HS of " + HandStrength + " and pot odds of " + potOdds);
-        float returnRate = (HandStrength / potOdds) - PossibleOpponentHS();
+		float potOdds = amountToRaise / (amountToRaise + potSize);
+        Debug.Log(gameObject.name + " has an HS of " + HandStrength + " and pot odds of " + potOdds + " in round " + Table.gameState);
+        if(Table.gameState > GameState.PreFlop) Debug.Assert(HandStrength <= 1);
+        float returnRate = HandStrength / potOdds;
         Debug.Log(gameObject.name + " has a return rate of " + returnRate);
 		return returnRate;
 	}
@@ -468,8 +290,12 @@ public class PokerPlayerRedux : MonoBehaviour{
 
         if(Services.Dealer.LastBet != Services.Dealer.BigBlind || Services.Dealer.LastBet != 0)
         {
+            float potSize = Table.instance.potChips;
+            int lastBet = Services.Dealer.LastBet;
+            if (lastBet == 0) lastBet = Services.Dealer.BigBlind;
+            float potOdds = lastBet / (lastBet + potSize);
             Debug.Log("lastBet = " + Services.Dealer.LastBet + " and pot = " + Table.instance.potChips + " and raisesInRound = " + Services.Dealer.raisesInRound);
-            opponentHS = (Services.Dealer.LastBet / (Table.instance.potChips - Services.Dealer.LastBet)) / (2 + Services.Dealer.raisesInRound);
+            opponentHS = (lastBet / (potSize - lastBet)) / (potOdds);
             Debug.Log("possibleOpponentHS = " + opponentHS);
         }
         return opponentHS;
@@ -553,61 +379,131 @@ public class PokerPlayerRedux : MonoBehaviour{
                 break;
         }
     }
-
-    //so this is the function that calls all the organization functions, evaluation functions, and handStrength
-    //basically this is what happens on each players turn no matter what if they are playing
-    //first we check if they are playing
-    //then we check what gamestate we're in, so we can call the right functions (this might be a good place for delegates)
-    //we get the sorted cards from the Table
-    //we make a new handEvaluator with those sorted cards
-    //then we evaluate that hand
-    //and set the evaluater as the player's hand.
-    //then we Determine the hand strength of the player, which decides whether they Fold Call or Raise
-    public void EvaluateHand()
+    public void Fold()
     {
-        if (PlayerState == PlayerState.Playing)
+        SayFold();
+        foreach (Card card in Table.instance.playerCards[SeatPos])
         {
-            if (Table.gameState == GameState.PreFlop)
+            card.transform.position = Table.instance.playerFoldZones[SeatPos].transform.position;
+            card.cardMarkedForDestruction = false;
+            Services.Dealer.deadCardsList.Add(card);
+        }
+        PlayerState = PlayerState.NotPlaying;
+        Hand = null;
+
+        //Debug.Log("Player " + SeatPos + " folded!");
+        if (Services.Dealer.GetActivePlayerCount() == 1)
+        {
+            Table.gameState = GameState.CleanUp;
+            for (int i = 0; i < Services.Dealer.players.Count; i++)
             {
-                turnComplete = false;
-                List<CardType> sortedCards = Table.instance.SortPlayerCardsPreFlop(SeatPos);
-                HandEvaluator playerHand = new HandEvaluator(sortedCards);
-                playerHand.EvaluateHandAtPreFlop();
-                Hand = playerHand;
-                DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
-                StartCoroutine(SetNextPlayer());
-            }
-            else if (Table.gameState == GameState.Flop)
-            {
-                turnComplete = false;
-                List<CardType> sortedCards = Table.instance.SortPlayerCardsAtFlop(SeatPos);
-                HandEvaluator playerHand = new HandEvaluator(sortedCards);
-                playerHand.EvaluateHandAtFlop();
-                Hand = playerHand;
-                DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
-                StartCoroutine(SetNextPlayer());
-            }
-            else if (Table.gameState == GameState.Turn)
-            {
-                turnComplete = false;
-                List<CardType> sortedCards = Table.instance.SortPlayerCardsAtTurn(SeatPos);
-                HandEvaluator playerHand = new HandEvaluator(sortedCards);
-                playerHand.EvaluateHandAtTurn();
-                Hand = playerHand;
-                DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
-                StartCoroutine(SetNextPlayer());
-            }
-            else if (Table.gameState == GameState.River)
-            {
-                turnComplete = false;
-                List<CardType> sortedCards = Table.instance.SortPlayerCardsAtRiver(SeatPos);
-                HandEvaluator playerHand = new HandEvaluator(sortedCards);
-                playerHand.EvaluateHandAtRiver();
-                Hand = playerHand;
-                DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
-                StartCoroutine(SetNextPlayer());
+                if (Services.Dealer.players[i].PlayerState == PlayerState.Playing)
+                {
+                    Services.Dealer.players[i].PlayerState = PlayerState.Winner;
+                    Services.Dealer.numberOfWinners = 1;
+                    //Debug.Log("current chip stack is at " + chipCount);
+                    Services.Dealer.players[i].ChipCountToCheckWhenWinning = Services.Dealer.players[i].chipCount;
+                    //Debug.Log("We are getting into the fold and the chipCountToCheckWhenWinning = " + ChipCountToCheckWhenWinning);
+                    Services.Dealer.playersReady = true;
+                    Services.Dealer.playersHaveBeenEvaluated = true;
+                    Services.Dealer.StartCoroutine(Services.Dealer.WaitForWinnersToGetPaid());
+                    Services.Dealer.players[i].FlipCards();
+                }
             }
         }
+    }
+    public void Call()
+    {
+        if (chipCount > 0)
+        {
+            //Debug.Log("currentBet = " + currentBet);
+            int betToCall = Services.Dealer.LastBet - currentBet;
+            if (chipCount - betToCall <= 0)
+            {
+                AllIn();
+                //Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
+            }
+            else
+            {
+                //Debug.Log("betToCall = " + betToCall);
+                if (betToCall == 0) SayCheck();
+                else SayCall();
+                Bet(betToCall);
+                currentBet = betToCall + currentBet;
+                Services.Dealer.LastBet = currentBet;
+                Debug.Log("Player " + SeatPos + " called " + betToCall);
+                //Debug.Log("and the pot is now at " + Table.instance.potChips);
+            }
+        }
+    }
+
+    public void Raise()
+    {
+        Services.Dealer.raisesInRound++;
+        int aggressors = 0;
+        timesRaisedThisRound++;
+        if (!isAggressor)
+        {
+            for (int i = 0; i < Services.Dealer.players.Count; i++)
+            {
+                if (Services.Dealer.players[i].isAggressor)
+                {
+                    aggressors++;
+                }
+                if (aggressors == 0) isAggressor = true;
+            }
+        }
+
+        if (chipCount > 0)
+        {
+            int raiseAmount = amountToRaise;
+            int betToRaise = Services.Dealer.LastBet + (raiseAmount - currentBet);
+            if (chipCount - betToRaise <= 0)
+            {
+                AllIn();
+                //Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
+                currentBet = betToRaise + currentBet;
+                Services.Dealer.LastBet = currentBet;
+                Debug.Log("player " + SeatPos + " raises " + betToRaise);
+                //Debug.Log("Player " + SeatPos + " raised!");
+                //Debug.Log("and the pot is now at " + Table.instance.potChips);
+                //Debug.Log("and player " + SeatPos + " is now at " + chipCount);
+            }
+            else
+            {
+                if (Services.Dealer.LastBet == 0)
+                {
+                    SayBet();
+                }
+                else
+                {
+                    SayRaise();
+                }
+                Bet(betToRaise);
+                currentBet = betToRaise + currentBet;
+                Services.Dealer.LastBet = currentBet;
+                //Debug.Log("player " + SeatPos + " raises " + betToRaise);
+                //Debug.Log("Player " + SeatPos + " raised!");
+                //Debug.Log("and the pot is now at " + Table.instance.potChips);
+                //Debug.Log("and player " + SeatPos + " is now at " + chipCount);
+            }
+        }
+    }
+
+    public void AllIn()
+    {
+        SayAllIn();
+        foreach (Card card in Table.instance.playerCards[SeatPos])
+        {
+            card.cardMarkedForDestruction = false;
+        }
+        chipCountBeforeAllIn = chipCount;
+        playerIsAllIn = true;
+        //Debug.Log("getting ready to go all in");
+        Bet(chipCount);
+        //similar to fold, when we go all in, we want to see if we're the last person to go all in
+        //if so, then we want to flip the cards
+        Services.Dealer.CheckAllInPlayers();
     }
 
     IEnumerator SetNextPlayer()
@@ -994,8 +890,10 @@ public class PokerPlayerRedux : MonoBehaviour{
 			handStrengthTestLoops++;
 			yield return null;
 		}
-		HandStrength = numberOfWins / 1000;
-		//Debug.Log("Player" + SeatPos + " has a HandStrength of " + HandStrength + " and a numberOfWins of " + numberOfWins);
+        float tempHandStrength = numberOfWins / 1000f;
+        Debug.Log(playerName + " has a raw HandStrength of " + tempHandStrength + " and a numberOfWins of " + numberOfWins);
+        HandStrength = Mathf.Pow(tempHandStrength, (float)Services.Dealer.GetActivePlayerCount());
+        Debug.Log(playerName + " has an adjusted HS of " + HandStrength);
 		rateOfReturn = FindRateOfReturn();
 		FoldCallRaiseDecision(rateOfReturn, this);
 		yield break;
@@ -1488,7 +1386,131 @@ public class PokerPlayerRedux : MonoBehaviour{
 			break;
 		}
 		return chipPrefab;
-	} 
+	}
+
+    //audio cue functuions for each decision
+    //def gonna need to refactor
+    public void SayCheck()
+    {
+        if (!playerAudioSource.isPlaying && !playerIsInConversation)
+        {
+            if (Services.SoundManager.conversationIsPlaying)
+            {
+                playerAudioSource.volume = 0.25f;
+            }
+            else
+            {
+                playerAudioSource.volume = 1f;
+            }
+            Services.SoundManager.GetSourceAndPlay(playerAudioSource, checkAudio);
+        }
+    }
+
+    public void SayFold()
+    {
+        if (!playerAudioSource.isPlaying && !playerIsInConversation)
+        {
+            //Services.SoundManager.GetSourceAndPlay(playerAudioSource, foldAudio);
+            float chanceOfConvo = Random.Range(0, 100);
+            if (chanceOfConvo < 25f)
+            {
+                if (!Services.SoundManager.conversationIsPlaying)
+                {
+                    //Services.SoundManager.PlayAsideConversation(UnityEngine.Random.Range(0, 5));
+                    Services.SoundManager.PlayAsideConversation(this);
+                    Debug.Log(gameObject + " started a conversation.");
+                }
+            }
+            else
+            {
+                if (Services.SoundManager.conversationIsPlaying)
+                {
+                    playerAudioSource.volume = 0.25f;
+                }
+                else
+                {
+                    playerAudioSource.volume = 1f;
+                }
+                Services.SoundManager.GetSourceAndPlay(playerAudioSource, foldAudio);
+                Debug.Log(gameObject + " said fold.");
+            }
+
+        }
+
+    }
+
+    public void SayRaise()
+    {
+        if (!playerAudioSource.isPlaying && !playerIsInConversation)
+        {
+            if (Services.SoundManager.conversationIsPlaying)
+            {
+                playerAudioSource.volume = 0.25f;
+            }
+            else
+            {
+                playerAudioSource.volume = 1f;
+            }
+            Services.SoundManager.GetSourceAndPlay(playerAudioSource, raiseAudio);
+        }
+    }
+
+    public void SayBet()
+    {
+        if (!playerAudioSource.isPlaying && !playerIsInConversation)
+        {
+            if (Services.SoundManager.conversationIsPlaying)
+            {
+                playerAudioSource.volume = 0.25f;
+            }
+            else
+            {
+                playerAudioSource.volume = 1f;
+            }
+            Services.SoundManager.GetSourceAndPlay(playerAudioSource, betAudio);
+        }
+    }
+
+    public void SayCall()
+    {
+        if (!playerAudioSource.isPlaying && !playerIsInConversation)
+        {
+            if (Services.SoundManager.conversationIsPlaying)
+            {
+                playerAudioSource.volume = 0.25f;
+            }
+            else
+            {
+                playerAudioSource.volume = 1f;
+            }
+            Services.SoundManager.GetSourceAndPlay(playerAudioSource, callAudio);
+        }
+    }
+
+    public void SayAllIn()
+    {
+        if (!playerAudioSource.isPlaying && !playerIsInConversation)
+        {
+            if (Services.SoundManager.conversationIsPlaying)
+            {
+                playerAudioSource.volume = 0.25f;
+            }
+            else
+            {
+                playerAudioSource.volume = 1f;
+            }
+            Services.SoundManager.GetSourceAndPlay(playerAudioSource, allInAudio);
+        }
+    }
+
+    //determines which reaction to have
+    public void WinnerReactions()
+    {
+        if (!playerAudioSource.isPlaying && !playerIsInConversation && !Services.SoundManager.conversationIsPlaying)
+        {
+            Services.SoundManager.GetSourceAndPlay(playerAudioSource, winAudio);
+        }
+    }
 
 }
 

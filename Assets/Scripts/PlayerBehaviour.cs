@@ -16,6 +16,7 @@ public class PlayerBehaviour {
         int modifier = 0;
 
         if (minimumRaise == 0) minimumRaise = Services.Dealer.BigBlind;
+        if (Table.gameState >= GameState.Turn) minimumRaise = Table.instance.potChips / 4;
 
         if (Table.gameState == GameState.PreFlop)
         {
@@ -50,7 +51,7 @@ public class PlayerBehaviour {
             else modifier -= 1; //if you can't that's bad.
 
             if (player.HandStrength > .7 && player.Hand.HandValues.PokerHand < PokerHand.OnePair) modifier += 3; //if you have a good HS but have less than OnePair, you're probably on a draw, so bet bigger
-            else if (player.HandStrength > .7 && player.Hand.HandValues.PokerHand > PokerHand.Flush) modifier = 1; //if you have a good HS and you have better than a flush, slow play it 
+            else if (player.HandStrength > .7 && player.Hand.HandValues.PokerHand > PokerHand.Flush && Table.gameState < GameState.River) modifier = 1; //if you have a good HS and you have better than a flush, slow play it 
 
             if (player.HandStrength > .6) modifier += 1; //if you have a decent hand
             else modifier -= 1; //if you have a "meh" hand
@@ -84,7 +85,11 @@ public class PlayerBehaviour {
                        ((player.chipCount - Services.Dealer.LastBet) > (Services.Dealer.BigBlind * 4))) player.Call();
                 else player.Fold();
             }
-            else player.Call();
+            else
+            {
+                if (Services.Dealer.raisesInRound > 1 && player.HandStrength < 8) player.Fold();
+                else player.Call();
+            }
 
             player.turnComplete = true;
             player.actedThisRound = true;
@@ -106,6 +111,10 @@ public class PlayerBehaviour {
                 if (randomNum > 50) player.Raise();
                 else player.Call();
             }
+            else if (Table.gameState == GameState.River &&
+                     Services.Dealer.raisesInRound >= 1 &&
+                     player.Hand.HandValues.PokerHand <= PokerHand.OnePair &&
+                     player.Hand.HandValues.Total < (int)player.Hand.Cards[5].rank * 2) player.Fold();
             else if (aggressor != null)
             {
                 if (aggressor.timesRaisedThisRound > 2 && player.timesRaisedThisRound > 1 && player.HandStrength > .85f) player.AllIn(); //if you're in a raise war, and you have a great hand just go all in
@@ -237,6 +246,7 @@ public class PlayerBehaviour {
         int modifier = 0;
 
         if (minimumRaise == 0) minimumRaise = Services.Dealer.BigBlind;
+        if (Table.gameState >= GameState.Turn) minimumRaise = Table.instance.potChips / 4;
 
         if (Table.gameState == GameState.PreFlop)
         {
@@ -281,7 +291,7 @@ public class PlayerBehaviour {
             if (player.HandStrength > .5) modifier += 1; //if you have a decent hand
             else modifier -= 1; //if you have a "meh" hand
 
-            if (player.chipCount > Services.Dealer.startingChipCount) modifier += Random.Range(2, 5);
+            if (player.chipCount >= Services.Dealer.startingChipCount) modifier += Random.Range(2, 5);
             else if (player.chipCount < Services.Dealer.startingChipCount) modifier -= Random.Range(2, 5);
 
             modifier -= Services.Dealer.raisesInRound; //cut down on how much you're betting based on betting history
@@ -304,7 +314,7 @@ public class PlayerBehaviour {
             {
                 player.AllIn();
             }
-            else if (player.HandStrength > 10 && player.timesRaisedThisRound == 0) player.Raise(); //if you have a good hand
+            else if (player.HandStrength > 8 && player.timesRaisedThisRound == 0) player.Raise(); //if you have a good hand
             else if (player.HandStrength < 5) //if you have a shit hand
             {
                 if ((Services.Dealer.LastBet - player.currentBet == 0) ||
@@ -313,7 +323,7 @@ public class PlayerBehaviour {
                        ((player.chipCount - Services.Dealer.LastBet) > (Services.Dealer.BigBlind * 4))) //if the call is zero, or you're small blind and there are only 2 players
                 {
                     float randomNum = Random.Range(0, 100);
-                    if (player.chipCount > Services.Dealer.startingChipCount && randomNum > 90) player.Raise(); //bluff it
+                    if (player.chipCount >= Services.Dealer.startingChipCount && randomNum > 90) player.Raise(); //bluff it
                     else player.Call(); //else just call
                 }
                 else player.Fold();
@@ -321,7 +331,7 @@ public class PlayerBehaviour {
             else
             {
                 float randomNum = Random.Range(0, 100);
-                if (player.chipCount > Services.Dealer.startingChipCount && randomNum > 80) player.Raise(); //bluff it
+                if (player.chipCount >= Services.Dealer.startingChipCount && randomNum > 40) player.Raise(); //bluff it
                 else player.Call(); //else just call
             }
             player.turnComplete = true;
@@ -338,11 +348,20 @@ public class PlayerBehaviour {
                     break;
                 }
             }
-            if (Table.gameState == GameState.River && Services.Dealer.LastBet == 0) //if you're on the river and no one has bet, take a stab at it.
+            if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1 && Services.Dealer.raisesInRound == 0) player.Call(); //don't do anything under the gun
+            else if (Table.gameState == GameState.River && Services.Dealer.LastBet == 0) //if you're on the river and no one has bet, take a stab at it.
             {
                 float randomNum = Random.Range(0, 100);
                 if (randomNum > 20) player.Raise();
                 else player.Call();
+            }
+            else if (Table.gameState == GameState.River &&
+                    Services.Dealer.raisesInRound >= 1 &&
+                    player.Hand.HandValues.PokerHand <= PokerHand.OnePair &&
+                    player.Hand.HandValues.Total < (int)player.Hand.Cards[5].rank * 2) player.Fold();
+            else if(Table.instance.DealerPosition == player.SeatPos && Services.Dealer.raisesInRound == 0)
+            {
+                if (Services.Dealer.LastBet == 0 || Services.Dealer.LastBet == Services.Dealer.BigBlind) player.Raise();
             }
             else if (aggressor != null)
             {
@@ -374,7 +393,6 @@ public class PlayerBehaviour {
     {
         if (returnRate < player.lowReturnRate)
         {
-            //Debug.Log("lowReturnRate");
             //95% chance fold, 5% bluff (raise)
             float randomNumber = Random.Range(0, 100);
             if (randomNumber < player.foldChanceLow)
@@ -412,10 +430,18 @@ public class PlayerBehaviour {
                 if (Services.Dealer.previousPlayerToAct != null)
                 {
                     if (!Services.Dealer.previousPlayerToAct.playerIsAllIn && player.chipCount > Services.Dealer.startingChipCount) player.Raise();
-                    else player.Fold();
+                    else
+                    {
+                        if (Services.Dealer.LastBet > 0) player.Fold();
+                        else player.Call();
+                    }
                 }
                 else if (!Services.Dealer.previousPlayerToAct.playerIsAllIn && player.chipCount > Services.Dealer.startingChipCount) player.Raise();
-                else player.Fold();
+                else
+                {
+                    if (Services.Dealer.LastBet > 0) player.Fold();
+                    else player.Call();
+                }
             }
 
         }
@@ -477,6 +503,7 @@ public class PlayerBehaviour {
         int modifier = 0;
 
         if (minimumRaise == 0) minimumRaise = Services.Dealer.BigBlind;
+        if (Table.gameState >= GameState.Turn) minimumRaise = Table.instance.potChips / 4;
 
         if (Table.gameState == GameState.PreFlop)
         {
@@ -496,24 +523,24 @@ public class PlayerBehaviour {
         }
         else
         {
-            modifier += Services.Dealer.GetActivePlayerCount(); //the more players there are the more unsafe your hand is, so bet bigger
+            //modifier += Services.Dealer.GetActivePlayerCount(); //the more players there are the more unsafe your hand is, so bet bigger
             if (Services.Dealer.GetActivePlayerCount() > 2)
             {
-                if (Table.instance.DealerPosition == player.SeatPos) modifier += 2; //if you're not heads up and you're the dealer, you're in good position
-                else
-                {
-                    if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1) modifier = 0; //if you're first to act you're in a terrible position
-                    else if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 2) modifier = 1; //still pretty bad position
-                    else if (Services.Dealer.GetActivePlayerCount() - Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1 && Services.Dealer.GetActivePlayerCount() >= 3) modifier += 2; //good position
-                }
+                //if (Table.instance.DealerPosition == player.SeatPos) modifier += 2; //if you're not heads up and you're the dealer, you're in good position
+                //else
+                //{
+                //    if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1) modifier = 0; //if you're first to act you're in a terrible position
+                //    else if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 2) modifier = 1; //still pretty bad position
+                //    else if (Services.Dealer.GetActivePlayerCount() - Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1 && Services.Dealer.GetActivePlayerCount() >= 3) modifier += 2; //good position
+                //}
             }
             if ((player.chipCount - Services.Dealer.LastBet) > (Services.Dealer.BigBlind * 4)) modifier += 1; //if you can cover the next few hands thats good
             else modifier -= 1; //if you can't that's bad.
 
             if (player.HandStrength > .7 && player.Hand.HandValues.PokerHand < PokerHand.OnePair) modifier += 3; //if you have a good HS but have less than OnePair, you're probably on a draw, so bet bigger
-            else if (player.HandStrength > .7 && player.Hand.HandValues.PokerHand > PokerHand.Flush) modifier = 1; //if you have a good HS and you have better than a flush, slow play it 
+            else if (player.HandStrength > .7 && player.Hand.HandValues.PokerHand > PokerHand.Flush) modifier = 3; //if you have a good HS and you have better than a flush, slow play it 
 
-            if (player.HandStrength > .6) modifier += 1; //if you have a decent hand
+            if (player.HandStrength > .8) modifier += 5; //if you have a decent hand
             else modifier -= 1; //if you have a "meh" hand
 
             modifier -= Services.Dealer.raisesInRound; //cut down on how much you're betting based on betting history
@@ -545,7 +572,11 @@ public class PlayerBehaviour {
                        ((player.chipCount - Services.Dealer.LastBet) > (Services.Dealer.BigBlind * 4))) player.Call();
                 else player.Fold();
             }
-            else player.Call();
+            else
+            {
+                if (Services.Dealer.raisesInRound > 1 && player.HandStrength < 10) player.Fold();
+                else player.Call();
+            }
 
             player.turnComplete = true;
             player.actedThisRound = true;
@@ -564,27 +595,31 @@ public class PlayerBehaviour {
             if (Table.gameState == GameState.River && Services.Dealer.LastBet == 0) //if you're on the river and no one has bet, take a stab at it.
             {
                 float randomNum = Random.Range(0, 100);
-                if (randomNum > 50) player.Raise();
+                if (randomNum > 90) player.Raise();
                 else player.Call();
             }
+            else if (Table.gameState == GameState.River &&
+                     Services.Dealer.raisesInRound >= 1 &&
+                     player.Hand.HandValues.PokerHand <= PokerHand.OnePair &&
+                     player.Hand.HandValues.Total < (int)player.Hand.Cards[5].rank * 2) player.Fold();
             else if (aggressor != null)
             {
-                if (aggressor.timesRaisedThisRound > 2 && player.timesRaisedThisRound > 1 && player.HandStrength > .85f) player.AllIn(); //if you're in a raise war, and you have a great hand just go all in
+                if (aggressor.timesRaisedThisRound > 1 && player.timesRaisedThisRound > 1 && player.HandStrength > .85f) player.AllIn(); //if you're in a raise war, and you have a great hand just go all in
                 else if (aggressor.PlayerState == PlayerState.Playing && aggressor.currentBet > Table.instance.potChips / Services.Dealer.raisesInRound) //if an aggressor has bet a huuge chunk of the pot
                 {
-                    if (player.Hand.HandValues.PokerHand < PokerHand.OnePair && player.HandStrength < .5f) player.Fold(); //if you have a bad hand, fold
+                    if (player.Hand.HandValues.PokerHand < PokerHand.OnePair && player.HandStrength < .7f) player.Fold(); //if you have a bad hand, fold
                     else player.Call(); //else just call
                 }
                 else player.DetermineAction(returnRate, player);
             }
-            else if ((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && player.HandStrength < 0.5) player.Fold(); //if betting would take the majority of your stack and you have a bad hand fold.
+            else if ((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && player.HandStrength < 0.7) player.Fold(); //if betting would take the majority of your stack and you have a bad hand fold.
             else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength < .75f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength < .75f) player.Fold(); //if you would bet 1/4 of your stack, and only a 75% chance of winning, fold
             else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength < .85f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength < .85f) player.Call(); //75% - 85% chance of winning, call
             else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength > .85f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength > .85f) player.AllIn(); //more than 85% go all in
-            else if (Services.Dealer.raisesInRound >= 2 && player.Hand.HandValues.PokerHand >= PokerHand.OnePair && player.HandStrength < .6f) //if there are more than two raises and you have a decent hand, call or fold.
+            else if (Services.Dealer.raisesInRound >= 2 && player.Hand.HandValues.PokerHand >= PokerHand.OnePair && player.HandStrength < .7f) //if there are more than two raises and you have a decent hand, call or fold.
             {
                 float randomNum = Random.Range(0, 100);
-                if (randomNum > 70) player.Call();
+                if (randomNum > 40) player.Call();
                 else player.Fold();
             }
             else player.DetermineAction(returnRate, player);
@@ -698,6 +733,7 @@ public class PlayerBehaviour {
         int modifier = 0;
 
         if (minimumRaise == 0) minimumRaise = Services.Dealer.BigBlind;
+        if (Table.gameState >= GameState.Turn) minimumRaise = Table.instance.potChips / 4;
 
         if (Table.gameState == GameState.PreFlop)
         {
@@ -753,12 +789,12 @@ public class PlayerBehaviour {
         //Debug.Log("Player " + SeatPos + " has a HS " + HandStrength);
         if (Table.gameState == GameState.PreFlop)
         {
-            if (((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4)) && player.HandStrength > 12)
+            if (((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * Random.Range(3, 8))) && player.HandStrength > Random.Range(10, 13))
             {
                 player.AllIn();
             }
-            else if (player.HandStrength > 12 && player.timesRaisedThisRound == 0) player.Raise();
-            else if (player.HandStrength < 5)
+            else if (player.HandStrength > Random.Range(10, 12) && player.timesRaisedThisRound == 0) player.Raise();
+            else if (player.HandStrength < Random.Range(5, 10))
             {
                 if ((Services.Dealer.LastBet - player.currentBet == 0) ||
                     ((Services.Dealer.LastBet - player.currentBet == Services.Dealer.SmallBlind) &&
@@ -766,7 +802,11 @@ public class PlayerBehaviour {
                        ((player.chipCount - Services.Dealer.LastBet) > (Services.Dealer.BigBlind * 4))) player.Call();
                 else player.Fold();
             }
-            else player.Call();
+            else
+            {
+                if (Services.Dealer.raisesInRound > 1 && player.HandStrength < 8) player.Fold();
+                else player.Call();
+            }
 
             player.turnComplete = true;
             player.actedThisRound = true;
@@ -788,24 +828,28 @@ public class PlayerBehaviour {
                 if (randomNum > 50) player.Raise();
                 else player.Call();
             }
+            else if (Table.gameState == GameState.River &&
+                     Services.Dealer.raisesInRound >= 1 &&
+                     player.Hand.HandValues.PokerHand <= PokerHand.OnePair &&
+                     player.Hand.HandValues.Total < (int)player.Hand.Cards[5].rank * 2) player.Fold();
             else if (aggressor != null)
             {
                 if (aggressor.timesRaisedThisRound > 2 && player.timesRaisedThisRound > 1 && player.HandStrength > .85f) player.AllIn(); //if you're in a raise war, and you have a great hand just go all in
                 else if (aggressor.PlayerState == PlayerState.Playing && aggressor.currentBet > Table.instance.potChips / Services.Dealer.raisesInRound) //if an aggressor has bet a huuge chunk of the pot
                 {
-                    if (player.Hand.HandValues.PokerHand < PokerHand.OnePair && player.HandStrength < .5f) player.Fold(); //if you have a bad hand, fold
+                    if (player.Hand.HandValues.PokerHand < PokerHand.OnePair && player.HandStrength < Random.Range(0.4f, 0.6f)) player.Fold(); //if you have a bad hand, fold
                     else player.Call(); //else just call
                 }
                 else player.DetermineAction(returnRate, player);
             }
-            else if ((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && player.HandStrength < 0.5) player.Fold(); //if betting would take the majority of your stack and you have a bad hand fold.
-            else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength < .75f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength < .75f) player.Fold(); //if you would bet 1/4 of your stack, and only a 75% chance of winning, fold
-            else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength < .85f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength < .85f) player.Call(); //75% - 85% chance of winning, call
+            else if ((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && player.HandStrength < Random.Range(0.4f, 0.6f)) player.Fold(); //if betting would take the majority of your stack and you have a bad hand fold.
+            else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength < .75f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength < Random.Range(0.65f, 0.85f)) player.Fold(); //if you would bet 1/4 of your stack, and only a 75% chance of winning, fold
+            else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength < .85f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength < Random.Range(0.5f, 0.9f)) player.Call(); //75% - 85% chance of winning, call
             else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength > .85f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength > .85f) player.AllIn(); //more than 85% go all in
             else if (Services.Dealer.raisesInRound >= 2 && player.Hand.HandValues.PokerHand >= PokerHand.OnePair && player.HandStrength < .6f) //if there are more than two raises and you have a decent hand, call or fold.
             {
                 float randomNum = Random.Range(0, 100);
-                if (randomNum > 70) player.Call();
+                if (randomNum > 50) player.Call();
                 else player.Fold();
             }
             else player.DetermineAction(returnRate, player);
@@ -919,6 +963,7 @@ public class PlayerBehaviour {
         int modifier = 0;
 
         if (minimumRaise == 0) minimumRaise = Services.Dealer.BigBlind;
+        if (Table.gameState >= GameState.Turn) minimumRaise = Table.instance.potChips / 4;
 
         if (Table.gameState == GameState.PreFlop)
         {
@@ -979,7 +1024,7 @@ public class PlayerBehaviour {
                 player.AllIn();
             }
             else if (player.HandStrength > 12 && player.timesRaisedThisRound == 0) player.Raise();
-            else if (player.HandStrength < 5)
+            else if (player.HandStrength < 2)
             {
                 if ((Services.Dealer.LastBet - player.currentBet == 0) ||
                     ((Services.Dealer.LastBet - player.currentBet == Services.Dealer.SmallBlind) &&
@@ -987,7 +1032,11 @@ public class PlayerBehaviour {
                        ((player.chipCount - Services.Dealer.LastBet) > (Services.Dealer.BigBlind * 4))) player.Call();
                 else player.Fold();
             }
-            else player.Call();
+            else
+            {
+                if (Services.Dealer.raisesInRound > 1 && player.HandStrength < 8) player.Fold();
+                else player.Call();
+            }
 
             player.turnComplete = true;
             player.actedThisRound = true;
@@ -1006,27 +1055,31 @@ public class PlayerBehaviour {
             if (Table.gameState == GameState.River && Services.Dealer.LastBet == 0) //if you're on the river and no one has bet, take a stab at it.
             {
                 float randomNum = Random.Range(0, 100);
-                if (randomNum > 50) player.Raise();
+                if (randomNum > 80) player.Raise();
                 else player.Call();
             }
+            else if (Table.gameState == GameState.River &&
+                     Services.Dealer.raisesInRound >= 1 &&
+                     player.Hand.HandValues.PokerHand <= PokerHand.OnePair &&
+                     player.Hand.HandValues.Total < (int)player.Hand.Cards[5].rank * 2) player.Fold();
             else if (aggressor != null)
             {
                 if (aggressor.timesRaisedThisRound > 2 && player.timesRaisedThisRound > 1 && player.HandStrength > .85f) player.AllIn(); //if you're in a raise war, and you have a great hand just go all in
                 else if (aggressor.PlayerState == PlayerState.Playing && aggressor.currentBet > Table.instance.potChips / Services.Dealer.raisesInRound) //if an aggressor has bet a huuge chunk of the pot
                 {
-                    if (player.Hand.HandValues.PokerHand < PokerHand.OnePair && player.HandStrength < .5f) player.Fold(); //if you have a bad hand, fold
+                    if (player.Hand.HandValues.PokerHand < PokerHand.OnePair && player.HandStrength < .3f) player.Fold(); //if you have a bad hand, fold
                     else player.Call(); //else just call
                 }
                 else player.DetermineAction(returnRate, player);
             }
-            else if ((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && player.HandStrength < 0.5) player.Fold(); //if betting would take the majority of your stack and you have a bad hand fold.
-            else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength < .75f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength < .75f) player.Fold(); //if you would bet 1/4 of your stack, and only a 75% chance of winning, fold
+            else if ((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && player.HandStrength < 0.3) player.Fold(); //if betting would take the majority of your stack and you have a bad hand fold.
+            else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength < .75f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength < .55f) player.Fold(); //if you would bet 1/4 of your stack, and only a 75% chance of winning, fold
             else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength < .85f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength < .85f) player.Call(); //75% - 85% chance of winning, call
             else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength > .85f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength > .85f) player.AllIn(); //more than 85% go all in
             else if (Services.Dealer.raisesInRound >= 2 && player.Hand.HandValues.PokerHand >= PokerHand.OnePair && player.HandStrength < .6f) //if there are more than two raises and you have a decent hand, call or fold.
             {
                 float randomNum = Random.Range(0, 100);
-                if (randomNum > 70) player.Call();
+                if (randomNum > 90) player.Call();
                 else player.Fold();
             }
             else player.DetermineAction(returnRate, player);
