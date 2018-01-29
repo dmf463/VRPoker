@@ -108,6 +108,8 @@ public class PokerPlayerRedux : MonoBehaviour{
 	public float highReturnRate;
 
     [Header("Player Behavior")]
+    [Header("PlayerInsightPercent")]
+    public float playerInsightPercent;
     [Header("Low RR (<)")]
     public float foldChanceLow;// = 95f;
     public float callChanceLow;// = 5f;

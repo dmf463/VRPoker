@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class PlayerBehaviour {
 
@@ -111,6 +112,33 @@ public class PlayerBehaviour {
                 if (randomNum > 50) player.Raise();
                 else player.Call();
             }
+            else if(Services.Dealer.GetActivePlayerCount() == 2 && Services.Dealer.raisesInRound >= 1 && Table.instance.potChips > Services.Dealer.BigBlind * 4)
+            {
+                PokerPlayerRedux opponent = null;
+                for (int i = 0; i < Services.Dealer.players.Count; i++)
+                {
+                    if(Services.Dealer.players[i].playerName != player.playerName && Services.Dealer.players[i].PlayerState == PlayerState.Playing)
+                    {
+                        opponent = Services.Dealer.players[i];
+                    }
+                }
+                if (opponent != null)
+                {
+                    if (OpponentHandIsBetter(player, opponent))
+                    {
+                        float randomNum = Random.Range(0, 100);
+                        if (randomNum > player.playerInsightPercent) player.Fold(); //if opponent hand is better, get out
+                        else player.DetermineAction(returnRate, player); 
+                    }
+                    else //if it's NOT better, than percent chance to call or raise
+                    {
+                        float newRandomNum = Random.Range(0, 100);
+                        if (newRandomNum > 50) player.Call();
+                        else player.Raise();
+                    }
+                }
+                else Debug.Log("We should not be reaching this point");
+            }
             else if (Table.gameState == GameState.River &&
                      Services.Dealer.raisesInRound >= 1 &&
                      player.Hand.HandValues.PokerHand <= PokerHand.OnePair &&
@@ -118,7 +146,7 @@ public class PlayerBehaviour {
             else if (aggressor != null)
             {
                 if (aggressor.timesRaisedThisRound > 2 && player.timesRaisedThisRound > 1 && player.HandStrength > .85f) player.AllIn(); //if you're in a raise war, and you have a great hand just go all in
-                else if (aggressor.PlayerState == PlayerState.Playing && aggressor.currentBet > Table.instance.potChips / Services.Dealer.raisesInRound) //if an aggressor has bet a huuge chunk of the pot
+                else if (aggressor.PlayerState == PlayerState.Playing && aggressor.timesRaisedThisRound > 0 && aggressor.currentBet > Table.instance.potChips / aggressor.timesRaisedThisRound) //if an aggressor has bet a huuge chunk of the pot
                 {
                     if (player.Hand.HandValues.PokerHand < PokerHand.OnePair && player.HandStrength < .5f) player.Fold(); //if you have a bad hand, fold
                     else player.Call(); //else just call
@@ -355,6 +383,33 @@ public class PlayerBehaviour {
                 if (randomNum > 20) player.Raise();
                 else player.Call();
             }
+            else if (Services.Dealer.GetActivePlayerCount() == 2 && Services.Dealer.raisesInRound > 1 && Table.instance.potChips > player.chipCount / 4)
+            {
+                PokerPlayerRedux opponent = null;
+                for (int i = 0; i < Services.Dealer.players.Count; i++)
+                {
+                    if (Services.Dealer.players[i].playerName != player.playerName && Services.Dealer.players[i].PlayerState == PlayerState.Playing)
+                    {
+                        opponent = Services.Dealer.players[i];
+                    }
+                }
+                if (opponent != null)
+                {
+                    if (OpponentHandIsBetter(player, opponent))
+                    {
+                        float randomNum = Random.Range(0, 100);
+                        if (randomNum > player.playerInsightPercent) player.Fold(); //if opponent hand is better, get out
+                        else player.DetermineAction(returnRate, player);
+                    }
+                    else //if it's NOT better, than percent chance to call or raise
+                    {
+                        float newRandomNum = Random.Range(0, 100);
+                        if (newRandomNum > 70) player.Call();
+                        else player.Raise();
+                    }
+                }
+                else Debug.Log("error");
+            }
             else if (Table.gameState == GameState.River &&
                     Services.Dealer.raisesInRound >= 1 &&
                     player.Hand.HandValues.PokerHand <= PokerHand.OnePair &&
@@ -366,7 +421,7 @@ public class PlayerBehaviour {
             else if (aggressor != null)
             {
                 if (aggressor.timesRaisedThisRound > 2 && player.timesRaisedThisRound > 1 && player.HandStrength > .85f) player.AllIn(); //if you're in a raise war, and you have a great hand just go all in
-                else if (aggressor.PlayerState == PlayerState.Playing && aggressor.currentBet > Table.instance.potChips / Services.Dealer.raisesInRound) //if an aggressor has bet a huuge chunk of the pot
+                else if (aggressor.PlayerState == PlayerState.Playing && aggressor.timesRaisedThisRound > 0 && aggressor.currentBet > Table.instance.potChips / aggressor.timesRaisedThisRound) //if an aggressor has bet a huuge chunk of the pot
                 {
                     if (player.Hand.HandValues.PokerHand < PokerHand.OnePair && player.HandStrength < .5f) player.Fold(); //if you have a bad hand, fold
                     else player.Call(); //else just call
@@ -407,10 +462,13 @@ public class PlayerBehaviour {
                 if (Services.Dealer.previousPlayerToAct != null)
                 {
                     if (!Services.Dealer.previousPlayerToAct.playerIsAllIn && player.chipCount > Services.Dealer.startingChipCount) player.Raise();
-                    else player.Fold();
+                    else
+                    {
+                        if (Services.Dealer.LastBet == 0) player.Call();
+                        else player.Fold();
+                    }
                 }
-                else if (!Services.Dealer.previousPlayerToAct.playerIsAllIn && player.chipCount > Services.Dealer.startingChipCount) player.Raise();
-                else player.Fold();
+                else player.Raise();
             }
 
         }
@@ -598,6 +656,33 @@ public class PlayerBehaviour {
                 if (randomNum > 90) player.Raise();
                 else player.Call();
             }
+            else if (Services.Dealer.GetActivePlayerCount() == 2 && Services.Dealer.raisesInRound >= 1 && Table.instance.potChips > Services.Dealer.BigBlind * 4)
+            {
+                PokerPlayerRedux opponent = null;
+                for (int i = 0; i < Services.Dealer.players.Count; i++)
+                {
+                    if (Services.Dealer.players[i].playerName != player.playerName && Services.Dealer.players[i].PlayerState == PlayerState.Playing)
+                    {
+                        opponent = Services.Dealer.players[i];
+                    }
+                }
+                if (opponent != null)
+                {
+                    if (OpponentHandIsBetter(player, opponent))
+                    {
+                        float randomNum = Random.Range(0, 100);
+                        if (randomNum > player.playerInsightPercent) player.Fold(); //if opponent hand is better, get out
+                        else player.DetermineAction(returnRate, player);
+                    }
+                    else //if it's NOT better, than percent chance to call or raise
+                    {
+                        float newRandomNum = Random.Range(0, 100);
+                        if (newRandomNum > 30) player.Call();
+                        else player.Raise();
+                    }
+                }
+                else Debug.Log("error");
+            }
             else if (Table.gameState == GameState.River &&
                      Services.Dealer.raisesInRound >= 1 &&
                      player.Hand.HandValues.PokerHand <= PokerHand.OnePair &&
@@ -605,7 +690,7 @@ public class PlayerBehaviour {
             else if (aggressor != null)
             {
                 if (aggressor.timesRaisedThisRound > 1 && player.timesRaisedThisRound > 1 && player.HandStrength > .85f) player.AllIn(); //if you're in a raise war, and you have a great hand just go all in
-                else if (aggressor.PlayerState == PlayerState.Playing && aggressor.currentBet > Table.instance.potChips / Services.Dealer.raisesInRound) //if an aggressor has bet a huuge chunk of the pot
+                else if (aggressor.PlayerState == PlayerState.Playing && aggressor.timesRaisedThisRound > 0 && aggressor.currentBet > Table.instance.potChips / aggressor.timesRaisedThisRound) //if an aggressor has bet a huuge chunk of the pot
                 {
                     if (player.Hand.HandValues.PokerHand < PokerHand.OnePair && player.HandStrength < .7f) player.Fold(); //if you have a bad hand, fold
                     else player.Call(); //else just call
@@ -828,6 +913,33 @@ public class PlayerBehaviour {
                 if (randomNum > 50) player.Raise();
                 else player.Call();
             }
+            else if (Services.Dealer.GetActivePlayerCount() == 2 && Services.Dealer.raisesInRound >= 1 && Table.instance.potChips > Services.Dealer.BigBlind * 4)
+            {
+                PokerPlayerRedux opponent = null;
+                for (int i = 0; i < Services.Dealer.players.Count; i++)
+                {
+                    if (Services.Dealer.players[i].playerName != player.playerName && Services.Dealer.players[i].PlayerState == PlayerState.Playing)
+                    {
+                        opponent = Services.Dealer.players[i];
+                    }
+                }
+                if (opponent != null)
+                {
+                    if (OpponentHandIsBetter(player, opponent))
+                    {
+                        float randomNum = Random.Range(0, 100);
+                        if (randomNum > player.playerInsightPercent) player.Fold(); //if opponent hand is better, get out
+                        else player.DetermineAction(returnRate, player);
+                    }
+                    else //if it's NOT better, than percent chance to call or raise
+                    {
+                        float newRandomNum = Random.Range(0, 100);
+                        if (newRandomNum > Random.Range(0, 100)) player.Call();
+                        else player.Raise();
+                    }
+                }
+                else Debug.Log("error");
+            }
             else if (Table.gameState == GameState.River &&
                      Services.Dealer.raisesInRound >= 1 &&
                      player.Hand.HandValues.PokerHand <= PokerHand.OnePair &&
@@ -835,7 +947,7 @@ public class PlayerBehaviour {
             else if (aggressor != null)
             {
                 if (aggressor.timesRaisedThisRound > 2 && player.timesRaisedThisRound > 1 && player.HandStrength > .85f) player.AllIn(); //if you're in a raise war, and you have a great hand just go all in
-                else if (aggressor.PlayerState == PlayerState.Playing && aggressor.currentBet > Table.instance.potChips / Services.Dealer.raisesInRound) //if an aggressor has bet a huuge chunk of the pot
+                else if (aggressor.PlayerState == PlayerState.Playing && aggressor.timesRaisedThisRound > 0 && aggressor.currentBet > Table.instance.potChips / aggressor.timesRaisedThisRound) //if an aggressor has bet a huuge chunk of the pot
                 {
                     if (player.Hand.HandValues.PokerHand < PokerHand.OnePair && player.HandStrength < Random.Range(0.4f, 0.6f)) player.Fold(); //if you have a bad hand, fold
                     else player.Call(); //else just call
@@ -1058,6 +1170,32 @@ public class PlayerBehaviour {
                 if (randomNum > 80) player.Raise();
                 else player.Call();
             }
+            else if (Services.Dealer.GetActivePlayerCount() == 2 && Services.Dealer.raisesInRound >= 1 && Table.instance.potChips > Services.Dealer.BigBlind * 4)
+            {
+                PokerPlayerRedux opponent = null;
+                for (int i = 0; i < Services.Dealer.players.Count; i++)
+                {
+                    if (Services.Dealer.players[i].playerName != player.playerName && Services.Dealer.players[i].PlayerState == PlayerState.Playing)
+                    {
+                        opponent = Services.Dealer.players[i];
+                    }
+                }
+                if (opponent != null)
+                {
+                    if (OpponentHandIsBetter(player, opponent))
+                    {
+                        float randomNum = Random.Range(0, 100);
+                        if (randomNum > player.playerInsightPercent) player.Fold(); //if opponent hand is better, get out
+                    }
+                    else //if it's NOT better, than percent chance to call or raise
+                    {
+                        float newRandomNum = Random.Range(0, 100);
+                        if (newRandomNum > 50) player.Call();
+                        else player.Raise();
+                    }
+                }
+                else Debug.Log("error");
+            }
             else if (Table.gameState == GameState.River &&
                      Services.Dealer.raisesInRound >= 1 &&
                      player.Hand.HandValues.PokerHand <= PokerHand.OnePair &&
@@ -1065,7 +1203,7 @@ public class PlayerBehaviour {
             else if (aggressor != null)
             {
                 if (aggressor.timesRaisedThisRound > 2 && player.timesRaisedThisRound > 1 && player.HandStrength > .85f) player.AllIn(); //if you're in a raise war, and you have a great hand just go all in
-                else if (aggressor.PlayerState == PlayerState.Playing && aggressor.currentBet > Table.instance.potChips / Services.Dealer.raisesInRound) //if an aggressor has bet a huuge chunk of the pot
+                else if (aggressor.PlayerState == PlayerState.Playing && aggressor.timesRaisedThisRound > 0 && aggressor.currentBet > Table.instance.potChips / aggressor.timesRaisedThisRound) //if an aggressor has bet a huuge chunk of the pot
                 {
                     if (player.Hand.HandValues.PokerHand < PokerHand.OnePair && player.HandStrength < .3f) player.Fold(); //if you have a bad hand, fold
                     else player.Call(); //else just call
@@ -1181,7 +1319,56 @@ public class PlayerBehaviour {
     }
     #endregion
 
+    public bool OpponentHandIsBetter(PokerPlayerRedux me, PokerPlayerRedux opponent)
+    {
+        List<PokerPlayerRedux> playersToEvaluate = new List<PokerPlayerRedux>();
+        playersToEvaluate.Add(me);
+        playersToEvaluate.Add(opponent);
 
+        List<PokerPlayerRedux> sortedPlayers = new List<PokerPlayerRedux>(playersToEvaluate.
+                                                                  OrderByDescending(bestHand => bestHand.Hand.HandValues.PokerHand).
+                                                                  ThenByDescending(bestHand => bestHand.Hand.HandValues.Total).
+                                                                  ThenByDescending(bestHand => bestHand.Hand.HandValues.HighCard));
+
+        List<List<PokerPlayerRedux>> PlayerRank = new List<List<PokerPlayerRedux>>();
+
+        for (int i = 0; i < sortedPlayers.Count; i++)
+        {
+            if (PlayerRank.Count == 0)
+            {
+                PlayerRank.Add(new List<PokerPlayerRedux>() { sortedPlayers[i] });
+            }
+            else if (sortedPlayers[i].Hand.HandValues.PokerHand == PlayerRank[PlayerRank.Count - 1][0].Hand.HandValues.PokerHand)
+            {
+                if (sortedPlayers[i].Hand.HandValues.Total == PlayerRank[PlayerRank.Count - 1][0].Hand.HandValues.Total)
+                {
+                    if (sortedPlayers[i].Hand.HandValues.HighCard == PlayerRank[PlayerRank.Count - 1][0].Hand.HandValues.HighCard)
+                    {
+                        PlayerRank[PlayerRank.Count - 1].Add(sortedPlayers[i]);
+                    }
+                    else
+                    {
+                        PlayerRank.Add(new List<PokerPlayerRedux>() { sortedPlayers[i] });
+                    }
+                }
+                else
+                {
+                    PlayerRank.Add(new List<PokerPlayerRedux>() { sortedPlayers[i] });
+                }
+            }
+            else
+            {
+                PlayerRank.Add(new List<PokerPlayerRedux>() { sortedPlayers[i] });
+            }
+        }
+
+        if (PlayerRank[0].Count > 1)
+        {
+            return false; //because if you have the same hand, it's not necessarily better
+        }
+        else if (PlayerRank[0][0].playerName == me.playerName) return false; //if I'm in the best position, then my opponents hand is not better
+        else return true; //if my opponent is in the first position they have the best hand
+    }
 
     #region old Raise code
     //if (Table.gameState == GameState.PreFlop)

@@ -430,6 +430,7 @@ public class Dealer : MonoBehaviour
         Debug.Log("Starting round " + Table.gameState);
         SetCurrentAndLastBet();
         foreach (PokerPlayerRedux player in players) player.timesRaisedThisRound = 0;
+        raisesInRound = 0;
         if (Table.gameState == GameState.PreFlop)
         {
             if(GetActivePlayerCount() == 2)
