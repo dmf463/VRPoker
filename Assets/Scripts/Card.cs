@@ -13,6 +13,9 @@ public class Card : InteractionSuperClass {
     public CardType cardType;
     private CardRaycast cardRay;
 
+    private Vector3 cardPosHeld;
+    private Vector3 cardPosOnRelease;
+
     //if the card is touching the table, this is true
     bool cardHitPlayer;
     bool cardOnTable;
@@ -422,6 +425,7 @@ public class Card : InteractionSuperClass {
     //also added in that if layCardsDown is equal to true we can let go of the card
     public override void HandAttachedUpdate(Hand attachedHand)
     {
+        cardPosHeld = transform.position;
         if(Table.gameState == GameState.NewRound)
         {
             if (cardFacingUp == true) Table.gameState = GameState.Misdeal;
@@ -439,9 +443,6 @@ public class Card : InteractionSuperClass {
             {
                 Services.PokerRules.cardsPulled.Add(cardType);
             }
-            //BUG ALERT: THERE IS A BUG HERE, IF THE CARD IS DEALT/PULLED AT THE WRONG ANGLE, AND THEN 
-            //DETACHED IT FREEZES IN THE AIR
-            //MAYBE FIXED IT WITH THE if (rb == null)
             if (rb == null)
             {
                 rb = GetComponent<Rigidbody>();
@@ -473,6 +474,14 @@ public class Card : InteractionSuperClass {
         yield return new WaitForSeconds(time);
         //Debug.Log("rb.velocity.magnitude = " + rb.velocity.magnitude);
         throwingVelocity = rb.velocity.magnitude;
+        cardPosOnRelease = transform.position;
+        float yDifference = cardPosHeld.y - cardPosOnRelease.y;
+        if (yDifference < -0.1f)
+        {
+            Debug.Log("yDifference for up, down, and then out = " + yDifference);
+            cardThrownWrong = true;
+        }
+
         if (rb.velocity.magnitude > MAGNITUDE_THRESHOLD)
         {
             startingFastTorque = true;
