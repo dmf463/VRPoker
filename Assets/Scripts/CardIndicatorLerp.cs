@@ -8,6 +8,7 @@ public class CardIndicatorLerp : MonoBehaviour {
     public float lerpSpeed;
     private float yPos;
     public float yOffset;
+
 	// Use this for initialization
 	void Start () {
         yPos = transform.position.y;

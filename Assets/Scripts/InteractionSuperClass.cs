@@ -149,20 +149,46 @@ public class InteractionSuperClass : MonoBehaviour {
             Hand hand = i == 0 ? throwingHand : deckHand;
             Vector2 touch = hand.controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
             var device = hand.GetComponent<Hand>().controller;
-            if (device.GetTouchDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
+            if (device.GetTouchDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad) && hand == throwingHand)
             {
                 TouchingTrackPad();
             }
         }
     }
 
+    public virtual void CheckTiltDirection(Hand hand)
+    {
+        var device = hand.GetComponent<Hand>().controller;
+        if (device.GetTouch(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
+        {
+            float yPress = device.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad).y;
+            float xPress = device.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad).x;
+            if (xPress >= .5f) OnTiltRight();
+            else if (xPress <= -0.5f) OnTiltLeft();
+            else if (yPress >= .5f) OnTiltUp();
+            else if (yPress <= -0.5f) OnTiltDown();
+        }
+    }
+
+    //public virtual void CheckTiltDirection_Y(Hand hand)
+    //{
+    //    var device = hand.GetComponent<Hand>().controller;
+    //    if (device.GetTouch(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
+    //    {
+    //        float yPress = device.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad).y;
+    //        float xPress = device.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad).x;
+    //        if (yPress == 1) OnTiltUp();
+    //        else if (yPress == -1) OnTiltDown();
+    //    }
+    //}
+
     //same as above but with checking swiping
     //I got this off the internet
     //so I don't understand all the trigonometry in it
-    public virtual void CheckSwipeDirection()
+    public virtual void CheckSwipeDirection(Hand hand)
     {
-        Vector2 touch = throwingHand.controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
-        var device = throwingHand.GetComponent<Hand>().controller;
+        Vector2 touch = hand.controller.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad);
+        var device = hand.GetComponent<Hand>().controller;
         if (device.GetTouchDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
         {
             //Debug.Log("touching Trackpad");
@@ -269,6 +295,26 @@ public class InteractionSuperClass : MonoBehaviour {
     public virtual void TouchingTrackPad()
     {
         Debug.Log("Touching Pad");
+    }
+
+    public virtual void OnTiltUp()
+    {
+        Debug.Log("Tilting Up");
+    }
+
+    public virtual void OnTiltDown()
+    {
+        Debug.Log("Tilting Down");
+    }
+
+    public virtual void OnTiltLeft()
+    {
+        Debug.Log("Tilting Left");
+    }
+
+    public virtual void OnTiltRight()
+    {
+        Debug.Log("Tilting Right");
     }
 
 }

@@ -229,7 +229,7 @@ public class Card : InteractionSuperClass {
         //we want to be constantly checking whether or not a player has swiped the track pad
         if (rb.isKinematic == true && deckIsEmpty == false)
         {
-            CheckSwipeDirection();
+            CheckSwipeDirection(throwingHand);
             CheckTouchDown();
         }
     }
@@ -493,32 +493,14 @@ public class Card : InteractionSuperClass {
     }
 
     //part of the interaction class this derives from.
-    public override void CheckSwipeDirection()
+    public override void CheckSwipeDirection(Hand hand)
     {
-        base.CheckSwipeDirection();
-    }
-
-    public override void OnSwipeTop()
-    {
-        RotateCard();
-        base.OnSwipeTop();
-    }
-
-    public override void OnSwipeLeft()
-    {
-        RotateCard();
-        base.OnSwipeLeft();
-    }
-
-    public override void OnSwipeRight()
-    {
-        RotateCard();
-        base.OnSwipeRight();
+        base.CheckSwipeDirection(throwingHand);
     }
 
     public override void TouchingTrackPad()
     {
-        //RotateCard();
+        RotateCard();
         base.TouchingTrackPad();
     }
 

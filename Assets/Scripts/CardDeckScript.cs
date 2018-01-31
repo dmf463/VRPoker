@@ -15,10 +15,6 @@ public class CardDeckScript : InteractionSuperClass {
     //this is the actual list of cards in the deck still
     [HideInInspector]
     public List<CardType> cardsInDeck;
-
-    public GameObject cardPreview;
-    private int cardNum;
-    
     //this is the deck...idk why I have a reference to the deck on the deck..
     //oh...apparently I have it for readability
     GameObject cardDeck;
@@ -68,9 +64,16 @@ public class CardDeckScript : InteractionSuperClass {
     private bool readyForAnotherCard = false;
 
     private bool cheating;
+    public GameObject cardPreview;
+    private int cardNum;
+    private float tiltSpeed = 0;
+    private const float TILT_INCREMENT = 0.01f;
+    private const float TILT_INCREMENT_MAX = 0.05f;
+    private float cheatKeyDelay = 0.2f;
     private CardType cheatCard;
-    private float cheatKeyDelay = 0.1f;
     private float cheatTimePassed = 0;
+    private bool readyToScroll = false;
+    private bool scrolling = false;
 
     //lalalalalala, setting stuff, lalalalalalalala
     void Start()
@@ -123,15 +126,15 @@ public class CardDeckScript : InteractionSuperClass {
         else if (Input.GetKeyDown(KeyCode.DownArrow)) cardPreview.SetActive(false);
         #endregion
 
-        //so if we have a throwing hand, want to make sure we're always checking 
+        //so if we have a deck hand, want to make sure we're always checking 
         //whether it was swiped, or pressed
         if (!Services.Dealer.OutsideVR)
         {
-            if (throwingHand != null)
+            if(deckHand != null)
             {
-                CheckPressPosition(throwingHand);
-                CheckPressPosition(deckHand);
-                CheckSwipeDirection();
+                CheckSwipeDirection(deckHand);
+                //CheckTiltDirection_Y(deckHand);
+                CheckTiltDirection(deckHand);
             }
         }
         ReadyToCheat();
@@ -140,7 +143,8 @@ public class CardDeckScript : InteractionSuperClass {
     void ReadyToCheat()
     {
         cheatTimePassed += Time.deltaTime;
-        if (cardPreview.activeSelf)
+        if (cheatTimePassed > cheatKeyDelay * 2) tiltSpeed = 0;
+        if (cardPreview.activeSelf && !deckIsEmpty)
         {
             cheating = true;
             List<CardType> orderedCards = new List<CardType>(cardsInDeck.
@@ -233,11 +237,11 @@ public class CardDeckScript : InteractionSuperClass {
         {
             handIsHoldingCard = true;
             handTouchingDeck = false;
-            cheating = false;
             cardPreview.SetActive(false);
             Card card = CreateCard(GrabACard(), interactableObject.transform.position, Quaternion.identity);
             card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
             hand.otherHand.AttachObject(card.gameObject);
+            cheating = false;
             MakeDeckSmaller();
             if (cardsInDeck.Count == 0)
             {
@@ -262,6 +266,7 @@ public class CardDeckScript : InteractionSuperClass {
         CardType cardToGrab = null;
         if (cheating)
         {
+            Debug.Log("Cheating should happen");
             for (int i = 0; i < cardsInDeck.Count; i++)
             {
                 if (cardsInDeck[i].rank == cheatCard.rank && cardsInDeck[i].suit == cheatCard.suit) cardToGrab = cardsInDeck[i];
@@ -269,7 +274,7 @@ public class CardDeckScript : InteractionSuperClass {
         }
         else
         {
-            //Debug.Log("grabbing random card");
+            Debug.Log("grabbing random card");
             int cardPos = Random.Range(0, cardsInDeck.Count);
             cardToGrab = cardsInDeck[cardPos];
         }
@@ -319,6 +324,7 @@ public class CardDeckScript : InteractionSuperClass {
         //
         //should seriously rethink this because of the way it feels between dropping the deck and throwing the deck
         //
+        cardPreview.SetActive(false);
         if (hand.GetTrackedObjectVelocity().magnitude > velocityThreshold) deckIsBeingThrown = true;
         if (deckIsBeingThrown == true)
         {
@@ -502,40 +508,54 @@ public class CardDeckScript : InteractionSuperClass {
         //Table.dealerState = DealerState.ShufflingState;
     }
 
-    //when we swipe up we set grabbingHighCard to true
-    public override void OnSwipeTop()
+    IEnumerator WaitToScroll(float time)
     {
-        cardPreview.SetActive(true);
-        cardNum = 0;
-        base.OnSwipeTop();
+        yield return new WaitForSeconds(time);
+        readyToScroll = true;
+    }
+
+    //when we swipe up we set grabbingHighCard to true
+    public override void OnTiltUp()
+    {
+        if (!cardPreview.activeSelf)
+        {
+            cardPreview.SetActive(true);
+            cardNum = 0;
+            StartCoroutine(WaitToScroll(.5f));
+        }
+        base.OnTiltUp();
     }
 
     //when we swipe down, we set grabbingLowCard to true
-    public override void OnSwipeBottom()
+    public override void OnTiltDown()
     {
         cardPreview.SetActive(false);
-        base.OnSwipeBottom();
+        base.OnTiltDown();
     }
 
-    public override void OnSwipeLeft()
+    public override void OnTiltLeft()
     {
-        if (Input.GetKey(KeyCode.LeftArrow) && cheatTimePassed > cheatKeyDelay)
+        if (cheatTimePassed > cheatKeyDelay - tiltSpeed && readyToScroll)
         {
+            if (tiltSpeed > cheatKeyDelay - TILT_INCREMENT_MAX) tiltSpeed = cheatKeyDelay -TILT_INCREMENT_MAX;
+            tiltSpeed += TILT_INCREMENT;
             cheatTimePassed = 0;
             if (cardNum == 0) cardNum = cardsInDeck.Count;
             cardNum--;
         }
-        base.OnSwipeLeft();
+        base.OnTiltLeft();
     }
 
-    public override void OnSwipeRight()
+    public override void OnTiltRight()
     {
-        if (cheatTimePassed > cheatKeyDelay)
+        if (cheatTimePassed > cheatKeyDelay - tiltSpeed && readyToScroll)
         {
+            if (tiltSpeed > cheatKeyDelay - TILT_INCREMENT_MAX) tiltSpeed = cheatKeyDelay - TILT_INCREMENT_MAX;
+            tiltSpeed += TILT_INCREMENT;
             cheatTimePassed = 0;
             cardNum++;
             cardNum = cardNum % cardsInDeck.Count;
         }
-        base.OnSwipeRight();
+        base.OnTiltRight();
     }
 }
