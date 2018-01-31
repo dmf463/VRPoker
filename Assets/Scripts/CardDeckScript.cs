@@ -530,6 +530,7 @@ public class CardDeckScript : InteractionSuperClass {
     public override void OnTiltDown()
     {
         cardPreview.SetActive(false);
+        cheating = false;
         base.OnTiltDown();
     }
 
