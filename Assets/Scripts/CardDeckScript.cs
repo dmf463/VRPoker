@@ -68,7 +68,7 @@ public class CardDeckScript : InteractionSuperClass {
     private int cardNum;
     private float tiltSpeed = 0;
     private const float TILT_INCREMENT = 0.01f;
-    private const float TILT_INCREMENT_MAX = 0.05f;
+    private const float TILT_INCREMENT_MAX = 0.08f;
     private float cheatKeyDelay = 0.2f;
     private CardType cheatCard;
     private float cheatTimePassed = 0;
