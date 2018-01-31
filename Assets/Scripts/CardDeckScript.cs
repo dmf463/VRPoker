@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR; //we need this for SteamVR
 using Valve.VR.InteractionSystem;
+using System.Linq;
 
 //this is the script that holds all the cards in the deck
 //as well it controls all the physics for the card deck
@@ -14,6 +15,9 @@ public class CardDeckScript : InteractionSuperClass {
     //this is the actual list of cards in the deck still
     [HideInInspector]
     public List<CardType> cardsInDeck;
+
+    public GameObject cardPreview;
+    private int cardNum;
     
     //this is the deck...idk why I have a reference to the deck on the deck..
     //oh...apparently I have it for readability
@@ -63,9 +67,10 @@ public class CardDeckScript : InteractionSuperClass {
     //so this is the bool that prevents us from instantiating more than one card at a time 
     private bool readyForAnotherCard = false;
 
-    //these are the bools that get set to allow us to cheat >=)
-    private bool grabbingHighCard;
-    private bool grabbingLowCard;
+    private bool cheating;
+    private CardType cheatCard;
+    private float cheatKeyDelay = 0.1f;
+    private float cheatTimePassed = 0;
 
     //lalalalalala, setting stuff, lalalalalalalala
     void Start()
@@ -91,6 +96,32 @@ public class CardDeckScript : InteractionSuperClass {
 
     void Update()
     {
+        #region Outside VR shortcuts
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            Card card = CreateCard(GrabACard(), GameObject.Find("ShufflingArea").transform.position, Quaternion.identity);
+            card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
+            Services.PokerRules.cardsPulled.Add(card.cardType);
+        }
+        if (Input.GetKey(KeyCode.RightArrow) && cheatTimePassed > cheatKeyDelay)
+        {
+            cheatTimePassed = 0;
+            cardNum++;
+            cardNum = cardNum % cardsInDeck.Count;
+        }
+        if (Input.GetKey(KeyCode.LeftArrow) && cheatTimePassed > cheatKeyDelay)
+        {
+            cheatTimePassed = 0;
+            if (cardNum == 0) cardNum = cardsInDeck.Count;
+            cardNum--;
+        }
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            cardPreview.SetActive(true);
+            cardNum = 0;
+        }
+        else if (Input.GetKeyDown(KeyCode.DownArrow)) cardPreview.SetActive(false);
+        #endregion
 
         //so if we have a throwing hand, want to make sure we're always checking 
         //whether it was swiped, or pressed
@@ -99,20 +130,26 @@ public class CardDeckScript : InteractionSuperClass {
             if (throwingHand != null)
             {
                 CheckPressPosition(throwingHand);
+                CheckPressPosition(deckHand);
                 CheckSwipeDirection();
             }
         }
+        ReadyToCheat();
+    }
 
-        //this is so if we're doing something outside of VR we can pull a card
-        if (Input.GetKeyDown(KeyCode.Z))
+    void ReadyToCheat()
+    {
+        cheatTimePassed += Time.deltaTime;
+        if (cardPreview.activeSelf)
         {
-            int cardPos = Random.Range(0, cardsInDeck.Count);
-            CardType cardType = cardsInDeck[cardPos];
-            Card card = CreateCard(cardType, GameObject.Find("ShufflingArea").transform.position, Quaternion.identity);
-            card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
-            Services.PokerRules.cardsPulled.Add(card.cardType);
+            cheating = true;
+            List<CardType> orderedCards = new List<CardType>(cardsInDeck.
+                                                             OrderByDescending(bestCard => bestCard.rank).
+                                                             ThenBy(bestCard => bestCard.suit));
+            cardPreview.GetComponent<MeshFilter>().mesh = cardMeshes[(int)orderedCards[cardNum].suit][(int)orderedCards[cardNum].rank - 2];
+            cheatCard = new CardType(orderedCards[cardNum].rank, orderedCards[cardNum].suit);
+            Debug.Log("cheatCard = " + cheatCard.rank + " of " + cheatCard.suit);
         }
-
     }
 
     //so if we're in shuffling state
@@ -196,10 +233,10 @@ public class CardDeckScript : InteractionSuperClass {
         {
             handIsHoldingCard = true;
             handTouchingDeck = false;
+            cheating = false;
+            cardPreview.SetActive(false);
             Card card = CreateCard(GrabACard(), interactableObject.transform.position, Quaternion.identity);
             card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
-            //Services.PokerRules.cardsPulled.Add(card.cardType);
-            //Services.PokerRules.cardsToDestroy.Add(card);
             hand.otherHand.AttachObject(card.gameObject);
             MakeDeckSmaller();
             if (cardsInDeck.Count == 0)
@@ -223,32 +260,11 @@ public class CardDeckScript : InteractionSuperClass {
     public CardType GrabACard()
     {
         CardType cardToGrab = null;
-        if (grabbingLowCard == true)
+        if (cheating)
         {
-            //Debug.Log("Grabbing lowest card");
-            grabbingLowCard = false;
-            cardToGrab = cardsInDeck[0];
             for (int i = 0; i < cardsInDeck.Count; i++)
             {
-                CardType currentCard = cardsInDeck[i];
-                if((int)currentCard.rank < (int)cardToGrab.rank)
-                {
-                    cardToGrab = currentCard;
-                }
-            }
-        }
-        else if (grabbingHighCard == true)
-        {
-            //Debug.Log("Grabbing high card");
-            grabbingHighCard = false;
-            cardToGrab = cardsInDeck[0];
-            for (int i = 0; i < cardsInDeck.Count; i++)
-            {
-                CardType currentCard = cardsInDeck[i];
-                if ((int)currentCard.rank > (int)cardToGrab.rank)
-                {
-                    cardToGrab = currentCard;
-                }
+                if (cardsInDeck[i].rank == cheatCard.rank && cardsInDeck[i].suit == cheatCard.suit) cardToGrab = cardsInDeck[i];
             }
         }
         else
@@ -486,47 +502,40 @@ public class CardDeckScript : InteractionSuperClass {
         //Table.dealerState = DealerState.ShufflingState;
     }
 
-    //when we swipe down, we set grabbingLowCard to true
-    public override void OnSwipeBottom()
-    {
-        if (handTouchingDeck) grabbingLowCard = true;
-        base.OnSwipeBottom();
-    }
-
     //when we swipe up we set grabbingHighCard to true
     public override void OnSwipeTop()
     {
-        if (handTouchingDeck) grabbingHighCard = true;
+        cardPreview.SetActive(true);
+        cardNum = 0;
         base.OnSwipeTop();
     }
 
-    //when we CLICK down
-    //if we can hold another card, and we're already holding a card
-    //we instantiate a new card into your hand with the proper offset
-    //we also make the deck smaller and destroy the deck if it was the last card
-    //public override void OnPressBottom()
-    //{
-    //    if (readyForAnotherCard && handIsHoldingCard == true)
-    //    {
-    //        GameObject firstCard = throwingHand.currentAttachedObject.gameObject;
-    //        Vector3 offset = new Vector3(-0.01f, -0.01f, 0) * throwingHand.AttachedObjects.Count;
-    //        int cardPos = Random.Range(0, cardsInDeck.Count);
-    //        CardType cardType = cardsInDeck[cardPos];
-    //        Card card = CreateCard(cardType, throwingHand.transform.position, Quaternion.identity);
-    //        card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
-    //        if(throwingHand.AttachedObjects.Count < 3)
-    //        {
-    //            throwingHand.AttachObject(card.gameObject, Hand.AttachmentFlags.ParentToHand);
-    //            card.gameObject.transform.localPosition = new Vector3(firstCard.transform.localPosition.x + offset.x, firstCard.transform.localPosition.y + offset.y, firstCard.transform.localPosition.z);
-    //        }
-    //        MakeDeckSmaller();
-    //        if (cardsInDeck.Count == 0)
-    //        {
-    //            deckHand.HoverUnlock(interactableObject);
-    //            Destroy(cardDeck);
-    //            Debug.Log("Destroyed Deck");
-    //            Table.dealerState = DealerState.ShufflingState;
-    //        }
-    //    }
-    //}
+    //when we swipe down, we set grabbingLowCard to true
+    public override void OnSwipeBottom()
+    {
+        cardPreview.SetActive(false);
+        base.OnSwipeBottom();
+    }
+
+    public override void OnSwipeLeft()
+    {
+        if (Input.GetKey(KeyCode.LeftArrow) && cheatTimePassed > cheatKeyDelay)
+        {
+            cheatTimePassed = 0;
+            if (cardNum == 0) cardNum = cardsInDeck.Count;
+            cardNum--;
+        }
+        base.OnSwipeLeft();
+    }
+
+    public override void OnSwipeRight()
+    {
+        if (cheatTimePassed > cheatKeyDelay)
+        {
+            cheatTimePassed = 0;
+            cardNum++;
+            cardNum = cardNum % cardsInDeck.Count;
+        }
+        base.OnSwipeRight();
+    }
 }
