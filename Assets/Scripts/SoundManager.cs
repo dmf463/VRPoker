@@ -15,6 +15,7 @@ public class SoundManager : MonoBehaviour
 
 	public AudioSource tutorial;
 
+
 	public AudioSource caseySource; 
 	public AudioSource zombieSource;
 	public AudioSource minnieSource;
@@ -75,6 +76,21 @@ public class SoundManager : MonoBehaviour
     }
 		
 
+	public void PlayTutorialAudio(int index)
+	{
+		Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.tutorialAudioFiles[index].audio, 1f, 1f);
+		Services.SoundManager.tutorialAudioFiles[index].hasBeenPlayed = true;
+		StartCoroutine(WaitToResetBool(Services.SoundManager.tutorialAudioFiles[index].audio.length, Services.SoundManager.tutorialAudioFiles[index]));
+	}
+
+	IEnumerator WaitToResetBool(float time, AudioData clip){
+		yield return new WaitForSeconds(time);
+		clip.finishedPlaying = true;
+	}
+
+
+
+
 	public void GenerateSourceAndPlay(AudioClip clip, float volume, float pitch = 1)
 	{
 		GenerateSourceAndPlay(clip, volume, pitch, transform.position);
@@ -94,6 +110,7 @@ public class SoundManager : MonoBehaviour
         source.volume = volume;
 		source.pitch = pitch;
         source.Play();
+		//Debug.Log(specialAudioSource.name);
         Destroy(specialAudioSource, clip.length);
     }
 
@@ -517,11 +534,13 @@ public class AudioData
 {
 	public AudioClip audio;
 	public bool hasBeenPlayed;
+	public bool finishedPlaying;
 
 	public AudioData(AudioClip _audio, bool _hasBeenPlayed)
 	{
-		_audio = audio;
-		_hasBeenPlayed = hasBeenPlayed;
+		audio = _audio;
+		hasBeenPlayed = _hasBeenPlayed;
+
 	}
 
 }

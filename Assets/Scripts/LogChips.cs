@@ -42,7 +42,8 @@ public class LogChips : MonoBehaviour
                 {
 					if(gameObject.name == playerNames[i] && Services.Dealer.players[i].PlayerState != PlayerState.Winner)
 					{
-						if(!Services.Dealer.players[i].playerAudioSource.isPlaying && !Services.Dealer.players[i].playerIsInConversation && !Services.SoundManager.conversationIsPlaying){
+						if(!Services.Dealer.players[i].playerAudioSource.isPlaying && !Services.Dealer.players[i].playerIsInConversation 
+							&& !Services.SoundManager.conversationIsPlaying && !Services.Dealer.inTutorial){
 							Services.SoundManager.GetSourceAndPlay(Services.Dealer.players[i].playerAudioSource, Services.Dealer.players[i].wrongChipsAudio);
 						}
 					}
