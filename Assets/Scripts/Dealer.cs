@@ -282,7 +282,10 @@ public class Dealer : MonoBehaviour
                     !players[i].playerIsInConversation &&
                     !Services.SoundManager.conversationIsPlaying)
                 {
+					if(!inTutorial)
+					{
                     Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].misdealAudio);
+					}
                 }
             }
             //messageText.text = "You misdealt the hand, click both triggers to restart the round.";
@@ -1088,7 +1091,10 @@ public class Dealer : MonoBehaviour
                        !Services.SoundManager.conversationIsPlaying &&
                        winnerCount < 2)
 					{
-						Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].tipAudio);
+						if(!inTutorial)
+						{
+							Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].tipAudio);
+						}
 					}
 				}
 			}
