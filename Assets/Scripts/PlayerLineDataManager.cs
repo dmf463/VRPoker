@@ -57,7 +57,7 @@ public class DialogueDataManager
 		//List<Conversation> conversationList = new List<Conversation>(); //list of conversations to add to the dictionary
 		for (int i = 2; i < fileRows.Length; i++)  //for each row in our array, ignoring the first two rows
 		{
-			//Debug.Log("Line " + i);
+			Debug.Log("Line " + i);
 			fileRow = fileRows [i]; //set filerow to equal that row
 			rowEntries = fileRow.Split (entrySeparator); //set entries by splitting the row using our entry separator
 			if(rowEntries.Length < 8){
@@ -66,7 +66,7 @@ public class DialogueDataManager
 			List<PlayerName> conversantList = new List<PlayerName>(); //list to hold the players who are in the conversation
 
 			for (int j = 0; j < 5; j++){
-				//Debug.Log("Row " + j + " " + rowEntries[j]);
+				Debug.Log("Row " + j + " " + rowEntries[j]);
 				if (rowEntries[j] != "")	{
 				conversantList.Add(GetConversantNameFromString(rowEntries[j]));
 				}
