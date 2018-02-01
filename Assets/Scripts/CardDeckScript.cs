@@ -75,6 +75,8 @@ public class CardDeckScript : InteractionSuperClass {
     private bool readyToScroll = false;
     private bool scrolling = false;
 
+
+
     //lalalalalala, setting stuff, lalalalalalalala
     void Start()
     {
@@ -291,6 +293,10 @@ public class CardDeckScript : InteractionSuperClass {
         handTouchingDeck = false;
         if(attachedHand.currentAttachedObject.tag == "CardDeck")
         {
+			if(Services.Dealer.havePickedUpDeckOnce != true)
+			{
+				Services.Dealer.havePickedUpDeckOnce = true;
+			}
             deckHand = attachedHand;
             throwingHand = attachedHand.otherHand;
             //Debug.Log("deckHand = " + attachedHand.name + " and throwingHand = " + attachedHand.otherHand.name);
