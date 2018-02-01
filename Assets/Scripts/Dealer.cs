@@ -53,8 +53,8 @@ public class Dealer : MonoBehaviour
     [HideInInspector]
     public int winnersPaid;
 
-    public int SmallBlind = 5;
-    public int BigBlind = 10;
+    public int SmallBlind;
+    public int BigBlind;
 
     //this is the value of the last bet that was put on the table
     public int LastBet;
@@ -75,7 +75,9 @@ public class Dealer : MonoBehaviour
     private float buttonBTimer = 0;
     private int bufferPeriod = 10;
 
-    public int raisesInRound; 
+    public int raisesInRound;
+
+    private float gameLength;
 
     [HideInInspector]
 	public bool misdealAudioPlayed =false;
@@ -111,6 +113,8 @@ public class Dealer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        IncreaseBlinds();
+
         buttonATimer--;
         buttonBTimer--;
 
@@ -348,6 +352,71 @@ public class Dealer : MonoBehaviour
         }
         #endregion
         lastGameState = Table.gameState;
+    }
+
+    void IncreaseBlinds()
+    {
+        gameLength += Time.deltaTime;
+        if(gameLength >= 300) //5 minutes
+        {
+            SmallBlind = 50;
+            BigBlind = SmallBlind * 2;
+        }
+        else if (gameLength >= 600) //10 minutes
+        {
+            SmallBlind = 75;
+            BigBlind = SmallBlind * 2;
+        }
+        else if (gameLength >= 900) //15 minutes
+        {
+            SmallBlind = 100;
+            BigBlind = SmallBlind * 2;
+        }
+        else if (gameLength >= 1200) //20 minutes
+        {
+            SmallBlind = 125;
+            BigBlind = SmallBlind * 2;
+        }
+        else if (gameLength >= 1500) //25 minutes
+        {
+            SmallBlind = 150;
+            BigBlind = SmallBlind * 2;
+        }
+        else if (gameLength >= 1800) //30 minutes
+        {
+            SmallBlind = 175;
+            BigBlind = SmallBlind * 2;
+        }
+        else if (gameLength >= 2100) //40 minutes
+        {
+            SmallBlind = 200;
+            BigBlind = SmallBlind * 2;
+        }
+        else if (gameLength >= 2400) //45 minutes
+        {
+            SmallBlind = 300;
+            BigBlind = SmallBlind * 2;
+        }
+        else if (gameLength >= 2700) //50 minutes
+        {
+            SmallBlind = 400;
+            BigBlind = SmallBlind * 2;
+        }
+        else if (gameLength >= 3000) //50 minutes
+        {
+            SmallBlind = 400;
+            BigBlind = SmallBlind * 2;
+        }
+        else if (gameLength >= 3300) //55 minutes
+        {
+            SmallBlind = 500;
+            BigBlind = SmallBlind * 2;
+        }
+        else if (gameLength >= 3600) //60 minutes
+        {
+            SmallBlind = 600;
+            BigBlind = SmallBlind * 2;
+        }
     }
 
     IEnumerator CheckForMistakesPreFlop(float time)
