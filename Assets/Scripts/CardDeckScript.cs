@@ -348,6 +348,10 @@ public class CardDeckScript : InteractionSuperClass {
     //and then refill the deck with 52 new cardTypes
     public void RefillCardDeck()
     {
+		if(!Services.Dealer.haveShuffledOnce)
+		{
+			Services.Dealer.haveShuffledOnce = true;
+		}
         Debug.Log("Refilling CardDeck");
         cardsInDeck.Clear();
         Table.instance.NewHand();
