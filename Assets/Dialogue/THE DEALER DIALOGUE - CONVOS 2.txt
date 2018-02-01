@@ -1,0 +1,12 @@
+PLAYERS					LINE 1 	 		LINE 2			LINE 3		
+1	2	3	4	5	Speaker	Line	Audio	Speaker	Line	Audio	Speaker	Line	Audio
+Floyd	Minnie				Floyd	"Blah"	floyd1.mp3	Minnie	"Blahblah"	minnie1.mp3	Floyd	"Blahblala"	floyd2.mp3
+Floyd	Casey				x	x	x						
+Floyd	Nathaniel				x	x	x						
+Floyd	Zombie				x	x	x						
+Minnie	Casey				x	x	x						
+Minnie	Nathaniel				x	x	x						
+Minnie	Zombie				x	x	x						
+Casey	Nathaniel				x	x	x						
+Casey 	Zombie				x	x	x						
+Zombie	Nathaniel				x	x	x						

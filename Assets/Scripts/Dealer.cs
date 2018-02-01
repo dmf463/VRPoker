@@ -24,6 +24,7 @@ public class Dealer : MonoBehaviour
     public List<Card> cardsTouchingTable = new List<Card>();
 
 	public List<PokerPlayerRedux> players = new List<PokerPlayerRedux>();
+	public List<PokerPlayerRedux> activePlayers = new List<PokerPlayerRedux>();
 
     public PokerPlayerRedux playerToAct;
     public PokerPlayerRedux previousPlayerToAct;
@@ -91,7 +92,8 @@ public class Dealer : MonoBehaviour
         Services.Dealer = this;
         Services.PokerRules = GameObject.Find("PokerRules").GetComponent<PokerRules>();
 		Services.PlayerBehaviour = new PlayerBehaviour();
-		//Services.SpiritManager = GameObject.Find("SpiritAIManager").GetComponent<SpiritAIManager>();   
+		//Services.SpiritManager = GameObject.Find("SpiritAIManager").GetComponent<SpiritAIManager>(); 
+		Services.DialogueDataManager.ParseDialogueFile((Services.SoundManager.dialogueFile));
     }
 
     // Use this for initialization
@@ -602,10 +604,13 @@ public class Dealer : MonoBehaviour
         {
 			players[i].SeatPos = i;
 			players[i].PlayerState = PlayerState.Playing;
+			activePlayers.Add(players[i]);
+			Debug.Log ("Adding " + players[i] + " to active players!");
             List<int> startingStack  = players[i].SetChipStacks(chipCount);
             Table.instance.AddChipTo(playerDestinations[i], chipCount);
             players[i].CreateAndOrganizeChipStacks(startingStack);
         }
+
         Table.instance.DealerPosition = 0;
         Table.instance.SetDealerButtonPos(Table.instance.DealerPosition);
         Table.instance.gameData = new PokerGameData(Table.instance.DealerPosition, players);
@@ -887,11 +892,21 @@ public class Dealer : MonoBehaviour
     {
         for (int i = 0; i < players.Count; i++)
         {
-            if (players[i].chipCount == 0) players[i].PlayerState = PlayerState.Eliminated;
+			if (players[i].chipCount == 0)
+			{
+				players[i].PlayerState = PlayerState.Eliminated;
+				if (activePlayers.Contains(players[i]))
+				{
+					activePlayers.Remove(players[i]);
+					Debug.Log ("Removing " + players[i] + " from active players!");
+				}
+			}
+
             if (players[i].PlayerState != PlayerState.Eliminated)
             {
                 players[i].PlayerState = PlayerState.Playing;
             }
+
             players[i].HasBeenPaid = false;
             players[i].playerIsAllIn = false;
             players[i].flippedCards = false;
@@ -937,7 +952,17 @@ public class Dealer : MonoBehaviour
         for (int i = 0; i < players.Count; i++)
         {
             Table.instance.playerChipStacks[i] = Table.instance.gameData.PlayerChipStacks[i];
-            if (players[i].chipCount == 0) players[i].PlayerState = PlayerState.Eliminated;
+			if (players[i].chipCount == 0)
+			{
+				players[i].PlayerState = PlayerState.Eliminated;
+				if (activePlayers.Contains(players[i]))
+				{
+					Debug.Log ("Removing " + players[i] + " from active players!");
+					activePlayers.Remove(players[i]);
+
+				}
+			}
+
             if (players[i].PlayerState != PlayerState.Eliminated)
             {
                 players[i].PlayerState = PlayerState.Playing;

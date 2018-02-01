@@ -7,7 +7,7 @@ using System.Linq;
 //I've had to add some states here and there as they pop up
 //the most important one is "Playing" because if they aren't marked as playing, then they'll be skipped
 public enum PlayerState { Playing, NotPlaying, Winner, Loser, Eliminated}
-public enum PlayerName { Casey, Zombie, Minnie, Nathaniel, Floyd}
+public enum PlayerName { None, Casey, Zombie, Minnie, Nathaniel, Floyd}
 
 
 public class PokerPlayerRedux : MonoBehaviour{
