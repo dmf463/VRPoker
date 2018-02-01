@@ -13,6 +13,7 @@ public class SoundManager : MonoBehaviour
 	public PokerPlayerRedux nathaniel;// Nathaniel
 	public PokerPlayerRedux floyd;// floyd
 
+	public AudioSource tutorial;
 
 	public AudioSource caseySource; 
 	public AudioSource zombieSource;
@@ -31,6 +32,10 @@ public class SoundManager : MonoBehaviour
 	public AudioClip[] lowAside2Index;
 	public AudioClip[] lowAside3Index;
 	public AudioClip[] lowAside4Index;
+
+	public AudioClip[] tutorialAudio;
+
+	public List <AudioData> tutorialAudioFiles = new List <AudioData>();
 
 
 
@@ -58,7 +63,9 @@ public class SoundManager : MonoBehaviour
 
     void Start()
     {
-		
+		for (int i = 0; i < tutorialAudio.Length; i++) {
+			tutorialAudioFiles.Add(new AudioData(tutorialAudio[i], false));
+		}
     }
 
     // Update is called once per frame
@@ -503,5 +510,18 @@ public class SoundManager : MonoBehaviour
 		conversationIsPlaying = false;
 	}
 
+
+}
+
+public class AudioData 
+{
+	public AudioClip audio;
+	public bool hasBeenPlayed;
+
+	public AudioData(AudioClip _audio, bool _hasBeenPlayed)
+	{
+		_audio = audio;
+		_hasBeenPlayed = hasBeenPlayed;
+	}
 
 }

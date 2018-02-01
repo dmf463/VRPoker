@@ -20,6 +20,9 @@ public class Dealer : MonoBehaviour
     //we set this to true if we're outside VR so we can text
     public bool OutsideVR = false;
 
+	public bool inTutorial = true;
+	public bool havePickedUpDeckOnce = false;
+
     [HideInInspector]
     public List<Card> cardsTouchingTable = new List<Card>();
 
@@ -60,6 +63,8 @@ public class Dealer : MonoBehaviour
     public int LastBet;
     public bool roundStarted = false;
     public bool playersReady = true;
+
+	public int roundCounter = 1; //which hand are we on? First, second, third....
 
 	[HideInInspector]
     public GameState lastGameState;
@@ -107,6 +112,13 @@ public class Dealer : MonoBehaviour
 		Debug.Log("Gamestate = " + Table.gameState);
         Table.dealerState = DealerState.DealingState;
         lastGameState = GameState.NewRound;
+
+		if(inTutorial){
+			if(roundCounter == 1){
+				Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.tutorialAudioFiles[0].audio, 1f);
+			}
+				
+		}
         //OutsideVR = true;
     }
 
@@ -498,6 +510,7 @@ public class Dealer : MonoBehaviour
 
     public void StartRound()
     {
+		
         Debug.Log("Starting round " + Table.gameState);
         SetCurrentAndLastBet();
         foreach (PokerPlayerRedux player in players) player.timesRaisedThisRound = 0;
@@ -660,7 +673,7 @@ public class Dealer : MonoBehaviour
             }
         }
         if(GetActivePlayerCount() - playersAllIn == 1)
-        {
+        { 
             onlyOnePlayerNotAllIn = true;
         }
 
