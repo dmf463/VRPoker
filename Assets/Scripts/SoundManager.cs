@@ -520,8 +520,8 @@ public class AudioData
 
 	public AudioData(AudioClip _audio, bool _hasBeenPlayed)
 	{
-		_audio = audio;
-		_hasBeenPlayed = hasBeenPlayed;
+		audio = _audio;
+		hasBeenPlayed = _hasBeenPlayed;
 	}
 
 }

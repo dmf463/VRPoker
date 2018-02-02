@@ -398,7 +398,7 @@ public class PokerPlayerRedux : MonoBehaviour{
         //Debug.Log("Player " + SeatPos + " folded!");
         if (Services.Dealer.GetActivePlayerCount() == 1)
         {
-            Table.gameState = GameState.CleanUp;
+            //Table.gameState = GameState.CleanUp;
             for (int i = 0; i < Services.Dealer.players.Count; i++)
             {
                 if (Services.Dealer.players[i].PlayerState == PlayerState.Playing)
@@ -410,7 +410,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                     //Debug.Log("We are getting into the fold and the chipCountToCheckWhenWinning = " + ChipCountToCheckWhenWinning);
                     Services.Dealer.playersReady = true;
                     Services.Dealer.playersHaveBeenEvaluated = true;
-                    Services.Dealer.WaitForWinnersToGetPaid();
+                    //Services.Dealer.WaitForWinnersToGetPaid();
                     Services.Dealer.players[i].FlipCards();
                 }
             }
