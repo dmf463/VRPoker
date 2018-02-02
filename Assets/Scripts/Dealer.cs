@@ -20,8 +20,11 @@ public class Dealer : MonoBehaviour
     //we set this to true if we're outside VR so we can text
     public bool OutsideVR = false;
 
-	public bool inTutorial = true;
-	public bool havePickedUpDeckOnce = false;
+    //TUTORIAL STUFF 
+    public bool inTutorial = true;
+    public int roundCounter = 1; //which hand are we on? First, second, third.... 
+    public bool havePickedUpDeckOnce = false;
+    public bool haveShuffledOnce = false;
 
     [HideInInspector]
     public List<Card> cardsTouchingTable = new List<Card>();
@@ -63,8 +66,6 @@ public class Dealer : MonoBehaviour
     public int LastBet;
     public bool roundStarted = false;
     public bool playersReady = true;
-
-	public int roundCounter = 1; //which hand are we on? First, second, third....
 
 	[HideInInspector]
     public GameState lastGameState;
@@ -109,22 +110,138 @@ public class Dealer : MonoBehaviour
         playerDestinations = Table.instance.playerDestinations;
         InitializePlayers(startingChipCount);
         Table.gameState = GameState.NewRound;
-		Debug.Log("Gamestate = " + Table.gameState);
+        Debug.Log("Gamestate = " + Table.gameState);
         Table.dealerState = DealerState.DealingState;
         lastGameState = GameState.NewRound;
 
-		if(inTutorial){
-			if(roundCounter == 1){
-				Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.tutorialAudioFiles[0].audio, 1f);
-			}
-				
-		}
-        //OutsideVR = true;
+        if (inTutorial)
+        {
+            if (roundCounter == 1 && Services.SoundManager.tutorialAudioFiles[0].hasBeenPlayed == false)
+            {
+                Services.SoundManager.PlayTutorialAudio(0);
+            }
+            //OutsideVR = true;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
+        //    if(Input.GetKeyDown(KeyCode.K)) 
+        //    { 
+        //      //Debug.Log(Services.SoundManager.tutorialAudioFiles.Count); 
+        //      if(!Services.SoundManager.tutorialAudioFiles[0].hasBeenPlayed) 
+        //      { 
+        //        //Debug.Log(Services.SoundManager.tutorialAudioFiles[0].audio); 
+        //        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.tutorialAudioFiles[0].audio, 1f, 1f); 
+        //        Services.SoundManager.tutorialAudioFiles[0].hasBeenPlayed = true; 
+        //      } 
+        //    } 
+
+        if (inTutorial)
+        {
+            if (roundCounter == 1)
+            {
+                //player picks up deck for first time 
+                if (Services.SoundManager.tutorialAudioFiles[0].finishedPlaying &&
+                  havePickedUpDeckOnce &&
+                  Services.SoundManager.tutorialAudioFiles[1].hasBeenPlayed == false)
+                {
+                    Services.SoundManager.PlayTutorialAudio(1);
+
+                }
+                //player deals face up card to each player 
+                else if (Services.SoundManager.tutorialAudioFiles[1].finishedPlaying &&
+                  cardsTouchingTable.Count >= 5 &&
+                  !Services.SoundManager.tutorialAudioFiles[2].hasBeenPlayed)
+                {
+                    int cardsFaceUp = 0;
+                    for (int i = 0; i < cardsTouchingTable.Count; i++)
+                    {
+                        if (cardsTouchingTable[i].cardIsFlipped) cardsFaceUp++;
+                    }
+                    if (cardsFaceUp >= 5)
+                    {
+                        Services.SoundManager.PlayTutorialAudio(2);
+                    }
+                }
+                //player placed dealer button in correct place 
+                else if (Services.SoundManager.tutorialAudioFiles[2].finishedPlaying &&
+                  !Services.SoundManager.tutorialAudioFiles[3].hasBeenPlayed)
+                {
+                    Services.SoundManager.PlayTutorialAudio(3);
+                }
+                //player collects cards into deck 
+                else if (Services.SoundManager.tutorialAudioFiles[3].finishedPlaying &&
+                  haveShuffledOnce &&
+                  !Services.SoundManager.tutorialAudioFiles[5].hasBeenPlayed)
+                {
+                    Services.SoundManager.PlayTutorialAudio(5);
+                }
+                //player deals 2 cards to each character 
+                else if (Services.SoundManager.tutorialAudioFiles[5].finishedPlaying &&
+                  Table.gameState == GameState.PreFlop &&
+                  !Services.SoundManager.tutorialAudioFiles[6].hasBeenPlayed)
+                {
+                    Services.SoundManager.PlayTutorialAudio(6);
+                }
+                //looks at first player 
+                else if (Services.SoundManager.tutorialAudioFiles[6].finishedPlaying &&
+                  !Services.SoundManager.tutorialAudioFiles[7].hasBeenPlayed)
+                {
+                    Services.SoundManager.PlayTutorialAudio(7);
+                }
+                //round over 
+                else if (Services.SoundManager.tutorialAudioFiles[7].finishedPlaying &&
+                  !Services.SoundManager.tutorialAudioFiles[8].hasBeenPlayed)
+                {
+                    Services.SoundManager.PlayTutorialAudio(8);
+                }
+                //player puts cards in burn pile 
+                else if (Services.SoundManager.tutorialAudioFiles[8].finishedPlaying &&
+                  !Services.SoundManager.tutorialAudioFiles[9].hasBeenPlayed)
+                {
+                    Services.SoundManager.PlayTutorialAudio(9);
+                }
+                //puts 3 cards in center 
+                else if (Services.SoundManager.tutorialAudioFiles[9].finishedPlaying &&
+                  !Services.SoundManager.tutorialAudioFiles[10].hasBeenPlayed)
+                {
+                    Services.SoundManager.PlayTutorialAudio(10);
+                }
+                //round over 
+                else if (Services.SoundManager.tutorialAudioFiles[10].finishedPlaying &&
+                  !Services.SoundManager.tutorialAudioFiles[11].hasBeenPlayed)
+                {
+                    Services.SoundManager.PlayTutorialAudio(11);
+                }
+                //puts card in center 
+                else if (Services.SoundManager.tutorialAudioFiles[11].finishedPlaying &&
+                  !Services.SoundManager.tutorialAudioFiles[12].hasBeenPlayed)
+                {
+                    Services.SoundManager.PlayTutorialAudio(12);
+                }
+                //round over 
+                else if (Services.SoundManager.tutorialAudioFiles[12].finishedPlaying &&
+                  !Services.SoundManager.tutorialAudioFiles[13].hasBeenPlayed)
+                {
+                    Services.SoundManager.PlayTutorialAudio(13);
+                }
+                //end of round 
+                else if (Services.SoundManager.tutorialAudioFiles[13].finishedPlaying &&
+                  !Services.SoundManager.tutorialAudioFiles[14].hasBeenPlayed)
+                {
+                    Services.SoundManager.PlayTutorialAudio(14);
+                }
+                //player pushes chips to the winner 
+                else if (Services.SoundManager.tutorialAudioFiles[14].finishedPlaying &&
+                  !Services.SoundManager.tutorialAudioFiles[15].hasBeenPlayed)
+                {
+                    Services.SoundManager.PlayTutorialAudio(15);
+                }
+
+            }
+        }
         IncreaseBlinds();
 
         buttonATimer--;
@@ -155,7 +272,10 @@ public class Dealer : MonoBehaviour
                     !players[i].playerIsInConversation &&
                     !Services.SoundManager.conversationIsPlaying)
                 {
-                    Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].misdealAudio);
+                    if (!inTutorial)
+                    {
+                        Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].misdealAudio);
+                    }
                 }
             }
             //messageText.text = "You misdealt the hand, click both triggers to restart the round.";
@@ -362,6 +482,12 @@ public class Dealer : MonoBehaviour
         }
         #endregion
         lastGameState = Table.gameState;
+    }
+
+    IEnumerator WaitToResetBool(float time, AudioData clip)
+    {
+        yield return new WaitForSeconds(time);
+        clip.finishedPlaying = true;
     }
 
     void IncreaseBlinds()
@@ -966,8 +1092,11 @@ public class Dealer : MonoBehaviour
                        !Services.SoundManager.conversationIsPlaying &&
                        winnerCount < 2)
 					{
-						Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].tipAudio);
-					}
+                        if (!inTutorial)
+                        {
+                            Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].tipAudio);
+                        }
+                    }
 				}
 			}
         }

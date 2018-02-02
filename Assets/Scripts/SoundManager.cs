@@ -73,9 +73,25 @@ public class SoundManager : MonoBehaviour
     {
 
     }
-		
 
-	public void GenerateSourceAndPlay(AudioClip clip, float volume, float pitch = 1)
+    public void PlayTutorialAudio(int index)
+
+    {
+        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.tutorialAudioFiles[index].audio, 1f, 1f);
+        Services.SoundManager.tutorialAudioFiles[index].hasBeenPlayed = true;
+        StartCoroutine(WaitToResetBool(Services.SoundManager.tutorialAudioFiles[index].audio.length, Services.SoundManager.tutorialAudioFiles[index]));
+    }
+
+
+
+    IEnumerator WaitToResetBool(float time, AudioData clip)
+    {
+        yield return new WaitForSeconds(time);   
+        clip.finishedPlaying = true;
+    }
+
+
+    public void GenerateSourceAndPlay(AudioClip clip, float volume, float pitch = 1)
 	{
 		GenerateSourceAndPlay(clip, volume, pitch, transform.position);
 	}
@@ -517,8 +533,9 @@ public class AudioData
 {
 	public AudioClip audio;
 	public bool hasBeenPlayed;
+    public bool finishedPlaying;
 
-	public AudioData(AudioClip _audio, bool _hasBeenPlayed)
+    public AudioData(AudioClip _audio, bool _hasBeenPlayed)
 	{
 		audio = _audio;
 		hasBeenPlayed = _hasBeenPlayed;

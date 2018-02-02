@@ -321,7 +321,7 @@ public class Card : InteractionSuperClass {
         //if (Table.dealerState == DealerState.ShufflingState)
         //{
             if (((cardOnTable == true && CardIsDead(this)) || 
-                  Table.gameState == GameState.CleanUp || Table.gameState == GameState.PostHand) && 
+                  Table.gameState == GameState.CleanUp || Table.gameState == GameState.PostHand || Services.Dealer.inTutorial) && 
                   other.gameObject.tag == "Hand" && !Services.Dealer.handIsOccupied)
             {
                 transform.position = new Vector3 (other.transform.position.x, transform.position.y, other.transform.position.z);

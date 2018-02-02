@@ -13,10 +13,13 @@ public class PlayerHit : MonoBehaviour
             CardDeckScript deckScript = cardDeck.GetComponent<CardDeckScript>();
             if ((other.gameObject.tag == "PlayingCard" && !deckScript.deckWasThrown) || other.gameObject.tag == "Chip")
             {
-                PokerPlayerRedux player = GetComponentInParent<PokerPlayerRedux>();
-                //Debug.Log("WE HIT SOMETHING");
-                AudioClip hitSound = player.cardHitAudio;
-                Services.SoundManager.GetSourceAndPlay(player.playerAudioSource, hitSound);
+                if (!Services.Dealer.inTutorial)
+                {
+                    PokerPlayerRedux player = GetComponentInParent<PokerPlayerRedux>();
+                    //Debug.Log("WE HIT SOMETHING");
+                    AudioClip hitSound = player.cardHitAudio;
+                    Services.SoundManager.GetSourceAndPlay(player.playerAudioSource, hitSound);
+                }
             }
         }
     }
