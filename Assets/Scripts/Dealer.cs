@@ -825,19 +825,19 @@ public class Dealer : MonoBehaviour
             potRemaining -= winningPlayers[i].chipsWon;
         }
         //PROBLEM AREA FOR GAZE SPLIT
-        if(winningPlayers.Count >= 2)
-        {
-            foreach (Chip chip in chipsInPot)
-            {
-                if (chip != null) Destroy(chip.gameObject);
-                else Debug.Log("You are trying to Destroy a chip that is alread DEAD");
-            }
-            for (int i = 0; i < winningPlayers.Count; i++)
-            {
-                List<int> splitPot = PrepChipsForSplit(winningPlayers[i].chipsWon);
-                SplitPot(splitPot, winningPlayers[i].SeatPos);
-            }
-        }
+        //if(winningPlayers.Count >= 2)
+        //{
+        //    foreach (Chip chip in chipsInPot)
+        //    {
+        //        if (chip != null) Destroy(chip.gameObject);
+        //        else Debug.Log("You are trying to Destroy a chip that is alread DEAD");
+        //    }
+        //    for (int i = 0; i < winningPlayers.Count; i++)
+        //    {
+        //        List<int> splitPot = PrepChipsForSplit(winningPlayers[i].chipsWon);
+        //        SplitPot(splitPot, winningPlayers[i].SeatPos);
+        //    }
+        //}
         Debug.Log("number of Winners is " + numberOfWinners);
         //added this in because of voiceActing, and not wanting two clips playing at the same time
         if(winningPlayers.Count == 2)

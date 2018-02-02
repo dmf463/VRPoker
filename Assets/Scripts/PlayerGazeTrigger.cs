@@ -8,7 +8,7 @@ public class PlayerGazeTrigger : MonoBehaviour
 {
 
     float timeLookedAtForEye = 1f;
-    float timeLookedAtForQuestion = 2f;
+    float timeLookedAtForQuestion = 1f;
     public float rayDistance;
     public LayerMask mask;
     public UnityEvent onEyeGazeComplete;
@@ -29,6 +29,13 @@ public class PlayerGazeTrigger : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            pokerPlayer.PlayerState = PlayerState.Winner;
+            Debug.Log(pokerPlayer.playerName + " is a " + pokerPlayer.PlayerState);
+            questionMarkActivated = true;
+            Debug.Log("I'M HITTING F");
+        }
         if (!Services.Dealer.OutsideVR)
         {
             //Debug.Log("PlayerToAct = " + Services.Dealer.playerToAct);
@@ -60,61 +67,64 @@ public class PlayerGazeTrigger : MonoBehaviour
                     }
                     else if (pokerPlayer.PlayerState == PlayerState.Winner || pokerPlayer.PlayerState == PlayerState.Loser)
                     {
+                        Debug.Log("WE GETTIN INTO THE RAYCAST WITH " + pokerPlayer.playerName + " AS A " + pokerPlayer.PlayerState);
                         if (rayHit.transform == this.transform) //are we looking at this thing
                         {
                             //Debug.Log("Hitting: " + this.gameObject.name);
                             //timeLookedAt = Mathf.Clamp01(timeLookedAt - Time.deltaTime); //after 1 second, this variable will be 0f;
-                            timeLookedAtForQuestion = Mathf.Clamp(timeLookedAtForQuestion - Time.deltaTime, 0, 2);
-                            questionMark.fillAmount = timeLookedAtForQuestion / 2;
+                            timeLookedAtForQuestion = Mathf.Clamp01(timeLookedAtForQuestion - Time.deltaTime);
+                            questionMark.fillAmount = timeLookedAtForQuestion;
                             if (timeLookedAtForEye == 0 && (pokerPlayer.PlayerState == PlayerState.Winner || pokerPlayer.PlayerState == PlayerState.Loser) && !pokerPlayer.playerLookedAt)
                             {
                                 pokerPlayer.playerLookedAt = true;
                                 Debug.Log("Ready to invoke question mark");
-                                timeLookedAtForQuestion = 2f;
+                                timeLookedAtForQuestion = 1f;
                                 progressImage.fillAmount = 0;
                                 onQuestionMarkGazeComplete.Invoke();
-                                //Debug.Log("player that just invoked was " + pokerPlayer);
-                                //Debug.Log("next player to act is " + Services.Dealer.playerToAct);
                             }
-                            else timeLookedAtForEye = 2;
+                            else
+                            {
+                                Debug.Log("setting that gaze to 1");
+                                timeLookedAtForEye = 1;
+                            }
                         }
                     }
                 }
             }
-        }
-
-        //update our UI image
-        if (pokerPlayer != Services.Dealer.playerToAct)
-        {
-            progressImage.fillAmount = 0;
-            eyeActivated = false;
-            progressImage.GetComponent<CardIndicatorLerp>().enabled = false;
-
-        }
-        else
-        {
-            if (!eyeActivated)
+            //update our UI image
+            if (pokerPlayer != Services.Dealer.playerToAct)
             {
-                eyeActivated = true;
-                progressImage.GetComponent<CardIndicatorLerp>().enabled = true;
-                progressImage.fillAmount = 1;
+                progressImage.fillAmount = 0;
+                eyeActivated = false;
+                progressImage.GetComponent<CardIndicatorLerp>().enabled = false;
+
             }
-        }
-
-        if (pokerPlayer.PlayerState != PlayerState.Winner || pokerPlayer.PlayerState != PlayerState.Loser)
-        {
-            questionMark.fillAmount = 0;
-            questionMarkActivated = false;
-            questionMark.GetComponent<CardIndicatorLerp>().enabled = false;
-        }
-        else
-        {
-            if (!questionMarkActivated)
+            else
             {
-                Debug.Log(pokerPlayer.playerName + " is a winner or loser");
-                questionMarkActivated = true;
-                questionMark.GetComponent<CardIndicatorLerp>().enabled = true;
-                questionMark.fillAmount = 1;
+                if (!eyeActivated)
+                {
+                    eyeActivated = true;
+                    progressImage.GetComponent<CardIndicatorLerp>().enabled = true;
+                    progressImage.fillAmount = 1;
+                }
+            }
+
+            if (pokerPlayer.PlayerState != PlayerState.Winner || pokerPlayer.PlayerState != PlayerState.Loser)
+            {
+                Debug.Log("getting into the first part on f click");
+                questionMark.fillAmount = 0;
+                questionMarkActivated = false;
+                questionMark.GetComponent<CardIndicatorLerp>().enabled = false;
+            }
+            else
+            {
+                if (!questionMarkActivated)
+                {
+                    Debug.Log(pokerPlayer.playerName + " is a winner or loser");
+                    questionMarkActivated = true;
+                    questionMark.GetComponent<CardIndicatorLerp>().enabled = true;
+                    questionMark.fillAmount = 1;
+                }
             }
         }
     }

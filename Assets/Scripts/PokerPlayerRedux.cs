@@ -398,7 +398,7 @@ public class PokerPlayerRedux : MonoBehaviour{
         //Debug.Log("Player " + SeatPos + " folded!");
         if (Services.Dealer.GetActivePlayerCount() == 1)
         {
-            //Table.gameState = GameState.CleanUp;
+            Table.gameState = GameState.ShowDown;
             for (int i = 0; i < Services.Dealer.players.Count; i++)
             {
                 if (Services.Dealer.players[i].PlayerState == PlayerState.Playing)
