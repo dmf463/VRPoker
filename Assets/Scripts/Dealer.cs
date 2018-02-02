@@ -809,6 +809,7 @@ public class Dealer : MonoBehaviour
             if(playerToCheck.PlayerState == PlayerState.Winner)
             {
                 winningPlayers.Add(playerToCheck);
+                playerToCheck.playerLookedAt = false;
             }
         }
         int potRemaining = potAmount;
@@ -998,6 +999,7 @@ public class Dealer : MonoBehaviour
             players[i].flippedCards = false;
             players[i].isAggressor = false;
             players[i].waitingToGetPaid = false;
+            players[i].playerLookedAt = false;
             players[i].timesRaisedThisRound = 0;
             //players[i].checkedHandStrength = false;
         }
@@ -1061,6 +1063,7 @@ public class Dealer : MonoBehaviour
             players[i].flippedCards = false;
             players[i].isAggressor = false;
             players[i].waitingToGetPaid = false;
+            players[i].playerLookedAt = false;
             players[i].timesRaisedThisRound = 0;
             //players[i].checkedHandStrength = false;
         }

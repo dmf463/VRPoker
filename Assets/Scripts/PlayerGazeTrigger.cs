@@ -7,8 +7,9 @@ using UnityEngine.UI;
 public class PlayerGazeTrigger : MonoBehaviour
 {
 
-    float timeLookedAtForEye = 1f;
-    float timeLookedAtForQuestion = 1f;
+    float timeRemaining;
+    float timeSpanForQuestion = 3;
+    float timeSpanForEye;
     public float rayDistance;
     public LayerMask mask;
     public UnityEvent onEyeGazeComplete;
@@ -29,13 +30,6 @@ public class PlayerGazeTrigger : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            pokerPlayer.PlayerState = PlayerState.Winner;
-            Debug.Log(pokerPlayer.playerName + " is a " + pokerPlayer.PlayerState);
-            questionMarkActivated = true;
-            Debug.Log("I'M HITTING F");
-        }
         if (!Services.Dealer.OutsideVR)
         {
             //Debug.Log("PlayerToAct = " + Services.Dealer.playerToAct);
@@ -51,14 +45,13 @@ public class PlayerGazeTrigger : MonoBehaviour
                 {
                     if (pokerPlayer == Services.Dealer.playerToAct)
                     {
-                        //Debug.Log("Hitting: " + this.gameObject.name);
-                        timeLookedAtForEye = Mathf.Clamp01(timeLookedAtForEye - Time.deltaTime); //after 1 second, this variable will be 0f;
-                        progressImage.fillAmount = timeLookedAtForEye;
-                        if (timeLookedAtForEye == 0 && pokerPlayer == Services.Dealer.playerToAct && !pokerPlayer.playerLookedAt)
+                        timeRemaining = Mathf.Max((timeRemaining - Time.deltaTime), 0); //after 1 second, this variable will be 0f;
+                        progressImage.fillAmount = timeRemaining / timeSpanForEye;
+                        if (timeRemaining == 0 && !pokerPlayer.playerLookedAt)
                         {
                             pokerPlayer.playerLookedAt = true;
                             Debug.Log("Ready to invoke next player");
-                            timeLookedAtForEye = 1f;
+                            timeRemaining = timeSpanForEye;
                             progressImage.fillAmount = 0;
                             onEyeGazeComplete.Invoke();
                             //Debug.Log("player that just invoked was " + pokerPlayer);
@@ -70,22 +63,15 @@ public class PlayerGazeTrigger : MonoBehaviour
                         Debug.Log("WE GETTIN INTO THE RAYCAST WITH " + pokerPlayer.playerName + " AS A " + pokerPlayer.PlayerState);
                         if (rayHit.transform == this.transform) //are we looking at this thing
                         {
-                            //Debug.Log("Hitting: " + this.gameObject.name);
-                            //timeLookedAt = Mathf.Clamp01(timeLookedAt - Time.deltaTime); //after 1 second, this variable will be 0f;
-                            timeLookedAtForQuestion = Mathf.Clamp01(timeLookedAtForQuestion - Time.deltaTime);
-                            questionMark.fillAmount = timeLookedAtForQuestion;
-                            if (timeLookedAtForEye == 0 && (pokerPlayer.PlayerState == PlayerState.Winner || pokerPlayer.PlayerState == PlayerState.Loser) && !pokerPlayer.playerLookedAt)
+                            timeRemaining = Mathf.Max((timeRemaining - Time.deltaTime), 0);
+                            questionMark.fillAmount = timeRemaining / timeSpanForQuestion;
+                            if (timeRemaining == 0 && !pokerPlayer.playerLookedAt)
                             {
                                 pokerPlayer.playerLookedAt = true;
                                 Debug.Log("Ready to invoke question mark");
-                                timeLookedAtForQuestion = 1f;
+                                timeRemaining = timeSpanForQuestion;
                                 progressImage.fillAmount = 0;
                                 onQuestionMarkGazeComplete.Invoke();
-                            }
-                            else
-                            {
-                                Debug.Log("setting that gaze to 1");
-                                timeLookedAtForEye = 1;
                             }
                         }
                     }
@@ -103,15 +89,18 @@ public class PlayerGazeTrigger : MonoBehaviour
             {
                 if (!eyeActivated)
                 {
+                    if (Table.gameState == GameState.PreFlop) timeSpanForEye = 2;
+                    else timeSpanForEye = 1;
+                    timeRemaining = timeSpanForEye;
                     eyeActivated = true;
                     progressImage.GetComponent<CardIndicatorLerp>().enabled = true;
                     progressImage.fillAmount = 1;
                 }
             }
 
-            if (pokerPlayer.PlayerState != PlayerState.Winner || pokerPlayer.PlayerState != PlayerState.Loser)
+            if (pokerPlayer.PlayerState != PlayerState.Winner && pokerPlayer.PlayerState != PlayerState.Loser)
             {
-                Debug.Log("getting into the first part on f click");
+                //Debug.Log("getting into the first part on f click");
                 questionMark.fillAmount = 0;
                 questionMarkActivated = false;
                 questionMark.GetComponent<CardIndicatorLerp>().enabled = false;
@@ -120,6 +109,7 @@ public class PlayerGazeTrigger : MonoBehaviour
             {
                 if (!questionMarkActivated)
                 {
+                    timeRemaining = timeSpanForQuestion;
                     Debug.Log(pokerPlayer.playerName + " is a winner or loser");
                     questionMarkActivated = true;
                     questionMark.GetComponent<CardIndicatorLerp>().enabled = true;
