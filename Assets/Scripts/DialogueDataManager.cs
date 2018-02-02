@@ -20,10 +20,12 @@ public class DialogueDataManager
 	{ //generic for comparing lists
 		public bool Equals(List<T> x, List<T> y)
 		{ //bool for comparing list x to list y
-			foreach (T t in x){
+			foreach (T t in x)
+			{
 				if(!y.Contains(t)) return false;
 			}
-			foreach (T t in y){
+			foreach (T t in y)
+			{
 				if(!x.Contains(t)) return false;
 			}
 			return true;
@@ -60,15 +62,18 @@ public class DialogueDataManager
 			Debug.Log("Line " + i);
 			fileRow = fileRows [i]; //set filerow to equal that row
 			rowEntries = fileRow.Split (entrySeparator); //set entries by splitting the row using our entry separator
-			if(rowEntries.Length < 8){
+			if(rowEntries.Length < 8)
+			{
 				continue;
 			}
 			List<PlayerName> conversantList = new List<PlayerName>(); //list to hold the players who are in the conversation
 
-			for (int j = 0; j < 5; j++){
+			for (int j = 0; j < 5; j++)
+			{
 				Debug.Log("Row " + j + " " + rowEntries[j]);
-				if (rowEntries[j] != "")	{
-				conversantList.Add(GetConversantNameFromString(rowEntries[j]));
+				if (rowEntries[j] != "")	
+				{
+					conversantList.Add(GetConversantNameFromString(rowEntries[j]));
 				}
 			}
 
@@ -91,10 +96,14 @@ public class DialogueDataManager
 	}
 
 	
-	void AddDialogueEntry(List<PlayerName> playerList, Conversation conversationToAdd, Dictionary<List<PlayerName>, List<Conversation>> dict){ //adds a new key/value entry in our dialogue dictionary
-		if (dict.ContainsKey (playerList)){ //if the dictionary already contains the passed in key (list of players)
+	void AddDialogueEntry(List<PlayerName> playerList, Conversation conversationToAdd, Dictionary<List<PlayerName>, List<Conversation>> dict)
+	{ //adds a new key/value entry in our dialogue dictionary
+		if (dict.ContainsKey (playerList))
+		{ //if the dictionary already contains the passed in key (list of players)
 			dict [playerList].Add(conversationToAdd); //add the conversation to that key
-		} else {
+		} 
+		else 
+		{
 			List<Conversation> conversationList = new List<Conversation>(); 
 			conversationList.Add (conversationToAdd);
 			dict.Add (playerList, conversationList);
@@ -102,10 +111,12 @@ public class DialogueDataManager
 	}
 
 
-	PlayerName GetConversantNameFromString (string nameString){  //uses the player name strings from the file to find the correct player names in the game
+	PlayerName GetConversantNameFromString (string nameString)
+	{  //uses the player name strings from the file to find the correct player names in the game
 		string str = nameString.ToUpper ().Trim(); //turns all letters in string to uppercase and removes spaces on either side
 
-		switch(str){
+		switch(str)
+		{
 		case "CASEY":
 			return PlayerName.Casey;
 		case "FLOYD":
@@ -125,13 +136,11 @@ public class DialogueDataManager
 
 public class Conversation //class for each conversation between players
 {
-	//private List<PlayerName> playersInConvo; //a list of the players that are part of the conversation
+	
 	private List<PlayerLine> playerLines; // a list of the player lines in the convo
-	//private int cluster; //the narrative cluster number of the conversation
 
-	public Conversation (List<PlayerLine> _playerLines){
-
-		//_playersInConvo = playersInConvo;
+	public Conversation (List<PlayerLine> _playerLines)
+	{
 		_playerLines = playerLines;
 	}
 }
