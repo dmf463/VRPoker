@@ -943,7 +943,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
         List<GameObject> playerPositions = new List<GameObject>
         {
-            GameObject.Find("P0Cards"), GameObject.Find("P1Cards"), GameObject.Find("P2Cards"), GameObject.Find("P3Cards"), GameObject.Find("P4Cards")
+            GameObject.Find("P0Chips"), GameObject.Find("P1Chips"), GameObject.Find("P2Chips"), GameObject.Find("P3Chips"), GameObject.Find("P4Chips")
         };
 
         int valueRemaining = chipAmount;
@@ -1000,7 +1000,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 		float incrementStackBy = 0;
 		List<GameObject> playerPositions = new List<GameObject>
 		{
-			GameObject.Find("P0Cards"), GameObject.Find("P1Cards"), GameObject.Find("P2Cards"), GameObject.Find("P3Cards"), GameObject.Find("P4Cards")
+			GameObject.Find("P0Chips"), GameObject.Find("P1Chips"), GameObject.Find("P2Chips"), GameObject.Find("P3Chips"), GameObject.Find("P4Chips")
 		};
 		Vector3 offSet = Vector3.zero;
 		Vector3 containerOffset = Vector3.up * .08f;
