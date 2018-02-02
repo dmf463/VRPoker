@@ -356,9 +356,7 @@ public class Dealer : MonoBehaviour
                                   " and a handTotal of " + players[i].Hand.HandValues.Total);
                     }
                 }
-                //sortedPlayers.Clear();
-                //playersHaveBeenEvaluated = true;
-                StartCoroutine(WaitForWinnersToGetPaid());
+                WaitForWinnersToGetPaid();
                 readyToAwardPlayers = true;
             }
         }
@@ -800,7 +798,7 @@ public class Dealer : MonoBehaviour
         numberOfWinners = PlayerRank[0].Count;
     }
 
-    public IEnumerator WaitForWinnersToGetPaid()
+    public void WaitForWinnersToGetPaid()
     {
         Debug.Assert(numberOfWinners > 0);
         List<PokerPlayerRedux> winningPlayers = new List<PokerPlayerRedux>();
@@ -826,6 +824,7 @@ public class Dealer : MonoBehaviour
             else winningPlayers[i].chipsWon = potAmountToGiveWinner;
             potRemaining -= winningPlayers[i].chipsWon;
         }
+        //PROBLEM AREA FOR GAZE SPLIT
         if(winningPlayers.Count >= 2)
         {
             foreach (Chip chip in chipsInPot)
@@ -870,17 +869,22 @@ public class Dealer : MonoBehaviour
             }
         }
 
-        while (!winnersHaveBeenPaid)
-        {
-            GivePlayersWinnings();
-            yield return null;
-        }
-        Table.gameState = GameState.PostHand;
-        GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
-        foreach(GameObject card in deadCards)
-        {
-            deadCardsList.Add(card.GetComponent<Card>());
-        }
+        //if (!winnersHaveBeenPaid)
+        //{
+        //    for (int i = 0; i < players.Count; i++)
+        //    {
+        //        if(players[i].PlayerState == PlayerState.Winner || players[i].PlayerState == PlayerState.Loser)
+        //        {
+        //            players[i].GetComponentInChildren<PlayerGazeTrigger>().questionMark.fillAmount = 1;
+        //        }
+        //    }
+        //}
+        //Table.gameState = GameState.PostHand;
+        //GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
+        //foreach(GameObject card in deadCards)
+        //{
+        //    deadCardsList.Add(card.GetComponent<Card>());
+        //}
         
     }
 
@@ -993,6 +997,7 @@ public class Dealer : MonoBehaviour
             players[i].playerIsAllIn = false;
             players[i].flippedCards = false;
             players[i].isAggressor = false;
+            players[i].waitingToGetPaid = false;
             players[i].timesRaisedThisRound = 0;
             //players[i].checkedHandStrength = false;
         }
@@ -1055,6 +1060,7 @@ public class Dealer : MonoBehaviour
             players[i].playerIsAllIn = false;
             players[i].flippedCards = false;
             players[i].isAggressor = false;
+            players[i].waitingToGetPaid = false;
             players[i].timesRaisedThisRound = 0;
             //players[i].checkedHandStrength = false;
         }
