@@ -5,7 +5,6 @@ using UnityEngine;
 public class LogCards : MonoBehaviour
 {
     #region MonoBehaviour Stuff
-    public float cardCount;
     private GameObject newCardDeck;
     private bool madeNewDeck;
     private int cardCountForTones;
@@ -33,8 +32,6 @@ public class LogCards : MonoBehaviour
     #endregion
     public void OnTriggerEnter(Collider other)
     {
-        //increase the cardCount to see how many cards have hit the table
-        cardCount += 1;
         #region Logging the PlayingCard for each space
         //so if it's a card
         if (other.gameObject.tag == "PlayingCard")

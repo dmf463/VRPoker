@@ -9,7 +9,7 @@ using System.Linq;
 //Gamestate is super important and controls the flow of the game. 
 public enum Destination { player0, player1, player2, player3, player4, board, burn, pot}
 public enum DealerState { DealingState, ShufflingState };
-public enum GameState {NewRound, PreFlop, Flop, Turn, River, ShowDown, CleanUp, PostHand, Misdeal}
+public enum GameState {NewRound, PreFlop, Flop, Turn, River, ShowDown, ChooseWinner, CleanUp, PostHand, Misdeal}
 
 public class Table {
     

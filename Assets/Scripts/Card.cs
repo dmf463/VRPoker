@@ -146,17 +146,7 @@ public class Card : InteractionSuperClass {
                 InstantiateNewDeck();
             }
         }
-
-        //this is where we're checking whether the card is facing up or not
-        //see those "magic numbers"?
-        //we want to get rid of those
-        //hence my desire for a raycast
-        if (cardRay.cardIsFaceUp)
-        {
-            cardFacingUp = true;
-            //Debug.Log("Card is facing up");
-        }
-        else cardFacingUp = false;
+        cardFacingUp = cardRay.CardIsFaceUp(90);
 
         //this is the function that flips the card in your hand
         //basically while the bool is true, we're constantly setting a new Qauternion, but the x-axis is being lerped

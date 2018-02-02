@@ -102,6 +102,8 @@ public class PokerPlayerRedux : MonoBehaviour{
     [HideInInspector]
     public int amountToRaise;
 
+    public bool waitingToGetPaid = false;
+
 	//the individual player variables for the Fold, Call, Raise decision based on Return Rate
 	public float lowReturnRate;
 	public float decentReturnRate;
@@ -396,7 +398,7 @@ public class PokerPlayerRedux : MonoBehaviour{
         //Debug.Log("Player " + SeatPos + " folded!");
         if (Services.Dealer.GetActivePlayerCount() == 1)
         {
-            Table.gameState = GameState.CleanUp;
+            Table.gameState = GameState.ShowDown;
             for (int i = 0; i < Services.Dealer.players.Count; i++)
             {
                 if (Services.Dealer.players[i].PlayerState == PlayerState.Playing)
@@ -408,7 +410,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                     //Debug.Log("We are getting into the fold and the chipCountToCheckWhenWinning = " + ChipCountToCheckWhenWinning);
                     Services.Dealer.playersReady = true;
                     Services.Dealer.playersHaveBeenEvaluated = true;
-                    Services.Dealer.StartCoroutine(Services.Dealer.WaitForWinnersToGetPaid());
+                    //Services.Dealer.WaitForWinnersToGetPaid();
                     Services.Dealer.players[i].FlipCards();
                 }
             }
@@ -934,6 +936,49 @@ public class PokerPlayerRedux : MonoBehaviour{
         }
     }
 
+    public void ReceiveWinnings()
+    {
+        float winnerCount = 0;
+        float winnersPaid = 0;
+        List<PokerPlayerRedux> winningPlayers = new List<PokerPlayerRedux>();
+        for (int i = 0; i < Services.Dealer.players.Count; i++)
+        {
+            if (Services.Dealer.players[i].PlayerState == PlayerState.Winner)
+            {
+                winningPlayers.Add(Services.Dealer.players[i]);
+                winnerCount++;
+                if (Services.Dealer.players[i].HasBeenPaid) winnersPaid++;
+            }
+        }
+
+        if (PlayerState == PlayerState.Winner)
+        {
+            Table.instance.playerChipStacks[SeatPos] = chipsWon + ChipCountToCheckWhenWinning;
+            winnersPaid++;
+            HasBeenPaid = true;
+            if (!playerAudioSource.isPlaying &&
+                !playerIsInConversation &&
+                !Services.SoundManager.conversationIsPlaying)
+            {
+                Services.SoundManager.GetSourceAndPlay(playerAudioSource, tipAudio);
+            }
+            if(winnersPaid == winnerCount)
+            {
+                GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
+                foreach (GameObject card in cardsOnTable) GameObject.Destroy(card);
+                Table.instance.NewHand();
+            }
+        }
+        else if (PlayerState == PlayerState.Loser)
+        {
+            if (!playerAudioSource.isPlaying &&
+                !playerIsInConversation &&
+                !Services.SoundManager.conversationIsPlaying)
+            {
+                Services.SoundManager.GetSourceAndPlay(playerAudioSource, wrongChipsAudio);
+            }
+        }
+    }
 
     //this is LIKE create and organize chipStacks, except is used only during intialization
     public List<int> SetChipStacks(int chipAmount)
@@ -943,7 +988,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
         List<GameObject> playerPositions = new List<GameObject>
         {
-            GameObject.Find("P0Cards"), GameObject.Find("P1Cards"), GameObject.Find("P2Cards"), GameObject.Find("P3Cards"), GameObject.Find("P4Cards")
+            GameObject.Find("P0Chips"), GameObject.Find("P1Chips"), GameObject.Find("P2Chips"), GameObject.Find("P3Chips"), GameObject.Find("P4Chips")
         };
 
         int valueRemaining = chipAmount;
@@ -1000,7 +1045,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 		float incrementStackBy = 0;
 		List<GameObject> playerPositions = new List<GameObject>
 		{
-			GameObject.Find("P0Cards"), GameObject.Find("P1Cards"), GameObject.Find("P2Cards"), GameObject.Find("P3Cards"), GameObject.Find("P4Cards")
+			GameObject.Find("P0Chips"), GameObject.Find("P1Chips"), GameObject.Find("P2Chips"), GameObject.Find("P3Chips"), GameObject.Find("P4Chips")
 		};
 		Vector3 offSet = Vector3.zero;
 		Vector3 containerOffset = Vector3.up * .08f;
