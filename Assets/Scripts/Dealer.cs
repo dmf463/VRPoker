@@ -14,6 +14,9 @@ using Valve.VR.InteractionSystem;
 public class Dealer : MonoBehaviour
 {
     public int startingChipCount;
+    public float cardMoveSpeed;
+    public bool killingCards = false;
+    public bool flyingAllowed = false;
 
     [HideInInspector]
     public List<Card> deadCardsList = new List<Card>();
@@ -137,7 +140,10 @@ public class Dealer : MonoBehaviour
         //        Services.SoundManager.tutorialAudioFiles[0].hasBeenPlayed = true; 
         //      } 
         //    } 
-
+        if (killingCards)
+        {
+            GrabAndKillCards();
+        }
         if (inTutorial)
         {
             if (roundCounter == 1)
@@ -286,7 +292,9 @@ public class Dealer : MonoBehaviour
                 hand2.GetStandardInteractionButtonDown() && buttonATimer > 0)
             {
                 //Debug.Log("Beginning to restart round");
-                Table.instance.RestartRound();
+                //Table.instance.RestartRound();
+                killingCards = true;
+                flyingAllowed = true;
             }
         }
         else if (Table.gameState == GameState.PostHand)
@@ -709,6 +717,38 @@ public class Dealer : MonoBehaviour
     {
         yield return new WaitForSeconds(time);
         readyForShowdown = true;
+    }
+
+    public void GrabAndKillCards()
+    {
+        Debug.Log("grabbingCards");
+        GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
+        GameObject cardDeck;
+        if (GameObject.FindGameObjectWithTag("CardDeck") != null) cardDeck = GameObject.FindGameObjectWithTag("CardDeck");
+        else cardDeck = GameObject.Find("ShufflingArea");
+        bool flyUp = false;
+        foreach (GameObject card in cardsOnTable)
+        {
+            card.GetComponent<Rigidbody>().useGravity = false;
+            card.GetComponent<BoxCollider>().enabled = false;
+            if (card.transform.position.y <= cardDeck.transform.position.y + .3f && flyingAllowed) flyUp = true;
+            else flyUp = false;
+            if (flyUp)
+            {
+                float step = cardMoveSpeed * 2 * Time.deltaTime;
+                card.transform.position = Vector3.MoveTowards(card.transform.position, card.transform.position + new Vector3 (0, 0.05f, 0), step);
+                Vector3 randomRot = new Vector3(UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360));
+                card.transform.Rotate(randomRot * step);
+            }
+            else
+            {
+                flyingAllowed = false;
+                float step = cardMoveSpeed * Time.deltaTime;
+                card.transform.position = Vector3.MoveTowards(card.transform.position, cardDeck.transform.position, step);
+                Physics.IgnoreCollision(card.GetComponent<Collider>(), GameObject.Find("Table").GetComponent<Collider>());
+                if (card.transform.position == cardDeck.transform.position) card.GetComponent<BoxCollider>().enabled = true;
+            }
+        }
     }
     
     public void CheckAllInPlayers()
