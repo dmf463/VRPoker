@@ -16,7 +16,8 @@ public class Dealer : MonoBehaviour
     public int startingChipCount;
     public float cardMoveSpeed;
     public bool killingCards = false;
-    public bool flyingAllowed = false;
+    public bool madeNewDeck;
+    GameObject newCardDeck;
 
     [HideInInspector]
     public List<Card> deadCardsList = new List<Card>();
@@ -294,7 +295,11 @@ public class Dealer : MonoBehaviour
                 //Debug.Log("Beginning to restart round");
                 //Table.instance.RestartRound();
                 killingCards = true;
-                flyingAllowed = true;
+                GameObject[] cards = GameObject.FindGameObjectsWithTag("PlayingCard");
+                foreach(GameObject card in cards)
+                {
+                    card.GetComponent<Card>().flyingAllowed = true;
+                }
             }
         }
         else if (Table.gameState == GameState.PostHand)
@@ -723,30 +728,52 @@ public class Dealer : MonoBehaviour
     {
         Debug.Log("grabbingCards");
         GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
-        GameObject cardDeck;
-        if (GameObject.FindGameObjectWithTag("CardDeck") != null) cardDeck = GameObject.FindGameObjectWithTag("CardDeck");
-        else cardDeck = GameObject.Find("ShufflingArea");
+        GameObject cardDeck = GameObject.Find("ShufflingArea"); ;
         bool flyUp = false;
         foreach (GameObject card in cardsOnTable)
         {
             card.GetComponent<Rigidbody>().useGravity = false;
             card.GetComponent<BoxCollider>().enabled = false;
-            if (card.transform.position.y <= cardDeck.transform.position.y + .3f && flyingAllowed) flyUp = true;
+            Vector3 randomRot = new Vector3(UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360));
+            card.transform.Rotate(randomRot * cardMoveSpeed * 2 * Time.deltaTime);
+            if (card.transform.position.y <= cardDeck.transform.position.y + UnityEngine.Random.Range(0.5f, 6f) && card.GetComponent<Card>().flyingAllowed) flyUp = true;
             else flyUp = false;
             if (flyUp)
             {
                 float step = cardMoveSpeed * 2 * Time.deltaTime;
                 card.transform.position = Vector3.MoveTowards(card.transform.position, card.transform.position + new Vector3 (0, 0.05f, 0), step);
-                Vector3 randomRot = new Vector3(UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360));
-                card.transform.Rotate(randomRot * step);
             }
             else
             {
-                flyingAllowed = false;
+                card.GetComponent<Card>().flyingAllowed = false;
                 float step = cardMoveSpeed * Time.deltaTime;
                 card.transform.position = Vector3.MoveTowards(card.transform.position, cardDeck.transform.position, step);
-                Physics.IgnoreCollision(card.GetComponent<Collider>(), GameObject.Find("Table").GetComponent<Collider>());
-                if (card.transform.position == cardDeck.transform.position) card.GetComponent<BoxCollider>().enabled = true;
+                if (card.transform.position == cardDeck.transform.position)
+                {
+                    if (!madeNewDeck)
+                    {
+                        newCardDeck = Instantiate(Services.PrefabDB.CardDeck, cardDeck.transform.position, Quaternion.identity) as GameObject;
+                        newCardDeck.GetComponent<CardDeckScript>().BuildDeckFromOneCard(newCardDeck);
+                        madeNewDeck = true;
+                    }
+                    if (madeNewDeck == true)
+                    {
+                        Destroy(card);
+                        //Debug.Log("destroying cards");
+                        newCardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
+                        if (cardsOnTable.Length < 5)
+                        {
+                            Table.instance.RestartRound();
+                            Services.Dealer.killingCards = false;
+                            madeNewDeck = false;
+                            GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
+                            foreach (GameObject dc in deadCards)
+                            {
+                                Destroy(dc);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
