@@ -168,7 +168,7 @@ public class CardDeckScript : InteractionSuperClass {
     {
         //if (Table.dealerState == DealerState.ShufflingState)
         //{
-            if ((Table.gameState == GameState.CleanUp || Table.gameState == GameState.PostHand) && Services.Dealer.winnersPaid == Services.Dealer.numberOfWinners)
+            if ((Table.gameState == GameState.CleanUp || Table.gameState == GameState.PostHand || Services.Dealer.inTutorial) && Services.Dealer.winnersPaid == Services.Dealer.numberOfWinners)
             {
                 if (other.gameObject.tag == "PlayingCard")
                 {
@@ -348,6 +348,10 @@ public class CardDeckScript : InteractionSuperClass {
     //and then refill the deck with 52 new cardTypes
     public void RefillCardDeck()
     {
+        if (!Services.Dealer.haveShuffledOnce)
+        {
+            Services.Dealer.haveShuffledOnce = true;
+        }
         Debug.Log("Refilling CardDeck");
         cardsInDeck.Clear();
         Table.instance.NewHand();
@@ -504,7 +508,7 @@ public class CardDeckScript : InteractionSuperClass {
     {
         yield return new WaitForSeconds(time);
         PokerPlayerRedux randomPlayer = Services.Dealer.players[Random.Range(0, Services.Dealer.players.Count)];
-        if (!randomPlayer.playerAudioSource.isPlaying && !randomPlayer.playerIsInConversation && !Services.SoundManager.conversationIsPlaying)
+        if (!randomPlayer.playerAudioSource.isPlaying && !randomPlayer.playerIsInConversation && !Services.SoundManager.conversationIsPlaying && !Services.Dealer.inTutorial)
         {
             Services.Dealer.misdealAudioPlayed = true;
             Services.SoundManager.GetSourceAndPlay(randomPlayer.playerAudioSource, randomPlayer.fiftyTwoAudio);

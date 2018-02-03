@@ -130,22 +130,6 @@ public class Card : InteractionSuperClass {
     //so this is literally the update function
     public void CardForDealingMode()
     {
-        //this is one of those inputs used during playtesting. 
-        //though we should PROBABLY have a way for the player to get a new deck
-        //without having to pick up every card
-        //if they decide to start a game of 52 card pick up
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            InstantiateNewDeck();
-        }
-
-        if (deckScript.deckWasThrown == true || deckScript.cardsInDeck.Count == 0)
-        {
-            if (throwingHand.controller.GetPress(EVRButtonId.k_EButton_Grip) || deckHand.controller.GetPress(EVRButtonId.k_EButton_Grip))
-            {
-                InstantiateNewDeck();
-            }
-        }
         cardFacingUp = cardRay.CardIsFaceUp(90);
 
         //this is the function that flips the card in your hand
@@ -337,7 +321,7 @@ public class Card : InteractionSuperClass {
         //if (Table.dealerState == DealerState.ShufflingState)
         //{
             if (((cardOnTable == true && CardIsDead(this)) || 
-                  Table.gameState == GameState.CleanUp || Table.gameState == GameState.PostHand) && 
+                  Table.gameState == GameState.CleanUp || Table.gameState == GameState.PostHand || Services.Dealer.inTutorial) && 
                   other.gameObject.tag == "Hand" && !Services.Dealer.handIsOccupied)
             {
                 transform.position = new Vector3 (other.transform.position.x, transform.position.y, other.transform.position.z);
