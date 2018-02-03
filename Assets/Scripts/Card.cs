@@ -9,6 +9,8 @@ using Valve.VR.InteractionSystem;
 //2) all the physics of the card
 public class Card : InteractionSuperClass {
 
+    public bool flyingAllowed = false;
+
     //this is the actual information for the card
     public CardType cardType;
     private CardRaycast cardRay;

@@ -257,8 +257,8 @@ public class InteractionSuperClass : MonoBehaviour {
         //Debug.Log("unlockingDeck");
         handIsHoldingCard = false;
         handTouchingDeck = false;
-		throwingHand.HoverUnlock(null);
-		deckHand.HoverUnlock(null);
+        if(throwingHand != null) throwingHand.HoverUnlock(null);
+		if(deckHand != null) deckHand.HoverUnlock(null);
 		throwingHand.DetachObject(throwingHand.currentAttachedObject);
 		deckHand.DetachObject(deckHand.currentAttachedObject);
         throwingHand = null;
