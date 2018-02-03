@@ -147,107 +147,108 @@ public class Dealer : MonoBehaviour
         }
         if (inTutorial)
         {
-            if (roundCounter == 1)
-            {
-                //player picks up deck for first time 
-                if (Services.SoundManager.tutorialAudioFiles[0].finishedPlaying &&
-                  havePickedUpDeckOnce &&
-                  Services.SoundManager.tutorialAudioFiles[1].hasBeenPlayed == false)
-                {
-                    Services.SoundManager.PlayTutorialAudio(1);
+            Services.SoundManager.CheckForTutorialAudioToBePlayed();
+        //    if (roundCounter == 1)
+        //    {
+        //        //player picks up deck for first time 
+        //        if (Services.SoundManager.tutorialAudioFiles[0].finishedPlaying &&
+        //          havePickedUpDeckOnce &&
+        //          Services.SoundManager.tutorialAudioFiles[1].hasBeenPlayed == false)
+        //        {
+        //            Services.SoundManager.PlayTutorialAudio(1);
 
-                }
-                //player deals face up card to each player 
-                else if (Services.SoundManager.tutorialAudioFiles[1].finishedPlaying &&
-                  cardsTouchingTable.Count >= 5 &&
-                  !Services.SoundManager.tutorialAudioFiles[2].hasBeenPlayed)
-                {
-                    int cardsFaceUp = 0;
-                    for (int i = 0; i < cardsTouchingTable.Count; i++)
-                    {
-                        if (cardsTouchingTable[i].cardIsFlipped) cardsFaceUp++;
-                    }
-                    if (cardsFaceUp >= 5)
-                    {
-                        Services.SoundManager.PlayTutorialAudio(2);
-                    }
-                }
-                //player placed dealer button in correct place 
-                else if (Services.SoundManager.tutorialAudioFiles[2].finishedPlaying &&
-                  !Services.SoundManager.tutorialAudioFiles[3].hasBeenPlayed)
-                {
-                    Services.SoundManager.PlayTutorialAudio(3);
-                }
-                //player collects cards into deck 
-                else if (Services.SoundManager.tutorialAudioFiles[3].finishedPlaying &&
-                  haveShuffledOnce &&
-                  !Services.SoundManager.tutorialAudioFiles[5].hasBeenPlayed)
-                {
-                    Services.SoundManager.PlayTutorialAudio(5);
-                }
-                //player deals 2 cards to each character 
-                else if (Services.SoundManager.tutorialAudioFiles[5].finishedPlaying &&
-                  Table.gameState == GameState.PreFlop &&
-                  !Services.SoundManager.tutorialAudioFiles[6].hasBeenPlayed)
-                {
-                    Services.SoundManager.PlayTutorialAudio(6);
-                }
-                //looks at first player 
-                else if (Services.SoundManager.tutorialAudioFiles[6].finishedPlaying &&
-                  !Services.SoundManager.tutorialAudioFiles[7].hasBeenPlayed)
-                {
-                    Services.SoundManager.PlayTutorialAudio(7);
-                }
-                //round over 
-                else if (Services.SoundManager.tutorialAudioFiles[7].finishedPlaying &&
-                  !Services.SoundManager.tutorialAudioFiles[8].hasBeenPlayed)
-                {
-                    Services.SoundManager.PlayTutorialAudio(8);
-                }
-                //player puts cards in burn pile 
-                else if (Services.SoundManager.tutorialAudioFiles[8].finishedPlaying &&
-                  !Services.SoundManager.tutorialAudioFiles[9].hasBeenPlayed)
-                {
-                    Services.SoundManager.PlayTutorialAudio(9);
-                }
-                //puts 3 cards in center 
-                else if (Services.SoundManager.tutorialAudioFiles[9].finishedPlaying &&
-                  !Services.SoundManager.tutorialAudioFiles[10].hasBeenPlayed)
-                {
-                    Services.SoundManager.PlayTutorialAudio(10);
-                }
-                //round over 
-                else if (Services.SoundManager.tutorialAudioFiles[10].finishedPlaying &&
-                  !Services.SoundManager.tutorialAudioFiles[11].hasBeenPlayed)
-                {
-                    Services.SoundManager.PlayTutorialAudio(11);
-                }
-                //puts card in center 
-                else if (Services.SoundManager.tutorialAudioFiles[11].finishedPlaying &&
-                  !Services.SoundManager.tutorialAudioFiles[12].hasBeenPlayed)
-                {
-                    Services.SoundManager.PlayTutorialAudio(12);
-                }
-                //round over 
-                else if (Services.SoundManager.tutorialAudioFiles[12].finishedPlaying &&
-                  !Services.SoundManager.tutorialAudioFiles[13].hasBeenPlayed)
-                {
-                    Services.SoundManager.PlayTutorialAudio(13);
-                }
-                //end of round 
-                else if (Services.SoundManager.tutorialAudioFiles[13].finishedPlaying &&
-                  !Services.SoundManager.tutorialAudioFiles[14].hasBeenPlayed)
-                {
-                    Services.SoundManager.PlayTutorialAudio(14);
-                }
-                //player pushes chips to the winner 
-                else if (Services.SoundManager.tutorialAudioFiles[14].finishedPlaying &&
-                  !Services.SoundManager.tutorialAudioFiles[15].hasBeenPlayed)
-                {
-                    Services.SoundManager.PlayTutorialAudio(15);
-                }
+        //        }
+        //        //player deals face up card to each player 
+        //        else if (Services.SoundManager.tutorialAudioFiles[1].finishedPlaying &&
+        //          cardsTouchingTable.Count >= 5 &&
+        //          !Services.SoundManager.tutorialAudioFiles[2].hasBeenPlayed)
+        //        {
+        //            int cardsFaceUp = 0;
+        //            for (int i = 0; i < cardsTouchingTable.Count; i++)
+        //            {
+        //                if (cardsTouchingTable[i].cardIsFlipped) cardsFaceUp++;
+        //            }
+        //            if (cardsFaceUp >= 5)
+        //            {
+        //                Services.SoundManager.PlayTutorialAudio(2);
+        //            }
+        //        }
+        //        //player placed dealer button in correct place 
+        //        else if (Services.SoundManager.tutorialAudioFiles[2].finishedPlaying &&
+        //          !Services.SoundManager.tutorialAudioFiles[3].hasBeenPlayed)
+        //        {
+        //            Services.SoundManager.PlayTutorialAudio(3);
+        //        }
+        //        //player collects cards into deck 
+        //        else if (Services.SoundManager.tutorialAudioFiles[3].finishedPlaying &&
+        //          haveShuffledOnce &&
+        //          !Services.SoundManager.tutorialAudioFiles[5].hasBeenPlayed)
+        //        {
+        //            Services.SoundManager.PlayTutorialAudio(5);
+        //        }
+        //        //player deals 2 cards to each character 
+        //        else if (Services.SoundManager.tutorialAudioFiles[5].finishedPlaying &&
+        //          Table.gameState == GameState.PreFlop &&
+        //          !Services.SoundManager.tutorialAudioFiles[6].hasBeenPlayed)
+        //        {
+        //            Services.SoundManager.PlayTutorialAudio(6);
+        //        }
+        //        //looks at first player 
+        //        else if (Services.SoundManager.tutorialAudioFiles[6].finishedPlaying &&
+        //          !Services.SoundManager.tutorialAudioFiles[7].hasBeenPlayed)
+        //        {
+        //            Services.SoundManager.PlayTutorialAudio(7);
+        //        }
+        //        //round over 
+        //        else if (Services.SoundManager.tutorialAudioFiles[7].finishedPlaying &&
+        //          !Services.SoundManager.tutorialAudioFiles[8].hasBeenPlayed)
+        //        {
+        //            Services.SoundManager.PlayTutorialAudio(8);
+        //        }
+        //        //player puts cards in burn pile 
+        //        else if (Services.SoundManager.tutorialAudioFiles[8].finishedPlaying &&
+        //          !Services.SoundManager.tutorialAudioFiles[9].hasBeenPlayed)
+        //        {
+        //            Services.SoundManager.PlayTutorialAudio(9);
+        //        }
+        //        //puts 3 cards in center 
+        //        else if (Services.SoundManager.tutorialAudioFiles[9].finishedPlaying &&
+        //          !Services.SoundManager.tutorialAudioFiles[10].hasBeenPlayed)
+        //        {
+        //            Services.SoundManager.PlayTutorialAudio(10);
+        //        }
+        //        //round over 
+        //        else if (Services.SoundManager.tutorialAudioFiles[10].finishedPlaying &&
+        //          !Services.SoundManager.tutorialAudioFiles[11].hasBeenPlayed)
+        //        {
+        //            Services.SoundManager.PlayTutorialAudio(11);
+        //        }
+        //        //puts card in center 
+        //        else if (Services.SoundManager.tutorialAudioFiles[11].finishedPlaying &&
+        //          !Services.SoundManager.tutorialAudioFiles[12].hasBeenPlayed)
+        //        {
+        //            Services.SoundManager.PlayTutorialAudio(12);
+        //        }
+        //        //round over 
+        //        else if (Services.SoundManager.tutorialAudioFiles[12].finishedPlaying &&
+        //          !Services.SoundManager.tutorialAudioFiles[13].hasBeenPlayed)
+        //        {
+        //            Services.SoundManager.PlayTutorialAudio(13);
+        //        }
+        //        //end of round 
+        //        else if (Services.SoundManager.tutorialAudioFiles[13].finishedPlaying &&
+        //          !Services.SoundManager.tutorialAudioFiles[14].hasBeenPlayed)
+        //        {
+        //            Services.SoundManager.PlayTutorialAudio(14);
+        //        }
+        //        //player pushes chips to the winner 
+        //        else if (Services.SoundManager.tutorialAudioFiles[14].finishedPlaying &&
+        //          !Services.SoundManager.tutorialAudioFiles[15].hasBeenPlayed)
+        //        {
+        //            Services.SoundManager.PlayTutorialAudio(15);
+        //        }
 
-            }
+        //    }
         }
         IncreaseBlinds();
 

@@ -123,6 +123,59 @@ public class SoundManager : MonoBehaviour
 	}
 
 
+    public void CheckForTutorialAudioToBePlayed()
+    {
+        int tutorialIndex = 1;
+        if (Services.Dealer.roundCounter == 1)
+        {
+            if(tutorialAudioFiles[tutorialIndex-1].finishedPlaying && !tutorialAudioFiles[tutorialIndex].finishedPlaying)
+            {
+            //player picks up deck for first time 
+                if (Services.Dealer.havePickedUpDeckOnce)
+                {
+                    PlayTutorialAudio(tutorialIndex);
+                    tutorialIndex++;
+                }
+            //player deals face up card to each player 
+                else if (tutorialIndex == 2 && Services.Dealer.cardsTouchingTable.Count >= 5)
+                {
+                    int cardsFaceUp = 0;
+                    for (int i = 0; i < Services.Dealer.cardsTouchingTable.Count; i++)
+                    {
+                        if (Services.Dealer.cardsTouchingTable[i].cardIsFlipped) cardsFaceUp++;
+                    }
+                    if (cardsFaceUp >= 5)
+                    {
+                        PlayTutorialAudio(tutorialIndex);
+                        tutorialIndex++;
+                    }
+                }
+                //player collects cards into deck 
+                else if (Services.Dealer.haveShuffledOnce)
+                {
+                    Services.SoundManager.PlayTutorialAudio(tutorialIndex);
+                    tutorialIndex++;
+                }
+                //player deals 2 cards to each character 
+                else if (Table.gameState == GameState.PreFlop)
+                {
+                    Services.SoundManager.PlayTutorialAudio(tutorialIndex);
+                    tutorialIndex++;
+                }
+                else
+                {
+                    Services.SoundManager.PlayTutorialAudio(tutorialIndex);
+                    tutorialIndex++;
+                }
+               
+            }
+        }
+    }
+
+
+
+
+
 //	public void PlayAsideConversation(int convo)
 //	{
 //		if(convo == 0){
@@ -528,6 +581,11 @@ public class SoundManager : MonoBehaviour
 
 
 }
+
+
+
+
+
 
 public class AudioData 
 {
