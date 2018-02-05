@@ -16,6 +16,7 @@ public class Dealer : MonoBehaviour
     public int startingChipCount;
     public float cardMoveSpeed;
     public bool killingCards = false;
+    public bool cleaningCards = false;
     public bool madeNewDeck;
     GameObject newCardDeck;
 
@@ -104,7 +105,6 @@ public class Dealer : MonoBehaviour
         Services.Dealer = this;
         Services.PokerRules = GameObject.Find("PokerRules").GetComponent<PokerRules>();
 		Services.PlayerBehaviour = new PlayerBehaviour();
-		//Services.SpiritManager = GameObject.Find("SpiritAIManager").GetComponent<SpiritAIManager>(); 
 		Services.DialogueDataManager.ParseDialogueFile((Services.SoundManager.dialogueFile));
     }
 
@@ -145,6 +145,7 @@ public class Dealer : MonoBehaviour
         {
             GrabAndKillCards();
         }
+        if (cleaningCards) CleanUpTable();
         if (inTutorial)
         {
             Services.SoundManager.CheckForTutorialAudioToBePlayed();
@@ -346,7 +347,8 @@ public class Dealer : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Table.instance.DebugHandsAndChips();
-            Table.instance.RestartRound();
+            cleaningCards = true;
+            
         }
         if (Input.GetKeyDown(KeyCode.X))
         {
@@ -773,6 +775,35 @@ public class Dealer : MonoBehaviour
                                 Destroy(dc);
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    public void CleanUpTable()
+    {
+        Debug.Log("grabbingCards");
+        GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
+        GameObject cardDeck = GameObject.FindGameObjectWithTag("CardDeck");
+        foreach (GameObject card in cardsOnTable)
+        {
+            float step = cardMoveSpeed * Time.deltaTime;
+            card.transform.position = Vector3.MoveTowards(card.transform.position, cardDeck.transform.position, step);
+            if (card.transform.position == cardDeck.transform.position)
+            {
+                Destroy(card);
+                //Debug.Log("destroying cards");
+                Debug.Log(cardsOnTable.Length);
+                cardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
+                if (cardsOnTable.Length < 5)
+                {
+                    Table.instance.RestartRound();
+                    cleaningCards = false;
+                    GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
+                    foreach (GameObject dc in deadCards)
+                    {
+                        Destroy(dc);
                     }
                 }
             }
