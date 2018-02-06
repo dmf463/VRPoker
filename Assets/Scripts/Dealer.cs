@@ -27,9 +27,14 @@ public class Dealer : MonoBehaviour
 
     //TUTORIAL STUFF 
     public bool inTutorial = true;
-    public int roundCounter = 1; //which hand are we on? First, second, third.... 
+    public int handCounter = 1; //which hand are we on? First, second, third.... 
+    public int roundsFinished = 0; //how many rounds of betting have we finished this hand
+    public int cardsBurned = 0; //how many cards have we burned
     public bool havePickedUpDeckOnce = false;
     public bool haveShuffledOnce = false;
+    public bool haveLookedAtFirstPlayer = false;
+
+
 
     [HideInInspector]
     public List<Card> cardsTouchingTable = new List<Card>();
@@ -120,7 +125,7 @@ public class Dealer : MonoBehaviour
 
         if (inTutorial)
         {
-            if (roundCounter == 1 && Services.SoundManager.tutorialAudioFiles[0].hasBeenPlayed == false)
+            if (handCounter == 1 && Services.SoundManager.tutorialAudioFiles[0].hasBeenPlayed == false)
             {
                 Services.SoundManager.PlayTutorialAudio(0);
             }
@@ -880,6 +885,9 @@ public class Dealer : MonoBehaviour
                     }
                 }
                 Debug.Log(Table.gameState + " Finished");
+
+                roundsFinished++; //increment int for tutorial vo based on when players are done betting
+               
                 playerToAct.playerSpotlight.SetActive(false);
                 playerToAct = null;
                 playersReady = true;

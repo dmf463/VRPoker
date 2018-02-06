@@ -126,7 +126,7 @@ public class SoundManager : MonoBehaviour
     public void CheckForTutorialAudioToBePlayed()
     {
         int tutorialIndex = 1;
-        if (Services.Dealer.roundCounter == 1)
+        if (Services.Dealer.handCounter == 1)
         {
             if(tutorialAudioFiles[tutorialIndex-1].finishedPlaying && !tutorialAudioFiles[tutorialIndex].finishedPlaying)
             {
@@ -148,23 +148,40 @@ public class SoundManager : MonoBehaviour
                     {
                         PlayTutorialAudio(tutorialIndex);
                         tutorialIndex++;
+                        //player placed dealer button in correct place (not in right now so just plays
+                        PlayTutorialAudio(tutorialIndex);
+                        tutorialIndex++;
                     }
                 }
+
                 //player collects cards into deck 
                 else if (Services.Dealer.haveShuffledOnce)
                 {
-                    Services.SoundManager.PlayTutorialAudio(tutorialIndex);
+                    PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
                 }
                 //player deals 2 cards to each character 
                 else if (Table.gameState == GameState.PreFlop)
                 {
-                    Services.SoundManager.PlayTutorialAudio(tutorialIndex);
+                    PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
                 }
-                else
+                //looks at first player 
+                else if (Services.Dealer.haveLookedAtFirstPlayer)
                 {
-                    Services.SoundManager.PlayTutorialAudio(tutorialIndex);
+                    PlayTutorialAudio(tutorialIndex);
+                    tutorialIndex++;
+                }
+                //round over
+                else if (Services.Dealer.roundsFinished == 1)
+                {
+                    PlayTutorialAudio(tutorialIndex);
+                    tutorialIndex++;
+                }
+                    
+                else if (Table.gameState == GameState.Flop)
+                {
+                    PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
                 }
                
