@@ -798,13 +798,16 @@ public class Dealer : MonoBehaviour
                 cardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
                 if (cardsOnTable.Length < 5)
                 {
-                    Table.instance.RestartRound();
+                    //Table.instance.RestartRound();
+                    cardDeck.transform.localScale = cardDeck.GetComponent<CardDeckScript>().newCardDeckScale;
+                    cardDeck.GetComponent<CardDeckScript>().RefillCardDeck();
                     cleaningCards = false;
                     GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
                     foreach (GameObject dc in deadCards)
                     {
                         Destroy(dc);
                     }
+                    Table.instance.NewHand();
                 }
             }
         }
