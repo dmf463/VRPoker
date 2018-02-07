@@ -6,6 +6,12 @@ using Valve.VR.InteractionSystem;
 
 public class Chip : InteractionSuperClass {
 
+
+    public float flying_start_time, flight_journey_distance;
+    public Vector3 flying_start_position;
+
+    public bool is_flying = false;
+    public float rotSpeed;
     //super important, this is how much the chip costs, we set this in chipConfig and assign it at start
     //public int chipValue;
 
@@ -354,6 +360,7 @@ public class Chip : InteractionSuperClass {
                     GameObject newChip = Instantiate(FindChipPrefab(chipStack.chips[i].ChipValue),
                                                      transform.position + Random.insideUnitSphere * chipSpawnOffset,
                                                      Quaternion.identity);
+                    Services.Dealer.thrownChips.Add(newChip);
                     Rigidbody rb = newChip.gameObject.GetComponent<Rigidbody>();
                     rb.AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);
                     rb.AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);

@@ -22,7 +22,7 @@ public class Dealer : MonoBehaviour
     public bool madeNewDeck;
     GameObject newCardDeck;
 
-    public List<GameObject> walls = new List<GameObject>();
+    public List<GameObject> thrownChips = new List<GameObject>();
 
     [HideInInspector]
     public List<Card> deadCardsList = new List<Card>();
@@ -737,14 +737,28 @@ public class Dealer : MonoBehaviour
                 startUpTime = Time.time;
                 GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
                 GameObject cardDeck = GameObject.Find("ShufflingArea");
-                foreach (GameObject card in cardsOnTable)
+                if(cardsOnTable.Length != 0)
                 {
-                    card.GetComponent<Card>().rotSpeed = UnityEngine.Random.Range(500, 1500);
-                    Destroy(card.GetComponent<ConstantForce>());
-                    card.GetComponent<Rigidbody>().useGravity = false;
-                    Destroy(card.GetComponent<BoxCollider>());
-                    card.GetComponent<Card>().is_flying = true;
+                    foreach (GameObject card in cardsOnTable)
+                    {
+                        card.GetComponent<Card>().rotSpeed = UnityEngine.Random.Range(500, 1500);
+                        Destroy(card.GetComponent<ConstantForce>());
+                        card.GetComponent<Rigidbody>().useGravity = false;
+                        Destroy(card.GetComponent<BoxCollider>());
+                        card.GetComponent<Card>().is_flying = true;
+                    }
                 }
+
+                //if(thrownChips.Count != 0)
+                //{
+                //    foreach (GameObject chip in thrownChips)
+                //    {
+                //        chip.GetComponent<Chip>().rotSpeed = UnityEngine.Random.Range(25, 100);
+                //        chip.GetComponent<Rigidbody>().useGravity = false;
+                //        Destroy(chip.GetComponent<BoxCollider>());
+                //        chip.GetComponent<Chip>().is_flying = true;
+                //    }
+                //}
             }
         }
         GrabAndKillCards();
@@ -761,6 +775,17 @@ public class Dealer : MonoBehaviour
             if (timeSinceClick <= flyTime)
             {
                 Vector3 rotPos = GameObject.Find("Table").transform.position;
+                //if (thrownChips.Count != 0)
+                //{
+                //    foreach (GameObject chip in thrownChips)
+                //    {
+                //        chip.transform.RotateAround(rotPos, Vector3.up, cardMoveSpeed * chip.GetComponent<Chip>().rotSpeed * Time.deltaTime);
+                //        Vector3 randomRot = new Vector3(UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360));
+                //        chip.transform.Rotate(randomRot * cardMoveSpeed * 2 * Time.deltaTime);
+                //        float step = cardMoveSpeed * 2 * Time.deltaTime;
+                //        chip.transform.position = Vector3.MoveTowards(chip.transform.position, rotPos + new Vector3(0 + rotPos.x, 1 + rotPos.y, 0 + rotPos.z), step);
+                //    }
+                //}
                 foreach (GameObject card in cardsOnTable)
                 {
                     card.transform.RotateAround(rotPos, Vector3.up, cardMoveSpeed * card.GetComponent<Card>().rotSpeed * Time.deltaTime);
@@ -789,9 +814,13 @@ public class Dealer : MonoBehaviour
                         card.GetComponent<Card>().flying_start_time = Time.time;
                         card.GetComponent<Card>().flight_journey_distance = Vector3.Distance(card.transform.position, cardDeck.transform.position);
                         card.GetComponent<Card>().flying_start_position = card.transform.position;
-
                     }
-
+                    //foreach (GameObject chip in thrownChips)
+                    //{
+                    //    chip.GetComponent<Chip>().flying_start_time = Time.time;
+                    //    chip.GetComponent<Chip>().flight_journey_distance = Vector3.Distance(chip.transform.position, cardDeck.transform.position);
+                    //    chip.GetComponent<Chip>().flying_start_position = chip.transform.position;
+                    //}
                     first_time = false;
                 }
                 foreach (GameObject card in cardsOnTable)
@@ -826,6 +855,7 @@ public class Dealer : MonoBehaviour
                     Table.instance.RestartRound();
                     Services.Dealer.killingCards = false;
                     madeNewDeck = false;
+                    thrownChips.Clear();
                 }
             }
         }
