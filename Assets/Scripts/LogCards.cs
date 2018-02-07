@@ -52,9 +52,13 @@ public class LogCards : MonoBehaviour
                         //Debug.Log(other.gameObject.name + " cannot be added to " + playerNames[i]);
                     }
                     //and the card has not already been dealt to somewhere else
-                    else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
+                    //else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
+                    //{
+                    //    Debug.Log(other.gameObject.name + " has already been logged by something else");
+                    //}
+                    else if (CardsBelongToAnotherPlayer(other.GetComponent<Card>()))
                     {
-                        Debug.Log(other.gameObject.name + " has already been logged by something else");
+                        Debug.Log("card belongs to someone else");
                     }
                     else if (other.gameObject.GetComponent<Rigidbody>().isKinematic == true)
                     {
@@ -165,5 +169,24 @@ public class LogCards : MonoBehaviour
 
         }
         #endregion
+    }
+
+    public bool CardsBelongToAnotherPlayer(Card card)
+    {
+        for (int i = 0; i < Table.instance.playerCards.Length; i++)
+        {
+            for (int j = 0; j < Table.instance.playerCards[i].Count; j++)
+            {
+                if(card.cardType.rank == Table.instance.playerCards[i][j].cardType.rank &&
+                   card.cardType.suit == Table.instance.playerCards[i][j].cardType.suit)
+                {
+                    if(GetComponentInParent<PokerPlayerRedux>().SeatPos != (int)playerDestinations[i])
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }
