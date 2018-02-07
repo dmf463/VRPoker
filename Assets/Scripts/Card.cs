@@ -9,7 +9,11 @@ using Valve.VR.InteractionSystem;
 //2) all the physics of the card
 public class Card : InteractionSuperClass {
 
-    public bool flyingAllowed = false;
+    public float flying_start_time, flight_journey_distance;
+    public Vector3 flying_start_position;
+
+    public bool is_flying = false;
+    public float rotSpeed;
 
     //this is the actual information for the card
     public CardType cardType;
@@ -133,7 +137,7 @@ public class Card : InteractionSuperClass {
     public void CardForDealingMode()
     {
         cardFacingUp = cardRay.CardIsFaceUp(90);
-
+        //if (flyingAllowed) StartCoroutine(WaitToStopFlying(2));
         //this is the function that flips the card in your hand
         //basically while the bool is true, we're constantly setting a new Qauternion, but the x-axis is being lerped
         //once that's done, flippingCard is no longer true
@@ -153,60 +157,60 @@ public class Card : InteractionSuperClass {
         //and the bool for throwin a card wrong has been set to true
         //and we didn't throw the ENTIRE deck
         //then we call the physics for throwing a single card poorly
-        if (rb.isKinematic == false && cardThrownWrong == true && deckScript.deckWasThrown == false)
-        {
-            ThrewSingleCardBadPhysics();
-        }
+        if (!is_flying) { 
+            if (rb.isKinematic == false && cardThrownWrong == true && deckScript.deckWasThrown == false)
+                ThrewSingleCardBadPhysics();
 
-        //if we're no longer holding the card
-        //and the card was thrown wrong
-        //but the card was thrown wrong because the entire deck was thrown
-        //then we call the card physics for when we throw the whole deck
-        //these phsycis are a bit more chaotic than the single card physics which is a bit more floaty
-        if (rb.isKinematic == false && cardThrownWrong == true && deckScript.deckWasThrown == true)
-        {
-            ThrewWholeDeckPhysics();
-        }
-
-        //if we're not holding the card
-        //and we threw the card hard enough
-        //we start the fast torque by rotating the card
-        //we also want to make sure that the card moves down a bit
-        //so we add some downward force
-        if (rb.isKinematic == false && startingFastTorque == true)
-        {
-            rb.drag = 0;
-            rb.AddForce(Vector3.down * 5);
-            transform.Rotate(Vector3.forward * (fastTorque * throwingVelocity));
-        }
-        //we do the same thing here, but if we threw the card more softly
-        else if (rb.isKinematic == false && startingSlowTorque == true)
-        {
-            rb.drag = 0;
-            rb.AddForce(Vector3.down * 5);
-            transform.Rotate(Vector3.forward * (slowTorque * throwingVelocity));
-        }
-
-        //basically we call this when the card hits the table
-        //this stops the card from rotating by lerping it's torque amount to zero
-        if (startLerping == true)
-        {
-            elapsedTimeForThrowTorque += Time.deltaTime;
-            fastTorque = Mathf.Lerp(fastTorque, 0, elapsedTimeForThrowTorque / torqueDuration);
-            slowTorque = Mathf.Lerp(slowTorque, 0, elapsedTimeForThrowTorque / torqueDuration);
-            if (elapsedTimeForThrowTorque >= torqueDuration)
+            //if we're no longer holding the card
+            //and the card was thrown wrong
+            //but the card was thrown wrong because the entire deck was thrown
+            //then we call the card physics for when we throw the whole deck
+            //these phsycis are a bit more chaotic than the single card physics which is a bit more floaty
+            if (rb.isKinematic == false && cardThrownWrong == true && deckScript.deckWasThrown == true)
             {
-                startLerping = false;
+                ThrewWholeDeckPhysics();
             }
 
-        }
+            //if we're not holding the card
+            //and we threw the card hard enough
+            //we start the fast torque by rotating the card
+            //we also want to make sure that the card moves down a bit
+            //so we add some downward force
+            if (rb.isKinematic == false && startingFastTorque == true)
+            {
+                rb.drag = 0;
+                rb.AddForce(Vector3.down * 5);
+                transform.Rotate(Vector3.forward * (fastTorque * throwingVelocity));
+            }
+            //we do the same thing here, but if we threw the card more softly
+            else if (rb.isKinematic == false && startingSlowTorque == true)
+            {
+                rb.drag = 0;
+                rb.AddForce(Vector3.down * 5);
+                transform.Rotate(Vector3.forward * (slowTorque * throwingVelocity));
+            }
 
-        //if we're holding a card, and the deck still has cards in it
-        //we want to be constantly checking whether or not a player has swiped the track pad
-        if (rb.isKinematic == true && deckIsEmpty == false)
-        {
-            CheckSwipeDirection(throwingHand);
-            CheckTouchDown();
+            //basically we call this when the card hits the table
+            //this stops the card from rotating by lerping it's torque amount to zero
+            if (startLerping == true)
+            {
+                elapsedTimeForThrowTorque += Time.deltaTime;
+                fastTorque = Mathf.Lerp(fastTorque, 0, elapsedTimeForThrowTorque / torqueDuration);
+                slowTorque = Mathf.Lerp(slowTorque, 0, elapsedTimeForThrowTorque / torqueDuration);
+                if (elapsedTimeForThrowTorque >= torqueDuration)
+                {
+                    startLerping = false;
+                }
+
+            }
+
+            //if we're holding a card, and the deck still has cards in it
+            //we want to be constantly checking whether or not a player has swiped the track pad
+            if (rb.isKinematic == true && deckIsEmpty == false)
+            {
+                CheckSwipeDirection(throwingHand);
+                CheckTouchDown();
+            }
         }
     }
 
@@ -263,6 +267,12 @@ public class Card : InteractionSuperClass {
         float badThrowVelocity = deckScript.badThrowVelocity;
         Vector3 randomRot = new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
         transform.Rotate(randomRot * badThrowVelocity * Time.deltaTime);
+    }
+
+    IEnumerator WaitToStopFlying(float time)
+    {
+        yield return new WaitForSeconds(time);
+        //flyingAllowed = false;
     }
 
     //so we want to check a few things when we collide with something

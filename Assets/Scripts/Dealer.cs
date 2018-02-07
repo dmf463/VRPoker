@@ -14,11 +14,15 @@ using Valve.VR.InteractionSystem;
 public class Dealer : MonoBehaviour
 {
     public int startingChipCount;
-    public float cardMoveSpeed;
+    public float cardMoveSpeed = 1;
     public bool killingCards = false;
-    public bool cleaningCards = false;
+    float startUpTime;
+    bool flyingClicked = false;
+    public float flyTime;
     public bool madeNewDeck;
     GameObject newCardDeck;
+
+    public List<GameObject> walls = new List<GameObject>();
 
     [HideInInspector]
     public List<Card> deadCardsList = new List<Card>();
@@ -34,7 +38,7 @@ public class Dealer : MonoBehaviour
     public bool haveShuffledOnce = false;
     public bool haveLookedAtFirstPlayer = false;
 
-
+    bool first_time = true;
 
     [HideInInspector]
     public List<Card> cardsTouchingTable = new List<Card>();
@@ -136,224 +140,19 @@ public class Dealer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //    if(Input.GetKeyDown(KeyCode.K)) 
-        //    { 
-        //      //Debug.Log(Services.SoundManager.tutorialAudioFiles.Count); 
-        //      if(!Services.SoundManager.tutorialAudioFiles[0].hasBeenPlayed) 
-        //      { 
-        //        //Debug.Log(Services.SoundManager.tutorialAudioFiles[0].audio); 
-        //        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.tutorialAudioFiles[0].audio, 1f, 1f); 
-        //        Services.SoundManager.tutorialAudioFiles[0].hasBeenPlayed = true; 
-        //      } 
-        //    } 
-        if (killingCards)
-        {
-            GrabAndKillCards();
-        }
-        if (cleaningCards) CleanUpTable();
-        if (inTutorial)
-        {
-            Services.SoundManager.CheckForTutorialAudioToBePlayed();
-        //    if (roundCounter == 1)
-        //    {
-        //        //player picks up deck for first time 
-        //        if (Services.SoundManager.tutorialAudioFiles[0].finishedPlaying &&
-        //          havePickedUpDeckOnce &&
-        //          Services.SoundManager.tutorialAudioFiles[1].hasBeenPlayed == false)
-        //        {
-        //            Services.SoundManager.PlayTutorialAudio(1);
 
-        //        }
-        //        //player deals face up card to each player 
-        //        else if (Services.SoundManager.tutorialAudioFiles[1].finishedPlaying &&
-        //          cardsTouchingTable.Count >= 5 &&
-        //          !Services.SoundManager.tutorialAudioFiles[2].hasBeenPlayed)
-        //        {
-        //            int cardsFaceUp = 0;
-        //            for (int i = 0; i < cardsTouchingTable.Count; i++)
-        //            {
-        //                if (cardsTouchingTable[i].cardIsFlipped) cardsFaceUp++;
-        //            }
-        //            if (cardsFaceUp >= 5)
-        //            {
-        //                Services.SoundManager.PlayTutorialAudio(2);
-        //            }
-        //        }
-        //        //player placed dealer button in correct place 
-        //        else if (Services.SoundManager.tutorialAudioFiles[2].finishedPlaying &&
-        //          !Services.SoundManager.tutorialAudioFiles[3].hasBeenPlayed)
-        //        {
-        //            Services.SoundManager.PlayTutorialAudio(3);
-        //        }
-        //        //player collects cards into deck 
-        //        else if (Services.SoundManager.tutorialAudioFiles[3].finishedPlaying &&
-        //          haveShuffledOnce &&
-        //          !Services.SoundManager.tutorialAudioFiles[5].hasBeenPlayed)
-        //        {
-        //            Services.SoundManager.PlayTutorialAudio(5);
-        //        }
-        //        //player deals 2 cards to each character 
-        //        else if (Services.SoundManager.tutorialAudioFiles[5].finishedPlaying &&
-        //          Table.gameState == GameState.PreFlop &&
-        //          !Services.SoundManager.tutorialAudioFiles[6].hasBeenPlayed)
-        //        {
-        //            Services.SoundManager.PlayTutorialAudio(6);
-        //        }
-        //        //looks at first player 
-        //        else if (Services.SoundManager.tutorialAudioFiles[6].finishedPlaying &&
-        //          !Services.SoundManager.tutorialAudioFiles[7].hasBeenPlayed)
-        //        {
-        //            Services.SoundManager.PlayTutorialAudio(7);
-        //        }
-        //        //round over 
-        //        else if (Services.SoundManager.tutorialAudioFiles[7].finishedPlaying &&
-        //          !Services.SoundManager.tutorialAudioFiles[8].hasBeenPlayed)
-        //        {
-        //            Services.SoundManager.PlayTutorialAudio(8);
-        //        }
-        //        //player puts cards in burn pile 
-        //        else if (Services.SoundManager.tutorialAudioFiles[8].finishedPlaying &&
-        //          !Services.SoundManager.tutorialAudioFiles[9].hasBeenPlayed)
-        //        {
-        //            Services.SoundManager.PlayTutorialAudio(9);
-        //        }
-        //        //puts 3 cards in center 
-        //        else if (Services.SoundManager.tutorialAudioFiles[9].finishedPlaying &&
-        //          !Services.SoundManager.tutorialAudioFiles[10].hasBeenPlayed)
-        //        {
-        //            Services.SoundManager.PlayTutorialAudio(10);
-        //        }
-        //        //round over 
-        //        else if (Services.SoundManager.tutorialAudioFiles[10].finishedPlaying &&
-        //          !Services.SoundManager.tutorialAudioFiles[11].hasBeenPlayed)
-        //        {
-        //            Services.SoundManager.PlayTutorialAudio(11);
-        //        }
-        //        //puts card in center 
-        //        else if (Services.SoundManager.tutorialAudioFiles[11].finishedPlaying &&
-        //          !Services.SoundManager.tutorialAudioFiles[12].hasBeenPlayed)
-        //        {
-        //            Services.SoundManager.PlayTutorialAudio(12);
-        //        }
-        //        //round over 
-        //        else if (Services.SoundManager.tutorialAudioFiles[12].finishedPlaying &&
-        //          !Services.SoundManager.tutorialAudioFiles[13].hasBeenPlayed)
-        //        {
-        //            Services.SoundManager.PlayTutorialAudio(13);
-        //        }
-        //        //end of round 
-        //        else if (Services.SoundManager.tutorialAudioFiles[13].finishedPlaying &&
-        //          !Services.SoundManager.tutorialAudioFiles[14].hasBeenPlayed)
-        //        {
-        //            Services.SoundManager.PlayTutorialAudio(14);
-        //        }
-        //        //player pushes chips to the winner 
-        //        else if (Services.SoundManager.tutorialAudioFiles[14].finishedPlaying &&
-        //          !Services.SoundManager.tutorialAudioFiles[15].hasBeenPlayed)
-        //        {
-        //            Services.SoundManager.PlayTutorialAudio(15);
-        //        }
-
-        //    }
-        }
+        WaitingToGrabAndKillCards();
+        RunTutorial();
         IncreaseBlinds();
+        CheckGameState();
 
         buttonATimer--;
         buttonBTimer--;
-
-        if (Table.gameState == GameState.NewRound)
-        {
-            //Debug.Log("newRound");
-            messageText.text = "";
-            if (Services.PokerRules.cardsPulled.Count == PlayerAtTableCount() * 2 && !checkedPreFlopCardCount)
-            {
-                checkedPreFlopCardCount = true;
-                StartCoroutine(CheckForMistakesPreFlop(1.5f));
-            }
-        }
-        else if (Table.gameState == GameState.CleanUp)
-        {
-            //messageText.text = "I guess everyone folded, woohoo!";
-        }
-        else if(Table.gameState == GameState.Misdeal)
-        {
-            //Debug.Log("misdeal");
-            if (!misdealAudioPlayed)
-            {
-                misdealAudioPlayed = true;
-                int i = UnityEngine.Random.Range(0, players.Count);
-                if (!players[i].playerAudioSource.isPlaying &&
-                    !players[i].playerIsInConversation &&
-                    !Services.SoundManager.conversationIsPlaying)
-                {
-                    if (!inTutorial)
-                    {
-                        Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].misdealAudio);
-                    }
-                }
-            }
-            //messageText.text = "You misdealt the hand, click both triggers to restart the round.";
-
-            if(hand1.GetStandardInteractionButtonDown()) buttonATimer = bufferPeriod;
-            if(hand2.GetStandardInteractionButtonDown()) buttonBTimer = bufferPeriod;
-            if(hand1.GetStandardInteractionButtonDown() && buttonBTimer > 0 ||
-                hand2.GetStandardInteractionButtonDown() && buttonATimer > 0)
-            {
-                //Debug.Log("Beginning to restart round");
-                //Table.instance.RestartRound();
-                killingCards = true;
-                GameObject[] cards = GameObject.FindGameObjectsWithTag("PlayingCard");
-                foreach(GameObject card in cards)
-                {
-                    card.GetComponent<Card>().flyingAllowed = true;
-                }
-            }
-        }
-        else if (Table.gameState == GameState.PostHand)
-        {
-            //messageText.text = "'Thanks dealer, here's a tip!' (you got a tip)";
-        }
-        else if (Table.gameState != GameState.ShowDown)
-        {
-            switch (Table.gameState)
-            {
-                case GameState.PreFlop:
-                    //Debug.Log("PREFLOP!");
-                    if (OutsideVR)
-                    {
-                        messageText.text = "player0 chipCount is " + players[0].chipCount +
-                                           "\nplayer1 chipCount is " + players[1].chipCount +
-                                           "\nplayer2 chipCount is " + players[2].chipCount +
-                                           "\nplayer3 chipCount is " + players[3].chipCount +
-                                           "\nplayer4 chipCount is " + players[4].chipCount +
-                                           "\npotSize is at " + Table.instance.potChips;
-                    }
-                    break;
-                case GameState.Flop:
-                    //Debug.Log("FLOP!");
-                    //messageText.text = "burnCards.count = " + Table.instance._burn.Count;
-
-                    break;
-                case GameState.Turn:
-                    //Debug.Log("TURN!");
-                    //messageText.text = "burnCards.count = " + Table.instance._burn.Count;
-
-                    break;
-                case GameState.River:
-                    //Debug.Log("RIVER!");
-                    //messageText.text = "burnCards.count = " + Table.instance._burn.Count;
-
-                    break;
-                default:
-                    break;
-            }
-        }
         #region Players evaluate their hands based on the gamestate
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Table.instance.DebugHandsAndChips();
-            cleaningCards = true;
-            
+            killingCards = true;
         }
         if (Input.GetKeyDown(KeyCode.X))
         {
@@ -511,6 +310,202 @@ public class Dealer : MonoBehaviour
         clip.finishedPlaying = true;
     }
 
+    public void CheckGameState()
+    {
+        if (Table.gameState == GameState.NewRound)
+        {
+            //Debug.Log("newRound");
+            messageText.text = "";
+            if (Services.PokerRules.cardsPulled.Count == PlayerAtTableCount() * 2 && !checkedPreFlopCardCount)
+            {
+                checkedPreFlopCardCount = true;
+                StartCoroutine(CheckForMistakesPreFlop(1.5f));
+            }
+        }
+        else if (Table.gameState == GameState.CleanUp)
+        {
+            //messageText.text = "I guess everyone folded, woohoo!";
+        }
+        else if (Table.gameState == GameState.Misdeal)
+        {
+            //Debug.Log("misdeal");
+            if (!misdealAudioPlayed)
+            {
+                misdealAudioPlayed = true;
+                int i = UnityEngine.Random.Range(0, players.Count);
+                if (!players[i].playerAudioSource.isPlaying &&
+                    !players[i].playerIsInConversation &&
+                    !Services.SoundManager.conversationIsPlaying)
+                {
+                    if (!inTutorial)
+                    {
+                        Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].misdealAudio);
+                    }
+                }
+            }
+            //messageText.text = "You misdealt the hand, click both triggers to restart the round.";
+
+            if (hand1.GetStandardInteractionButtonDown()) buttonATimer = bufferPeriod;
+            if (hand2.GetStandardInteractionButtonDown()) buttonBTimer = bufferPeriod;
+            if (hand1.GetStandardInteractionButtonDown() && buttonBTimer > 0 ||
+                hand2.GetStandardInteractionButtonDown() && buttonATimer > 0)
+            {
+                //Debug.Log("Beginning to restart round");
+                //Table.instance.RestartRound();
+                killingCards = true;
+            }
+        }
+        else if (Table.gameState == GameState.PostHand)
+        {
+            //messageText.text = "'Thanks dealer, here's a tip!' (you got a tip)";
+        }
+        else if (Table.gameState != GameState.ShowDown)
+        {
+            switch (Table.gameState)
+            {
+                case GameState.PreFlop:
+                    //Debug.Log("PREFLOP!");
+                    if (OutsideVR)
+                    {
+                        messageText.text = "player0 chipCount is " + players[0].chipCount +
+                                           "\nplayer1 chipCount is " + players[1].chipCount +
+                                           "\nplayer2 chipCount is " + players[2].chipCount +
+                                           "\nplayer3 chipCount is " + players[3].chipCount +
+                                           "\nplayer4 chipCount is " + players[4].chipCount +
+                                           "\npotSize is at " + Table.instance.potChips;
+                    }
+                    break;
+                case GameState.Flop:
+                    //Debug.Log("FLOP!");
+                    //messageText.text = "burnCards.count = " + Table.instance._burn.Count;
+
+                    break;
+                case GameState.Turn:
+                    //Debug.Log("TURN!");
+                    //messageText.text = "burnCards.count = " + Table.instance._burn.Count;
+
+                    break;
+                case GameState.River:
+                    //Debug.Log("RIVER!");
+                    //messageText.text = "burnCards.count = " + Table.instance._burn.Count;
+
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    public void RunTutorial()
+    {
+        if (inTutorial)
+        {
+            Services.SoundManager.CheckForTutorialAudioToBePlayed();
+            #region Tutorial sound 
+            //    if (roundCounter == 1)
+            //    {
+            //        //player picks up deck for first time 
+            //        if (Services.SoundManager.tutorialAudioFiles[0].finishedPlaying &&
+            //          havePickedUpDeckOnce &&
+            //          Services.SoundManager.tutorialAudioFiles[1].hasBeenPlayed == false)
+            //        {
+            //            Services.SoundManager.PlayTutorialAudio(1);
+
+            //        }
+            //        //player deals face up card to each player 
+            //        else if (Services.SoundManager.tutorialAudioFiles[1].finishedPlaying &&
+            //          cardsTouchingTable.Count >= 5 &&
+            //          !Services.SoundManager.tutorialAudioFiles[2].hasBeenPlayed)
+            //        {
+            //            int cardsFaceUp = 0;
+            //            for (int i = 0; i < cardsTouchingTable.Count; i++)
+            //            {
+            //                if (cardsTouchingTable[i].cardIsFlipped) cardsFaceUp++;
+            //            }
+            //            if (cardsFaceUp >= 5)
+            //            {
+            //                Services.SoundManager.PlayTutorialAudio(2);
+            //            }
+            //        }
+            //        //player placed dealer button in correct place 
+            //        else if (Services.SoundManager.tutorialAudioFiles[2].finishedPlaying &&
+            //          !Services.SoundManager.tutorialAudioFiles[3].hasBeenPlayed)
+            //        {
+            //            Services.SoundManager.PlayTutorialAudio(3);
+            //        }
+            //        //player collects cards into deck 
+            //        else if (Services.SoundManager.tutorialAudioFiles[3].finishedPlaying &&
+            //          haveShuffledOnce &&
+            //          !Services.SoundManager.tutorialAudioFiles[5].hasBeenPlayed)
+            //        {
+            //            Services.SoundManager.PlayTutorialAudio(5);
+            //        }
+            //        //player deals 2 cards to each character 
+            //        else if (Services.SoundManager.tutorialAudioFiles[5].finishedPlaying &&
+            //          Table.gameState == GameState.PreFlop &&
+            //          !Services.SoundManager.tutorialAudioFiles[6].hasBeenPlayed)
+            //        {
+            //            Services.SoundManager.PlayTutorialAudio(6);
+            //        }
+            //        //looks at first player 
+            //        else if (Services.SoundManager.tutorialAudioFiles[6].finishedPlaying &&
+            //          !Services.SoundManager.tutorialAudioFiles[7].hasBeenPlayed)
+            //        {
+            //            Services.SoundManager.PlayTutorialAudio(7);
+            //        }
+            //        //round over 
+            //        else if (Services.SoundManager.tutorialAudioFiles[7].finishedPlaying &&
+            //          !Services.SoundManager.tutorialAudioFiles[8].hasBeenPlayed)
+            //        {
+            //            Services.SoundManager.PlayTutorialAudio(8);
+            //        }
+            //        //player puts cards in burn pile 
+            //        else if (Services.SoundManager.tutorialAudioFiles[8].finishedPlaying &&
+            //          !Services.SoundManager.tutorialAudioFiles[9].hasBeenPlayed)
+            //        {
+            //            Services.SoundManager.PlayTutorialAudio(9);
+            //        }
+            //        //puts 3 cards in center 
+            //        else if (Services.SoundManager.tutorialAudioFiles[9].finishedPlaying &&
+            //          !Services.SoundManager.tutorialAudioFiles[10].hasBeenPlayed)
+            //        {
+            //            Services.SoundManager.PlayTutorialAudio(10);
+            //        }
+            //        //round over 
+            //        else if (Services.SoundManager.tutorialAudioFiles[10].finishedPlaying &&
+            //          !Services.SoundManager.tutorialAudioFiles[11].hasBeenPlayed)
+            //        {
+            //            Services.SoundManager.PlayTutorialAudio(11);
+            //        }
+            //        //puts card in center 
+            //        else if (Services.SoundManager.tutorialAudioFiles[11].finishedPlaying &&
+            //          !Services.SoundManager.tutorialAudioFiles[12].hasBeenPlayed)
+            //        {
+            //            Services.SoundManager.PlayTutorialAudio(12);
+            //        }
+            //        //round over 
+            //        else if (Services.SoundManager.tutorialAudioFiles[12].finishedPlaying &&
+            //          !Services.SoundManager.tutorialAudioFiles[13].hasBeenPlayed)
+            //        {
+            //            Services.SoundManager.PlayTutorialAudio(13);
+            //        }
+            //        //end of round 
+            //        else if (Services.SoundManager.tutorialAudioFiles[13].finishedPlaying &&
+            //          !Services.SoundManager.tutorialAudioFiles[14].hasBeenPlayed)
+            //        {
+            //            Services.SoundManager.PlayTutorialAudio(14);
+            //        }
+            //        //player pushes chips to the winner 
+            //        else if (Services.SoundManager.tutorialAudioFiles[14].finishedPlaying &&
+            //          !Services.SoundManager.tutorialAudioFiles[15].hasBeenPlayed)
+            //        {
+            //            Services.SoundManager.PlayTutorialAudio(15);
+            //        }
+
+            //    }
+            #endregion
+        }
+    }
     void IncreaseBlinds()
     {
         gameLength += Time.deltaTime;
@@ -732,87 +727,105 @@ public class Dealer : MonoBehaviour
         readyForShowdown = true;
     }
 
-    public void GrabAndKillCards()
+    public void WaitingToGrabAndKillCards()
     {
-        Debug.Log("grabbingCards");
-        GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
-        GameObject cardDeck = GameObject.Find("ShufflingArea"); ;
-        bool flyUp = false;
-        foreach (GameObject card in cardsOnTable)
+        if (killingCards)
         {
-            card.GetComponent<Rigidbody>().useGravity = false;
-            card.GetComponent<BoxCollider>().enabled = false;
-            Vector3 randomRot = new Vector3(UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360));
-            card.transform.Rotate(randomRot * cardMoveSpeed * 2 * Time.deltaTime);
-            if (card.transform.position.y <= cardDeck.transform.position.y + UnityEngine.Random.Range(0.5f, 6f) && card.GetComponent<Card>().flyingAllowed) flyUp = true;
-            else flyUp = false;
-            if (flyUp)
+            if (!flyingClicked)
             {
-                float step = cardMoveSpeed * 2 * Time.deltaTime;
-                card.transform.position = Vector3.MoveTowards(card.transform.position, card.transform.position + new Vector3 (0, 0.05f, 0), step);
-            }
-            else
-            {
-                card.GetComponent<Card>().flyingAllowed = false;
-                float step = cardMoveSpeed * Time.deltaTime;
-                card.transform.position = Vector3.MoveTowards(card.transform.position, cardDeck.transform.position, step);
-                if (card.transform.position == cardDeck.transform.position)
+                flyingClicked = true;
+                startUpTime = Time.time;
+                GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
+                GameObject cardDeck = GameObject.Find("ShufflingArea");
+                foreach (GameObject card in cardsOnTable)
                 {
-                    if (!madeNewDeck)
-                    {
-                        newCardDeck = Instantiate(Services.PrefabDB.CardDeck, cardDeck.transform.position, Quaternion.identity) as GameObject;
-                        newCardDeck.GetComponent<CardDeckScript>().BuildDeckFromOneCard(newCardDeck);
-                        madeNewDeck = true;
-                    }
-                    if (madeNewDeck == true)
-                    {
-                        Destroy(card);
-                        //Debug.Log("destroying cards");
-                        newCardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
-                        if (cardsOnTable.Length < 5)
-                        {
-                            Table.instance.RestartRound();
-                            Services.Dealer.killingCards = false;
-                            madeNewDeck = false;
-                            GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
-                            foreach (GameObject dc in deadCards)
-                            {
-                                Destroy(dc);
-                            }
-                        }
-                    }
+                    card.GetComponent<Card>().rotSpeed = UnityEngine.Random.Range(500, 1500);
+                    Destroy(card.GetComponent<ConstantForce>());
+                    card.GetComponent<Rigidbody>().useGravity = false;
+                    Destroy(card.GetComponent<BoxCollider>());
+                    card.GetComponent<Card>().is_flying = true;
                 }
             }
         }
+        GrabAndKillCards();
     }
 
-    public void CleanUpTable()
+    public void GrabAndKillCards()
     {
-        Debug.Log("grabbingCards");
-        GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
-        GameObject cardDeck = GameObject.FindGameObjectWithTag("CardDeck");
-        foreach (GameObject card in cardsOnTable)
+        if (flyingClicked)
         {
-            float step = cardMoveSpeed * Time.deltaTime;
-            card.transform.position = Vector3.MoveTowards(card.transform.position, cardDeck.transform.position, step);
-            if (card.transform.position == cardDeck.transform.position)
+            float timeSinceClick = Time.time - startUpTime;
+            GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
+            GameObject cardDeck = GameObject.Find("ShufflingArea");
+
+            if (timeSinceClick <= flyTime)
             {
-                Destroy(card);
-                //Debug.Log("destroying cards");
-                Debug.Log(cardsOnTable.Length);
-                cardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
-                if (cardsOnTable.Length < 5)
+                Vector3 rotPos = GameObject.Find("Table").transform.position;
+                foreach (GameObject card in cardsOnTable)
                 {
-                    //Table.instance.RestartRound();
-                    cardDeck.transform.localScale = cardDeck.GetComponent<CardDeckScript>().newCardDeckScale;
-                    cardDeck.GetComponent<CardDeckScript>().RefillCardDeck();
-                    cleaningCards = false;
-                    GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
-                    foreach (GameObject dc in deadCards)
+                    card.transform.RotateAround(rotPos, Vector3.up, cardMoveSpeed * card.GetComponent<Card>().rotSpeed * Time.deltaTime);
+                    Vector3 randomRot = new Vector3(UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360));
+                    card.transform.Rotate(randomRot * cardMoveSpeed * 2 * Time.deltaTime);
+                    float step = cardMoveSpeed * 2 * Time.deltaTime;
+                    card.transform.position = Vector3.MoveTowards(card.transform.position, rotPos + new Vector3(0 + rotPos.x, 1 + rotPos.y, 0 + rotPos.z), step);
+                }
+            }
+            else if (timeSinceClick <= flyTime + 1)
+            {
+                Vector3 rotPos = GameObject.Find("Table").transform.position;
+                foreach (GameObject card in cardsOnTable)
+                {
+                    card.transform.RotateAround(rotPos, Vector3.up, cardMoveSpeed * 40 * Time.deltaTime);
+                    Vector3 randomRot = new Vector3(UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360));
+                    card.transform.Rotate(randomRot * cardMoveSpeed * 2 * Time.deltaTime);
+                }
+            }
+            else
+            {
+                if (first_time)
+                {
+                    foreach (GameObject card in cardsOnTable)
                     {
-                        Destroy(dc);
+                        card.GetComponent<Card>().flying_start_time = Time.time;
+                        card.GetComponent<Card>().flight_journey_distance = Vector3.Distance(card.transform.position, cardDeck.transform.position);
+                        card.GetComponent<Card>().flying_start_position = card.transform.position;
+
                     }
-                    Table.instance.NewHand();
+
+                    first_time = false;
+                }
+                foreach (GameObject card in cardsOnTable)
+                {
+                    //float step = cardMoveSpeed * Time.deltaTime;
+                    float distCovered = (Time.time - card.GetComponent<Card>().flying_start_time) * (cardMoveSpeed * 5);
+                    float fracJourney = distCovered / card.GetComponent<Card>().flight_journey_distance;
+                    card.transform.position = Vector3.Lerp(card.GetComponent<Card>().flying_start_position, cardDeck.transform.position, fracJourney);
+                    if (card.transform.position == cardDeck.transform.position)
+                    {
+                        if (!madeNewDeck)
+                        {
+                            Destroy(card);
+                            card.GetComponent<Card>().is_flying = false;
+                            newCardDeck = Instantiate(Services.PrefabDB.CardDeck, cardDeck.transform.position, Quaternion.identity) as GameObject;
+                            newCardDeck.GetComponent<CardDeckScript>().BuildDeckFromOneCard(newCardDeck);
+                            madeNewDeck = true;
+                        }
+                        if (madeNewDeck == true)
+                        {
+                            Destroy(card);
+                            card.GetComponent<Card>().is_flying = false;
+                            newCardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
+                        }
+                    }
+                }
+
+                if (cardsOnTable.Length == 0)
+                {
+                    flyingClicked = false;
+                    first_time = true;
+                    Table.instance.RestartRound();
+                    Services.Dealer.killingCards = false;
+                    madeNewDeck = false;
                 }
             }
         }

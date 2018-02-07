@@ -282,7 +282,7 @@ public class PokerPlayerRedux : MonoBehaviour{
         if (lastBet == 0) lastBet = Services.Dealer.BigBlind; 
 		float potOdds = amountToRaise / (amountToRaise + potSize);
         Debug.Log(gameObject.name + " has an HS of " + HandStrength + " and pot odds of " + potOdds + " in round " + Table.gameState);
-        if(Table.gameState > GameState.PreFlop) Debug.Assert(HandStrength <= 1);
+        if (Table.gameState > GameState.PreFlop && Table.gameState != GameState.Misdeal) Debug.Assert(HandStrength <= 1);
         float returnRate = HandStrength / potOdds;
         Debug.Log(gameObject.name + " has a return rate of " + returnRate);
 		return returnRate;
@@ -967,7 +967,6 @@ public class PokerPlayerRedux : MonoBehaviour{
             {
                 GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
                 foreach (GameObject card in cardsOnTable) GameObject.Destroy(card);
-                Services.Dealer.CleanUpTable();
             }
         }
         else if (PlayerState == PlayerState.Loser)
