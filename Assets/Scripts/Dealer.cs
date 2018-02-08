@@ -21,6 +21,9 @@ public class Dealer : MonoBehaviour
     public float flyTime;
     public bool madeNewDeck;
     GameObject newCardDeck;
+    public bool deckIsDead;
+    public bool cleaningCards = false;
+    public bool holdRotate = false;
 
     public List<GameObject> thrownChips = new List<GameObject>();
 
@@ -141,7 +144,8 @@ public class Dealer : MonoBehaviour
     void Update()
     {
 
-        WaitingToGrabAndKillCards();
+        WaitingToGrabCardsOn_ThrownDeck();
+        WaitingToGrabCardsOn_MisDeal();
         RunTutorial();
         IncreaseBlinds();
         CheckGameState();
@@ -350,9 +354,10 @@ public class Dealer : MonoBehaviour
             if (hand1.GetStandardInteractionButtonDown() && buttonBTimer > 0 ||
                 hand2.GetStandardInteractionButtonDown() && buttonATimer > 0)
             {
-                //Debug.Log("Beginning to restart round");
-                //Table.instance.RestartRound();
-                killingCards = true;
+                if (deckIsDead) killingCards = true;
+                else cleaningCards = true;
+                Debug.Log("killingCards = " + killingCards);
+                Debug.Log("cleaningCards = " + cleaningCards);
             }
         }
         else if (Table.gameState == GameState.PostHand)
@@ -506,6 +511,7 @@ public class Dealer : MonoBehaviour
             #endregion
         }
     }
+
     void IncreaseBlinds()
     {
         gameLength += Time.deltaTime;
@@ -727,10 +733,82 @@ public class Dealer : MonoBehaviour
         readyForShowdown = true;
     }
 
-    public void WaitingToGrabAndKillCards()
+    public void WaitingToGrabCardsOn_MisDeal()
+    {
+        if (cleaningCards)
+        {
+            Debug.Log("entering CleaningCards");
+            if (!flyingClicked)
+            {
+                flyingClicked = true;
+                startUpTime = Time.time;
+                GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
+                if (cardsOnTable.Length != 0)
+                {
+                    foreach (GameObject card in cardsOnTable)
+                    {
+                        Destroy(card.GetComponent<ConstantForce>());
+                        Destroy(card.GetComponent<BoxCollider>());
+                        card.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+                        card.GetComponent<Rigidbody>().velocity = Vector3.zero;
+                        card.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
+                        card.GetComponent<Card>().is_flying = true;
+                    }
+                }
+            }
+        }
+        CleanUpCards();
+    }
+
+    public void CleanUpCards()
+    {
+        if (cleaningCards)
+        {
+            if (flyingClicked)
+            {
+                float timeSinceClick = Time.time - startUpTime;
+                GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
+                GameObject cardDeck = GameObject.FindGameObjectWithTag("CardDeck");
+                if (first_time)
+                {
+                    foreach (GameObject card in cardsOnTable)
+                    {
+                        card.GetComponent<Card>().flying_start_time = Time.time;
+                        card.GetComponent<Card>().flight_journey_distance = Vector3.Distance(card.transform.position, cardDeck.transform.position);
+                        card.GetComponent<Card>().flying_start_position = card.transform.position;
+                    }
+                    first_time = false;
+                }
+                foreach (GameObject card in cardsOnTable)
+                {
+                    //float step = cardMoveSpeed * Time.deltaTime;
+                    float distCovered = (Time.time - card.GetComponent<Card>().flying_start_time) * cardMoveSpeed;
+                    float fracJourney = distCovered / card.GetComponent<Card>().flight_journey_distance;
+                    card.transform.position = Vector3.MoveTowards(card.GetComponent<Card>().flying_start_position, cardDeck.transform.position, .25f * Time.deltaTime);
+                    if (card.transform.position == cardDeck.transform.position)
+                    {
+                        Destroy(card);
+                        card.GetComponent<Card>().is_flying = false;
+                        cardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
+                    }
+                }
+
+                if (cardsOnTable.Length == 0)
+                {
+                    flyingClicked = false;
+                    first_time = true;
+                    Table.instance.RestartRound();
+                    cleaningCards = false;
+                }
+            }
+        }
+    }
+
+    public void WaitingToGrabCardsOn_ThrownDeck()
     {
         if (killingCards)
         {
+            Debug.Log("entering KillingCards");
             if (!flyingClicked)
             {
                 flyingClicked = true;
@@ -792,20 +870,25 @@ public class Dealer : MonoBehaviour
                     Vector3 randomRot = new Vector3(UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360));
                     card.transform.Rotate(randomRot * cardMoveSpeed * 2 * Time.deltaTime);
                     float step = cardMoveSpeed * 2 * Time.deltaTime;
-                    card.transform.position = Vector3.MoveTowards(card.transform.position, rotPos + new Vector3(0 + rotPos.x, 1 + rotPos.y, 0 + rotPos.z), step);
+                    if(card.transform.position.y < Camera.main.transform.position.y + 0.25f)
+                    {
+                        card.transform.position = Vector3.MoveTowards(card.transform.position, rotPos + new Vector3(0 + rotPos.x, 1 + rotPos.y, 0 + rotPos.z), step);
+                    }
                 }
+                holdRotate = true;
             }
-            else if (timeSinceClick <= flyTime + 1)
+            else if (timeSinceClick <= flyTime + 1 || holdRotate)
             {
                 Vector3 rotPos = GameObject.Find("Table").transform.position;
                 foreach (GameObject card in cardsOnTable)
                 {
                     card.transform.RotateAround(rotPos, Vector3.up, cardMoveSpeed * 40 * Time.deltaTime);
                     Vector3 randomRot = new Vector3(UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360));
-                    card.transform.Rotate(randomRot * cardMoveSpeed * 2 * Time.deltaTime);
+                    card.transform.Rotate(randomRot * cardMoveSpeed * Time.deltaTime);
                 }
+                StartCoroutine(HoldForSpin());
             }
-            else
+            else if(!holdRotate)
             {
                 if (first_time)
                 {
@@ -859,6 +942,16 @@ public class Dealer : MonoBehaviour
                 }
             }
         }
+    }
+    IEnumerator HoldForSpin()
+    {
+        while(hand1.GetStandardInteractionButton() && hand2.GetStandardInteractionButton())
+        {
+            holdRotate = true;
+            yield return null;
+        }
+        holdRotate = false;
+        yield break;
     }
     
     public void CheckAllInPlayers()

@@ -129,13 +129,13 @@ public class Table {
         {
             //Debug.Log("Could not find CardDeck, instantiating new one");
             GameObject shuffleArea = GameObject.Find("ShufflingArea");
-            GameObject newCardDeck = GameObject.Instantiate(Services.PrefabDB.CardDeck, shuffleArea.transform.position, Quaternion.identity) as GameObject;
+            GameObject newCardDeck = GameObject.Instantiate(Services.PrefabDB.CardDeck, shuffleArea.transform.position, Services.PrefabDB.CardDeck.transform.rotation) as GameObject;
         }
         else
         {
             GameObject.Destroy(GameObject.FindGameObjectWithTag("CardDeck"));
             GameObject shuffleArea = GameObject.Find("ShufflingArea");
-            GameObject newCardDeck = GameObject.Instantiate(Services.PrefabDB.CardDeck, shuffleArea.transform.position, Quaternion.identity) as GameObject;
+            GameObject newCardDeck = GameObject.Instantiate(Services.PrefabDB.CardDeck, shuffleArea.transform.position, Services.PrefabDB.CardDeck.transform.rotation) as GameObject;
         }
 
         if (gameState == GameState.ShowDown || gameState == GameState.PostHand || gameState == GameState.CleanUp)

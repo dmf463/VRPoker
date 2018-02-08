@@ -249,6 +249,7 @@ public class CardDeckScript : InteractionSuperClass {
             {
                 hand.HoverUnlock(interactableObject);
                 Destroy(cardDeck);
+                Services.Dealer.deckIsDead = true;
                 Debug.Log("Destroyed Deck");
                 if(Table.gameState != GameState.CleanUp || Table.gameState != GameState.PostHand)
                 {
@@ -352,6 +353,7 @@ public class CardDeckScript : InteractionSuperClass {
         {
             Services.Dealer.haveShuffledOnce = true;
         }
+        Services.Dealer.deckIsDead = false;
         Debug.Log("Refilling CardDeck");
         cardsInDeck.Clear();
         Table.instance.NewHand();
@@ -392,6 +394,7 @@ public class CardDeckScript : InteractionSuperClass {
     //same as above, except it creates the list
     public void PopulateCardDeck()
     {
+        Services.Dealer.deckIsDead = false;
         cardsInDeck = new List<CardType>();
         SuitType[] suits = new SuitType[4] 
         {
@@ -514,6 +517,7 @@ public class CardDeckScript : InteractionSuperClass {
             Services.SoundManager.GetSourceAndPlay(randomPlayer.playerAudioSource, randomPlayer.fiftyTwoAudio);
         }
         Destroy(cardDeck);
+        Services.Dealer.deckIsDead = true;
         Table.gameState = GameState.Misdeal;
         //Table.dealerState = DealerState.ShufflingState;
     }

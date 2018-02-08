@@ -153,19 +153,13 @@ public class Card : InteractionSuperClass {
             }
         }
 
-        //so if we're not holding the card
-        //and the bool for throwin a card wrong has been set to true
-        //and we didn't throw the ENTIRE deck
-        //then we call the physics for throwing a single card poorly
-        if (!is_flying) { 
+
+        if (!is_flying)
+        { 
             if (rb.isKinematic == false && cardThrownWrong == true && deckScript.deckWasThrown == false)
                 ThrewSingleCardBadPhysics();
 
-            //if we're no longer holding the card
-            //and the card was thrown wrong
-            //but the card was thrown wrong because the entire deck was thrown
-            //then we call the card physics for when we throw the whole deck
-            //these phsycis are a bit more chaotic than the single card physics which is a bit more floaty
+
             if (rb.isKinematic == false && cardThrownWrong == true && deckScript.deckWasThrown == true)
             {
                 ThrewWholeDeckPhysics();
@@ -203,7 +197,6 @@ public class Card : InteractionSuperClass {
                 }
 
             }
-
             //if we're holding a card, and the deck still has cards in it
             //we want to be constantly checking whether or not a player has swiped the track pad
             if (rb.isKinematic == true && deckIsEmpty == false)
