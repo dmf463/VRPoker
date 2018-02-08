@@ -965,8 +965,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             }
             if(winnersPaid == winnerCount)
             {
-                GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
-                foreach (GameObject card in cardsOnTable) GameObject.Destroy(card);
+                Services.Dealer.cleaningCards = true;
             }
         }
         else if (PlayerState == PlayerState.Loser)
