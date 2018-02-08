@@ -776,11 +776,11 @@ public class Dealer : MonoBehaviour
         {
             if (flyingClicked)
             {
-                float timeSinceClick = Time.time - startUpTime;
                 GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
                 GameObject cardDeck = GameObject.FindGameObjectWithTag("CardDeck");
                 if (first_time)
                 {
+                    Debug.Log("first time values set");
                     foreach (GameObject card in cardsOnTable)
                     {
                         card.GetComponent<Card>().flying_start_time = Time.time;
@@ -794,12 +794,12 @@ public class Dealer : MonoBehaviour
                     //float step = cardMoveSpeed * Time.deltaTime;
                     float distCovered = (Time.time - card.GetComponent<Card>().flying_start_time) * cardMoveSpeed;
                     float fracJourney = distCovered / card.GetComponent<Card>().flight_journey_distance;
-                    card.transform.position = Vector3.MoveTowards(card.GetComponent<Card>().flying_start_position, cardDeck.transform.position, .25f * Time.deltaTime);
+                    card.transform.position = Vector3.Lerp(card.transform.position, cardDeck.transform.position, fracJourney);
                     if (card.transform.position == cardDeck.transform.position)
                     {
-                        Destroy(card);
                         card.GetComponent<Card>().is_flying = false;
                         cardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
+                        Destroy(card);
                     }
                 }
 
@@ -836,17 +836,6 @@ public class Dealer : MonoBehaviour
                         card.GetComponent<Card>().is_flying = true;
                     }
                 }
-
-                //if(thrownChips.Count != 0)
-                //{
-                //    foreach (GameObject chip in thrownChips)
-                //    {
-                //        chip.GetComponent<Chip>().rotSpeed = UnityEngine.Random.Range(25, 100);
-                //        chip.GetComponent<Rigidbody>().useGravity = false;
-                //        Destroy(chip.GetComponent<BoxCollider>());
-                //        chip.GetComponent<Chip>().is_flying = true;
-                //    }
-                //}
             }
         }
         GrabAndKillCards();
@@ -863,17 +852,6 @@ public class Dealer : MonoBehaviour
             if (timeSinceClick <= flyTime)
             {
                 Vector3 rotPos = GameObject.Find("Table").transform.position;
-                //if (thrownChips.Count != 0)
-                //{
-                //    foreach (GameObject chip in thrownChips)
-                //    {
-                //        chip.transform.RotateAround(rotPos, Vector3.up, cardMoveSpeed * chip.GetComponent<Chip>().rotSpeed * Time.deltaTime);
-                //        Vector3 randomRot = new Vector3(UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360));
-                //        chip.transform.Rotate(randomRot * cardMoveSpeed * 2 * Time.deltaTime);
-                //        float step = cardMoveSpeed * 2 * Time.deltaTime;
-                //        chip.transform.position = Vector3.MoveTowards(chip.transform.position, rotPos + new Vector3(0 + rotPos.x, 1 + rotPos.y, 0 + rotPos.z), step);
-                //    }
-                //}
                 foreach (GameObject card in cardsOnTable)
                 {
                     card.transform.RotateAround(rotPos, Vector3.up, cardMoveSpeed * card.GetComponent<Card>().rotSpeed * Time.deltaTime);
@@ -908,12 +886,6 @@ public class Dealer : MonoBehaviour
                         card.GetComponent<Card>().flight_journey_distance = Vector3.Distance(card.transform.position, cardDeck.transform.position);
                         card.GetComponent<Card>().flying_start_position = card.transform.position;
                     }
-                    //foreach (GameObject chip in thrownChips)
-                    //{
-                    //    chip.GetComponent<Chip>().flying_start_time = Time.time;
-                    //    chip.GetComponent<Chip>().flight_journey_distance = Vector3.Distance(chip.transform.position, cardDeck.transform.position);
-                    //    chip.GetComponent<Chip>().flying_start_position = chip.transform.position;
-                    //}
                     first_time = false;
                 }
                 foreach (GameObject card in cardsOnTable)
@@ -1433,7 +1405,6 @@ public class Dealer : MonoBehaviour
 				{
 					Debug.Log ("Removing " + players[i] + " from active players!");
 					activePlayers.Remove(players[i]);
-
 				}
 			}
 

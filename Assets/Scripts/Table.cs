@@ -133,9 +133,12 @@ public class Table {
         }
         else
         {
-            GameObject.Destroy(GameObject.FindGameObjectWithTag("CardDeck"));
-            GameObject shuffleArea = GameObject.Find("ShufflingArea");
-            GameObject newCardDeck = GameObject.Instantiate(Services.PrefabDB.CardDeck, shuffleArea.transform.position, Services.PrefabDB.CardDeck.transform.rotation) as GameObject;
+            //GameObject.Destroy(GameObject.FindGameObjectWithTag("CardDeck"));
+            //GameObject shuffleArea = GameObject.Find("ShufflingArea");
+            //GameObject newCardDeck = GameObject.Instantiate(Services.PrefabDB.CardDeck, shuffleArea.transform.position, Services.PrefabDB.CardDeck.transform.rotation) as GameObject;
+            GameObject cardDeck = GameObject.FindGameObjectWithTag("CardDeck");
+            cardDeck.transform.localScale = cardDeck.GetComponent<CardDeckScript>().newCardDeckScale;
+            cardDeck.GetComponent<CardDeckScript>().RefillCardDeck();
         }
 
         if (gameState == GameState.ShowDown || gameState == GameState.PostHand || gameState == GameState.CleanUp)
