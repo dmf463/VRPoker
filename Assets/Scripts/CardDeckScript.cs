@@ -295,10 +295,10 @@ public class CardDeckScript : InteractionSuperClass {
         if(attachedHand.currentAttachedObject.tag == "CardDeck")
         {
            
-			if(Services.Dealer.havePickedUpDeck != true && !Services.Dealer.havePickedUpDeckForFirstTime)
+			if(Services.SoundManager.havePickedUpDeck != true && !Services.SoundManager.havePickedUpDeckForFirstTime)
 			{
-				Services.Dealer.havePickedUpDeck = true;
-                Services.Dealer.havePickedUpDeckForFirstTime = true;
+				Services.SoundManager.havePickedUpDeck = true;
+                Services.SoundManager.havePickedUpDeckForFirstTime = true;
 
                
 			}
@@ -353,12 +353,12 @@ public class CardDeckScript : InteractionSuperClass {
     //and then refill the deck with 52 new cardTypes
     public void RefillCardDeck()
     {
-        Services.Dealer.numberOfShuffles++;
-        Debug.Log("Number of timed deck refilled: " + Services.Dealer.numberOfShuffles);
-        if (!Services.Dealer.haveShuffledOnce && Services.Dealer.numberOfShuffles == 2)
+        Services.SoundManager.numberOfShuffles++;
+        Debug.Log("Number of timed deck refilled: " + Services.SoundManager.numberOfShuffles);
+        if (!Services.SoundManager.haveShuffledOnce && Services.SoundManager.numberOfShuffles == 2)
         {
             Debug.Log("Deck shuffled");
-            Services.Dealer.haveShuffledOnce = true;
+            Services.SoundManager.haveShuffledOnce = true;
         }
         Services.Dealer.deckIsDead = false;
         Debug.Log("Refilling CardDeck");

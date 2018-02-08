@@ -37,6 +37,23 @@ public class SoundManager : MonoBehaviour
     int tutorialIndex = 1;
     AudioClip nextAudio;
 
+    //TUTORIAL STUFF 
+   
+    public int handCounter = 1; //which hand are we on? First, second, third.... 
+    public int roundsFinished = 0; //how many rounds of betting have we finished this hand
+    public bool roundOneComplete = false;
+    public int cardsBurned = 0; //how many cards have we burned
+    public bool havePickedUpDeck = false;
+    public bool havePickedUpDeckForFirstTime = false;
+    public int numberOfShuffles = 0;
+    public bool haveShuffledOnce = false;
+    public bool haveLookedAtFirstPlayer = false;
+    public bool dealtTwoCards = false;
+    public bool fiveFaceUpCardsDealt = false;
+    public bool dealerButtonMoved = false;
+
+
+
     public List <AudioData> tutorialAudioFiles = new List <AudioData>();
 
     public bool conversationIsPlaying;
@@ -127,75 +144,82 @@ public class SoundManager : MonoBehaviour
     public void CheckForTutorialAudioToBePlayed()
     {
         Debug.Log("Tutorial index: " + tutorialIndex);
-        if (Services.Dealer.handCounter == 1)
+        if (handCounter == 1)
         {
             if (tutorialAudioFiles[tutorialIndex - 1].finishedPlaying && !tutorialAudioFiles[tutorialIndex].hasBeenPlayed) 
             {
                 //player picks up deck for first time 
-                if (Services.Dealer.havePickedUpDeck)
+                if (havePickedUpDeck)
                 {
                     Debug.Log("Thinks we have picked up deck");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
-                    Services.Dealer.havePickedUpDeck = false;
+                    havePickedUpDeck = false;
                 }
                 //player deals face up card to each player 
-                else if (Services.Dealer.cardsTouchingTable.Count >= 5)
+                else if (Services.Dealer.cardsTouchingTable.Count >= 5 && !fiveFaceUpCardsDealt)
                 {
+                    Debug.Log("Caught if seen more than once");
                     int cardsFaceUp = 0;
                     for (int i = 0; i < Services.Dealer.cardsTouchingTable.Count; i++)
                     {
                         if (Services.Dealer.cardsTouchingTable[i].cardIsFlipped) cardsFaceUp++;
                     }
-                    if (cardsFaceUp >= 5 && !Services.Dealer.fiveFaceUpCardsDealt)
+                    if (cardsFaceUp >= 5)
                     {
                         Debug.Log("Thinks we have dealt a face up card to each player");
                         PlayTutorialAudio(tutorialIndex);
                         tutorialIndex++;
-                        Services.Dealer.fiveFaceUpCardsDealt = true;
+                        fiveFaceUpCardsDealt = true;
 
                     }
                 }
-                else if (!Services.Dealer.dealerButtonMoved && tutorialIndex == 3) //player placed dealer button in correct place (not in right now so just plays
+                else if (!dealerButtonMoved && tutorialIndex == 3) //player placed dealer button in correct place (not in right now so just plays automatically)
                 {
                     Debug.Log("Should play automatically since there is no dealer button movement mechanic");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
-                    Services.Dealer.dealerButtonMoved = true;
+                    dealerButtonMoved = true;
                 }
 
                 //player collects cards into deck 
-                else if (Services.Dealer.haveShuffledOnce && Services.Dealer.fiveFaceUpCardsDealt && Services.Dealer.cardsTouchingTable.Count == 0 && Services.Dealer.numberOfShuffles >= 2)
+                else if (haveShuffledOnce && fiveFaceUpCardsDealt && Services.Dealer.cardsTouchingTable.Count == 0 && numberOfShuffles >= 2)
                 {
                     Debug.Log("Thinks we have shuffled for the first time");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
-                    Services.Dealer.haveShuffledOnce = false;
+                    haveShuffledOnce = false;
                 }
                 //player deals 2 cards to each character 
-                else if (Table.gameState == GameState.PreFlop && !Services.Dealer.dealtTwoCards)
+                else if (Table.gameState == GameState.PreFlop && !dealtTwoCards)
                 {
                     Debug.Log("Thinks we have dealt 2 cards to each character ");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
-                    Services.Dealer.dealtTwoCards = true;
+                    dealtTwoCards = true;
                 }
                 //looks at first player 
-                else if (Services.Dealer.haveLookedAtFirstPlayer)
+                else if (haveLookedAtFirstPlayer)
                 {
                     Debug.Log("Thinks we have looked at the first player");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
-                    Services.Dealer.haveLookedAtFirstPlayer = false;
+                    haveLookedAtFirstPlayer = false;
                 }
                 //round over
-                else if (Services.Dealer.roundsFinished == 1 && !Services.Dealer.roundOneComplete)
+                else if (roundsFinished == 1 && !roundOneComplete)
                 {
                     Debug.Log("Thinks the first round is finished");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
-                    Services.Dealer.roundOneComplete = true;
+                    roundOneComplete = true;
                 }
+                else if (Table.instance._burn.Count == 1 && !Table.instance._burn[0].cardIsFlipped)
+                {
+                    PlayTutorialAudio(tutorialIndex);
+                    tutorialIndex++;
+                }
+
                     
                 //else if (Table.gameState == GameState.Flop)
                 //{

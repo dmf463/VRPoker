@@ -56,9 +56,9 @@ public class PlayerGazeTrigger : MonoBehaviour
                             onEyeGazeComplete.Invoke();
                             //Debug.Log("player that just invoked was " + pokerPlayer);
                             //Debug.Log("next player to act is " + Services.Dealer.playerToAct);
-                            if (Services.Dealer.haveLookedAtFirstPlayer != true)
+                            if (Services.SoundManager.haveLookedAtFirstPlayer != true)
                             {
-                                Services.Dealer.haveLookedAtFirstPlayer = true;
+                                Services.SoundManager.haveLookedAtFirstPlayer = true;
                             }
                         }
                     }

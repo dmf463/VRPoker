@@ -34,19 +34,7 @@ public class Dealer : MonoBehaviour
 
     //TUTORIAL STUFF 
     public bool inTutorial = true;
-    public int handCounter = 1; //which hand are we on? First, second, third.... 
-    public int roundsFinished = 0; //how many rounds of betting have we finished this hand
-    public bool roundOneComplete = false;
-    public int cardsBurned = 0; //how many cards have we burned
-    public bool havePickedUpDeck = false;
-    public bool havePickedUpDeckForFirstTime = false;
-    public int numberOfShuffles = 0;
-    public bool haveShuffledOnce = false;
-    public bool haveLookedAtFirstPlayer = false;
-    public bool dealtTwoCards = false;
-    public bool fiveFaceUpCardsDealt = false;
-    public bool dealerButtonMoved = false;
-
+ 
     bool first_time = true;
 
     [HideInInspector]
@@ -138,7 +126,7 @@ public class Dealer : MonoBehaviour
 
         if (inTutorial)
         {
-            if (handCounter == 1 && Services.SoundManager.tutorialAudioFiles[0].hasBeenPlayed == false)
+            if (Services.SoundManager.handCounter == 1 && Services.SoundManager.tutorialAudioFiles[0].hasBeenPlayed == false)
             {
                 Services.SoundManager.PlayTutorialAudio(0);
             }
@@ -149,11 +137,6 @@ public class Dealer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (dealerButtonMoved)
-        {
-            Debug.Log("DEALER BUTTON MOVED");
-        }
-
         WaitingToGrabCardsOn_ThrownDeck();
         WaitingToGrabCardsOn_MisDeal();
         RunTutorial();
@@ -1004,7 +987,7 @@ public class Dealer : MonoBehaviour
                 }
                 Debug.Log(Table.gameState + " Finished");
 
-                roundsFinished++; //increment int for tutorial vo based on when players are done betting
+                Services.SoundManager.roundsFinished++; //increment int for tutorial vo based on when players are done betting
                
                 playerToAct.playerSpotlight.SetActive(false);
                 playerToAct = null;
