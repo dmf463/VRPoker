@@ -137,7 +137,6 @@ public class Dealer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(Table.gameState);
         WaitingToGrabCardsOn_ThrownDeck();
         WaitingToGrabCardsOn_MisDeal();
         RunTutorial();
