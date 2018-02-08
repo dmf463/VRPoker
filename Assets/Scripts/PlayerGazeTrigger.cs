@@ -112,7 +112,7 @@ public class PlayerGazeTrigger : MonoBehaviour
             }
             else
             {
-                if (!questionMarkActivated)
+                if (!questionMarkActivated && Services.Dealer.readyToAwardPlayers)
                 {
                     timeRemaining = timeSpanForQuestion;
                     Debug.Log(pokerPlayer.playerName + " is a winner or loser");

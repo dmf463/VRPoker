@@ -137,7 +137,6 @@ public class Dealer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(Table.gameState);
         WaitingToGrabCardsOn_ThrownDeck();
         WaitingToGrabCardsOn_MisDeal();
         RunTutorial();
@@ -758,7 +757,7 @@ public class Dealer : MonoBehaviour
         {
             if (flyingClicked)
             {
-                Vector3 modPos = new Vector3(0, 0.25f, 0);
+                Vector3 modPos = new Vector3(0, 0.03f, 0);
                 GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
                 GameObject cardDeck = GameObject.FindGameObjectWithTag("CardDeck");
                 if (first_time)
