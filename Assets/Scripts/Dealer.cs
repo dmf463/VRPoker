@@ -166,7 +166,7 @@ public class Dealer : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Table.instance.DebugHandsAndChips();
-            killingCards = true;
+            cleaningCards = true;
         }
         if (Input.GetKeyDown(KeyCode.X))
         {
@@ -759,9 +759,10 @@ public class Dealer : MonoBehaviour
                     {
                         Destroy(card.GetComponent<ConstantForce>());
                         Destroy(card.GetComponent<BoxCollider>());
-                        card.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-                        card.GetComponent<Rigidbody>().velocity = Vector3.zero;
-                        card.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
+                        Destroy(card.GetComponent<Rigidbody>());
+                        //card.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+                        //card.GetComponent<Rigidbody>().velocity = Vector3.zero;
+                        //card.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
                         card.GetComponent<Card>().is_flying = true;
                     }
                 }
@@ -776,6 +777,7 @@ public class Dealer : MonoBehaviour
         {
             if (flyingClicked)
             {
+                Vector3 modPos = new Vector3(0, .02f, 0);
                 GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
                 GameObject cardDeck = GameObject.FindGameObjectWithTag("CardDeck");
                 if (first_time)
@@ -784,7 +786,7 @@ public class Dealer : MonoBehaviour
                     foreach (GameObject card in cardsOnTable)
                     {
                         card.GetComponent<Card>().flying_start_time = Time.time;
-                        card.GetComponent<Card>().flight_journey_distance = Vector3.Distance(card.transform.position, cardDeck.transform.position);
+                        card.GetComponent<Card>().flight_journey_distance = Vector3.Distance(card.transform.position, cardDeck.transform.position + modPos);
                         card.GetComponent<Card>().flying_start_position = card.transform.position;
                     }
                     first_time = false;
@@ -794,15 +796,14 @@ public class Dealer : MonoBehaviour
                     //float step = cardMoveSpeed * Time.deltaTime;
                     float distCovered = (Time.time - card.GetComponent<Card>().flying_start_time) * cardMoveSpeed;
                     float fracJourney = distCovered / card.GetComponent<Card>().flight_journey_distance;
-                    card.transform.position = Vector3.Lerp(card.transform.position, cardDeck.transform.position, fracJourney);
-                    if (card.transform.position == cardDeck.transform.position)
+                    card.transform.position = Vector3.Lerp(card.transform.position, cardDeck.transform.position + modPos, fracJourney);
+                    if (card.transform.position == cardDeck.transform.position + modPos)
                     {
                         card.GetComponent<Card>().is_flying = false;
                         cardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
                         Destroy(card);
                     }
                 }
-
                 if (cardsOnTable.Length == 0)
                 {
                     flyingClicked = false;
@@ -843,84 +844,87 @@ public class Dealer : MonoBehaviour
 
     public void GrabAndKillCards()
     {
-        if (flyingClicked)
+        if (killingCards)
         {
-            float timeSinceClick = Time.time - startUpTime;
-            GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
-            GameObject cardDeck = GameObject.Find("ShufflingArea");
+            if (flyingClicked)
+            {
+                float timeSinceClick = Time.time - startUpTime;
+                GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
+                GameObject cardDeck = GameObject.Find("ShufflingArea");
 
-            if (timeSinceClick <= flyTime)
-            {
-                Vector3 rotPos = GameObject.Find("Table").transform.position;
-                foreach (GameObject card in cardsOnTable)
+                if (timeSinceClick <= flyTime)
                 {
-                    card.transform.RotateAround(rotPos, Vector3.up, cardMoveSpeed * card.GetComponent<Card>().rotSpeed * Time.deltaTime);
-                    Vector3 randomRot = new Vector3(UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360));
-                    card.transform.Rotate(randomRot * cardMoveSpeed * 2 * Time.deltaTime);
-                    float step = cardMoveSpeed * 2 * Time.deltaTime;
-                    if(card.transform.position.y < Camera.main.transform.position.y + 0.25f)
-                    {
-                        card.transform.position = Vector3.MoveTowards(card.transform.position, rotPos + new Vector3(0 + rotPos.x, 1 + rotPos.y, 0 + rotPos.z), step);
-                    }
-                }
-                holdRotate = true;
-            }
-            else if (timeSinceClick <= flyTime + 1 || holdRotate)
-            {
-                Vector3 rotPos = GameObject.Find("Table").transform.position;
-                foreach (GameObject card in cardsOnTable)
-                {
-                    card.transform.RotateAround(rotPos, Vector3.up, cardMoveSpeed * 40 * Time.deltaTime);
-                    Vector3 randomRot = new Vector3(UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360));
-                    card.transform.Rotate(randomRot * cardMoveSpeed * Time.deltaTime);
-                }
-                StartCoroutine(HoldForSpin());
-            }
-            else if(!holdRotate)
-            {
-                if (first_time)
-                {
+                    Vector3 rotPos = GameObject.Find("Table").transform.position;
                     foreach (GameObject card in cardsOnTable)
                     {
-                        card.GetComponent<Card>().flying_start_time = Time.time;
-                        card.GetComponent<Card>().flight_journey_distance = Vector3.Distance(card.transform.position, cardDeck.transform.position);
-                        card.GetComponent<Card>().flying_start_position = card.transform.position;
+                        card.transform.RotateAround(rotPos, Vector3.up, cardMoveSpeed * card.GetComponent<Card>().rotSpeed * Time.deltaTime);
+                        Vector3 randomRot = new Vector3(UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360));
+                        card.transform.Rotate(randomRot * cardMoveSpeed * 2 * Time.deltaTime);
+                        float step = cardMoveSpeed * 2 * Time.deltaTime;
+                        if (card.transform.position.y < Camera.main.transform.position.y + 0.25f)
+                        {
+                            card.transform.position = Vector3.MoveTowards(card.transform.position, rotPos + new Vector3(0 + rotPos.x, 1 + rotPos.y, 0 + rotPos.z), step);
+                        }
                     }
-                    first_time = false;
+                    holdRotate = true;
                 }
-                foreach (GameObject card in cardsOnTable)
+                else if (timeSinceClick <= flyTime + 1 || holdRotate)
                 {
-                    //float step = cardMoveSpeed * Time.deltaTime;
-                    float distCovered = (Time.time - card.GetComponent<Card>().flying_start_time) * (cardMoveSpeed * 5);
-                    float fracJourney = distCovered / card.GetComponent<Card>().flight_journey_distance;
-                    card.transform.position = Vector3.Lerp(card.GetComponent<Card>().flying_start_position, cardDeck.transform.position, fracJourney);
-                    if (card.transform.position == cardDeck.transform.position)
+                    Vector3 rotPos = GameObject.Find("Table").transform.position;
+                    foreach (GameObject card in cardsOnTable)
                     {
-                        if (!madeNewDeck)
+                        card.transform.RotateAround(rotPos, Vector3.up, cardMoveSpeed * 40 * Time.deltaTime);
+                        Vector3 randomRot = new Vector3(UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360));
+                        card.transform.Rotate(randomRot * cardMoveSpeed * Time.deltaTime);
+                    }
+                    StartCoroutine(HoldForSpin());
+                }
+                else if (!holdRotate)
+                {
+                    if (first_time)
+                    {
+                        foreach (GameObject card in cardsOnTable)
                         {
-                            Destroy(card);
-                            card.GetComponent<Card>().is_flying = false;
-                            newCardDeck = Instantiate(Services.PrefabDB.CardDeck, cardDeck.transform.position, Quaternion.identity) as GameObject;
-                            newCardDeck.GetComponent<CardDeckScript>().BuildDeckFromOneCard(newCardDeck);
-                            madeNewDeck = true;
+                            card.GetComponent<Card>().flying_start_time = Time.time;
+                            card.GetComponent<Card>().flight_journey_distance = Vector3.Distance(card.transform.position, cardDeck.transform.position);
+                            card.GetComponent<Card>().flying_start_position = card.transform.position;
                         }
-                        if (madeNewDeck == true)
+                        first_time = false;
+                    }
+                    foreach (GameObject card in cardsOnTable)
+                    {
+                        //float step = cardMoveSpeed * Time.deltaTime;
+                        float distCovered = (Time.time - card.GetComponent<Card>().flying_start_time) * (cardMoveSpeed * 5);
+                        float fracJourney = distCovered / card.GetComponent<Card>().flight_journey_distance;
+                        card.transform.position = Vector3.Lerp(card.GetComponent<Card>().flying_start_position, cardDeck.transform.position, fracJourney);
+                        if (card.transform.position == cardDeck.transform.position)
                         {
-                            Destroy(card);
-                            card.GetComponent<Card>().is_flying = false;
-                            newCardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
+                            if (!madeNewDeck)
+                            {
+                                Destroy(card);
+                                card.GetComponent<Card>().is_flying = false;
+                                newCardDeck = Instantiate(Services.PrefabDB.CardDeck, cardDeck.transform.position, Quaternion.identity) as GameObject;
+                                newCardDeck.GetComponent<CardDeckScript>().BuildDeckFromOneCard(newCardDeck);
+                                madeNewDeck = true;
+                            }
+                            if (madeNewDeck == true)
+                            {
+                                Destroy(card);
+                                card.GetComponent<Card>().is_flying = false;
+                                newCardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
+                            }
                         }
                     }
-                }
 
-                if (cardsOnTable.Length == 0)
-                {
-                    flyingClicked = false;
-                    first_time = true;
-                    Table.instance.RestartRound();
-                    Services.Dealer.killingCards = false;
-                    madeNewDeck = false;
-                    thrownChips.Clear();
+                    if (cardsOnTable.Length == 0)
+                    {
+                        flyingClicked = false;
+                        first_time = true;
+                        Table.instance.RestartRound();
+                        Services.Dealer.killingCards = false;
+                        madeNewDeck = false;
+                        thrownChips.Clear();
+                    }
                 }
             }
         }
