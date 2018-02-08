@@ -35,10 +35,9 @@ public class SoundManager : MonoBehaviour
 
 	public AudioClip[] tutorialAudio;
     int tutorialIndex = 1;
+    AudioClip nextAudio;
 
-	public List <AudioData> tutorialAudioFiles = new List <AudioData>();
-
-
+    public List <AudioData> tutorialAudioFiles = new List <AudioData>();
 
     public bool conversationIsPlaying;
     public bool aside1Played;
@@ -72,7 +71,7 @@ public class SoundManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+       
     }
 
     public void PlayTutorialAudio(int index)
@@ -112,6 +111,7 @@ public class SoundManager : MonoBehaviour
 		source.pitch = pitch;
         source.Play();
         Destroy(specialAudioSource, clip.length);
+        Debug.Log("Clip played: " + clip.name);
     }
 
 	public void GetSourceAndPlay(AudioSource source, AudioClip clip)
@@ -126,66 +126,83 @@ public class SoundManager : MonoBehaviour
 
     public void CheckForTutorialAudioToBePlayed()
     {
-        Debug.Log("Tutorial index = " + tutorialIndex);
+        Debug.Log("Tutorial index: " + tutorialIndex);
         if (Services.Dealer.handCounter == 1)
         {
-            if(tutorialAudioFiles[tutorialIndex-1].finishedPlaying && !tutorialAudioFiles[tutorialIndex].finishedPlaying)
+            if (tutorialAudioFiles[tutorialIndex - 1].finishedPlaying && !tutorialAudioFiles[tutorialIndex].hasBeenPlayed) 
             {
-            //player picks up deck for first time 
-                if (Services.Dealer.havePickedUpDeckOnce)
+                //player picks up deck for first time 
+                if (Services.Dealer.havePickedUpDeck)
                 {
+                    Debug.Log("Thinks we have picked up deck");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
-                    Debug.Log("Play audio file ");
+                    Services.Dealer.havePickedUpDeck = false;
                 }
-            //player deals face up card to each player 
-                else if (tutorialIndex == 2 && Services.Dealer.cardsTouchingTable.Count >= 5)
+                //player deals face up card to each player 
+                else if (Services.Dealer.cardsTouchingTable.Count >= 5)
                 {
                     int cardsFaceUp = 0;
                     for (int i = 0; i < Services.Dealer.cardsTouchingTable.Count; i++)
                     {
                         if (Services.Dealer.cardsTouchingTable[i].cardIsFlipped) cardsFaceUp++;
                     }
-                    if (cardsFaceUp >= 5)
+                    if (cardsFaceUp >= 5 && !Services.Dealer.fiveFaceUpCardsDealt)
                     {
+                        Debug.Log("Thinks we have dealt a face up card to each player");
                         PlayTutorialAudio(tutorialIndex);
                         tutorialIndex++;
-                        //player placed dealer button in correct place (not in right now so just plays
-                        PlayTutorialAudio(tutorialIndex);
-                        tutorialIndex++;
+                        Services.Dealer.fiveFaceUpCardsDealt = true;
+
                     }
+                }
+                else if (!Services.Dealer.dealerButtonMoved && tutorialIndex == 3) //player placed dealer button in correct place (not in right now so just plays
+                {
+                    Debug.Log("Should play automatically since there is no dealer button movement mechanic");
+                    PlayTutorialAudio(tutorialIndex);
+                    tutorialIndex++;
+                    Services.Dealer.dealerButtonMoved = true;
                 }
 
                 //player collects cards into deck 
-                else if (Services.Dealer.haveShuffledOnce)
+                else if (Services.Dealer.haveShuffledOnce && Services.Dealer.fiveFaceUpCardsDealt && Services.Dealer.cardsTouchingTable.Count == 0 && Services.Dealer.numberOfShuffles >= 2)
                 {
+                    Debug.Log("Thinks we have shuffled for the first time");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
+                    Services.Dealer.haveShuffledOnce = false;
                 }
                 //player deals 2 cards to each character 
-                else if (Table.gameState == GameState.PreFlop)
+                else if (Table.gameState == GameState.PreFlop && !Services.Dealer.dealtTwoCards)
                 {
+                    Debug.Log("Thinks we have dealt 2 cards to each character ");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
+                    Services.Dealer.dealtTwoCards = true;
                 }
                 //looks at first player 
                 else if (Services.Dealer.haveLookedAtFirstPlayer)
                 {
+                    Debug.Log("Thinks we have looked at the first player");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
+                    Services.Dealer.haveLookedAtFirstPlayer = false;
                 }
                 //round over
-                else if (Services.Dealer.roundsFinished == 1)
+                else if (Services.Dealer.roundsFinished == 1 && !Services.Dealer.roundOneComplete)
                 {
+                    Debug.Log("Thinks the first round is finished");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
+                    Services.Dealer.roundOneComplete = true;
                 }
                     
-                else if (Table.gameState == GameState.Flop)
-                {
-                    PlayTutorialAudio(tutorialIndex);
-                    tutorialIndex++;
-                }
+                //else if (Table.gameState == GameState.Flop)
+                //{
+                //    Debug.Log("Thinks we have looked at the first player");
+                //    PlayTutorialAudio(tutorialIndex);
+                //    tutorialIndex++;
+                //}
                
             }
         }

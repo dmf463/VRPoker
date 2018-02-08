@@ -36,10 +36,16 @@ public class Dealer : MonoBehaviour
     public bool inTutorial = true;
     public int handCounter = 1; //which hand are we on? First, second, third.... 
     public int roundsFinished = 0; //how many rounds of betting have we finished this hand
+    public bool roundOneComplete = false;
     public int cardsBurned = 0; //how many cards have we burned
-    public bool havePickedUpDeckOnce = false;
+    public bool havePickedUpDeck = false;
+    public bool havePickedUpDeckForFirstTime = false;
+    public int numberOfShuffles = 0;
     public bool haveShuffledOnce = false;
     public bool haveLookedAtFirstPlayer = false;
+    public bool dealtTwoCards = false;
+    public bool fiveFaceUpCardsDealt = false;
+    public bool dealerButtonMoved = false;
 
     bool first_time = true;
 
@@ -143,6 +149,10 @@ public class Dealer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (dealerButtonMoved)
+        {
+            Debug.Log("DEALER BUTTON MOVED");
+        }
 
         WaitingToGrabCardsOn_ThrownDeck();
         WaitingToGrabCardsOn_MisDeal();

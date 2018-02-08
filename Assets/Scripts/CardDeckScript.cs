@@ -294,9 +294,13 @@ public class CardDeckScript : InteractionSuperClass {
         handTouchingDeck = false;
         if(attachedHand.currentAttachedObject.tag == "CardDeck")
         {
-			if(Services.Dealer.havePickedUpDeckOnce != true)
+           
+			if(Services.Dealer.havePickedUpDeck != true && !Services.Dealer.havePickedUpDeckForFirstTime)
 			{
-				Services.Dealer.havePickedUpDeckOnce = true;
+				Services.Dealer.havePickedUpDeck = true;
+                Services.Dealer.havePickedUpDeckForFirstTime = true;
+
+               
 			}
             deckHand = attachedHand;
             throwingHand = attachedHand.otherHand;
@@ -349,8 +353,11 @@ public class CardDeckScript : InteractionSuperClass {
     //and then refill the deck with 52 new cardTypes
     public void RefillCardDeck()
     {
-        if (!Services.Dealer.haveShuffledOnce)
+        Services.Dealer.numberOfShuffles++;
+        Debug.Log("Number of timed deck refilled: " + Services.Dealer.numberOfShuffles);
+        if (!Services.Dealer.haveShuffledOnce && Services.Dealer.numberOfShuffles == 2)
         {
+            Debug.Log("Deck shuffled");
             Services.Dealer.haveShuffledOnce = true;
         }
         Services.Dealer.deckIsDead = false;
