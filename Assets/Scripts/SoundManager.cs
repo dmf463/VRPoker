@@ -34,6 +34,7 @@ public class SoundManager : MonoBehaviour
 	public AudioClip[] lowAside4Index;
 
 	public AudioClip[] tutorialAudio;
+    int tutorialIndex = 1;
 
 	public List <AudioData> tutorialAudioFiles = new List <AudioData>();
 
@@ -125,7 +126,7 @@ public class SoundManager : MonoBehaviour
 
     public void CheckForTutorialAudioToBePlayed()
     {
-        int tutorialIndex = 1;
+        Debug.Log("Tutorial index = " + tutorialIndex);
         if (Services.Dealer.handCounter == 1)
         {
             if(tutorialAudioFiles[tutorialIndex-1].finishedPlaying && !tutorialAudioFiles[tutorialIndex].finishedPlaying)
@@ -135,6 +136,7 @@ public class SoundManager : MonoBehaviour
                 {
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
+                    Debug.Log("Play audio file ");
                 }
             //player deals face up card to each player 
                 else if (tutorialIndex == 2 && Services.Dealer.cardsTouchingTable.Count >= 5)
