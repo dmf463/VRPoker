@@ -69,15 +69,15 @@ public class LogCards : MonoBehaviour
                         Table.instance.AddCardTo(playerDestinations[i], other.GetComponent<Card>());
                         Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
                         Services.PokerRules.PlayTone();
-                        //Debug.Log(other.gameObject.name + " went into " + playerNames[i]);
+                        Debug.Log(other.gameObject.name + " went into " + playerNames[i]);
                     }
                 }
 
             }
             //if the card is going into TheBoard
             if (this.gameObject.name == "TheBoard" && Services.Dealer.playerToAct == null && 
-                (Table.gameState != GameState.CleanUp ||
-                 Table.gameState != GameState.PostHand ||
+                (Table.gameState != GameState.CleanUp &&
+                 Table.gameState != GameState.PostHand &&
                  Table.gameState != GameState.NewRound))
             {
                 //same thing as above
@@ -107,7 +107,7 @@ public class LogCards : MonoBehaviour
                 {
                     Table.instance.AddCardTo(Destination.board, other.GetComponent<Card>());
                     Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
-                    //Debug.Log(other.gameObject.name + " went into " + this.gameObject.name);
+                    Debug.Log(other.gameObject.name + " went into " + this.gameObject.name);
                 }
                 //}
 

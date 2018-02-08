@@ -8,7 +8,7 @@ public class PlayerGazeTrigger : MonoBehaviour
 {
 
     float timeRemaining;
-    float timeSpanForQuestion = 3;
+    float timeSpanForQuestion = 1;
     float timeSpanForEye;
     public float rayDistance;
     public LayerMask mask;
@@ -93,7 +93,7 @@ public class PlayerGazeTrigger : MonoBehaviour
             {
                 if (!eyeActivated)
                 {
-                    if (Table.gameState == GameState.PreFlop) timeSpanForEye = 2;
+                    if (Table.gameState == GameState.PreFlop) timeSpanForEye = 1;
                     else timeSpanForEye = 1;
                     timeRemaining = timeSpanForEye;
                     eyeActivated = true;

@@ -34,19 +34,7 @@ public class Dealer : MonoBehaviour
 
     //TUTORIAL STUFF 
     public bool inTutorial = true;
-    public int handCounter = 1; //which hand are we on? First, second, third.... 
-    public int roundsFinished = 0; //how many rounds of betting have we finished this hand
-    public bool roundOneComplete = false;
-    public int cardsBurned = 0; //how many cards have we burned
-    public bool havePickedUpDeck = false;
-    public bool havePickedUpDeckForFirstTime = false;
-    public int numberOfShuffles = 0;
-    public bool haveShuffledOnce = false;
-    public bool haveLookedAtFirstPlayer = false;
-    public bool dealtTwoCards = false;
-    public bool fiveFaceUpCardsDealt = false;
-    public bool dealerButtonMoved = false;
-
+ 
     bool first_time = true;
 
     [HideInInspector]
@@ -138,7 +126,7 @@ public class Dealer : MonoBehaviour
 
         if (inTutorial)
         {
-            if (handCounter == 1 && Services.SoundManager.tutorialAudioFiles[0].hasBeenPlayed == false)
+            if (Services.SoundManager.handCounter == 1 && Services.SoundManager.tutorialAudioFiles[0].hasBeenPlayed == false)
             {
                 Services.SoundManager.PlayTutorialAudio(0);
             }
@@ -149,11 +137,7 @@ public class Dealer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (dealerButtonMoved)
-        {
-            Debug.Log("DEALER BUTTON MOVED");
-        }
-
+        Debug.Log(Table.gameState);
         WaitingToGrabCardsOn_ThrownDeck();
         WaitingToGrabCardsOn_MisDeal();
         RunTutorial();
@@ -760,9 +744,6 @@ public class Dealer : MonoBehaviour
                         Destroy(card.GetComponent<ConstantForce>());
                         Destroy(card.GetComponent<BoxCollider>());
                         Destroy(card.GetComponent<Rigidbody>());
-                        //card.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-                        //card.GetComponent<Rigidbody>().velocity = Vector3.zero;
-                        //card.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
                         card.GetComponent<Card>().is_flying = true;
                     }
                 }
@@ -777,7 +758,7 @@ public class Dealer : MonoBehaviour
         {
             if (flyingClicked)
             {
-                Vector3 modPos = new Vector3(0, .02f, 0);
+                Vector3 modPos = new Vector3(0, 0.25f, 0);
                 GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
                 GameObject cardDeck = GameObject.FindGameObjectWithTag("CardDeck");
                 if (first_time)
@@ -804,6 +785,7 @@ public class Dealer : MonoBehaviour
                         Destroy(card);
                     }
                 }
+
                 if (cardsOnTable.Length == 0)
                 {
                     flyingClicked = false;
@@ -1693,24 +1675,3 @@ public class Dealer : MonoBehaviour
 }
 
        
-    public bool OutsideVR = false;
-
-    //TUTORIAL STUFF 
-    public bool inTutorial = true;
- 
-    bool first_time = true;
-
-        lastGameState = GameState.NewRound;
-
-        if (inTutorial)
-        {
-            if (Services.SoundManager.handCounter == 1 && Services.SoundManager.tutorialAudioFiles[0].hasBeenPlayed == false)
-            {
-                Services.SoundManager.PlayTutorialAudio(0);
-            }
-            //OutsideVR = true;
-        }
-    {
-        WaitingToGrabCardsOn_ThrownDeck();
-        WaitingToGrabCardsOn_MisDeal();
-        RunTutorial();
