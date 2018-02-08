@@ -180,6 +180,7 @@ public class SoundManager : MonoBehaviour
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
                     dealerButtonMoved = true;
+                    Table.gameState = GameState.CleanUp;
                 }
 
                 //player collects cards into deck 
@@ -189,6 +190,7 @@ public class SoundManager : MonoBehaviour
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
                     haveShuffledOnce = false;
+                    Table.gameState = GameState.NewRound;
                 }
                 //player deals 2 cards to each character 
                 else if (Table.gameState == GameState.PreFlop && !dealtTwoCards)
