@@ -362,25 +362,29 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public void DetermineAction(float returnRate, PokerPlayerRedux player)
     {
-        switch (playerName)
+        if (Services.Dealer.inTutorial) Call();
+        else
         {
-            case PlayerName.Casey:
-                Services.PlayerBehaviour.CASEY_DetermineAction(returnRate, player);
-                break;
-            case PlayerName.Zombie:
-                Services.PlayerBehaviour.ZOMBIE_DetermineAction(returnRate, player);
-                break;
-            case PlayerName.Minnie:
-                Services.PlayerBehaviour.MINNIE_DetermineAction(returnRate, player);
-                break;
-            case PlayerName.Nathaniel:
-                Services.PlayerBehaviour.NATHANIEL_DetermineAction(returnRate, player);
-                break;
-            case PlayerName.Floyd:
-                Services.PlayerBehaviour.FLOYD_DetermineAction(returnRate, player);
-                break;
-            default:
-                break;
+            switch (playerName)
+            {
+                case PlayerName.Casey:
+                    Services.PlayerBehaviour.CASEY_DetermineAction(returnRate, player);
+                    break;
+                case PlayerName.Zombie:
+                    Services.PlayerBehaviour.ZOMBIE_DetermineAction(returnRate, player);
+                    break;
+                case PlayerName.Minnie:
+                    Services.PlayerBehaviour.MINNIE_DetermineAction(returnRate, player);
+                    break;
+                case PlayerName.Nathaniel:
+                    Services.PlayerBehaviour.NATHANIEL_DetermineAction(returnRate, player);
+                    break;
+                case PlayerName.Floyd:
+                    Services.PlayerBehaviour.FLOYD_DetermineAction(returnRate, player);
+                    break;
+                default:
+                    break;
+            }
         }
     }
     public void Fold()

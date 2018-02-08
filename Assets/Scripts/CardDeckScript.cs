@@ -63,7 +63,7 @@ public class CardDeckScript : InteractionSuperClass {
     //so this is the bool that prevents us from instantiating more than one card at a time 
     private bool readyForAnotherCard = false;
 
-    private bool cheating;
+    public bool cheating;
     public GameObject cardPreview;
     private int cardNum;
     private float tiltSpeed = 0;

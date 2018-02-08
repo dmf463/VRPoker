@@ -113,8 +113,8 @@ public class LogCards : MonoBehaviour
 
             }
             else if (this.gameObject.name == "BurnCards" && Services.Dealer.playerToAct == null &&
-                (Table.gameState != GameState.CleanUp ||
-                 Table.gameState != GameState.PostHand ||
+                (Table.gameState != GameState.CleanUp &&
+                 Table.gameState != GameState.PostHand &&
                  Table.gameState != GameState.NewRound))
             {
                 //if (Table.dealerState == DealerState.DealingState)

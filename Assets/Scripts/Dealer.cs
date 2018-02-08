@@ -96,6 +96,8 @@ public class Dealer : MonoBehaviour
 
     private float gameLength;
 
+    public PokerGameData startingGameState;
+
     [HideInInspector]
 	public bool misdealAudioPlayed =false;
 
@@ -123,6 +125,7 @@ public class Dealer : MonoBehaviour
         Debug.Log("Gamestate = " + Table.gameState);
         Table.dealerState = DealerState.DealingState;
         lastGameState = GameState.NewRound;
+        startingGameState = new PokerGameData(0, players);
 
         if (inTutorial)
         {
@@ -1418,6 +1421,70 @@ public class Dealer : MonoBehaviour
         winnersHaveBeenPaid = false;
         readyToAwardPlayers = false;
 		misdealAudioPlayed = false;
+        finalHandEvaluation = false;
+        roundStarted = false;
+        raisesInRound = 0;
+        Services.PokerRules.TurnOffAllIndicators();
+        GameObject[] chipsOnTable = GameObject.FindGameObjectsWithTag("Chip");
+        if (chipsOnTable.Length > 0)
+        {
+            foreach (GameObject chip in chipsOnTable)
+            {
+                Destroy(chip);
+            }
+        }
+        for (int i = 0; i < players.Count; i++)
+        {
+            if (players[i].PlayerState == PlayerState.Playing)
+            {
+                List<int> newStacks = players[i].SetChipStacks(players[i].chipCount);
+                GameObject[] chipsToDestroy = GameObject.FindGameObjectsWithTag("Chip");
+                players[i].CreateAndOrganizeChipStacks(newStacks);
+            }
+        }
+    }
+
+    public void StartNewGameAfterTutorial()
+    {
+        //Debug.Log("ResettingGameStatus");
+        for (int i = 0; i < players.Count; i++)
+        {
+            Table.instance.playerChipStacks[i] = startingGameState.PlayerChipStacks[i];
+            if (players[i].chipCount == 0)
+            {
+                players[i].PlayerState = PlayerState.Eliminated;
+                if (activePlayers.Contains(players[i]))
+                {
+                    Debug.Log("Removing " + players[i] + " from active players!");
+                    activePlayers.Remove(players[i]);
+                }
+            }
+
+            if (players[i].PlayerState != PlayerState.Eliminated)
+            {
+                players[i].PlayerState = PlayerState.Playing;
+                players[i].actedThisRound = false;
+                players[i].turnComplete = false;
+            }
+            players[i].HasBeenPaid = false;
+            players[i].playerIsAllIn = false;
+            players[i].flippedCards = false;
+            players[i].isAggressor = false;
+            players[i].waitingToGetPaid = false;
+            players[i].playerLookedAt = false;
+            players[i].timesRaisedThisRound = 0;
+            //players[i].checkedHandStrength = false;
+        }
+        GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
+        foreach (GameObject card in cardsOnTable) Destroy(card);
+        Table.gameState = GameState.NewRound;
+        Services.Dealer.playerToAct = null;
+        Services.Dealer.previousPlayerToAct = null;
+        Services.PokerRules.checkedForCorrections = false;
+        playersHaveBeenEvaluated = false;
+        winnersHaveBeenPaid = false;
+        readyToAwardPlayers = false;
+        misdealAudioPlayed = false;
         finalHandEvaluation = false;
         roundStarted = false;
         raisesInRound = 0;

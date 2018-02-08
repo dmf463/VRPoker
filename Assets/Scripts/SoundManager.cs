@@ -56,10 +56,16 @@ public class SoundManager : MonoBehaviour
     public int numberOfShuffles = 0;
     public bool haveShuffledOnce = false;
     public bool haveLookedAtFirstPlayer = false;
+    public bool lookAudioPlayed = false;
     public bool dealtTwoCards = false;
     public bool fiveFaceUpCardsDealt = false;
     public int faceUpTableCards = 0; 
     public bool dealerButtonMoved = false;
+    public bool buttonMovedAgain = false;
+    public bool gaveWinnerEarnings = false;
+    public bool secondHand = false;
+    public bool cheatingEngaged = false;
+    public bool letEmLoose = false;
 
 
 
@@ -210,12 +216,13 @@ public class SoundManager : MonoBehaviour
                     dealtTwoCards = true;
                 }
                 //looks at first player 
-                else if (haveLookedAtFirstPlayer)
+                else if (haveLookedAtFirstPlayer && !lookAudioPlayed)
                 {
                     Debug.Log("Thinks we have looked at the first player");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
                     haveLookedAtFirstPlayer = false;
+                    lookAudioPlayed = true;
                 }
                 //1st round over
                 else if (roundsFinished == 1 && !roundOneComplete)
@@ -236,7 +243,8 @@ public class SoundManager : MonoBehaviour
                 //puts three cards in center
                 else if (Table.instance._board.Count == 3 && !flopDealt)
                 {
-                    foreach (Card card in Table.instance._board) {
+                    foreach (Card card in Table.instance._board)
+                    {
                         if (card.cardFacingUp)
                         {
                             faceUpTableCards++;
@@ -271,7 +279,7 @@ public class SoundManager : MonoBehaviour
                     }
                     foreach (Card card in Table.instance._burn)
                     {
-                        if (card.cardIsFlipped)
+                        if (!card.cardIsFlipped)
                         {
                             cardsBurned++;
                         }
@@ -287,9 +295,86 @@ public class SoundManager : MonoBehaviour
                         cardsBurned = 0;
                     }
                 }
+                //3rd round over
+                else if (roundsFinished == 3 && !roundThreeComplete)
+                {
+                    Debug.Log("Thinks the third round is finished");
+                    PlayTutorialAudio(tutorialIndex);
+                    tutorialIndex++;
+                    roundThreeComplete = true;
+                }
+                //burn and river
+                else if (Table.instance._board.Count == 5 && Table.instance._burn.Count == 3 && !riverDealt && !burnedThirdCard)
+                {
+                    foreach (Card card in Table.instance._board)
+                    {
+                        if (card.cardFacingUp)
+                        {
+                            faceUpTableCards++;
+                        }
+                    }
+                    foreach (Card card in Table.instance._burn)
+                    {
+                        if (!card.cardIsFlipped)
+                        {
+                            cardsBurned++;
+                        }
+                    }
+                    if (faceUpTableCards >= 5 && cardsBurned == 3)
+                    {
+                        Debug.Log("thinks we have burned and river");
+                        PlayTutorialAudio(tutorialIndex);
+                        tutorialIndex++;
+                        riverDealt = true;
+                        burnedThirdCard = true;
+                        faceUpTableCards = 0;
+                        cardsBurned = 0;
+                    }
+                }
+                else if (!gaveWinnerEarnings && Services.Dealer.cleaningCards && tutorialIndex == 14) //player placed dealer button in correct place (not in right now so just plays automatically)
+                {
+                    Debug.Log("gave player winnings");
+                    PlayTutorialAudio(tutorialIndex);
+                    tutorialIndex++;
+                    gaveWinnerEarnings = true;
 
+                }
+                else if (!secondHand && tutorialIndex == 15) //player placed dealer button in correct place (not in right now so just plays automatically)
+                {
+                    Debug.Log("automatic");
+                    PlayTutorialAudio(tutorialIndex);
+                    tutorialIndex++;
+                    secondHand = true;
 
+                }
+                else if (!buttonMovedAgain && tutorialIndex == 16) //player placed dealer button in correct place (not in right now so just plays automatically)
+                {
+                    Debug.Log("automatic");
+                    PlayTutorialAudio(tutorialIndex);
+                    tutorialIndex++;
+                    buttonMovedAgain = true;
 
+                }
+                else if (GameObject.FindGameObjectWithTag("CardDeck").GetComponent<CardDeckScript>().cheating && !cheatingEngaged)
+                {
+                    Debug.Log("CHEATING");
+                    PlayTutorialAudio(tutorialIndex);
+                    tutorialIndex = 23;
+                    cheatingEngaged = true;
+                }
+                else if (!letEmLoose && tutorialIndex == 23)
+                {
+                    Debug.Log("Let em loose");
+                    PlayTutorialAudio(tutorialIndex);        
+                    letEmLoose = true;
+                    tutorialIndex = 27;
+                }
+                else if (Services.Dealer.killingCards && tutorialIndex >= 23)
+                {
+                    PlayTutorialAudio(tutorialIndex);
+                    Table.instance.RestartRound();
+                    Services.Dealer.inTutorial = false;
+                }
 
             }
         }

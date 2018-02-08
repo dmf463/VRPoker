@@ -162,30 +162,60 @@ public class Table {
         }
         else
         {
-            Debug.Log("RestartingRound in " + Table.gameState);
-            for (int i = 0; i < playerCards.Length; i++)
+            if (Services.Dealer.inTutorial)
             {
-                playerCards[i].Clear();
-            }
-            Services.Dealer.ResetGameState();
-            _board.Clear();
-            _burn.Clear();
-            Services.PokerRules.cardsPulled.Clear();
-            Services.PokerRules.cardsLogged.Clear();
-            Services.Dealer.cardsTouchingTable.Clear();
-            Services.Dealer.chipsInPot.Clear();
-            Services.Dealer.deadCardsList.Clear();
+                Debug.Log("RestartingRound in " + Table.gameState);
+                for (int i = 0; i < playerCards.Length; i++)
+                {
+                    playerCards[i].Clear();
+                }
+                Services.Dealer.StartNewGameAfterTutorial();
+                _board.Clear();
+                _burn.Clear();
+                Services.PokerRules.cardsPulled.Clear();
+                Services.PokerRules.cardsLogged.Clear();
+                Services.Dealer.cardsTouchingTable.Clear();
+                Services.Dealer.chipsInPot.Clear();
+                Services.Dealer.deadCardsList.Clear();
 
-            potChips = 0;
-            gameState = GameState.NewRound;
-            GameObject deck = GameObject.FindGameObjectWithTag("CardDeck");
-            deck.GetComponent<CardDeckScript>().UnlockDeck();
-            DealerPosition = gameData.DealerPosition; //this does not account for a dead dealer
-            SetDealerButtonPos(DealerPosition);
-            Services.Dealer.StartCoroutine(Services.Dealer.WaitToPostBlinds(.25f));
-            Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(1).currentBet = Services.Dealer.SmallBlind;
-            Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(2).currentBet = Services.Dealer.BigBlind;
-            Services.Dealer.LastBet = Services.Dealer.BigBlind;
+                potChips = 0;
+                gameState = GameState.NewRound;
+                GameObject deck = GameObject.FindGameObjectWithTag("CardDeck");
+                deck.GetComponent<CardDeckScript>().UnlockDeck();
+                DealerPosition = Services.Dealer.startingGameState.DealerPosition; //this does not account for a dead dealer
+                SetDealerButtonPos(DealerPosition);
+                Services.Dealer.StartCoroutine(Services.Dealer.WaitToPostBlinds(.25f));
+                Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(1).currentBet = Services.Dealer.SmallBlind;
+                Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(2).currentBet = Services.Dealer.BigBlind;
+                Services.Dealer.LastBet = Services.Dealer.BigBlind;
+            }
+            else
+            {
+                Debug.Log("RestartingRound in " + Table.gameState);
+                for (int i = 0; i < playerCards.Length; i++)
+                {
+                    playerCards[i].Clear();
+                }
+                Services.Dealer.ResetGameState();
+                _board.Clear();
+                _burn.Clear();
+                Services.PokerRules.cardsPulled.Clear();
+                Services.PokerRules.cardsLogged.Clear();
+                Services.Dealer.cardsTouchingTable.Clear();
+                Services.Dealer.chipsInPot.Clear();
+                Services.Dealer.deadCardsList.Clear();
+
+                potChips = 0;
+                gameState = GameState.NewRound;
+                GameObject deck = GameObject.FindGameObjectWithTag("CardDeck");
+                deck.GetComponent<CardDeckScript>().UnlockDeck();
+                DealerPosition = gameData.DealerPosition; //this does not account for a dead dealer
+                SetDealerButtonPos(DealerPosition);
+                Services.Dealer.StartCoroutine(Services.Dealer.WaitToPostBlinds(.25f));
+                Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(1).currentBet = Services.Dealer.SmallBlind;
+                Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(2).currentBet = Services.Dealer.BigBlind;
+                Services.Dealer.LastBet = Services.Dealer.BigBlind;
+            }
         }
     }
     //we use this function in order to get access to the actual card gameObjects
