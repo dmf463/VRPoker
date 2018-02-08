@@ -8,7 +8,7 @@ public class PlayerGazeTrigger : MonoBehaviour
 {
 
     float timeRemaining;
-    float timeSpanForQuestion = 1;
+    float timeSpanForQuestion = 3;
     float timeSpanForEye;
     public float rayDistance;
     public LayerMask mask;
