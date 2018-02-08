@@ -42,7 +42,15 @@ public class SoundManager : MonoBehaviour
     public int handCounter = 1; //which hand are we on? First, second, third.... 
     public int roundsFinished = 0; //how many rounds of betting have we finished this hand
     public bool roundOneComplete = false;
+    public bool roundTwoComplete = false;
+    public bool roundThreeComplete = false;
     public int cardsBurned = 0; //how many cards have we burned
+    public bool burnedFirstCard = false;
+    public bool burnedSecondCard = false;
+    public bool burnedThirdCard = false;
+    public bool flopDealt = false;
+    public bool turnDealt = false;
+    public bool riverDealt = false;
     public bool havePickedUpDeck = false;
     public bool havePickedUpDeckForFirstTime = false;
     public int numberOfShuffles = 0;
@@ -50,6 +58,7 @@ public class SoundManager : MonoBehaviour
     public bool haveLookedAtFirstPlayer = false;
     public bool dealtTwoCards = false;
     public bool fiveFaceUpCardsDealt = false;
+    public int faceUpTableCards = 0; 
     public bool dealerButtonMoved = false;
 
 
@@ -208,7 +217,7 @@ public class SoundManager : MonoBehaviour
                     tutorialIndex++;
                     haveLookedAtFirstPlayer = false;
                 }
-                //round over
+                //1st round over
                 else if (roundsFinished == 1 && !roundOneComplete)
                 {
                     Debug.Log("Thinks the first round is finished");
@@ -216,20 +225,72 @@ public class SoundManager : MonoBehaviour
                     tutorialIndex++;
                     roundOneComplete = true;
                 }
-                else if (Table.instance._burn.Count == 1 && !Table.instance._burn[0].cardIsFlipped)
+                //put first card in burn pile
+                else if (Table.instance._burn.Count == 1 && !Table.instance._burn[0].cardIsFlipped && !burnedFirstCard)
                 {
+                    Debug.Log("Thinks we've burned one card");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
+                    burnedFirstCard = true;
+                }
+                //puts three cards in center
+                else if (Table.instance._board.Count == 3 && !flopDealt)
+                {
+                    foreach (Card card in Table.instance._board) {
+                        if (card.cardFacingUp)
+                        {
+                            faceUpTableCards++;
+                        }
+                    }
+                    if (faceUpTableCards >= 3)
+                    {
+                        Debug.Log("thinks we have dealt the flop");
+                        PlayTutorialAudio(tutorialIndex);
+                        tutorialIndex++;
+                        flopDealt = true;
+                        faceUpTableCards = 0;
+                    }
+                }
+                //2nd round over
+                else if (roundsFinished == 2 && !roundTwoComplete)
+                {
+                    Debug.Log("Thinks the second round is finished");
+                    PlayTutorialAudio(tutorialIndex);
+                    tutorialIndex++;
+                    roundTwoComplete = true;
+                }
+                //burn and turn
+                else if (Table.instance._board.Count == 4 && Table.instance._burn.Count == 2 && !turnDealt && !burnedSecondCard)
+                {
+                    foreach (Card card in Table.instance._board)
+                    {
+                        if (card.cardFacingUp)
+                        {
+                            faceUpTableCards++;
+                        }
+                    }
+                    foreach (Card card in Table.instance._burn)
+                    {
+                        if (card.cardIsFlipped)
+                        {
+                            cardsBurned++;
+                        }
+                    }
+                    if (faceUpTableCards >= 4 && cardsBurned == 2)
+                    {
+                        Debug.Log("thinks we have burned and turned");
+                        PlayTutorialAudio(tutorialIndex);
+                        tutorialIndex++;
+                        turnDealt = true;
+                        burnedSecondCard = true;
+                        faceUpTableCards = 0;
+                        cardsBurned = 0;
+                    }
                 }
 
-                    
-                //else if (Table.gameState == GameState.Flop)
-                //{
-                //    Debug.Log("Thinks we have looked at the first player");
-                //    PlayTutorialAudio(tutorialIndex);
-                //    tutorialIndex++;
-                //}
-               
+
+
+
             }
         }
     }
