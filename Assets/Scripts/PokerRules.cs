@@ -9,6 +9,7 @@ public class PokerRules : MonoBehaviour {
     public List<Vector3> chipPositionWhenPushing;
     public int chipsBeingPushed;
     public List<Chip> chipGroup;
+    public List<Card> thrownCards = new List<Card>();
     //this keeps track of ALL the cards that have been dealt in a given hand
     //this way we won't use the same card twice for multiple things
     public List<CardType> cardsPulled = new List<CardType>();
@@ -26,7 +27,7 @@ public class PokerRules : MonoBehaviour {
     private int turnCard;
     private int riverCard;
     public bool checkedForCorrections;
-    private int toneCount;
+    public int toneCount;
     public float cardToneVolume;
 
     // Use this for initialization
@@ -381,6 +382,13 @@ public class PokerRules : MonoBehaviour {
                 }
             }
         }
+    }
+
+    public bool CardIsInCorrectLocation(Card card, int cardCount)
+    {
+        SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+        int playerIndex = Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardCount);
+        return Table.instance.playerCards[playerIndex].Contains(card);
     }
 
     public void CorrectMistakes()

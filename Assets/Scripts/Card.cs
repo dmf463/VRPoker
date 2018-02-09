@@ -15,9 +15,12 @@ public class Card : InteractionSuperClass {
     public bool is_flying = false;
     public float rotSpeed;
 
+    public float checkTime;
+
     //this is the actual information for the card
     public CardType cardType;
-    private CardRaycast cardRay;
+
+    public bool stillTouchingCollider = false;
 
     private Vector3 cardPosHeld;
     private Vector3 cardPosOnRelease;
@@ -106,7 +109,7 @@ public class Card : InteractionSuperClass {
         //lalalalalala setting shit in start lalalalalalalala
         cardDeck = GameObject.FindGameObjectWithTag("CardDeck"); //DEF will need to change this for recoupling purposes.
         deckScript = cardDeck.GetComponent<CardDeckScript>();  //gonna need to rework A LOT
-        cardRay = GetComponent<CardRaycast>();
+        //cardRay = GetComponent<CardRaycast>();
         rb = GetComponent<Rigidbody>();
         elapsedTimeForCardFlip = 0;
         //playerHand = GameObject.Find("Hand1").GetComponent<Hand>();
@@ -136,7 +139,7 @@ public class Card : InteractionSuperClass {
     //so this is literally the update function
     public void CardForDealingMode()
     {
-        cardFacingUp = cardRay.CardIsFaceUp(90);
+        //cardFacingUp = CardIsFaceUp(90);
         //if (flyingAllowed) StartCoroutine(WaitToStopFlying(2));
         //this is the function that flips the card in your hand
         //basically while the bool is true, we're constantly setting a new Qauternion, but the x-axis is being lerped
@@ -407,7 +410,7 @@ public class Card : InteractionSuperClass {
         cardPosHeld = transform.position;
         if(Table.gameState == GameState.NewRound)
         {
-            if (cardFacingUp == true) Table.gameState = GameState.Misdeal;
+            if (CardIsFaceUp(120, "ShufflingArea")) Table.gameState = GameState.Misdeal;
         }
         base.HandAttachedUpdate(attachedHand);
     }
@@ -418,33 +421,34 @@ public class Card : InteractionSuperClass {
     //notice the giant bug alert? this could probably be fixed with a RayCast
     public override void OnDetachedFromHand(Hand hand)
     {
-            if (!Services.PokerRules.cardsPulled.Contains(cardType) && Table.gameState != GameState.Misdeal)
-            {
-                Services.PokerRules.cardsPulled.Add(cardType);
-            }
-            if (rb == null)
-            {
-                rb = GetComponent<Rigidbody>();
-            }
-        if (cardRay.CardIsFaceUp(90) && cardIsFlipped == false)
+        Services.PokerRules.thrownCards.Add(this);
+        if (!Services.PokerRules.cardsPulled.Contains(cardType) && Table.gameState != GameState.Misdeal)
+        {
+            Services.PokerRules.cardsPulled.Add(cardType);
+        }
+        if (rb == null)
+        {
+            rb = GetComponent<Rigidbody>();
+        }
+        if (CardIsFaceUp(90, "ShufflingArea") && cardIsFlipped == false)
         {
             //Debug.Log(this.gameObject.name + " card is facing the wrong way");
             cardThrownWrong = true;
         }
-		Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cards[Random.Range(0,Services.SoundManager.cards.Length)], 0.25f, Random.Range(0.95f, 1.05f), transform.position);
-            StartCoroutine(CheckVelocity(.025f));
-        if (Table.gameState == GameState.NewRound)
-        {
-            StartCoroutine(CheckIfFaceUpPreFlop(2, this));
-        }
+        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cards[Random.Range(0, Services.SoundManager.cards.Length)], 0.25f, Random.Range(0.95f, 1.05f), transform.position);
+        StartCoroutine(CheckVelocity(.025f));
+        //if (Table.gameState == GameState.NewRound)
+        //{
+        //    StartCoroutine(CheckIfFaceUpPreFlop(2));
+        //}
         base.OnDetachedFromHand(hand);
     }
 
-    IEnumerator CheckIfFaceUpPreFlop(float time, Card card)
-    {
-        yield return new WaitForSeconds(time);
-        if (card.cardFacingUp) Table.gameState = GameState.Misdeal;
-    }
+    //IEnumerator CheckIfFaceUpPreFlop(float time)
+    //{
+    //    yield return new WaitForSeconds(time);
+    //    if (CardIsFaceUp(150, )) Table.gameState = GameState.Misdeal;
+    //}
 
     //basically we want to give some time for the card to actually LEAVE the hand before we check the velocity
     //it's this that lets us know whether the card was thrown hard or soft
@@ -460,7 +464,6 @@ public class Card : InteractionSuperClass {
             Debug.Log("yDifference for up, down, and then out = " + yDifference);
             cardThrownWrong = true;
         }
-
         if (rb.velocity.magnitude > MAGNITUDE_THRESHOLD)
         {
             startingFastTorque = true;
@@ -469,7 +472,36 @@ public class Card : InteractionSuperClass {
         {
             startingSlowTorque = true;
         }
+        StartCoroutine(CheckIfCardIsAtDestination(checkTime));
     }
+
+    IEnumerator CheckIfCardIsAtDestination(float time)
+    {
+        yield return new WaitForSeconds(time);
+        if (Services.PokerRules.CardIsInCorrectLocation(this, Services.PokerRules.cardsPulled.Count))
+        {
+            Services.Dealer.messageText.text = "Card is in correct location";
+            Debug.Log("Card is in correct location");
+        }
+        else
+        {
+            Services.Dealer.messageText.text = "Card is not in correct location";
+            Debug.Log("Card is not in correct location");
+        }
+        
+    }
+
+    public Vector3 GetPlayerPos()
+    {
+        Vector3 pos;
+        int playerIndex = Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(Services.PokerRules.cardsPulled.Count);
+        PokerPlayerRedux player = Services.Dealer.players[playerIndex];
+        GameObject playerCardSpace = player.gameObject.GetComponentInChildren<LogCards>().gameObject;
+        Debug.Log("playerCardSpace name = " + playerCardSpace.name);
+        pos = playerCardSpace.transform.position;
+        return pos;
+    }
+
 
     //part of the interaction class this derives from.
     public override void CheckSwipeDirection(Hand hand)
@@ -488,6 +520,15 @@ public class Card : InteractionSuperClass {
     {
         flippingCard = true;
         rotationAtFlipStart = transform.localRotation;
+    }
+
+    public bool CardIsFaceUp(float angleThreshold, string comparisonPoint)
+    {
+        Transform obj = GameObject.Find(comparisonPoint).transform;
+        Vector3 targetDir = obj.position - transform.position;
+        float angle = Vector3.Angle(targetDir, -transform.forward);
+        if (angle > angleThreshold) return true;
+        else return false;
     }
 
 }

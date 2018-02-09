@@ -143,7 +143,7 @@ public class SoundManager : MonoBehaviour
 		source.pitch = pitch;
         source.Play();
         Destroy(specialAudioSource, clip.length);
-        Debug.Log("Clip played: " + clip.name);
+        //Debug.Log("Clip played: " + clip.name);
     }
 
 	public void GetSourceAndPlay(AudioSource source, AudioClip clip)
@@ -166,7 +166,7 @@ public class SoundManager : MonoBehaviour
                 //player picks up deck for first time 
                 if (havePickedUpDeck)
                 {
-                    Debug.Log("Thinks we have picked up deck");
+                   // Debug.Log("Thinks we have picked up deck");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
                     havePickedUpDeck = false;
@@ -174,7 +174,7 @@ public class SoundManager : MonoBehaviour
                 //player deals face up card to each player 
                 else if (Services.Dealer.cardsTouchingTable.Count >= 5 && !fiveFaceUpCardsDealt)
                 {
-                    Debug.Log("Caught if seen more than once");
+                    //Debug.Log("Caught if seen more than once");
                     int cardsFaceUp = 0;
                     for (int i = 0; i < Services.Dealer.cardsTouchingTable.Count; i++)
                     {
@@ -182,7 +182,7 @@ public class SoundManager : MonoBehaviour
                     }
                     if (cardsFaceUp >= 5)
                     {
-                        Debug.Log("Thinks we have dealt a face up card to each player");
+                        //Debug.Log("Thinks we have dealt a face up card to each player");
                         PlayTutorialAudio(tutorialIndex);
                         tutorialIndex++;
                         fiveFaceUpCardsDealt = true;
@@ -191,7 +191,7 @@ public class SoundManager : MonoBehaviour
                 }
                 else if (!dealerButtonMoved && tutorialIndex == 3) //player placed dealer button in correct place (not in right now so just plays automatically)
                 {
-                    Debug.Log("Should play automatically since there is no dealer button movement mechanic");
+                   // Debug.Log("Should play automatically since there is no dealer button movement mechanic");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
                     dealerButtonMoved = true;
@@ -201,7 +201,7 @@ public class SoundManager : MonoBehaviour
                 //player collects cards into deck 
                 else if (haveShuffledOnce && fiveFaceUpCardsDealt && Services.Dealer.cardsTouchingTable.Count == 0 && numberOfShuffles >= 2)
                 {
-                    Debug.Log("Thinks we have shuffled for the first time");
+                   // Debug.Log("Thinks we have shuffled for the first time");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
                     haveShuffledOnce = false;
@@ -210,7 +210,7 @@ public class SoundManager : MonoBehaviour
                 //player deals 2 cards to each character 
                 else if (Table.gameState == GameState.PreFlop && !dealtTwoCards)
                 {
-                    Debug.Log("Thinks we have dealt 2 cards to each character ");
+                   // Debug.Log("Thinks we have dealt 2 cards to each character ");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
                     dealtTwoCards = true;
@@ -218,7 +218,7 @@ public class SoundManager : MonoBehaviour
                 //looks at first player 
                 else if (haveLookedAtFirstPlayer && !lookAudioPlayed)
                 {
-                    Debug.Log("Thinks we have looked at the first player");
+                   // Debug.Log("Thinks we have looked at the first player");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
                     haveLookedAtFirstPlayer = false;
@@ -227,7 +227,7 @@ public class SoundManager : MonoBehaviour
                 //1st round over
                 else if (roundsFinished == 1 && !roundOneComplete)
                 {
-                    Debug.Log("Thinks the first round is finished");
+                   // Debug.Log("Thinks the first round is finished");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
                     roundOneComplete = true;
@@ -235,7 +235,7 @@ public class SoundManager : MonoBehaviour
                 //put first card in burn pile
                 else if (Table.instance._burn.Count == 1 && !Table.instance._burn[0].cardIsFlipped && !burnedFirstCard)
                 {
-                    Debug.Log("Thinks we've burned one card");
+                  //  Debug.Log("Thinks we've burned one card");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
                     burnedFirstCard = true;
@@ -252,7 +252,7 @@ public class SoundManager : MonoBehaviour
                     }
                     if (faceUpTableCards >= 3)
                     {
-                        Debug.Log("thinks we have dealt the flop");
+                      //  Debug.Log("thinks we have dealt the flop");
                         PlayTutorialAudio(tutorialIndex);
                         tutorialIndex++;
                         flopDealt = true;
@@ -262,7 +262,7 @@ public class SoundManager : MonoBehaviour
                 //2nd round over
                 else if (roundsFinished == 2 && !roundTwoComplete)
                 {
-                    Debug.Log("Thinks the second round is finished");
+                   // Debug.Log("Thinks the second round is finished");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
                     roundTwoComplete = true;
@@ -286,7 +286,7 @@ public class SoundManager : MonoBehaviour
                     }
                     if (faceUpTableCards >= 4 && cardsBurned == 2)
                     {
-                        Debug.Log("thinks we have burned and turned");
+                        //Debug.Log("thinks we have burned and turned");
                         PlayTutorialAudio(tutorialIndex);
                         tutorialIndex++;
                         turnDealt = true;
@@ -298,7 +298,7 @@ public class SoundManager : MonoBehaviour
                 //3rd round over
                 else if (roundsFinished == 3 && !roundThreeComplete)
                 {
-                    Debug.Log("Thinks the third round is finished");
+                   // Debug.Log("Thinks the third round is finished");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
                     roundThreeComplete = true;
@@ -322,7 +322,7 @@ public class SoundManager : MonoBehaviour
                     }
                     if (faceUpTableCards >= 5 && cardsBurned == 3)
                     {
-                        Debug.Log("thinks we have burned and river");
+                      //  Debug.Log("thinks we have burned and river");
                         PlayTutorialAudio(tutorialIndex);
                         tutorialIndex++;
                         riverDealt = true;
@@ -333,7 +333,7 @@ public class SoundManager : MonoBehaviour
                 }
                 else if (!gaveWinnerEarnings && Services.Dealer.cleaningCards && tutorialIndex == 14) //player placed dealer button in correct place (not in right now so just plays automatically)
                 {
-                    Debug.Log("gave player winnings");
+                   // Debug.Log("gave player winnings");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
                     gaveWinnerEarnings = true;
@@ -341,7 +341,7 @@ public class SoundManager : MonoBehaviour
                 }
                 else if (!secondHand && tutorialIndex == 15) //player placed dealer button in correct place (not in right now so just plays automatically)
                 {
-                    Debug.Log("automatic");
+                   // Debug.Log("automatic");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
                     secondHand = true;
@@ -349,7 +349,7 @@ public class SoundManager : MonoBehaviour
                 }
                 else if (!buttonMovedAgain && tutorialIndex == 16) //player placed dealer button in correct place (not in right now so just plays automatically)
                 {
-                    Debug.Log("automatic");
+                  //  Debug.Log("automatic");
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
                     buttonMovedAgain = true;
@@ -361,6 +361,7 @@ public class SoundManager : MonoBehaviour
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex = 23;
                     cheatingEngaged = true;
+                    Debug.Log("Let em loose is: " + letEmLoose);
                 }
                 else if (!letEmLoose && tutorialIndex == 23)
                 {

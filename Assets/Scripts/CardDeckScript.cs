@@ -277,7 +277,7 @@ public class CardDeckScript : InteractionSuperClass {
         }
         else
         {
-            Debug.Log("grabbing random card");
+            //Debug.Log("grabbing random card");
             int cardPos = Random.Range(0, cardsInDeck.Count);
             cardToGrab = cardsInDeck[cardPos];
         }
@@ -354,7 +354,7 @@ public class CardDeckScript : InteractionSuperClass {
     public void RefillCardDeck()
     {
         Services.SoundManager.numberOfShuffles++;
-        Debug.Log("Number of timed deck refilled: " + Services.SoundManager.numberOfShuffles);
+        //Debug.Log("Number of timed deck refilled: " + Services.SoundManager.numberOfShuffles);
         if (!Services.SoundManager.haveShuffledOnce && Services.SoundManager.numberOfShuffles == 2)
         {
             Debug.Log("Deck shuffled");

@@ -75,7 +75,7 @@ public class LogCards : MonoBehaviour
 
             }
             //if the card is going into TheBoard
-            if (this.gameObject.name == "TheBoard" && Services.Dealer.playerToAct == null && 
+            if (this.gameObject.name == "TheBoard" && Services.Dealer.playerToAct == null &&
                 (Table.gameState != GameState.CleanUp &&
                  Table.gameState != GameState.PostHand &&
                  Table.gameState != GameState.NewRound))
@@ -129,46 +129,89 @@ public class LogCards : MonoBehaviour
                 }
                 else if (Services.Dealer.deadCardsList.Contains(other.GetComponent<Card>()))
                 {
-                   // Debug.Log(other.gameObject.name + "card is dead");
+                    // Debug.Log(other.gameObject.name + "card is dead");
                 }
                 else
                 {
                     Table.instance.AddCardTo(Destination.burn, other.GetComponent<Card>());
                     Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
-                    //Debug.Log(other.gameObject.name + "Card went into " + this.gameObject.name);
+                    Debug.Log(other.gameObject.name + "Card went into " + this.gameObject.name);
                 }
-                //}
             }
-            //else if (this.gameObject.name == "ShufflingArea" && Table.gameState == GameState.Misdeal)
-            //{
-            //    if (GameObject.FindGameObjectWithTag("CardDeck") == null)
-            //    {
-            //        //Debug.Log("Could not find CardDeck, instantiating new one");
-            //        newCardDeck = Instantiate(Services.PrefabDB.CardDeck, transform.position, Quaternion.identity) as GameObject;
-            //        newCardDeck.GetComponent<CardDeckScript>().BuildDeckFromOneCard(newCardDeck);
-            //        madeNewDeck = true;
-            //    }
-            //    if (madeNewDeck == true)
-            //    {
-            //        Destroy(other.gameObject);
-            //        //Debug.Log("destroying cards");
-            //        newCardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
-            //        if (newCardDeck.GetComponent<CardDeckScript>().currentCardDeckScale.y > newCardDeck.GetComponent<CardDeckScript>().newCardDeckScale.y)
-            //        {
-            //            Table.instance.RestartRound();
-            //            Services.Dealer.killingCards
-            //            madeNewDeck = false;
-            //            GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
-            //            foreach (GameObject card in deadCards)
-            //            {
-            //                Destroy(card);
-            //            }
-            //        }
-            //    }
-            //}
-
         }
         #endregion
+    }
+
+    //public void OnTriggerStay(Collider other)
+    //{
+    //    if(other.gameObject.tag == "PlayingCard")
+    //    {
+    //        other.GetComponent<Card>().stillTouchingCollider = true;
+    //    }
+    //}
+
+    public void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "PlayingCard")
+        {
+            //Debug.Log("Distance between objects is " + Vector3.Distance(other.gameObject.transform.position, transform.position));
+            if (GetComponent<Collider>().bounds.Contains(other.ClosestPointOnBounds(transform.position)))
+            {
+                other.GetComponent<Card>().stillTouchingCollider = true;
+            }
+            else other.GetComponent<Card>().stillTouchingCollider = false;
+
+            if (!other.GetComponent<Card>().stillTouchingCollider)
+            {
+                //we go through all the player names
+                for (int i = 0; i < playerNames.Count; i++)
+                {
+                    //when we get to the match, we know which place to remove this from
+                    if (gameObject.name == playerNames[i] && Table.gameState == GameState.NewRound && Services.Dealer.players[i].PlayerState != PlayerState.Eliminated)
+                    {
+
+                        Table.instance.RemoveCardFrom(playerDestinations[i], other.GetComponent<Card>());
+                        Services.PokerRules.cardsLogged.Remove(other.GetComponent<Card>());
+                        Services.PokerRules.toneCount--;
+                        Services.PokerRules.PlayTone();
+                        Debug.Log(other.gameObject.name + " is gone from " + playerNames[i]);
+                    }
+                }
+            }
+        }
+        //WaitToCheckExit(0.25f, other);
+    }
+
+    IEnumerator WaitToCheckExit(float time, Collider other)
+    {
+        yield return new WaitForSeconds(time);
+        if (other.gameObject.tag == "PlayingCard")
+        {
+            Debug.Log("Distance between objects is " + Vector3.Distance(other.gameObject.transform.position, transform.position));
+            if (Vector3.Distance(other.gameObject.transform.position, transform.position) < 1)
+            {
+                other.GetComponent<Card>().stillTouchingCollider = true;
+            }
+            else other.GetComponent<Card>().stillTouchingCollider = false;
+
+            if (!other.GetComponent<Card>().stillTouchingCollider)
+            {
+                //we go through all the player names
+                for (int i = 0; i < playerNames.Count; i++)
+                {
+                    //when we get to the match, we know which place to remove this from
+                    if (gameObject.name == playerNames[i] && Table.gameState == GameState.NewRound && Services.Dealer.players[i].PlayerState != PlayerState.Eliminated)
+                    {
+
+                        Table.instance.RemoveCardFrom(playerDestinations[i], other.GetComponent<Card>());
+                        Services.PokerRules.cardsLogged.Remove(other.GetComponent<Card>());
+                        Services.PokerRules.toneCount--;
+                        Services.PokerRules.PlayTone();
+                        Debug.Log(other.gameObject.name + " is gone from " + playerNames[i]);
+                    }
+                }
+            }
+        }
     }
 
     public bool CardsBelongToAnotherPlayer(Card card)
