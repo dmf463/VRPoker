@@ -248,14 +248,15 @@ public class Dealer : MonoBehaviour
             else if (GetActivePlayerCount() - allInPlayerCount == 1 && playersReady) Table.gameState = GameState.ShowDown;
             if(readyForShowdown == true)
             {
-                if (!OutsideVR)
-                {
-                    if (hand1.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true && hand2.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true)
-                    {
-                        Table.gameState = GameState.ShowDown;
-                    }
-                }
-                else if (Input.GetKeyDown(KeyCode.DownArrow)) Table.gameState = GameState.ShowDown;
+                //if (!OutsideVR)
+                //{
+                    StartCoroutine(ReadyForShowDown(1));
+                    //if (hand1.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true && hand2.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true)
+                    //{
+                    //    Table.gameState = GameState.ShowDown;
+                    //}
+                //}
+                //else if (Input.GetKeyDown(KeyCode.DownArrow)) Table.gameState = GameState.ShowDown;
             }
         }
 
@@ -308,6 +309,12 @@ public class Dealer : MonoBehaviour
     {
         yield return new WaitForSeconds(time);
         clip.finishedPlaying = true;
+    }
+
+    IEnumerator ReadyForShowDown(float time)
+    {
+        yield return new WaitForSeconds(time);
+        Table.gameState = GameState.ShowDown;
     }
 
     public void CheckGameState()
@@ -586,19 +593,19 @@ public class Dealer : MonoBehaviour
                 cardCountForPreFlop++;
             }
         }
-        for (int i = 0; i < cardsTouchingTable.Count; i++)
-        {
-            if (!OutsideVR)
-            {
-                if (cardsTouchingTable[i].cardFacingUp) misdeal = true;
-            }
-        }
-        if(Services.Dealer.cardsTouchingTable.Count <= (PlayerAtTableCount()/2))
-        {
-            Debug.Log("Misdeal for there being less than 5 cards on the table");
-            Table.gameState = GameState.Misdeal;
-        }
-        else if(misdeal)
+        //for (int i = 0; i < cardsTouchingTable.Count; i++)
+        //{
+        //    if (!OutsideVR)
+        //    {
+        //        if (cardsTouchingTable[i].cardFacingUp) misdeal = true;
+        //    }
+        //}
+        //if(Services.Dealer.cardsTouchingTable.Count <= (PlayerAtTableCount()/2))
+        //{
+        //    Debug.Log("Misdeal for there being less than 5 cards on the table");
+        //    Table.gameState = GameState.Misdeal;
+        //}
+        if(misdeal)
         {
             Debug.Log("misdeal");
             Table.gameState = GameState.Misdeal;
@@ -1350,6 +1357,7 @@ public class Dealer : MonoBehaviour
         }
         Services.PokerRules.cardsPulled.Clear();
         Services.PokerRules.cardsLogged.Clear();
+        Services.PokerRules.thrownCards.Clear();
         cardsTouchingTable.Clear();
         Table.gameState = GameState.NewRound;
         playersHaveBeenEvaluated = false;

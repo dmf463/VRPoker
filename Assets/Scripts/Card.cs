@@ -14,6 +14,8 @@ public class Card : InteractionSuperClass {
 
     public bool is_flying = false;
     public float rotSpeed;
+    public bool thrownWrong = false;
+    int cardsCaught = 0;
 
     public float checkTime;
 
@@ -134,6 +136,7 @@ public class Card : InteractionSuperClass {
         //it's weird and this definitely needs refactoring
         //in fact this whole game could probably benefit from using state machines considering how many states I have
         CardForDealingMode();
+        BringCardBack();
 
 }
     //so this is literally the update function
@@ -328,12 +331,12 @@ public class Card : InteractionSuperClass {
     {
         //if (Table.dealerState == DealerState.ShufflingState)
         //{
-            if (((cardOnTable == true && CardIsDead(this)) || 
-                  Table.gameState == GameState.CleanUp || Table.gameState == GameState.PostHand) && 
-                  other.gameObject.tag == "Hand" && !Services.Dealer.handIsOccupied)
-            {
-                transform.position = new Vector3 (other.transform.position.x, transform.position.y, other.transform.position.z);
-            }
+            //if (((cardOnTable == true && CardIsDead(this)) || 
+            //      Table.gameState == GameState.CleanUp || Table.gameState == GameState.PostHand) && 
+            //      other.gameObject.tag == "Hand" && !Services.Dealer.handIsOccupied)
+            //{
+            //    transform.position = new Vector3 (other.transform.position.x, transform.position.y, other.transform.position.z);
+            //}
         //}
     }
 
@@ -421,7 +424,10 @@ public class Card : InteractionSuperClass {
     //notice the giant bug alert? this could probably be fixed with a RayCast
     public override void OnDetachedFromHand(Hand hand)
     {
-        Services.PokerRules.thrownCards.Add(this);
+        if (!Services.PokerRules.thrownCards.Contains(gameObject))
+        {
+            Services.PokerRules.thrownCards.Add(gameObject);
+        }
         if (!Services.PokerRules.cardsPulled.Contains(cardType) && Table.gameState != GameState.Misdeal)
         {
             Services.PokerRules.cardsPulled.Add(cardType);
@@ -472,23 +478,84 @@ public class Card : InteractionSuperClass {
         {
             startingSlowTorque = true;
         }
-        StartCoroutine(CheckIfCardIsAtDestination(checkTime));
+        if(!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && Table.gameState == GameState.NewRound)
+        {
+            StartCoroutine(CheckIfCardIsAtDestination(checkTime));
+        }
     }
 
     IEnumerator CheckIfCardIsAtDestination(float time)
     {
         yield return new WaitForSeconds(time);
+        Debug.Log("thrownCardsList = " + Services.PokerRules.thrownCards.Count);
+        float badCardsDebug = 0;
+        for (int i = Services.PokerRules.thrownCards.Count - 1; i >= 0; i--)
+        {
+            if (Services.PokerRules.thrownCards[i].GetComponent<Card>().thrownWrong)
+            {
+                badCardsDebug++;
+            }
+        }
+        Debug.Log("badcards count = " + badCardsDebug);
         if (Services.PokerRules.CardIsInCorrectLocation(this, Services.PokerRules.cardsPulled.Count))
         {
+            float badCards = 0;
             Services.Dealer.messageText.text = "Card is in correct location";
             Debug.Log("Card is in correct location");
+            for (int i = Services.PokerRules.thrownCards.Count - 1; i >= 0; i--)
+            {
+                if (Services.PokerRules.thrownCards[i].GetComponent<Card>().thrownWrong)
+                {
+                    badCards++;
+                }
+            }
+            if (badCards == 0) Services.PokerRules.thrownCards.Remove(gameObject);
+            else
+            {
+                thrownWrong = true;
+                Table.instance.RemoveCardFrom(Table.instance.playerDestinations[Services.PokerRules.CardOwner(Services.PokerRules.cardsPulled.Count).SeatPos], this);
+            }
         }
         else
         {
-            Services.Dealer.messageText.text = "Card is not in correct location";
-            Debug.Log("Card is not in correct location");
+            Debug.Log("card is in wrong location");
+            thrownWrong = true;
+            Table.instance.RemoveCardFrom(Table.instance.playerDestinations[Services.PokerRules.CardOwner(Services.PokerRules.cardsPulled.Count).SeatPos], this);
+            Services.PokerRules.cardsLogged.Remove(this);
+            Services.PokerRules.cardsPulled.Remove(cardType);
+            cardDeck.GetComponent<CardDeckScript>().cardsInDeck.Add(cardType);
+            flying_start_time = Time.time;
+            flight_journey_distance = Vector3.Distance(transform.position, cardDeck.transform.position);
+            flying_start_position = transform.position;
         }
-        
+    }
+
+    public void BringCardBack()
+    {
+        if (thrownWrong && !Services.Dealer.killingCards && !Services.Dealer.cleaningCards)
+        {
+            Debug.Log("cardsPulled = " + Services.PokerRules.cardsPulled.Count);
+            Services.Dealer.messageText.text = "Card is not in correct location";
+            //float step = cardMoveSpeed * Time.deltaTime;
+            if (Services.PokerRules.thrownCards.Contains(gameObject))
+            {
+                float distCovered = (Time.time - flying_start_time) * (Services.Dealer.cardMoveSpeed * 5);
+                float fracJourney = distCovered / flight_journey_distance;
+                transform.position = Vector3.Lerp(GetComponent<Card>().flying_start_position, cardDeck.transform.position, fracJourney);
+                if (transform.position == cardDeck.transform.position)
+                {
+                    thrownWrong = false;
+                    Services.PokerRules.thrownCards.Remove(gameObject);
+                    cardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
+                    Destroy(gameObject);
+                }
+            }
+            if (Services.PokerRules.thrownCards.Count == 0)
+            {
+                Services.PokerRules.TurnOffAllIndicators();
+                Services.PokerRules.IndicateCardPlacement(Services.PokerRules.cardsPulled.Count);
+            }
+        }
     }
 
     public Vector3 GetPlayerPos()

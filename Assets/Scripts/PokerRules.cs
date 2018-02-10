@@ -9,12 +9,11 @@ public class PokerRules : MonoBehaviour {
     public List<Vector3> chipPositionWhenPushing;
     public int chipsBeingPushed;
     public List<Chip> chipGroup;
-    public List<Card> thrownCards = new List<Card>();
+    public List<GameObject> thrownCards = new List<GameObject>();
     //this keeps track of ALL the cards that have been dealt in a given hand
     //this way we won't use the same card twice for multiple things
     public List<CardType> cardsPulled = new List<CardType>();
     public List<Card> cardsLogged = new List<Card>();
-    public List<CardType> misdealtCards = new List<CardType>();
     public GameObject[] cardsToDestroy;
     private List<Destination> playerDestinations = new List<Destination>();
     List<GameObject> boardPos = new List<GameObject>();
@@ -388,7 +387,15 @@ public class PokerRules : MonoBehaviour {
     {
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
         int playerIndex = Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardCount);
+        Debug.Log("correct location for card is " + Services.Dealer.players[playerIndex].playerName);
         return Table.instance.playerCards[playerIndex].Contains(card);
+    }
+
+    public PokerPlayerRedux CardOwner(int cardCount)
+    {
+        SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+        int playerIndex = Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardCount);
+        return Services.Dealer.players[playerIndex];
     }
 
     public void CorrectMistakes()
@@ -576,6 +583,7 @@ public class PokerRules : MonoBehaviour {
 
     public void PlayTone()
     {
+        if (toneCount < 0) toneCount = 0;
         if (Table.gameState == GameState.NewRound)
         {
             SetCardPlacement(Services.Dealer.PlayerAtTableCount());
@@ -598,11 +606,12 @@ public class PokerRules : MonoBehaviour {
                     }
                     else
                     {
-                        if(toneCount == 0)
-                        {
-                            Table.gameState = GameState.Misdeal;
-                        }
-                        else toneCount = 0;
+                        toneCount = 0;
+                        //if(toneCount == 0)
+                        //{
+                        //    Table.gameState = GameState.Misdeal;
+                        //}
+                        //else toneCount = 0;
                     }
                 }
             }
