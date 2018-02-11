@@ -7,9 +7,9 @@ public class GlowLerp : MonoBehaviour {
 
     float glowMax = 1.5f;
     float glowMin = 1;
-    float currentGlow = 0;
     public float glowSpeed = 1;
     SpriteGlowEffect glowScript;
+    public bool turnOff = false;
 
 	// Use this for initialization
 	void Start () {
