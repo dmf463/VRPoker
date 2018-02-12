@@ -321,9 +321,7 @@ public class Dealer : MonoBehaviour
     {
         if (Table.gameState == GameState.NewRound)
         {
-            //Debug.Log("newRound");
-            //messageText.text = "";
-            if (Services.PokerRules.cardsPulled.Count == PlayerAtTableCount() * 2 && !checkedPreFlopCardCount)
+            if (Services.PokerRules.cardsPulled.Count == PlayerAtTableCount() * 2 && !checkedPreFlopCardCount && Services.PokerRules.thrownCards.Count == 0)
             {
                 checkedPreFlopCardCount = true;
                 StartCoroutine(CheckForMistakesPreFlop(1.5f));
@@ -582,52 +580,43 @@ public class Dealer : MonoBehaviour
 
     IEnumerator CheckForMistakesPreFlop(float time)
     {
-        Debug.Log("CheckingPreFlopMistakes");
-        yield return new WaitForSeconds(time);
-        int cardCountForPreFlop = 0;
-        bool misdeal = false;
-        for (int playerCardIndex = 0; playerCardIndex < Table.instance.playerCards.Length; playerCardIndex++)
+        if (Table.gameState != GameState.Misdeal)
         {
-            for (int cardTotal = 0; cardTotal < Table.instance.playerCards[playerCardIndex].Count; cardTotal++)
+            Debug.Log("CheckingPreFlopMistakes");
+            yield return new WaitForSeconds(time);
+            int cardCountForPreFlop = 0;
+            bool misdeal = false;
+            for (int playerCardIndex = 0; playerCardIndex < Table.instance.playerCards.Length; playerCardIndex++)
             {
-                cardCountForPreFlop++;
+                for (int cardTotal = 0; cardTotal < Table.instance.playerCards[playerCardIndex].Count; cardTotal++)
+                {
+                    cardCountForPreFlop++;
+                }
             }
+            if (misdeal)
+            {
+                Debug.Log("misdeal");
+                Table.gameState = GameState.Misdeal;
+            }
+            else if (cardCountForPreFlop == Services.PokerRules.cardsPulled.Count)
+            {
+                Debug.Log("got all the right cards");
+                Table.gameState = GameState.PreFlop;
+            }
+            else if (Services.PokerRules.cardsPulled.Count > players.Count * 2 && !Services.Dealer.OutsideVR)
+            {
+                Debug.Log("Dealt too many cards");
+                Table.gameState = GameState.Misdeal;
+            }
+            else
+            {
+                Debug.Log("correctingMistakes because cardCountForPreflop != cardsPulled");
+                Services.PokerRules.CorrectMistakesPreFlop();
+                Table.gameState = GameState.PreFlop;
+            }
+            Debug.Log("ending the check");
+            checkedPreFlopCardCount = false;
         }
-        //for (int i = 0; i < cardsTouchingTable.Count; i++)
-        //{
-        //    if (!OutsideVR)
-        //    {
-        //        if (cardsTouchingTable[i].cardFacingUp) misdeal = true;
-        //    }
-        //}
-        //if(Services.Dealer.cardsTouchingTable.Count <= (PlayerAtTableCount()/2))
-        //{
-        //    Debug.Log("Misdeal for there being less than 5 cards on the table");
-        //    Table.gameState = GameState.Misdeal;
-        //}
-        if(misdeal)
-        {
-            Debug.Log("misdeal");
-            Table.gameState = GameState.Misdeal;
-        }
-        else if (cardCountForPreFlop == Services.PokerRules.cardsPulled.Count)
-        {
-            Debug.Log("got all the right cards");
-            Table.gameState = GameState.PreFlop;
-        }
-        else if(Services.PokerRules.cardsPulled.Count > players.Count * 2 && !Services.Dealer.OutsideVR)
-        {
-            Debug.Log("Dealt too many cards");
-            Table.gameState = GameState.Misdeal;
-        }
-        else
-        {
-            Debug.Log("correctingMistakes because cardCountForPreflop != cardsPulled");
-            Services.PokerRules.CorrectMistakesPreFlop();
-            Table.gameState = GameState.PreFlop;
-        }
-        Debug.Log("ending the check");
-        checkedPreFlopCardCount = false;
     }
 
     //this is an ease of life function for finding the amount of active players in a round

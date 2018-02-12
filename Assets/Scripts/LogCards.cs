@@ -59,7 +59,7 @@ public class LogCards : MonoBehaviour
                     //{
                     //    Debug.Log(other.gameObject.name + " has already been logged by something else");
                     //}
-                    else if (CardsBelongToAnotherPlayer(other.GetComponent<Card>()))
+                    else if (CardIsOccupied(other.GetComponent<Card>()))
                     {
                         Debug.Log("card belongs to someone else");
                     }
@@ -69,10 +69,34 @@ public class LogCards : MonoBehaviour
                     }
                     else
                     {
-                        Table.instance.AddCardTo(playerDestinations[i], other.GetComponent<Card>());
-                        Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
-                        Services.PokerRules.PlayTone();
-                        Debug.Log(other.gameObject.name + " went into " + playerNames[i]);
+                        if (!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && Table.gameState == GameState.NewRound)
+                        {
+                            //StartCoroutine(other.GetComponent<Card>().CheckIfCardIsAtDestination(0, other.GetComponent<Card>().cardThrownNum));
+                            //if (Services.PokerRules.CardIsInCorrectLocation(other.GetComponent<Card>(), other.GetComponent<Card>().cardThrownNum) && !CardsAreFlying(other.gameObject))
+                            //{
+                                Table.instance.AddCardTo(playerDestinations[i], other.GetComponent<Card>());
+                                //other.GetComponent<Card>().is_flying = false;
+                                Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
+                                Services.PokerRules.PlayTone();
+                                Debug.Log(other.gameObject.name + " went into " + playerNames[i]);
+                            //}
+                            //else
+                            //{
+                            //    Card cardToRemove = other.GetComponent<Card>();
+                            //    GameObject cardDeck = GameObject.FindGameObjectWithTag("CardDeck");
+                            //    Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[7], 0.05f);
+                            //    Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[8], 0.05f);
+                            //    Services.PokerRules.toneCount = 0;
+                            //    cardToRemove.thrownWrong = true;
+                            //    Table.instance.RemoveCardFrom(cardToRemove);
+                            //    Services.PokerRules.cardsLogged.Remove(cardToRemove);
+                            //    Services.PokerRules.cardsPulled.Remove(cardToRemove.cardType);
+                            //    cardDeck.GetComponent<CardDeckScript>().cardsInDeck.Add(cardToRemove.cardType);
+                            //    cardToRemove.flying_start_time = Time.time;
+                            //    cardToRemove.flight_journey_distance = Vector3.Distance(transform.position, cardDeck.transform.position);
+                            //    cardToRemove.flying_start_position = transform.position;
+                            //}
+                        }
                     }
                 }
 
@@ -111,6 +135,7 @@ public class LogCards : MonoBehaviour
                     Table.instance.AddCardTo(Destination.board, other.GetComponent<Card>());
                     Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
                     Debug.Log(other.gameObject.name + " went into " + this.gameObject.name);
+                    Services.PokerRules.PlayTone();
                 }
                 //}
 
@@ -139,6 +164,7 @@ public class LogCards : MonoBehaviour
                     Table.instance.AddCardTo(Destination.burn, other.GetComponent<Card>());
                     Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
                     Debug.Log(other.gameObject.name + "Card went into " + this.gameObject.name);
+                    Services.PokerRules.PlayTone();
                 }
             }
         }
@@ -173,7 +199,7 @@ public class LogCards : MonoBehaviour
                     if (gameObject.name == playerNames[i] && Table.gameState == GameState.NewRound && Services.Dealer.players[i].PlayerState != PlayerState.Eliminated)
                     {
 
-                        Table.instance.RemoveCardFrom(playerDestinations[i], other.GetComponent<Card>());
+                        Table.instance.RemoveCard(playerDestinations[i], other.GetComponent<Card>());
                         Services.PokerRules.cardsLogged.Remove(other.GetComponent<Card>());
                         Services.PokerRules.toneCount--;
                         Services.PokerRules.PlayTone();
@@ -206,7 +232,7 @@ public class LogCards : MonoBehaviour
                     if (gameObject.name == playerNames[i] && Table.gameState == GameState.NewRound && Services.Dealer.players[i].PlayerState != PlayerState.Eliminated)
                     {
 
-                        Table.instance.RemoveCardFrom(playerDestinations[i], other.GetComponent<Card>());
+                        Table.instance.RemoveCard(playerDestinations[i], other.GetComponent<Card>());
                         Services.PokerRules.cardsLogged.Remove(other.GetComponent<Card>());
                         Services.PokerRules.toneCount--;
                         Services.PokerRules.PlayTone();
@@ -217,19 +243,35 @@ public class LogCards : MonoBehaviour
         }
     }
 
-    public bool CardsBelongToAnotherPlayer(Card card)
+    public bool CardIsOccupied(Card card)
     {
         for (int i = 0; i < Table.instance.playerCards.Length; i++)
         {
             for (int j = 0; j < Table.instance.playerCards[i].Count; j++)
             {
-                if(card.cardType.rank == Table.instance.playerCards[i][j].cardType.rank &&
+                if (card.cardType.rank == Table.instance.playerCards[i][j].cardType.rank &&
                    card.cardType.suit == Table.instance.playerCards[i][j].cardType.suit)
                 {
-                    if(GetComponentInParent<PokerPlayerRedux>().SeatPos != (int)playerDestinations[i])
+                    if (GetComponentInParent<PokerPlayerRedux>().SeatPos != (int)playerDestinations[i])
                     {
                         return true;
                     }
+                }
+            }
+        }
+        return false;
+    }
+
+    public bool CardsAreFlying(GameObject card)
+    {
+        GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
+        for (int i = 0; i < cardsOnTable.Length; i++)
+        {
+            if (cardsOnTable[i].GetComponent<Card>().is_flying)
+            {
+                if(card != cardsOnTable[i])
+                {
+                    return true;
                 }
             }
         }

@@ -114,6 +114,7 @@ public class Table {
         Services.Dealer.ResetPlayerStatus();
         gameState = GameState.NewRound;
         Services.PokerRules.TurnOffAllIndicators();
+        Services.PokerRules.toneCount = 0;
         DealerPosition = (Services.Dealer.FindFirstPlayerToAct(1).SeatPos); //this does not account for a dead dealer
         SetDealerButtonPos(DealerPosition);
         gameData = new PokerGameData(DealerPosition, Services.Dealer.players);
@@ -125,6 +126,7 @@ public class Table {
 
     public void RestartRound()
     {
+        Services.PokerRules.toneCount = 0;
         if (GameObject.FindGameObjectWithTag("CardDeck") == null)
         {
             //Debug.Log("Could not find CardDeck, instantiating new one");
@@ -172,6 +174,7 @@ public class Table {
             _burn.Clear();
             Services.PokerRules.cardsPulled.Clear();
             Services.PokerRules.cardsLogged.Clear();
+            Services.PokerRules.thrownCards.Clear();
             Services.Dealer.cardsTouchingTable.Clear();
             Services.Dealer.chipsInPot.Clear();
             Services.Dealer.deadCardsList.Clear();
@@ -250,13 +253,28 @@ public class Table {
         }
     }
 
-    public void RemoveCardFrom(Destination dest, Card card)
+    public void RemoveCard(Destination dest, Card card)
     {
         for (int i = 0; i < playerDestinations.Count; i++)
         {
             if(dest == playerDestinations[i])
             {
                 playerCards[i].Remove(card);
+            }
+        }
+    }
+
+    public void RemoveCardFrom(Card card)
+    {
+        for (int i = 0; i < playerCards.Length; i++)
+        {
+            for (int j = 0; j < playerCards[i].Count; j++)
+            {
+                if(card.cardType.rank == playerCards[i][j].cardType.rank &&
+                    card.cardType.suit == playerCards[i][j].cardType.suit)
+                {
+                    playerCards[i].Remove(playerCards[i][j]);
+                }
             }
         }
     }

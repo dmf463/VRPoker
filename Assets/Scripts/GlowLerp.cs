@@ -5,9 +5,9 @@ using SpriteGlow;
 
 public class GlowLerp : MonoBehaviour {
 
-    float glowMax = 1.5f;
-    float glowMin = 1;
-    public float glowSpeed = 1;
+    float glowMax = 1.1f;
+    float glowMin = 1f;
+    public float glowSpeed = .5f;
     SpriteGlowEffect glowScript;
     public bool turnOff = false;
 

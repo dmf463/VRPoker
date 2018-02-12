@@ -54,27 +54,26 @@ public class PokerRules : MonoBehaviour {
         if (Table.gameState == GameState.PreFlop)
         {
 
-            if ((cardsPulled.Count - 1 == flopCards || Table.instance._board.Count == 3) && !checkedForCorrections && CardsAreFaceUp())
+            if ((cardsPulled.Count - 1 == flopCards || Table.instance._board.Count == 3) && !checkedForCorrections && CardsAreFaceUp() && thrownCards.Count == 0)
             {
                 StartCoroutine(CheckFlopMistakes(1));
             }
         }
         else if (Table.gameState == GameState.Flop)
         {
-            if ((cardsPulled.Count - 1 == turnCard || Table.instance._board.Count == 4) && !checkedForCorrections && CardsAreFaceUp())
+            if ((cardsPulled.Count - 1 == turnCard || Table.instance._board.Count == 4) && !checkedForCorrections && CardsAreFaceUp() && thrownCards.Count == 0)
             {
                 StartCoroutine(CheckTurnMistakes(1));
             }
         }
         else if (Table.gameState == GameState.Turn)
         {
-            if ((cardsPulled.Count - 1 == riverCard || Table.instance._board.Count == 5) && !checkedForCorrections && CardsAreFaceUp())
+            if ((cardsPulled.Count - 1 == riverCard || Table.instance._board.Count == 5) && !checkedForCorrections && CardsAreFaceUp() && thrownCards.Count == 0)
             {
                 StartCoroutine(CheckRiverMistakes(1));
             }
         }
-
-        if (Table.gameState != GameState.NewRound) toneCount = 0;
+        //if (Table.gameState != GameState.NewRound) toneCount = 0;
     }
 
     public bool CardsAreFaceUp()
@@ -83,7 +82,7 @@ public class PokerRules : MonoBehaviour {
         {
             if (!Services.Dealer.OutsideVR)
             {
-                if (!Table.instance._board[i].cardFacingUp)
+                if (!Table.instance._board[i].CardIsFaceUp(90, "TheBoard"))
                 {
                     return false;
                 }
@@ -385,6 +384,7 @@ public class PokerRules : MonoBehaviour {
 
     public bool CardIsInCorrectLocation(Card card, int cardCount)
     {
+        card.cardChecked = true;
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
         int playerIndex = Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardCount);
         Debug.Log("correct location for card is " + Services.Dealer.players[playerIndex].playerName);
@@ -607,14 +607,45 @@ public class PokerRules : MonoBehaviour {
                     else
                     {
                         toneCount = 0;
-                        //if(toneCount == 0)
-                        //{
-                        //    Table.gameState = GameState.Misdeal;
-                        //}
-                        //else toneCount = 0;
                     }
                 }
             }
+        }
+        else if (Table.gameState == GameState.PreFlop)
+        {
+            if (Table.instance._burn.Count == 1 && Table.instance._board.Count == 0) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[6], cardToneVolume);
+            else if (Table.instance._board.Count == 1 && Table.instance._burn.Count == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[7], cardToneVolume);
+            else if (Table.instance._board.Count == 2 && Table.instance._burn.Count == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[8], cardToneVolume);
+            else if (Table.instance._board.Count == 3 && Table.instance._burn.Count == 1) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[9], cardToneVolume);
+            else
+            {
+                Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[7], cardToneVolume);
+                Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[8], cardToneVolume);
+            }
+        }
+        else if (Table.gameState == GameState.Flop)
+        {
+            if (Table.instance._burn.Count == 2 && Table.instance._board.Count == 3) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[8], cardToneVolume);
+            else if (Table.instance._burn.Count == 2 && Table.instance._board.Count == 4) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[9], cardToneVolume);
+            else
+            {
+                Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[7], cardToneVolume);
+                Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[8], cardToneVolume);
+            }
+        }
+        else if (Table.gameState == GameState.Turn)
+        {
+            if (Table.instance._burn.Count == 3 && Table.instance._board.Count == 4) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[8], cardToneVolume);
+            else if (Table.instance._burn.Count == 3 && Table.instance._board.Count == 5) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[9], cardToneVolume);
+            else
+            {
+                Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[7], cardToneVolume);
+                Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[8], cardToneVolume);
+            }
+        }
+        else if (Table.gameState == GameState.River)
+        {
+            toneCount = 0;
         }
     }
 }
