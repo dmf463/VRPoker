@@ -7,7 +7,14 @@ public class TextManager : MonoBehaviour {
     SpriteRenderer sr;
     Vector4 startColor;
     public GameObject misdealText;
+    public GameObject dealTwoCardsText;
+    public GameObject lookAtEachPlayer;
+    public GameObject boardCards;
+    public GameObject whoWon;
     bool playedSound = false;
+    public bool inTutorial = false;
+    bool tutorialFinished = false;
+    
 
 	// Use this for initialization
 	void Start () {
@@ -38,6 +45,83 @@ public class TextManager : MonoBehaviour {
             misdealText.SetActive(false);
             playedSound = false;
         }
-		
+
+        if (inTutorial)
+        {
+            sr.color = Color.black;
+            if (Table.gameState == GameState.Misdeal)
+            {
+                dealTwoCardsText.SetActive(false);
+                lookAtEachPlayer.SetActive(false);
+                boardCards.SetActive(false);
+                whoWon.SetActive(false);
+            }
+            else if (Table.gameState == GameState.NewRound)
+            {
+                sr.color = Color.black;
+                dealTwoCardsText.SetActive(true);
+            }
+            else if (Table.gameState == GameState.PreFlop && Services.SoundManager.roundsFinished == 0) 
+            {
+                sr.color = Color.black;
+                dealTwoCardsText.SetActive(false);
+                lookAtEachPlayer.SetActive(true);
+            }
+            else if(Table.gameState == GameState.PreFlop && Services.SoundManager.roundsFinished == 1)
+            {
+                sr.color = Color.black;
+                lookAtEachPlayer.SetActive(false);
+                boardCards.SetActive(true);
+
+            }
+            else if(Table.gameState == GameState.Flop && Services.SoundManager.roundsFinished == 1)
+            {
+                sr.color = Color.black;
+                boardCards.SetActive(false);
+                lookAtEachPlayer.SetActive(true);
+            }
+            else if (Table.gameState == GameState.Flop && Services.SoundManager.roundsFinished == 2)
+            {
+                sr.color = Color.black;
+                lookAtEachPlayer.SetActive(false);
+                boardCards.SetActive(true);
+            }
+            else if (Table.gameState == GameState.Turn && Services.SoundManager.roundsFinished == 2)
+            {
+                sr.color = Color.black;
+                boardCards.SetActive(false);
+                lookAtEachPlayer.SetActive(true);
+            }
+            else if (Table.gameState == GameState.Turn && Services.SoundManager.roundsFinished == 3)
+            {
+                sr.color = Color.black;
+                lookAtEachPlayer.SetActive(false);
+                boardCards.SetActive(true);
+            }
+            else if (Table.gameState == GameState.River && Services.SoundManager.roundsFinished == 3)
+            {
+                sr.color = Color.black;
+                boardCards.SetActive(false);
+                lookAtEachPlayer.SetActive(true);
+            }
+            else if(Table.gameState == GameState.ShowDown)
+            {
+                sr.color = Color.black;
+                lookAtEachPlayer.SetActive(false);
+                whoWon.SetActive(true);
+            }
+        }
+        else
+        {
+            if (!tutorialFinished)
+            {
+                tutorialFinished = true;
+                dealTwoCardsText.SetActive(false);
+                lookAtEachPlayer.SetActive(false);
+                boardCards.SetActive(false);
+                whoWon.SetActive(false);
+                sr.color = startColor;
+            }
+        }
 	}
 }

@@ -12,5 +12,6 @@ public static class Services {
 	public static DialogueDataManager DialogueDataManager { get; set; }
     public static PokerRules PokerRules { get; set; }
     public static PlayerBehaviour PlayerBehaviour { get; set; }
+    public static TextManager TextManager { get; set; }
 
 }

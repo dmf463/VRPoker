@@ -122,6 +122,7 @@ public class Table {
         Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(1).currentBet = Services.Dealer.SmallBlind;
         Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(2).currentBet = Services.Dealer.BigBlind;
         Services.Dealer.LastBet = Services.Dealer.BigBlind;
+        Services.TextManager.inTutorial = false;
     }
 
     public void RestartRound()

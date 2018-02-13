@@ -112,6 +112,7 @@ public class Dealer : MonoBehaviour
         Services.PokerRules = GameObject.Find("PokerRules").GetComponent<PokerRules>();
 		Services.PlayerBehaviour = new PlayerBehaviour();
 		Services.DialogueDataManager.ParseDialogueFile((Services.SoundManager.dialogueFile));
+        Services.TextManager = GameObject.Find("TableGraphics").GetComponent<TextManager>();
     }
 
     // Use this for initialization
@@ -124,6 +125,7 @@ public class Dealer : MonoBehaviour
         Table.dealerState = DealerState.DealingState;
         lastGameState = GameState.NewRound;
         startingGameState = new PokerGameData(0, players);
+        Services.TextManager.inTutorial = true;
 
         if (inTutorial)
         {
