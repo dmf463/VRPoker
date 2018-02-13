@@ -308,15 +308,15 @@ public class Card : InteractionSuperClass {
     //so this is how we check if the card is on the table
     void OnCollisionStay(Collision other)
     {
-        if (!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && Table.gameState == GameState.NewRound)
-        {
-            Debug.Log("hitting " + other.gameObject.tag);
-            if (other.gameObject.tag == "Table" || other.gameObject.tag == "Floor" && rb.velocity.magnitude <= 0.00001 && !cardChecked)
-            {
-                cardChecked = true;
-                StartCoroutine(CheckIfCardIsAtDestination(0, cardThrownNum));
-            }
-        }
+        //if (!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && Table.gameState == GameState.NewRound)
+        //{
+        //    Debug.Log("hitting " + other.gameObject.tag);
+        //    if (other.gameObject.tag == "Table" || other.gameObject.tag == "Floor" && rb.velocity.magnitude <= 0.00001 && !cardChecked)
+        //    {
+        //        cardChecked = true;
+        //        StartCoroutine(CheckIfCardIsAtDestination(0, cardThrownNum));
+        //    }
+        //}
         if (other.gameObject.tag == "Table")
         {
             cardOnTable = true;
@@ -499,7 +499,7 @@ public class Card : InteractionSuperClass {
         }
         if (!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && Table.gameState == GameState.NewRound)
         {
-            //StartCoroutine(CheckIfCardIsAtDestination(checkTime, cardThrownNum));
+            StartCoroutine(CheckIfCardIsAtDestination(checkTime, cardThrownNum));
         }
     }
 
@@ -599,6 +599,10 @@ public class Card : InteractionSuperClass {
                     is_flying = false;
                     thrownWrong = false;
                     Services.PokerRules.thrownCards.Remove(gameObject);
+                    foreach(GameObject card in Services.PokerRules.thrownCards)
+                    {
+                        StartCoroutine(card.GetComponent<Card>().CheckIfCardIsAtDestination(0, Services.PokerRules.cardsPulled.Count));
+                    }
                     cardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
                     Destroy(gameObject);
                 }
