@@ -48,10 +48,6 @@ public class Dealer : MonoBehaviour
 
     private List<Destination> playerDestinations = new List<Destination>();
 
-    //the board and the text are pretty much placeholders to give messages to the player via text
-    public GameObject MessageBoard;
-    public TextMesh messageText;
-
     [HideInInspector]
     public bool handIsOccupied;
 
@@ -66,6 +62,9 @@ public class Dealer : MonoBehaviour
 
     [HideInInspector]
     public bool readyToAwardPlayers = false;
+
+    [HideInInspector]
+    public bool everyoneFolded = false;
 
     [HideInInspector]
     public int winnersPaid;
@@ -104,7 +103,6 @@ public class Dealer : MonoBehaviour
     void Awake()
     {
         //just the message board stuff
-        messageText = MessageBoard.GetComponent<TextMesh>();
 
         //this is where we intialize all our services stuff
         Services.PrefabDB = Resources.Load<PrefabDB>("Prefabs/PrefabDB");
@@ -238,7 +236,6 @@ public class Dealer : MonoBehaviour
                 readyForShowdown = false;
                 StartCoroutine(WaitForShowDown(2));
             }
-            //messageText.text = "Click both trigger buttons to start the showdown";
             int allInPlayerCount = 0;
             for (int i = 0; i < players.Count; i++)
             {
@@ -359,45 +356,6 @@ public class Dealer : MonoBehaviour
                 else cleaningCards = true;
                 Debug.Log("killingCards = " + killingCards);
                 Debug.Log("cleaningCards = " + cleaningCards);
-            }
-        }
-        else if (Table.gameState == GameState.PostHand)
-        {
-            //messageText.text = "'Thanks dealer, here's a tip!' (you got a tip)";
-        }
-        else if (Table.gameState != GameState.ShowDown)
-        {
-            switch (Table.gameState)
-            {
-                case GameState.PreFlop:
-                    //Debug.Log("PREFLOP!");
-                    if (OutsideVR)
-                    {
-                        messageText.text = "player0 chipCount is " + players[0].chipCount +
-                                           "\nplayer1 chipCount is " + players[1].chipCount +
-                                           "\nplayer2 chipCount is " + players[2].chipCount +
-                                           "\nplayer3 chipCount is " + players[3].chipCount +
-                                           "\nplayer4 chipCount is " + players[4].chipCount +
-                                           "\npotSize is at " + Table.instance.potChips;
-                    }
-                    break;
-                case GameState.Flop:
-                    //Debug.Log("FLOP!");
-                    //messageText.text = "burnCards.count = " + Table.instance._burn.Count;
-
-                    break;
-                case GameState.Turn:
-                    //Debug.Log("TURN!");
-                    //messageText.text = "burnCards.count = " + Table.instance._burn.Count;
-
-                    break;
-                case GameState.River:
-                    //Debug.Log("RIVER!");
-                    //messageText.text = "burnCards.count = " + Table.instance._burn.Count;
-
-                    break;
-                default:
-                    break;
             }
         }
     }
@@ -601,6 +559,8 @@ public class Dealer : MonoBehaviour
             else if (cardCountForPreFlop == Services.PokerRules.cardsPulled.Count)
             {
                 Debug.Log("got all the right cards");
+                Debug.Log("cardsPulled = " + Services.PokerRules.cardsPulled.Count);
+                Debug.Log("thrownCards = " + Services.PokerRules.thrownCards.Count);
                 Table.gameState = GameState.PreFlop;
             }
             else if (Services.PokerRules.cardsPulled.Count > players.Count * 2 && !Services.Dealer.OutsideVR)
@@ -1354,6 +1314,7 @@ public class Dealer : MonoBehaviour
         readyToAwardPlayers = false;
         finalHandEvaluation = false;
 		misdealAudioPlayed = false;
+        everyoneFolded = false;
         raisesInRound = 0;
         Services.PokerRules.checkedForCorrections = false;
         chipsInPot.Clear();
@@ -1419,6 +1380,7 @@ public class Dealer : MonoBehaviour
         readyToAwardPlayers = false;
 		misdealAudioPlayed = false;
         finalHandEvaluation = false;
+        everyoneFolded = false;
         roundStarted = false;
         raisesInRound = 0;
         Services.PokerRules.TurnOffAllIndicators();

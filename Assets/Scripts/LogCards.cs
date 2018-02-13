@@ -71,35 +71,15 @@ public class LogCards : MonoBehaviour
                     {
                         if (!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && Table.gameState == GameState.NewRound)
                         {
-                            //StartCoroutine(other.GetComponent<Card>().CheckIfCardIsAtDestination(0, other.GetComponent<Card>().cardThrownNum));
-                            //if (Services.PokerRules.CardIsInCorrectLocation(other.GetComponent<Card>(), other.GetComponent<Card>().cardThrownNum) && !CardsAreFlying(other.gameObject))
-                            //{
+
                                 Table.instance.AddCardTo(playerDestinations[i], other.GetComponent<Card>());
                                 //other.GetComponent<Card>().is_flying = false;
                                 Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
                                 Services.PokerRules.PlayTone();
                                 Debug.Log(other.gameObject.name + " went into " + playerNames[i]);
-                            //}
-                            //else
-                            //{
-                            //    Card cardToRemove = other.GetComponent<Card>();
-                            //    GameObject cardDeck = GameObject.FindGameObjectWithTag("CardDeck");
-                            //    Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[7], 0.05f);
-                            //    Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[8], 0.05f);
-                            //    Services.PokerRules.toneCount = 0;
-                            //    cardToRemove.thrownWrong = true;
-                            //    Table.instance.RemoveCardFrom(cardToRemove);
-                            //    Services.PokerRules.cardsLogged.Remove(cardToRemove);
-                            //    Services.PokerRules.cardsPulled.Remove(cardToRemove.cardType);
-                            //    cardDeck.GetComponent<CardDeckScript>().cardsInDeck.Add(cardToRemove.cardType);
-                            //    cardToRemove.flying_start_time = Time.time;
-                            //    cardToRemove.flight_journey_distance = Vector3.Distance(transform.position, cardDeck.transform.position);
-                            //    cardToRemove.flying_start_position = transform.position;
-                            //}
                         }
                     }
                 }
-
             }
             //if the card is going into TheBoard
             if (this.gameObject.name == "TheBoard" && Services.Dealer.playerToAct == null &&

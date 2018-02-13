@@ -53,9 +53,16 @@ public class PokerRules : MonoBehaviour {
 
         if (Table.gameState == GameState.PreFlop)
         {
+            //Debug.Log("cardsPulled.count = " + cardsPulled.Count +
+            //          " and flopCards = " + flopCards +
+            //          " and boardACount = " + Table.instance._board.Count +
+            //          " and checkedForCorrections =  " + checkedForCorrections +
+            //          " and CardsAreFaceUp = " + CardsAreFaceUp() +
+            //          " and thrownCards.count = " + thrownCards.Count); 
 
             if ((cardsPulled.Count - 1 == flopCards || Table.instance._board.Count == 3) && !checkedForCorrections && CardsAreFaceUp() && thrownCards.Count == 0)
             {
+                Debug.Log("checking flop");
                 StartCoroutine(CheckFlopMistakes(1));
             }
         }
@@ -63,6 +70,7 @@ public class PokerRules : MonoBehaviour {
         {
             if ((cardsPulled.Count - 1 == turnCard || Table.instance._board.Count == 4) && !checkedForCorrections && CardsAreFaceUp() && thrownCards.Count == 0)
             {
+                Debug.Log("checking turn");
                 StartCoroutine(CheckTurnMistakes(1));
             }
         }
@@ -70,6 +78,7 @@ public class PokerRules : MonoBehaviour {
         {
             if ((cardsPulled.Count - 1 == riverCard || Table.instance._board.Count == 5) && !checkedForCorrections && CardsAreFaceUp() && thrownCards.Count == 0)
             {
+                Debug.Log("checking river");
                 StartCoroutine(CheckRiverMistakes(1));
             }
         }
@@ -82,10 +91,12 @@ public class PokerRules : MonoBehaviour {
         {
             if (!Services.Dealer.OutsideVR)
             {
-                if (!Table.instance._board[i].CardIsFaceUp(90, "TheBoard"))
-                {
-                    return false;
-                }
+                //if (!Table.instance._board[i].CardIsFaceUp(50, "TheBoard"))
+                //{
+                //    Debug.Log("boardCard[i] has an angle of " + Table.instance._board[i].GetCardAngle("TheBoard"));
+                //    return false;
+                //}
+                if (!Table.instance._board[i].cardIsFlipped) return false;
             }
         }
         return true;

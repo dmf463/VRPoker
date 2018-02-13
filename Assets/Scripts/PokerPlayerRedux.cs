@@ -407,6 +407,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             {
                 if (Services.Dealer.players[i].PlayerState == PlayerState.Playing)
                 {
+                    Services.Dealer.everyoneFolded = true;
                     Services.Dealer.players[i].PlayerState = PlayerState.Winner;
                     Services.Dealer.numberOfWinners = 1;
                     //Debug.Log("current chip stack is at " + chipCount);
@@ -416,6 +417,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                     Services.Dealer.playersHaveBeenEvaluated = true;
                     //Services.Dealer.WaitForWinnersToGetPaid();
                     Services.Dealer.players[i].FlipCards();
+                    StartCoroutine(WaitToReceiveWinnings(1));
                 }
             }
         }
@@ -654,7 +656,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 	{
 		if(Table.gameState == GameState.PreFlop)
 		{
-			Services.Dealer.StartCoroutine(DeterminePreFlopHandStrength(1, myCard1, myCard2));
+			Services.Dealer.StartCoroutine(DeterminePreFlopHandStrength(0.5f, myCard1, myCard2));
 		}
 		else
 		{
@@ -938,6 +940,12 @@ public class PokerPlayerRedux : MonoBehaviour{
             eval.isTesting = false;
             return holeCards;
         }
+    }
+
+    IEnumerator WaitToReceiveWinnings(float time)
+    {
+        yield return new WaitForSeconds(time);
+        ReceiveWinnings();
     }
 
     public void ReceiveWinnings()
