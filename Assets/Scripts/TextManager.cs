@@ -55,6 +55,7 @@ public class TextManager : MonoBehaviour {
                 lookAtEachPlayer.SetActive(false);
                 boardCards.SetActive(false);
                 whoWon.SetActive(false);
+                Services.SoundManager.roundsFinished = 0;
             }
             else if (Table.gameState == GameState.NewRound)
             {
