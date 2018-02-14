@@ -71,6 +71,18 @@ public class LogChips : MonoBehaviour
                 }
             }
         }
+        if(other.gameObject.tag == "Tip" && gameObject.name == "TipCatcher")
+        {
+            ChipStack chipStack;
+            int chipValue;
+            if (other.GetComponent<Chip>().chipStack != null)
+            {
+                chipStack = other.GetComponent<Chip>().chipStack;
+                chipValue = chipStack.stackValue;
+            }
+            else chipValue = other.GetComponent<Chip>().chipData.ChipValue;
+            Services.Dealer.tipCount += chipValue;
+        }
     }
 
 

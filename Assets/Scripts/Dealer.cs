@@ -5,6 +5,7 @@ using System.Linq;
 using System;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
+using TMPro;
 
 //this entire script is essentially what the dealer does
 //the three most important scripts are Dealer, Table, and PokerPlayerRedux
@@ -13,6 +14,8 @@ using Valve.VR.InteractionSystem;
 //PokerPlayerRedux handles all the functions and info that a poker player would need to play
 public class Dealer : MonoBehaviour
 {
+    public int tipCount;
+    public GameObject tipIndicator;
     public int startingChipCount;
     public float cardMoveSpeed = 1;
     public bool killingCards = false;
@@ -118,6 +121,7 @@ public class Dealer : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        tipCount = 0;
         playerDestinations = Table.instance.playerDestinations;
         InitializePlayers(startingChipCount);
         Table.gameState = GameState.NewRound;
@@ -140,6 +144,7 @@ public class Dealer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        tipIndicator.GetComponent<TextMeshPro>().text = tipCount.ToString();
         WaitingToGrabCardsOn_ThrownDeck();
         WaitingToGrabCardsOn_MisDeal();
         RunTutorial();
@@ -1005,9 +1010,9 @@ public class Dealer : MonoBehaviour
     public void PostBlinds()
     {
         //Debug.Log("posting blinds");
-        players[SeatsAwayFromDealerAmongstLivePlayers(1)].Bet(SmallBlind);
+        players[SeatsAwayFromDealerAmongstLivePlayers(1)].Bet(SmallBlind, false);
         players[SeatsAwayFromDealerAmongstLivePlayers(1)].currentBet = SmallBlind;
-        players[SeatsAwayFromDealerAmongstLivePlayers(2)].Bet(BigBlind);
+        players[SeatsAwayFromDealerAmongstLivePlayers(2)].Bet(BigBlind, false);
         players[SeatsAwayFromDealerAmongstLivePlayers(2)].currentBet = BigBlind;
         LastBet = BigBlind;
     }

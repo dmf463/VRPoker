@@ -12,6 +12,7 @@ public class Chip : InteractionSuperClass {
 
     public bool is_flying = false;
     public float rotSpeed;
+    public bool isTip = false;
     //super important, this is how much the chip costs, we set this in chipConfig and assign it at start
     //public int chipValue;
 

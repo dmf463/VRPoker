@@ -6,6 +6,7 @@ using Valve.VR.InteractionSystem;
 
 public class PokerRules : MonoBehaviour {
 
+    public Material tipMaterial;
     public List<Vector3> chipPositionWhenPushing;
     public int chipsBeingPushed;
     public List<Chip> chipGroup;

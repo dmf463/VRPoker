@@ -438,7 +438,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                 //Debug.Log("betToCall = " + betToCall);
                 if (betToCall == 0) SayCheck();
                 else SayCall();
-                Bet(betToCall);
+                Bet(betToCall, false);
                 currentBet = betToCall + currentBet;
                 Services.Dealer.LastBet = currentBet;
                 Debug.Log("Player " + SeatPos + " called " + betToCall);
@@ -489,7 +489,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                 {
                     SayRaise();
                 }
-                Bet(betToRaise);
+                Bet(betToRaise, false);
                 currentBet = betToRaise + currentBet;
                 Services.Dealer.LastBet = currentBet;
                 //Debug.Log("player " + SeatPos + " raises " + betToRaise);
@@ -510,7 +510,7 @@ public class PokerPlayerRedux : MonoBehaviour{
         chipCountBeforeAllIn = chipCount;
         playerIsAllIn = true;
         //Debug.Log("getting ready to go all in");
-        Bet(chipCount);
+        Bet(chipCount, false);
         //similar to fold, when we go all in, we want to see if we're the last person to go all in
         //if so, then we want to flip the cards
         Services.Dealer.CheckAllInPlayers();
@@ -965,9 +965,17 @@ public class PokerPlayerRedux : MonoBehaviour{
 
         if (PlayerState == PlayerState.Winner)
         {
+            int tipAmount = (int)(chipsWon * .10f);
+            int remainder = tipAmount % ChipConfig.RED_CHIP_VALUE;
+            if (remainder > 0)
+            {
+                tipAmount = (tipAmount - remainder) + ChipConfig.RED_CHIP_VALUE;
+            }
+            Debug.Log(playerName + " tipped $" + tipAmount);
             Table.instance.playerChipStacks[SeatPos] = chipsWon + ChipCountToCheckWhenWinning;
             winnersPaid++;
             HasBeenPaid = true;
+            Bet(tipAmount, true);
             if (!playerAudioSource.isPlaying &&
                 !playerIsInConversation &&
                 !Services.SoundManager.conversationIsPlaying &&
@@ -1181,7 +1189,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 	}
 
 
-    public void Bet(int betAmount)
+    public void Bet(int betAmount, bool isTipping)
     {
 		Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.chips[Random.Range(0,Services.SoundManager.chips.Length)], 0.25f, Random.Range(0.95f,1.05f), transform.position);
         int oldChipStackValue = chipCount;
@@ -1189,7 +1197,7 @@ public class PokerPlayerRedux : MonoBehaviour{
         {
             GameObject.Find("P0BetZone"), GameObject.Find("P1BetZone"), GameObject.Find("P2BetZone"), GameObject.Find("P3BetZone"), GameObject.Find("P4BetZone")
         };
-
+        Vector3 tipPos = GameObject.Find("TipZone").transform.position;
         List<int> colorChipCount = new List<int>()
         {
 			//blackChipCount, whiteChipCount, blueChipCount, redChipCount
@@ -1265,10 +1273,19 @@ public class PokerPlayerRedux : MonoBehaviour{
                     for (int colorCount = 0; colorCount < colorChipCount[colorListIndex]; colorCount++)
                     {
                         Vector3 offSet = new Vector3(Random.Range(0, .5f), .5f, Random.Range(0, .5f));
-                        GameObject newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
+                        GameObject newChip;
+                        if (!isTipping)
+                        {
+                            newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
+                        }
+                        else
+                        {
+                            newChip = GameObject.Instantiate(chipToMake, tipPos + offSet, Quaternion.Euler(-90, 0, 0));
+                            newChip.GetComponent<MeshRenderer>().material = Services.PokerRules.tipMaterial;
+                        }
                         newChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
-                        Services.Dealer.chipsInPot.Add(newChip.GetComponent<Chip>());
-                        Table.instance.potChips += newChip.GetComponent<Chip>().chipData.ChipValue;
+                        if(!isTipping) Services.Dealer.chipsInPot.Add(newChip.GetComponent<Chip>());
+                        if(!isTipping) Table.instance.potChips += newChip.GetComponent<Chip>().chipData.ChipValue;
                         Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChip.GetComponent<Chip>().chipData.ChipValue);
                     }
                 }
@@ -1281,8 +1298,17 @@ public class PokerPlayerRedux : MonoBehaviour{
             float incrementStackBy = 0;
             Vector3 offSet = Vector3.zero;
             Vector3 containerOffset = Vector3.up * .08f;
-            GameObject chipContainer = GameObject.Instantiate(new GameObject(), playerBetZones[SeatPos].transform.position + containerOffset, playerBetZones[SeatPos].transform.rotation);
-            chipContainer.tag = "Container";
+            GameObject chipContainer;
+            if (!isTipping)
+            {
+                chipContainer = GameObject.Instantiate(new GameObject(), playerBetZones[SeatPos].transform.position + containerOffset, playerBetZones[SeatPos].transform.rotation);
+            }
+            else
+            {
+                chipContainer = GameObject.Instantiate(new GameObject(), tipPos + containerOffset, playerBetZones[SeatPos].transform.rotation);
+            }
+            if(!isTipping) chipContainer.tag = "TipContainer";
+            else chipContainer.tag = "Container";
             chipContainer.name = "Container";
             chipContainer.transform.rotation = Quaternion.Euler(0, chipContainer.transform.rotation.eulerAngles.y + 90, 0);
             Vector3 lastStackPos = Vector3.zero;
@@ -1320,12 +1346,22 @@ public class PokerPlayerRedux : MonoBehaviour{
                         if (chipIndex == 0)
                         {
                             chipStackCount++;
-                            GameObject newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
+                            GameObject newChip;
+                            if (!isTipping)
+                            {
+                                newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
+                            }
+                            else
+                            {
+                                newChip = GameObject.Instantiate(chipToMake, tipPos + offSet, Quaternion.Euler(-90, 0, 0));
+                                newChip.GetComponent<MeshRenderer>().material = Services.PokerRules.tipMaterial;
+                                newChip.gameObject.tag = "Tip";
+                            }
                             newChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
                             Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChip.GetComponent<Chip>().chipData.ChipValue);
-                            Table.instance.potChips += newChip.GetComponent<Chip>().chipData.ChipValue;
+                            if (!isTipping) Table.instance.potChips += newChip.GetComponent<Chip>().chipData.ChipValue;
                             parentChip = newChip;
-                            Services.Dealer.chipsInPot.Add(newChip.GetComponent<Chip>());
+                            if (!isTipping) Services.Dealer.chipsInPot.Add(newChip.GetComponent<Chip>());
                             parentChip.transform.parent = chipContainer.transform;
                             parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
                             parentChip.GetComponent<Chip>().chipStack = new ChipStack(parentChip.GetComponent<Chip>());
@@ -1345,12 +1381,22 @@ public class PokerPlayerRedux : MonoBehaviour{
                         else if (chipStackCount >= chipCountMax)
                         {
                             chipStackCount = 1;
-                            GameObject newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
+                            GameObject newChip;
+                            if (!isTipping)
+                            {
+                                newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
+                            }
+                            else
+                            {
+                                newChip = GameObject.Instantiate(chipToMake, tipPos + offSet, Quaternion.Euler(-90, 0, 0));
+                                newChip.GetComponent<MeshRenderer>().material = Services.PokerRules.tipMaterial;
+                                newChip.gameObject.tag = "Tip";
+                            }
                             newChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
                             Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChip.GetComponent<Chip>().chipData.ChipValue);
-                            Table.instance.potChips += newChip.GetComponent<Chip>().chipData.ChipValue;
+                            if(!isTipping) Table.instance.potChips += newChip.GetComponent<Chip>().chipData.ChipValue;
                             parentChip = newChip;
-                            Services.Dealer.chipsInPot.Add(newChip.GetComponent<Chip>());
+                            if(!isTipping) Services.Dealer.chipsInPot.Add(newChip.GetComponent<Chip>());
                             parentChip.transform.parent = chipContainer.transform;
                             parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
                             parentChip.GetComponent<Chip>().chipStack = new ChipStack(parentChip.GetComponent<Chip>());
@@ -1372,7 +1418,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                             chipStackCount++;
                             ChipData newChipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
                             Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChipData.ChipValue);
-                            Table.instance.potChips += newChipData.ChipValue;
+                            if(!isTipping) Table.instance.potChips += newChipData.ChipValue;
                             parentChip.GetComponent<Chip>().chipStack.chips.Add(newChipData);
                             parentChip.GetComponent<Chip>().chipStack.stackValue += newChipData.ChipValue;
                             parentChip.transform.localScale = new Vector3(parentChip.transform.localScale.x,
