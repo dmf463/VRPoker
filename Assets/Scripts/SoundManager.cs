@@ -157,6 +157,12 @@ public class SoundManager : MonoBehaviour
         StartCoroutine(PlayerStopsTalking(clip.length, player));
 	}
 
+    public void GetNonPlayerSourceAndPlay(AudioSource source, AudioClip clip)
+    {
+        source.clip = clip;
+        source.Play();
+    }
+
 
     public void CheckForTutorialAudioToBePlayed()
     {

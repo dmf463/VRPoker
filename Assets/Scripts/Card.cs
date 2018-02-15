@@ -554,7 +554,7 @@ public class Card : InteractionSuperClass {
                 }
             }
             Debug.Log("badcards count = " + badCardsDebug);
-            if (Services.PokerRules.CardIsInCorrectLocation(this, cardsPulled))
+            if (Services.PokerRules.CardIsInCorrectLocation(this, cardsPulled) && !cardIsFlipped)
             {
                 float badCards = 0;
                 //Services.Dealer.messageText.text = "Card is in correct location";

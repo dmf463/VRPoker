@@ -531,6 +531,7 @@ public class PokerRules : MonoBehaviour {
 
     public void PushGroupOfChips()
     {
+        if (chipGroup.Count != 0) 
         for (int i = 0; i < chipGroup.Count; i++)
         {
             Rigidbody rb = chipGroup[i].gameObject.GetComponent<Rigidbody>();

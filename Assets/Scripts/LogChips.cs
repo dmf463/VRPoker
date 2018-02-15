@@ -98,7 +98,8 @@ public class LogChips : MonoBehaviour
                 chipValue = chipStack.stackValue;
             }
             else chipValue = other.GetComponent<Chip>().chipData.ChipValue;
-            Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.fallingTip, .5f);
+            //Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.fallingTip, .7f);
+            Services.SoundManager.GetNonPlayerSourceAndPlay(GetComponent<AudioSource>(), Services.SoundManager.fallingTip);
             Services.Dealer.tipCount += chipValue;
             Destroy(other.gameObject);
         }

@@ -1208,7 +1208,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public void Bet(int betAmount, bool isTipping)
     {
-        if (isTipping) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.tipSFX, .3f);
+        if (isTipping) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.tipSFX, 1f);
 		else Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.chips[Random.Range(0,Services.SoundManager.chips.Length)], 0.25f, Random.Range(0.95f,1.05f), transform.position);
         int oldChipStackValue = chipCount;
         List<GameObject> playerBetZones = new List<GameObject>
