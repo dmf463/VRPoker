@@ -1223,7 +1223,7 @@ public class Dealer : MonoBehaviour
                 //
                 //
                 //IMPORTANT DEBUG
-                Debug.Log("for player" + player.SeatPos + " the winnerChipStack = " + winnerChipStack + " and the Player has" + player.chipCount);
+                //Debug.Log("for player" + player.SeatPos + " the winnerChipStack = " + winnerChipStack + " and the Player has" + player.chipCount);
                 //
                 ///
                 ///

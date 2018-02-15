@@ -141,7 +141,7 @@ public class Chip : InteractionSuperClass {
                     {
                         if ((hand.transform.position - transform.position).magnitude < .2f && (handPos - chipPos).magnitude < .12f && heightDifference < HEIGHT_THRESHOLD && !isAtDestination)
                         {
-                            Debug.Log(heightDifference + " is from chipWorth " + chipData.ChipValue);
+                            //Debug.Log(heightDifference + " is from chipWorth " + chipData.ChipValue);
                             Vector3 vel = hand.GetTrackedObjectVelocity();
                             Vector2 vel2D = new Vector2(vel.x, vel.z);
                             Vector2 touchVect = (chipPos - (handPos));

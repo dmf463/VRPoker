@@ -145,6 +145,12 @@ public class Card : InteractionSuperClass {
         {
             transform.position = new Vector3(transform.position.x, yPos, transform.position.z);
         }
+        if(Vector3.Distance(transform.position, GameObject.Find("ShufflingArea").transform.position) > 20)
+        {
+            Vector3 pos = GameObject.Find("ShufflingArea").transform.position;
+            transform.position = new Vector3(pos.x, pos.y, pos.z);
+            rb.velocity = Vector3.zero;
+        }
 
 }
     //so this is literally the update function

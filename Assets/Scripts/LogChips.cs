@@ -15,6 +15,11 @@ public class LogChips : MonoBehaviour
     {
         Destination.player0, Destination.player1, Destination.player2, Destination.player3, Destination.player4
     };
+    float startUpTime;
+    bool startTimer = false;
+    float timeLimit = 2;
+    PokerPlayerRedux player;
+    bool playerMadeMistake = false;
 
     // Use this for initialization
     void Start()
@@ -25,7 +30,20 @@ public class LogChips : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if (startTimer)
+        {
+            Debug.Log("STARTING TIMER");
+            float timeSinceEnter = Time.time - startUpTime;
+            if(timeSinceEnter >= timeLimit)
+            {
+                Debug.Log("SHOULD SAY LINE");
+                if (!player.playerAudioSource.isPlaying && !player.playerIsInConversation && !Services.SoundManager.conversationIsPlaying)
+                {
+                    Services.SoundManager.GetSourceAndPlay(player.playerAudioSource, player.wrongChipsAudio);
+                }
+                startTimer = false;
+            }
+        }
     }
     #endregion
 
@@ -42,9 +60,10 @@ public class LogChips : MonoBehaviour
                 {
 					if(gameObject.name == playerNames[i] && Services.Dealer.players[i].PlayerState != PlayerState.Winner)
 					{
-						if(!Services.Dealer.players[i].playerAudioSource.isPlaying && !Services.Dealer.players[i].playerIsInConversation && !Services.SoundManager.conversationIsPlaying){
-							Services.SoundManager.GetSourceAndPlay(Services.Dealer.players[i].playerAudioSource, Services.Dealer.players[i].wrongChipsAudio);
-						}
+                        Debug.Log("NOT MY CHIP");
+                        player = Services.Dealer.players[i];
+                        startUpTime = Time.time;
+                        startTimer = true;
 					}
                     if (gameObject.name == playerNames[i])
                     {
@@ -94,6 +113,14 @@ public class LogChips : MonoBehaviour
                 Debug.Log("chip is leaving");
                 for (int i = 0; i < playerNames.Count; i++)
                 {
+                    if(player != null)
+                    {
+                        if (Services.Dealer.players[i].SeatPos == player.SeatPos)
+                        {
+                            startTimer = false;
+                            Debug.Log("TURNING TIMER OFF");
+                        }
+                    }
                     if (gameObject.name == playerNames[i] &&
                         Services.Dealer.players[i].PlayerState == PlayerState.Winner &&
                         Services.Dealer.players[i].chipCount != Services.Dealer.players[i].chipsWon + Services.Dealer.players[i].ChipCountToCheckWhenWinning)
