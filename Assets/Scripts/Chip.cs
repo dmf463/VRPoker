@@ -9,14 +9,18 @@ public class Chip : InteractionSuperClass {
 
     public float flying_start_time, flight_journey_distance;
     public Vector3 flying_start_position;
+    public PokerPlayerRedux owner;
 
     public bool is_flying = false;
     public float rotSpeed;
     public bool isTip = false;
+    public bool isLerping = false;
     //super important, this is how much the chip costs, we set this in chipConfig and assign it at start
     //public int chipValue;
 
     public ChipData chipData;
+
+    public bool isAtDestination = false;
 
     //is the chip touching another chip?
     private bool isTouchingChip;
@@ -52,6 +56,8 @@ public class Chip : InteractionSuperClass {
 
     //the velocity threshold by which chip stacks come apart
     const float MAGNITUDE_THRESHOLD = 2;
+
+    const float HEIGHT_THRESHOLD = .15f;
 
     //the max amount of chips that can go in a chipstack
     const float MAX_CHIPSTACK = 25;
@@ -115,73 +121,134 @@ public class Chip : InteractionSuperClass {
 
     void FixedUpdate()
     {
-		if(!Services.Dealer.OutsideVR){
-	        for (int i = 0; i < 2; i++)
-	        {
-	            Hand hand = i == 0 ? throwingHand : deckHand;
-	            //if (chipStack != null && hand != null)
-	            if (hand != null)
-	            {
-	                Vector2 handPos = new Vector2(hand.transform.position.x, hand.transform.position.z);
-	                Vector2 chipPos = new Vector2(transform.position.x, transform.position.z);
-	                Vector2 otherHandPos = new Vector2(hand.otherHand.transform.position.x, hand.otherHand.transform.position.z);
-	                if (hand.controller.GetTouch(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
-	                {
-	                    if ((hand.transform.position - transform.position).magnitude < .2f && (handPos - chipPos).magnitude < .12f)
-	                    {
-	                        Vector3 vel = hand.GetTrackedObjectVelocity();
-	                        Vector2 vel2D = new Vector2(vel.x, vel.z);
-	                        Vector2 touchVect = (chipPos - (handPos));
-	                        Vector2 chipDir = touchVect;
-	                        float dot = Vector2.Dot(vel2D.normalized, touchVect.normalized);
-	                        if (vel2D.magnitude > .2f && dot > .75f) //.6
-	                        {
-	                            chipDir = vel2D;
-	                        }
+        PushChips();
+	}
 
-	                        Vector3 dest = hand.transform.TransformPoint(Services.PokerRules.chipPositionWhenPushing[spotIndex]);
-	                        if (!pushingChip && Services.PokerRules.chipGroup.Count <= 10)
-	                        {
-	                            Services.PokerRules.chipGroup.Add(this);
+    void PushChips()
+    {
+        if (!Services.Dealer.OutsideVR)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                Hand hand = i == 0 ? throwingHand : deckHand;
+                if (hand != null)
+                {
+                    Vector2 handPos = new Vector2(hand.transform.position.x, hand.transform.position.z);
+                    Vector2 chipPos = new Vector2(transform.position.x, transform.position.z);
+                    Vector2 otherHandPos = new Vector2(hand.otherHand.transform.position.x, hand.otherHand.transform.position.z);
+                    float heightDifference = hand.transform.position.y - transform.position.y;
+                    if (Table.gameState == GameState.ShowDown && Services.Dealer.chipsInPot.Contains(this) && !isAtDestination)
+                    {
+                        if ((hand.transform.position - transform.position).magnitude < .2f && (handPos - chipPos).magnitude < .12f && heightDifference < HEIGHT_THRESHOLD && !isAtDestination)
+                        {
+                            Debug.Log(heightDifference + " is from chipWorth " + chipData.ChipValue);
+                            Vector3 vel = hand.GetTrackedObjectVelocity();
+                            Vector2 vel2D = new Vector2(vel.x, vel.z);
+                            Vector2 touchVect = (chipPos - (handPos));
+                            Vector2 chipDir = touchVect;
+                            float dot = Vector2.Dot(vel2D.normalized, touchVect.normalized);
+                            if (vel2D.magnitude > .2f && dot > .75f) //.6
+                            {
+                                chipDir = vel2D;
+                            }
+
+                            Vector3 dest = hand.transform.TransformPoint(Services.PokerRules.chipPositionWhenPushing[spotIndex]);
+                            if (!pushingChip && Services.PokerRules.chipGroup.Count <= 10)
+                            {
+                                Services.PokerRules.chipGroup.Add(this);
                                 GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
-                                foreach(GameObject chip in allChips)
+                                foreach (GameObject chip in allChips)
                                 {
                                     Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), chip.GetComponent<Collider>(), true);
                                 }
-	                            handPushingChip = hand;
-	                            pushingChip = true;
+                                handPushingChip = hand;
+                                pushingChip = true;
                                 Services.Dealer.handIsOccupied = true;
-	                            spotIndex = Services.PokerRules.chipsBeingPushed;
-	                            Services.PokerRules.chipsBeingPushed += 1;
+                                spotIndex = Services.PokerRules.chipsBeingPushed;
+                                Services.PokerRules.chipsBeingPushed += 1;
                                 Services.PokerRules.ConsolidateStack();
-	                            //Debug.Log(Services.PokerRules.chipsBeingPushed);
-	                        }
-	                    }
-	                }
-
-	                else
-	                {
-	                    if (pushingChip && !handPushingChip.controller.GetTouch(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad))
-	                    {
-	                        Services.PokerRules.chipGroup.Clear();
-                            GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
-                            foreach (GameObject chip in allChips)
-                            {
-                                Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), chip.GetComponent<Collider>(), false);
                             }
-                            timesToSplit = 0;
-	                        handPushingChip = null;
-	                        pushingChip = false;
-                            Services.Dealer.handIsOccupied = false;
-	                        spotIndex = 0;
-	                        Services.PokerRules.chipsBeingPushed = 0;
-	                    }
-	                }
-	            }
-	        }
-	    }
-	}
+                        }
+                        else
+                        {
+                            if (pushingChip && (handPushingChip.transform.position.y - transform.position.y) > HEIGHT_THRESHOLD)
+                            {
+                                Services.PokerRules.chipGroup.Clear();
+                                GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
+                                foreach (GameObject chip in allChips)
+                                {
+                                    Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), chip.GetComponent<Collider>(), false);
+                                }
+                                timesToSplit = 0;
+                                handPushingChip = null;
+                                pushingChip = false;
+                                Services.Dealer.handIsOccupied = false;
+                                spotIndex = 0;
+                                Services.PokerRules.chipsBeingPushed = 0;
+                            }
+                        }
+                    }
+                    else if(isAtDestination && Services.PokerRules.chipGroup.Contains(this))
+                    {
+                        Services.PokerRules.chipGroup.Remove(this);
+                        timesToSplit = 0;
+                        handPushingChip = null;
+                        pushingChip = false;
+                        spotIndex = 0;
+                        //InitializeLerp(gameObject, owner.GetComponentInChildren<LogCards>().gameObject.transform.position);
+                    }
+                    else if (Table.gameState == GameState.PostHand)
+                    {
+                        //InitializeLerp(gameObject, owner.GetComponentInChildren<LogCards>().gameObject.transform.position);
+                        Services.PokerRules.chipGroup.Clear();
+                        GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
+                        foreach (GameObject chip in allChips)
+                        {
+                            Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), chip.GetComponent<Collider>(), false);
+                        }
+                        timesToSplit = 0;
+                        handPushingChip = null;
+                        pushingChip = false;
+                        Services.Dealer.handIsOccupied = false;
+                        spotIndex = 0;
+                        Services.PokerRules.chipsBeingPushed = 0;
+                    }
+                }
+            }
+        }
+    }
 
+    public void InitializeLerp(GameObject obj ,Vector3 pos)
+    {
+        Debug.Log("SETTING UP LERP");
+        flying_start_time = Time.time;
+        flight_journey_distance = Vector3.Distance(obj.transform.position, pos);
+        flying_start_position = obj.transform.position;
+        LerpTowards(obj, pos);
+    }
+    public void LerpTowards(GameObject obj, Vector3 pos)
+    {
+        Debug.Log("STARTING LERP");
+        StartCoroutine(ActiveLerping(obj, pos));
+    }
+
+    IEnumerator ActiveLerping(GameObject obj, Vector3 pos)
+    {
+        while (isLerping)
+        {
+            Debug.Log("LERPING");
+            float distCovered = (Time.time - flying_start_time) * 1;
+            float fracJourney = distCovered / flight_journey_distance;
+            obj.transform.position = Vector3.Lerp(flying_start_position, pos, fracJourney);
+            if(obj.transform.position == pos)
+            {
+                isLerping = false;
+            }
+            yield return null;
+        }
+        Debug.Log("LERP DONE");
+        yield break;
+    }
     //on collision, we want to check:
     //a) is the object a chip?
     //b) is that chip in a stack?
@@ -361,6 +428,7 @@ public class Chip : InteractionSuperClass {
                     GameObject newChip = Instantiate(FindChipPrefab(chipStack.chips[i].ChipValue),
                                                      transform.position + Random.insideUnitSphere * chipSpawnOffset,
                                                      Quaternion.identity);
+                    if(gameObject.tag == "Tip") newChip.GetComponent<MeshRenderer>().material = Services.PokerRules.tipMaterial;
                     Services.Dealer.thrownChips.Add(newChip);
                     Rigidbody rb = newChip.gameObject.GetComponent<Rigidbody>();
                     rb.AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);

@@ -18,6 +18,7 @@ public class Card : InteractionSuperClass {
     int cardsCaught = 0;
     public int cardThrownNum;
     public bool cardChecked = false;
+    float yPos = 0;
 
     public float checkTime;
 
@@ -139,6 +140,11 @@ public class Card : InteractionSuperClass {
         //in fact this whole game could probably benefit from using state machines considering how many states I have
         CardForDealingMode();
         BringCardBack();
+        cardFacingUp = CardIsFaceUp(105, "TheBoard");
+        if(yPos != 0 && !is_flying)
+        {
+            transform.position = new Vector3(transform.position.x, yPos, transform.position.z);
+        }
 
 }
     //so this is literally the update function
@@ -157,7 +163,8 @@ public class Card : InteractionSuperClass {
             {
                 elapsedTimeForCardFlip = 0;
                 flippingCard = false;
-                cardIsFlipped = true;
+                if (!cardIsFlipped) cardIsFlipped = true;
+                else cardIsFlipped = false;
             }
         }
 
@@ -320,6 +327,7 @@ public class Card : InteractionSuperClass {
         if (other.gameObject.tag == "Table")
         {
             cardOnTable = true;
+            yPos = transform.position.y;
         }
     }
 
@@ -328,6 +336,7 @@ public class Card : InteractionSuperClass {
         if (other.gameObject.tag == "Table")
         {
             cardOnTable = false;
+            yPos = 0;
             Services.Dealer.cardsTouchingTable.Remove(this);
         }
     }
@@ -406,11 +415,12 @@ public class Card : InteractionSuperClass {
     {
         //if(Table.dealerState == DealerState.DealingState)
         //{
-        if (cardFacingUp == false)
+        yPos = 0;
+        if (!cardFacingUp || !cardIsFlipped)
         {
             transform.rotation = throwingHand.GetAttachmentTransform("CardFaceDown").transform.rotation;
         }
-        else if (cardFacingUp == true)
+        else if (cardFacingUp || cardIsFlipped)
         {
             transform.rotation = throwingHand.GetAttachmentTransform("CardFaceUp").transform.rotation;
         }
@@ -431,7 +441,7 @@ public class Card : InteractionSuperClass {
         cardPosHeld = transform.position;
         if(Table.gameState == GameState.NewRound)
         {
-            if (CardIsFaceUp(120, "ShufflingArea")) Table.gameState = GameState.Misdeal;
+            if (CardIsFaceUp(105, "ShufflingArea")) Table.gameState = GameState.Misdeal;
         }
         base.HandAttachedUpdate(attachedHand);
     }
@@ -649,7 +659,7 @@ public class Card : InteractionSuperClass {
     public bool CardIsFaceUp(float angleThreshold, string comparisonPoint)
     {
         float angle = GetCardAngle(comparisonPoint);
-        if (angle > angleThreshold) return true;
+        if (angle > angleThreshold || cardIsFlipped) return true;
         else return false;
     }
 

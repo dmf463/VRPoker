@@ -8,7 +8,7 @@ public class PlayerGazeTrigger : MonoBehaviour
 {
 
     float timeRemaining;
-    float timeSpanForQuestion = 3;
+    //float timeSpanForQuestion = 3;
     float timeSpanForEye;
     public float rayDistance;
     public LayerMask mask;
@@ -53,23 +53,23 @@ public class PlayerGazeTrigger : MonoBehaviour
                 }
             }
 
-            if (pokerPlayer.PlayerState != PlayerState.Winner && pokerPlayer.PlayerState != PlayerState.Loser)
-            {
-                questionMark.fillAmount = 0;
-                questionMarkActivated = false;
-                questionMark.GetComponent<CardIndicatorLerp>().enabled = false;
-            }
-            else
-            {
-                if (!questionMarkActivated && Services.Dealer.readyToAwardPlayers)
-                {
-                    timeRemaining = timeSpanForQuestion;
-                    Debug.Log(pokerPlayer.playerName + " is a winner or loser");
-                    questionMarkActivated = true;
-                    questionMark.GetComponent<CardIndicatorLerp>().enabled = true;
-                    questionMark.fillAmount = 1;
-                }
-            }
+            //if (pokerPlayer.PlayerState != PlayerState.Winner && pokerPlayer.PlayerState != PlayerState.Loser)
+            //{
+            //    questionMark.fillAmount = 0;
+            //    questionMarkActivated = false;
+            //    questionMark.GetComponent<CardIndicatorLerp>().enabled = false;
+            //}
+            //else
+            //{
+            //    if (!questionMarkActivated && Services.Dealer.readyToAwardPlayers)
+            //    {
+            //        timeRemaining = timeSpanForQuestion;
+            //        Debug.Log(pokerPlayer.playerName + " is a winner or loser");
+            //        questionMarkActivated = true;
+            //        questionMark.GetComponent<CardIndicatorLerp>().enabled = true;
+            //        questionMark.fillAmount = 1;
+            //    }
+            //}
             //Debug.Log("PlayerToAct = " + Services.Dealer.playerToAct);
             //1. declare your raycast (origin of the array, and then the direction it shoots)
             Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
@@ -87,7 +87,7 @@ public class PlayerGazeTrigger : MonoBehaviour
                         {
                             timeRemaining = Mathf.Max((timeRemaining - Time.deltaTime), 0); //after 1 second, this variable will be 0f;
                             progressImage.fillAmount = timeRemaining / timeSpanForEye;
-                            Debug.Log("time remaining = " + timeRemaining + " and fillAmount = " + progressImage.fillAmount);
+                            //Debug.Log("time remaining = " + timeRemaining + " and fillAmount = " + progressImage.fillAmount);
                             if (timeRemaining <= 0.5f && !pokerPlayer.playerLookedAt)
                             {
                                 pokerPlayer.playerLookedAt = true;
@@ -99,7 +99,7 @@ public class PlayerGazeTrigger : MonoBehaviour
                         {
                             timeRemaining = Mathf.Clamp01(timeRemaining - Time.deltaTime);
                             progressImage.fillAmount = timeRemaining;
-                            Debug.Log("time remaining = " + timeRemaining + " and fillAmount = " + progressImage.fillAmount);
+                            //Debug.Log("time remaining = " + timeRemaining + " and fillAmount = " + progressImage.fillAmount);
                             if (timeRemaining <= 0 && !pokerPlayer.playerLookedAt)
                             {
                                 pokerPlayer.playerLookedAt = true;
@@ -110,23 +110,23 @@ public class PlayerGazeTrigger : MonoBehaviour
                             }
                         }
                     }
-                    else if (pokerPlayer.PlayerState == PlayerState.Winner || pokerPlayer.PlayerState == PlayerState.Loser)
-                    {
-                        Debug.Log("WE GETTIN INTO THE RAYCAST WITH " + pokerPlayer.playerName + " AS A " + pokerPlayer.PlayerState);
-                        if (rayHit.transform == this.transform) //are we looking at this thing
-                        {
-                            timeRemaining = Mathf.Max((timeRemaining - Time.deltaTime), 0);
-                            questionMark.fillAmount = timeRemaining / timeSpanForQuestion;
-                            if (timeRemaining == 0 && !pokerPlayer.playerLookedAt)
-                            {
-                                pokerPlayer.playerLookedAt = true;
-                                Debug.Log("Ready to invoke question mark");
-                                timeRemaining = timeSpanForQuestion;
-                                questionMark.fillAmount = 0;
-                                onQuestionMarkGazeComplete.Invoke();
-                            }
-                        }
-                    }
+                    //else if (pokerPlayer.PlayerState == PlayerState.Winner || pokerPlayer.PlayerState == PlayerState.Loser)
+                    //{
+                    //    Debug.Log("WE GETTIN INTO THE RAYCAST WITH " + pokerPlayer.playerName + " AS A " + pokerPlayer.PlayerState);
+                    //    if (rayHit.transform == this.transform) //are we looking at this thing
+                    //    {
+                    //        timeRemaining = Mathf.Max((timeRemaining - Time.deltaTime), 0);
+                    //        questionMark.fillAmount = timeRemaining / timeSpanForQuestion;
+                    //        if (timeRemaining == 0 && !pokerPlayer.playerLookedAt)
+                    //        {
+                    //            pokerPlayer.playerLookedAt = true;
+                    //            Debug.Log("Ready to invoke question mark");
+                    //            timeRemaining = timeSpanForQuestion;
+                    //            questionMark.fillAmount = 0;
+                    //            onQuestionMarkGazeComplete.Invoke();
+                    //        }
+                    //    }
+                    //}
                 }
             }
         }

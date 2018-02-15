@@ -241,7 +241,7 @@ public class Dealer : MonoBehaviour
                 if (!OnlyAllInPlayersLeft()) StartRound();
                 else playersReady = true;
                 readyForShowdown = false;
-                StartCoroutine(WaitForShowDown(2));
+                StartCoroutine(WaitForShowDown());
             }
             int allInPlayerCount = 0;
             for (int i = 0; i < players.Count; i++)
@@ -264,12 +264,6 @@ public class Dealer : MonoBehaviour
             }
         }
 
-        //so here, if's the showdown, and the players have not already been evaluated
-        //we add all the players in the hand to a new list and then pass that list to the proper evaluate function
-        //once that's done, we get readyToAwardPlayers and each player flips their cards
-        //we then clear the sortedPlayer list, because reasons?
-        //and we start the coroutine that puts the players in idle while they await their winnings
-        //finally, once that's done, we set the lastGameState to the current table state
         if (Table.gameState == GameState.ShowDown)
         {
             if (!playersHaveBeenEvaluated)
@@ -301,7 +295,7 @@ public class Dealer : MonoBehaviour
                                   " and a handTotal of " + players[i].Hand.HandValues.Total);
                     }
                 }
-                WaitForWinnersToGetPaid();
+                StartCoroutine(WaitForWinnersToGetPaid());
                 readyToAwardPlayers = true;
             }
         }
@@ -334,6 +328,11 @@ public class Dealer : MonoBehaviour
         else if (Table.gameState == GameState.CleanUp)
         {
             //messageText.text = "I guess everyone folded, woohoo!";
+        }
+        else if(Table.gameState == GameState.PostHand)
+        {
+            GameObject[] tips = GameObject.FindGameObjectsWithTag("Tip");
+            if (tips.Length == 0) cleaningCards = true;
         }
         else if (Table.gameState == GameState.Misdeal)
         {
@@ -686,10 +685,14 @@ public class Dealer : MonoBehaviour
     }
 
     //this is just a way to give the player a little buffer time so they don't accidentally trigger the showdown
-    IEnumerator WaitForShowDown(float time)
+    IEnumerator WaitForShowDown()
     {
-        yield return new WaitForSeconds(time);
+        while(playerToAct != null)
+        {
+            yield return null;
+        }
         readyForShowdown = true;
+        yield break;
     }
 
     public void WaitingToGrabCardsOn_MisDeal()
@@ -1103,7 +1106,7 @@ public class Dealer : MonoBehaviour
         numberOfWinners = PlayerRank[0].Count;
     }
 
-    public void WaitForWinnersToGetPaid()
+    public IEnumerator WaitForWinnersToGetPaid()
     {
         Debug.Assert(numberOfWinners > 0);
         List<PokerPlayerRedux> winningPlayers = new List<PokerPlayerRedux>();
@@ -1131,19 +1134,19 @@ public class Dealer : MonoBehaviour
             potRemaining -= winningPlayers[i].chipsWon;
         }
         //PROBLEM AREA FOR GAZE SPLIT
-        //if(winningPlayers.Count >= 2)
-        //{
-        //    foreach (Chip chip in chipsInPot)
-        //    {
-        //        if (chip != null) Destroy(chip.gameObject);
-        //        else Debug.Log("You are trying to Destroy a chip that is alread DEAD");
-        //    }
-        //    for (int i = 0; i < winningPlayers.Count; i++)
-        //    {
-        //        List<int> splitPot = PrepChipsForSplit(winningPlayers[i].chipsWon);
-        //        SplitPot(splitPot, winningPlayers[i].SeatPos);
-        //    }
-        //}
+        if (winningPlayers.Count >= 2)
+        {
+            foreach (Chip chip in chipsInPot)
+            {
+                if (chip != null) Destroy(chip.gameObject);
+                else Debug.Log("You are trying to Destroy a chip that is alread DEAD");
+            }
+            for (int i = 0; i < winningPlayers.Count; i++)
+            {
+                List<int> splitPot = PrepChipsForSplit(winningPlayers[i].chipsWon);
+                SplitPot(splitPot, winningPlayers[i].SeatPos);
+            }
+        }
         Debug.Log("number of Winners is " + numberOfWinners);
         //added this in because of voiceActing, and not wanting two clips playing at the same time
         if(winningPlayers.Count == 2)
@@ -1175,23 +1178,20 @@ public class Dealer : MonoBehaviour
             }
         }
 
-        //if (!winnersHaveBeenPaid)
-        //{
-        //    for (int i = 0; i < players.Count; i++)
-        //    {
-        //        if(players[i].PlayerState == PlayerState.Winner || players[i].PlayerState == PlayerState.Loser)
-        //        {
-        //            players[i].GetComponentInChildren<PlayerGazeTrigger>().questionMark.fillAmount = 1;
-        //        }
-        //    }
-        //}
-        //Table.gameState = GameState.PostHand;
-        //GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
-        //foreach(GameObject card in deadCards)
-        //{
-        //    deadCardsList.Add(card.GetComponent<Card>());
-        //}
-        
+        while (!winnersHaveBeenPaid)
+        {
+            GivePlayersWinnings();
+            yield return null;
+        }
+        for (int i = 0; i < players.Count; i++)
+        {
+            if(players[i].PlayerState == PlayerState.Winner)
+            {
+                players[i].Tip();
+            }
+        }
+        Table.gameState = GameState.PostHand;
+        yield break;
     }
 
     //this is out current method for calling the reaction audio for winners
@@ -1223,7 +1223,7 @@ public class Dealer : MonoBehaviour
                 //
                 //
                 //IMPORTANT DEBUG
-                //Debug.Log("for player" + player.SeatPos + " the winnerChipStack = " + winnerChipStack + " and the Player has" + player.chipCount);
+                Debug.Log("for player" + player.SeatPos + " the winnerChipStack = " + winnerChipStack + " and the Player has" + player.chipCount);
                 //
                 ///
                 ///
@@ -1309,6 +1309,7 @@ public class Dealer : MonoBehaviour
             players[i].waitingToGetPaid = false;
             players[i].playerLookedAt = false;
             players[i].timesRaisedThisRound = 0;
+            players[i].gaveTip = false;
             //players[i].checkedHandStrength = false;
         }
         Services.PokerRules.cardsPulled.Clear();
@@ -1374,6 +1375,7 @@ public class Dealer : MonoBehaviour
             players[i].waitingToGetPaid = false;
             players[i].playerLookedAt = false;
             players[i].timesRaisedThisRound = 0;
+            players[i].gaveTip = false;
             //players[i].checkedHandStrength = false;
         }
         GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");

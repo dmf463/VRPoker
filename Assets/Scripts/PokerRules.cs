@@ -61,7 +61,7 @@ public class PokerRules : MonoBehaviour {
             //          " and CardsAreFaceUp = " + CardsAreFaceUp() +
             //          " and thrownCards.count = " + thrownCards.Count); 
 
-            if ((cardsPulled.Count - 1 == flopCards || Table.instance._board.Count == 3) && !checkedForCorrections && CardsAreFaceUp() && thrownCards.Count == 0)
+            if ((cardsPulled.Count - 1 == flopCards || Table.instance._board.Count == 3) && !checkedForCorrections && CardsAreFacingCorrectDirection() && thrownCards.Count == 0)
             {
                 Debug.Log("checking flop");
                 StartCoroutine(CheckFlopMistakes(1));
@@ -69,7 +69,7 @@ public class PokerRules : MonoBehaviour {
         }
         else if (Table.gameState == GameState.Flop)
         {
-            if ((cardsPulled.Count - 1 == turnCard || Table.instance._board.Count == 4) && !checkedForCorrections && CardsAreFaceUp() && thrownCards.Count == 0)
+            if ((cardsPulled.Count - 1 == turnCard || Table.instance._board.Count == 4) && !checkedForCorrections && CardsAreFacingCorrectDirection() && thrownCards.Count == 0)
             {
                 Debug.Log("checking turn");
                 StartCoroutine(CheckTurnMistakes(1));
@@ -77,7 +77,7 @@ public class PokerRules : MonoBehaviour {
         }
         else if (Table.gameState == GameState.Turn)
         {
-            if ((cardsPulled.Count - 1 == riverCard || Table.instance._board.Count == 5) && !checkedForCorrections && CardsAreFaceUp() && thrownCards.Count == 0)
+            if ((cardsPulled.Count - 1 == riverCard || Table.instance._board.Count == 5) && !checkedForCorrections && CardsAreFacingCorrectDirection() && thrownCards.Count == 0)
             {
                 Debug.Log("checking river");
                 StartCoroutine(CheckRiverMistakes(1));
@@ -86,18 +86,25 @@ public class PokerRules : MonoBehaviour {
         //if (Table.gameState != GameState.NewRound) toneCount = 0;
     }
 
-    public bool CardsAreFaceUp()
+    public bool CardsAreFacingCorrectDirection()
     {
         for (int i = 0; i < Table.instance._board.Count; i++)
         {
             if (!Services.Dealer.OutsideVR)
             {
-                //if (!Table.instance._board[i].CardIsFaceUp(50, "TheBoard"))
-                //{
-                //    Debug.Log("boardCard[i] has an angle of " + Table.instance._board[i].GetCardAngle("TheBoard"));
-                //    return false;
-                //}
-                if (!Table.instance._board[i].cardIsFlipped) return false;
+                if (!Table.instance._board[i].CardIsFaceUp(50, "TheBoard"))
+                {
+                    Debug.Log("cardAngle = " + Table.instance._board[i].GetCardAngle("TheBoard"));
+                    return false;
+                }
+            }
+        }
+        for (int i = 0; i < Table.instance._burn.Count; i++)
+        {
+            if (Table.instance._burn[i].CardIsFaceUp(120, "TheBoard"))
+            {
+                //Debug.Log("cardAngle = " + Table.instance._burn[i].GetCardAngle("TheBoard"));
+                return false;
             }
         }
         return true;

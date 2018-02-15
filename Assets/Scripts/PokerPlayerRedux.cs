@@ -21,7 +21,7 @@ public class PokerPlayerRedux : MonoBehaviour{
     public int cardsReplaced = 0;
     public bool isAggressor = false;
     public int timesRaisedThisRound = 0;
-
+    public bool gaveTip = false;
 	//what position they are at the table, this is set in Dealer and is massively important
 	//this is the current means by which we differentiate between which instance of PokerPlayerRedux we're currently working with
 	public int SeatPos { get; set; }
@@ -417,7 +417,8 @@ public class PokerPlayerRedux : MonoBehaviour{
                     Services.Dealer.playersHaveBeenEvaluated = true;
                     //Services.Dealer.WaitForWinnersToGetPaid();
                     Services.Dealer.players[i].FlipCards();
-                    StartCoroutine(WaitToReceiveWinnings(1));
+                    Services.Dealer.StartCoroutine(Services.Dealer.WaitForWinnersToGetPaid());
+
                 }
             }
         }
@@ -948,6 +949,22 @@ public class PokerPlayerRedux : MonoBehaviour{
         ReceiveWinnings();
     }
 
+    public void Tip()
+    {
+        if (!gaveTip)
+        {
+            gaveTip = true;
+            int tipAmount = (int)(chipsWon * .10f);
+            int remainder = tipAmount % ChipConfig.RED_CHIP_VALUE;
+            if (remainder > 0)
+            {
+                tipAmount = (tipAmount - remainder) + ChipConfig.RED_CHIP_VALUE;
+            }
+            Bet(tipAmount, true);
+            Debug.Log(playerName + " tipped $" + tipAmount);
+        }
+    }
+
     public void ReceiveWinnings()
     {
         float winnerCount = 0;
@@ -1208,7 +1225,13 @@ public class PokerPlayerRedux : MonoBehaviour{
         {
             ChipConfig.BLACK_CHIP_VALUE, ChipConfig.WHITE_CHIP_VALUE, ChipConfig.BLUE_CHIP_VALUE, ChipConfig.RED_CHIP_VALUE
         };
+
         int valueRemaining = betAmount;
+        int remainder = valueRemaining % ChipConfig.RED_CHIP_VALUE;
+        if (remainder > 0)
+        {
+            valueRemaining = (valueRemaining - remainder) + ChipConfig.RED_CHIP_VALUE;
+        }
 
         int blackChipCountMAX = FindChipMax(ChipConfig.BLACK_CHIP_VALUE);
         int whiteChipCountMAX = FindChipMax(ChipConfig.WHITE_CHIP_VALUE);
