@@ -315,7 +315,9 @@ public class Card : InteractionSuperClass {
         if(other.gameObject.tag == "Table")
         {
             Services.Dealer.cardsTouchingTable.Add(this);
+            yPos = transform.position.y;
         }
+
     }
 
     //so this is how we check if the card is on the table

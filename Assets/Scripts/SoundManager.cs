@@ -87,6 +87,8 @@ public class SoundManager : MonoBehaviour
 	public AudioClip[] chips;
     public AudioClip[] cards;
     public AudioClip[] cardTones;
+    public AudioClip tipSFX;
+    public AudioClip fallingTip;
 
 	void Awake()
 	{
