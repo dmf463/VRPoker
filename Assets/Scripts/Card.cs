@@ -470,50 +470,36 @@ public class Card : InteractionSuperClass {
         //if (!cardChecked)
         //{
         //    cardChecked = true;
-            Debug.Log("thrownCardsList = " + Services.PokerRules.thrownCards.Count);
-            float badCardsDebug = 0;
+        Debug.Log("thrownCardsList = " + Services.PokerRules.thrownCards.Count);
+        float badCardsDebug = 0;
+        for (int i = Services.PokerRules.thrownCards.Count - 1; i >= 0; i--)
+        {
+            if (Services.PokerRules.thrownCards[i].GetComponent<Card>().thrownWrong)
+            {
+                badCardsDebug++;
+            }
+        }
+        Debug.Log("badcards count = " + badCardsDebug);
+        if (Services.PokerRules.CardIsInCorrectLocation(this, cardsPulled) && !CardIsFaceUp())
+        {
+            float badCards = 0;
+            //Services.Dealer.messageText.text = "Card is in correct location";
+            Debug.Log("Card is in correct location");
             for (int i = Services.PokerRules.thrownCards.Count - 1; i >= 0; i--)
             {
-                if (Services.PokerRules.thrownCards[i].GetComponent<Card>().thrownWrong)
+                if (Services.PokerRules.thrownCards[i].GetComponent<Card>().thrownWrong ||
+                    Services.PokerRules.thrownCards[i].GetComponent<Card>().is_flying ||
+                    !Services.PokerRules.CardIsInCorrectLocation(Services.PokerRules.thrownCards[i].GetComponent<Card>(), Services.PokerRules.cardsPulled.Count))
                 {
-                    badCardsDebug++;
+                    badCards++;
                 }
             }
-            Debug.Log("badcards count = " + badCardsDebug);
-            if (Services.PokerRules.CardIsInCorrectLocation(this, cardsPulled) && !CardIsFaceUp())
+            if (badCards == 0 && !CardsAreFlying(gameObject))
             {
-                float badCards = 0;
-                //Services.Dealer.messageText.text = "Card is in correct location";
-                Debug.Log("Card is in correct location");
-                for (int i = Services.PokerRules.thrownCards.Count - 1; i >= 0; i--)
-                {
-                    if (Services.PokerRules.thrownCards[i].GetComponent<Card>().thrownWrong ||
-                        Services.PokerRules.thrownCards[i].GetComponent<Card>().is_flying ||
-                        !Services.PokerRules.CardIsInCorrectLocation(Services.PokerRules.thrownCards[i].GetComponent<Card>(), Services.PokerRules.cardsPulled.Count))
-                    {
-                        badCards++;
-                    }
-                }
-                if (badCards == 0 && !CardsAreFlying(gameObject))
-                {
-                    Services.PokerRules.thrownCards.Clear();
-                }
-                else
-                {
-                    thrownWrong = true;
-                    Table.instance.RemoveCardFrom(this);
-                    Services.PokerRules.cardsLogged.Remove(this);
-                    Services.PokerRules.cardsPulled.Remove(cardType);
-                    Debug.Log("Removing " + cardType.rank + " of " + cardType.suit);
-                    cardDeck.GetComponent<CardDeckScript>().cardsInDeck.Add(cardType);
-                    flying_start_time = Time.time;
-                    flight_journey_distance = Vector3.Distance(transform.position, cardDeck.transform.position);
-                    flying_start_position = transform.position;
-                }
+                Services.PokerRules.thrownCards.Clear();
             }
             else
             {
-                Debug.Log("card is in wrong location");
                 thrownWrong = true;
                 Table.instance.RemoveCardFrom(this);
                 Services.PokerRules.cardsLogged.Remove(this);
@@ -523,8 +509,26 @@ public class Card : InteractionSuperClass {
                 flying_start_time = Time.time;
                 flight_journey_distance = Vector3.Distance(transform.position, cardDeck.transform.position);
                 flying_start_position = transform.position;
+                Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[7], .05f);
+                Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[8], .05f);
             }
         }
+        else
+        {
+            Debug.Log("card is in wrong location");
+            thrownWrong = true;
+            Table.instance.RemoveCardFrom(this);
+            Services.PokerRules.cardsLogged.Remove(this);
+            Services.PokerRules.cardsPulled.Remove(cardType);
+            Debug.Log("Removing " + cardType.rank + " of " + cardType.suit);
+            cardDeck.GetComponent<CardDeckScript>().cardsInDeck.Add(cardType);
+            flying_start_time = Time.time;
+            flight_journey_distance = Vector3.Distance(transform.position, cardDeck.transform.position);
+            flying_start_position = transform.position;
+            Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[7], .05f);
+            Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[8], .05f);
+        }
+    }
     //}
 
     public void BringCardBack()
