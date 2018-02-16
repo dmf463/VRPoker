@@ -91,6 +91,7 @@ public class Card : InteractionSuperClass {
 
     //basically checked if a card is flipped or not
     public bool cardFacingUp = false;
+    public bool cardWasManuallyFlipped = false;
 
 
     //this is checking to see if the card is both being held, and also touching the table
@@ -145,6 +146,7 @@ public class Card : InteractionSuperClass {
             {
                 elapsedTimeForCardFlip = 0;
                 flippingCard = false;
+                cardWasManuallyFlipped = true;
             }
         }
 
@@ -397,7 +399,7 @@ public class Card : InteractionSuperClass {
         {
             rb = GetComponent<Rigidbody>();
         }
-        if (CardIsFaceUp())
+        if (CardIsFaceUp() && !cardWasManuallyFlipped)
         {
             //Debug.Log(this.gameObject.name + " card is facing the wrong way");
             cardThrownWrong = true;

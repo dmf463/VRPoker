@@ -110,6 +110,10 @@ public class LogCards : MonoBehaviour
                 {
                     Debug.Log(other.gameObject.name + "card is dead");
                 }
+                else if (!other.GetComponent<Card>().CardIsFaceUp())
+                {
+                    Debug.Log("card is faceDown");
+                }
                 else
                 {
                     Table.instance.AddCardTo(Destination.board, other.GetComponent<Card>());
@@ -139,6 +143,10 @@ public class LogCards : MonoBehaviour
                 {
                     // Debug.Log(other.gameObject.name + "card is dead");
                 }
+                else if (other.GetComponent<Card>().CardIsFaceUp())
+                {
+                    Debug.Log("card is face up");
+                }
                 else
                 {
                     Table.instance.AddCardTo(Destination.burn, other.GetComponent<Card>());
@@ -150,14 +158,6 @@ public class LogCards : MonoBehaviour
         }
         #endregion
     }
-
-    //public void OnTriggerStay(Collider other)
-    //{
-    //    if(other.gameObject.tag == "PlayingCard")
-    //    {
-    //        other.GetComponent<Card>().stillTouchingCollider = true;
-    //    }
-    //}
 
     public void OnTriggerExit(Collider other)
     {
@@ -188,40 +188,8 @@ public class LogCards : MonoBehaviour
                 }
             }
         }
-        //WaitToCheckExit(0.25f, other);
     }
 
-    IEnumerator WaitToCheckExit(float time, Collider other)
-    {
-        yield return new WaitForSeconds(time);
-        if (other.gameObject.tag == "PlayingCard")
-        {
-            Debug.Log("Distance between objects is " + Vector3.Distance(other.gameObject.transform.position, transform.position));
-            if (Vector3.Distance(other.gameObject.transform.position, transform.position) < 1)
-            {
-                other.GetComponent<Card>().stillTouchingCollider = true;
-            }
-            else other.GetComponent<Card>().stillTouchingCollider = false;
-
-            if (!other.GetComponent<Card>().stillTouchingCollider)
-            {
-                //we go through all the player names
-                for (int i = 0; i < playerNames.Count; i++)
-                {
-                    //when we get to the match, we know which place to remove this from
-                    if (gameObject.name == playerNames[i] && Table.gameState == GameState.NewRound && Services.Dealer.players[i].PlayerState != PlayerState.Eliminated)
-                    {
-
-                        Table.instance.RemoveCard(playerDestinations[i], other.GetComponent<Card>());
-                        Services.PokerRules.cardsLogged.Remove(other.GetComponent<Card>());
-                        Services.PokerRules.toneCount--;
-                        Services.PokerRules.PlayTone();
-                        Debug.Log(other.gameObject.name + " is gone from " + playerNames[i]);
-                    }
-                }
-            }
-        }
-    }
 
     public bool CardIsOccupied(Card card)
     {

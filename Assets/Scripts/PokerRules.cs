@@ -233,25 +233,40 @@ public class PokerRules : MonoBehaviour {
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
         if (Table.gameState == GameState.PreFlop)
         {
+            //all of these used to be cardsPulled.count
+            //I changed them to cardsLogged.Count in order to make sure the lights didn't progress unless you put a card there
+            //changing it back to cardsPulled, but adding in another check for cardsLogged before we actually progress forward.
+            
             if (cardsPulled.Count == burnCard1)
             {
-                cardIndicators[5].SetActive(true);
+                if(cardsLogged.Count == burnCard1)
+                {
+                    cardIndicators[5].SetActive(true);
+                }
             }
             else if (cardsPulled.Count == flopCards - 2)
             {
+                if(cardsLogged.Count == flopCards - 2)
+                {
                 cardIndicators[5].SetActive(false);
                 cardIndicators[0].SetActive(true);
+                }
             }
             else if (cardsPulled.Count == flopCards - 1)
             {
-
-                cardIndicators[0].SetActive(false);
-                cardIndicators[1].SetActive(true);
+                if (cardsLogged.Count == flopCards - 1)
+                {
+                    cardIndicators[0].SetActive(false);
+                    cardIndicators[1].SetActive(true);
+                }
             }
             else if (cardsPulled.Count == flopCards)
             {
-                cardIndicators[1].SetActive(false);
-                cardIndicators[2].SetActive(true);
+                if (cardsLogged.Count == flopCards)
+                {
+                    cardIndicators[1].SetActive(false);
+                    cardIndicators[2].SetActive(true);
+                }
             }
             else
             {
@@ -265,7 +280,7 @@ public class PokerRules : MonoBehaviour {
             {
                 cardIndicators[5].SetActive(true);
             }
-            else if (cardsPulled.Count == turnCard)
+            else if (cardsPulled.Count == turnCard && cardsLogged.Count == burnCard2)
             {
                 cardIndicators[5].SetActive(false);
                 cardIndicators[3].SetActive(true);
