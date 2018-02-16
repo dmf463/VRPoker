@@ -1186,6 +1186,7 @@ public class PlayerBehaviour {
                     {
                         float randomNum = Random.Range(0, 100);
                         if (randomNum > player.playerInsightPercent) player.Fold(); //if opponent hand is better, get out
+                        else player.DetermineAction(returnRate, player);
                     }
                     else //if it's NOT better, than percent chance to call or raise
                     {

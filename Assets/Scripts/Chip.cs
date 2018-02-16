@@ -257,12 +257,12 @@ public class Chip : InteractionSuperClass {
     void OnCollisionEnter(Collision other)
     {
         //Debug.Log("hitting " + other.gameObject.name);
-        if (other.gameObject.tag == "Chip" && other.gameObject.GetComponent<Chip>().chipStack == null)
+        if ((other.gameObject.tag == "Chip" || other.gameObject.tag == "Tip") && other.gameObject.GetComponent<Chip>().chipStack == null)
         {
             isTouchingChip = true;
             incomingChip = other.gameObject.GetComponent<Chip>();
         }
-        else if(other.gameObject.tag == "Chip" && other.gameObject.GetComponent<Chip>().chipStack != null)
+        else if((other.gameObject.tag == "Chip" || other.gameObject.tag == "Tip") && other.gameObject.GetComponent<Chip>().chipStack != null)
         {
             if (other.gameObject.GetComponent<Chip>().chipStack.chips.Count < MAX_CHIPSTACK)
             {
@@ -275,12 +275,12 @@ public class Chip : InteractionSuperClass {
     //when we are no longer colliding, we want to set everything we had previously set to false
     void OnCollisionExit(Collision other)
     {
-        if (other.gameObject.tag == "Chip" && other.gameObject.GetComponent<Chip>().chipStack == null)
+        if ((other.gameObject.tag == "Chip" || other.gameObject.tag == "Tip") && other.gameObject.GetComponent<Chip>().chipStack == null)
         {
             isTouchingChip = false;
             incomingChip = null;
         }
-        else if (other.gameObject.tag == "Chip" && other.gameObject.GetComponent<Chip>().chipStack != null)
+        else if ((other.gameObject.tag == "Chip" || other.gameObject.tag == "Tip") && other.gameObject.GetComponent<Chip>().chipStack != null)
         {
             isTouchingStack = false;
             isTouchingChip = false;
@@ -312,10 +312,26 @@ public class Chip : InteractionSuperClass {
                     incomingChip = null;
                     isTouchingChip = false;
                 }
-                //we might not need this. what's it for?
+                else if(incomingChip != null && incomingChip.gameObject.tag == "Tip")
+                {
+                    chipStack.AddToStackInHand(incomingChip.chipData);
+                    Destroy(incomingChip.gameObject);
+                    incomingChip = null;
+                    isTouchingChip = false;
+                }
                 isTouchingChip = false;
             }
             if (isTouchingStack && incomingStack.chipData.ChipValue == chipData.ChipValue)
+            {
+                foreach (ChipData chip in incomingStack.chipStack.chips)
+                {
+                    chipStack.AddToStackInHand(chip);
+                    isTouchingStack = false;
+                }
+                Destroy(incomingStack.gameObject);
+                incomingStack = null;
+            }
+            else if(isTouchingStack && incomingStack.gameObject.tag == "Tip")
             {
                 foreach (ChipData chip in incomingStack.chipStack.chips)
                 {
@@ -429,7 +445,11 @@ public class Chip : InteractionSuperClass {
                     GameObject newChip = Instantiate(FindChipPrefab(chipStack.chips[i].ChipValue),
                                                      transform.position + Random.insideUnitSphere * chipSpawnOffset,
                                                      Quaternion.identity);
-                    if(gameObject.tag == "Tip") newChip.GetComponent<MeshRenderer>().material = Services.PokerRules.tipMaterial;
+                    if (gameObject.tag == "Tip")
+                    {
+                        newChip.GetComponent<MeshRenderer>().material = Services.PokerRules.tipMaterial;
+                        newChip.gameObject.tag = "Tip";
+                    }
                     if (chipForBet) newChip.GetComponent<Chip>().chipForBet = true;
                     Services.Dealer.thrownChips.Add(newChip);
                     Rigidbody rb = newChip.gameObject.GetComponent<Rigidbody>();
