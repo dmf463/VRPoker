@@ -90,11 +90,11 @@ public class LogCards : MonoBehaviour
                 //same thing as above
                 //if (Table.dealerState == DealerState.DealingState)
                 //{
-                if (Table.instance._board.Contains(other.GetComponent<Card>()))
+                if (Table.instance.board.Contains(other.GetComponent<Card>()))
                 {
                     Debug.Log(other.gameObject.name + " is already in the board");
                 }
-                else if (Table.instance._board.Count == 5)
+                else if (Table.instance.board.Count == 5)
                 {
                     Debug.Log(other.gameObject.name + "cannot be added to the board");
                 }
@@ -112,13 +112,13 @@ public class LogCards : MonoBehaviour
                 }
                 else if (!other.GetComponent<Card>().CardIsFaceUp())
                 {
-                    Debug.Log("card is faceDown");
+                    //Debug.Log("card is faceDown");
                 }
                 else
                 {
                     Table.instance.AddCardTo(Destination.board, other.GetComponent<Card>());
                     Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
-                    Debug.Log(other.gameObject.name + " went into " + this.gameObject.name);
+                    //Debug.Log(other.gameObject.name + " went into " + this.gameObject.name);
                     Services.PokerRules.PlayTone();
                 }
                 //}
@@ -131,7 +131,7 @@ public class LogCards : MonoBehaviour
             {
                 //if (Table.dealerState == DealerState.DealingState)
                 //{
-                if (Table.instance._burn.Contains(other.GetComponent<Card>()))
+                if (Table.instance.burn.Contains(other.GetComponent<Card>()))
                 {
                     //Debug.Log(other.gameObject.name + " is already in the burn");
                 }
@@ -145,13 +145,13 @@ public class LogCards : MonoBehaviour
                 }
                 else if (other.GetComponent<Card>().CardIsFaceUp())
                 {
-                    Debug.Log("card is face up");
+                    //Debug.Log("card is face up");
                 }
                 else
                 {
                     Table.instance.AddCardTo(Destination.burn, other.GetComponent<Card>());
                     Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
-                    Debug.Log(other.gameObject.name + "Card went into " + this.gameObject.name);
+                    //Debug.Log(other.gameObject.name + "Card went into " + this.gameObject.name);
                     Services.PokerRules.PlayTone();
                 }
             }

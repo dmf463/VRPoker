@@ -167,6 +167,10 @@ public class Dealer : MonoBehaviour
             }
         }
 
+        if (playersReady)
+        {
+            Services.PokerRules.SetCardIndicator();
+        }
         //this resets bools necessary to start new rounds
         //once both of these are true, then the next round will start
         if (playersReady && Table.gameState != lastGameState)
@@ -174,10 +178,7 @@ public class Dealer : MonoBehaviour
             Debug.Log("starting round");
             roundStarted = false;
             playersReady = false;
-        }
-        if (playersReady)
-        {
-            Services.PokerRules.SetCardIndicator();
+            Services.PokerRules.TurnOffAllIndicators();
         }
         //starts the round for pre-flop
         if (Table.gameState == GameState.PreFlop)

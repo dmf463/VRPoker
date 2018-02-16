@@ -55,10 +55,10 @@ public class Table {
     };
 
     //this is the list that holds the community cards
-    public List<Card> _board = new List<Card>();
+    public List<Card> board = new List<Card>();
 
     //currently don't actually require the player to burn, but that will change.
-    public List<Card> _burn = new List<Card>();
+    public List<Card> burn = new List<Card>();
 
     //this is the list that holds all the players chips. this is where we get the actual chips to count and instantiate
     public List<int> playerChipStacks = new List<int>(5)
@@ -94,8 +94,8 @@ public class Table {
         {
             playerCards.Clear();
         }
-        _board.Clear();
-        _burn.Clear();
+        board.Clear();
+        burn.Clear();
     }
 
     //this function goes through everything that needs to be reset and resets it
@@ -108,8 +108,8 @@ public class Table {
         {
             playerCards[i].Clear();
         }
-        _board.Clear();
-        _burn.Clear();
+        board.Clear();
+        burn.Clear();
         potChips = 0;
         Services.Dealer.ResetPlayerStatus();
         gameState = GameState.NewRound;
@@ -171,8 +171,8 @@ public class Table {
                 playerCards[i].Clear();
             }
             Services.Dealer.ResetGameState();
-            _board.Clear();
-            _burn.Clear();
+            board.Clear();
+            burn.Clear();
             Services.PokerRules.cardsPulled.Clear();
             Services.PokerRules.cardsLogged.Clear();
             Services.PokerRules.thrownCards.Clear();
@@ -236,11 +236,11 @@ public class Table {
     {
         if (dest == Destination.board)
         {
-            _board.Add(card);
+            board.Add(card);
         }
         else if (dest == Destination.burn)
         {
-            _burn.Add(card);
+            burn.Add(card);
         }
         else
         {
@@ -301,9 +301,9 @@ public class Table {
         List<CardType> EvaluatedHand = new List<CardType>();
         EvaluatedHand = GetCardTypes(seatPos);
         if (EvaluatedHand.Count != 2) Debug.Log("EvaluatedHandCount = " + EvaluatedHand.Count);
-        EvaluatedHand.Add(_board[0].cardType);
-        EvaluatedHand.Add(_board[1].cardType);
-        EvaluatedHand.Add(_board[2].cardType);
+        EvaluatedHand.Add(board[0].cardType);
+        EvaluatedHand.Add(board[1].cardType);
+        EvaluatedHand.Add(board[2].cardType);
         if (EvaluatedHand.Count != 5) Debug.Log("EvaluatedHandCount = " + EvaluatedHand.Count);
         Debug.Assert(EvaluatedHand.Count == 5);
         EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
@@ -317,10 +317,10 @@ public class Table {
         List<CardType> EvaluatedHand = new List<CardType>();
         EvaluatedHand = GetCardTypes(seatPos);
         if (EvaluatedHand.Count != 2) Debug.Log("EvaluatedHandCount = " + EvaluatedHand.Count);
-        EvaluatedHand.Add(_board[0].cardType);
-        EvaluatedHand.Add(_board[1].cardType);
-        EvaluatedHand.Add(_board[2].cardType);
-        EvaluatedHand.Add(_board[3].cardType);
+        EvaluatedHand.Add(board[0].cardType);
+        EvaluatedHand.Add(board[1].cardType);
+        EvaluatedHand.Add(board[2].cardType);
+        EvaluatedHand.Add(board[3].cardType);
         if (EvaluatedHand.Count != 6) Debug.Log("EvaluatedHandCount = " + EvaluatedHand.Count);
         Debug.Assert(EvaluatedHand.Count == 6);
         EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
@@ -334,11 +334,11 @@ public class Table {
         List<CardType> EvaluatedHand = new List<CardType>();
         EvaluatedHand = GetCardTypes(seatPos);
         if (EvaluatedHand.Count != 2) Debug.Log("EvaluatedHandCount = " + EvaluatedHand.Count);
-        EvaluatedHand.Add(_board[0].cardType);
-        EvaluatedHand.Add(_board[1].cardType);
-        EvaluatedHand.Add(_board[2].cardType);
-        EvaluatedHand.Add(_board[3].cardType);
-        EvaluatedHand.Add(_board[4].cardType);
+        EvaluatedHand.Add(board[0].cardType);
+        EvaluatedHand.Add(board[1].cardType);
+        EvaluatedHand.Add(board[2].cardType);
+        EvaluatedHand.Add(board[3].cardType);
+        EvaluatedHand.Add(board[4].cardType);
         if (EvaluatedHand.Count != 7) Debug.Log("EvaluatedHandCount = " + EvaluatedHand.Count);
         Debug.Assert(EvaluatedHand.Count == 7);
         EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
@@ -368,9 +368,9 @@ public class Table {
             }
 
         }
-        for (int i = 0; i < _board.Count; i++)
+        for (int i = 0; i < board.Count; i++)
         {
-            Debug.Log("Board Card " + i + " is " + _board[i].cardType.rank + " of " + _board[i].cardType.suit);
+            Debug.Log("Board Card " + i + " is " + board[i].cardType.rank + " of " + board[i].cardType.suit);
         }
 
         for (int i = 0; i < playerChipStacks.Count; i++)

@@ -241,7 +241,7 @@ public class SoundManager : MonoBehaviour
                     roundOneComplete = true;
                 }
                 //put first card in burn pile
-                else if (Table.instance._burn.Count == 1 && !Table.instance._burn[0].CardIsFaceUp() && !burnedFirstCard)
+                else if (Table.instance.burn.Count == 1 && !Table.instance.burn[0].CardIsFaceUp() && !burnedFirstCard)
                 {
                   //  Debug.Log("Thinks we've burned one card");
                     PlayTutorialAudio(tutorialIndex);
@@ -249,9 +249,9 @@ public class SoundManager : MonoBehaviour
                     burnedFirstCard = true;
                 }
                 //puts three cards in center
-                else if (Table.instance._board.Count == 3 && !flopDealt)
+                else if (Table.instance.board.Count == 3 && !flopDealt)
                 {
-                    foreach (Card card in Table.instance._board)
+                    foreach (Card card in Table.instance.board)
                     {
                         if (card.cardFacingUp)
                         {
@@ -276,16 +276,16 @@ public class SoundManager : MonoBehaviour
                     roundTwoComplete = true;
                 }
                 //burn and turn
-                else if (Table.instance._board.Count == 4 && Table.instance._burn.Count == 2 && !turnDealt && !burnedSecondCard)
+                else if (Table.instance.board.Count == 4 && Table.instance.burn.Count == 2 && !turnDealt && !burnedSecondCard)
                 {
-                    foreach (Card card in Table.instance._board)
+                    foreach (Card card in Table.instance.board)
                     {
                         if (card.cardFacingUp)
                         {
                             faceUpTableCards++;
                         }
                     }
-                    foreach (Card card in Table.instance._burn)
+                    foreach (Card card in Table.instance.burn)
                     {
                         if (!card.CardIsFaceUp())
                         {
@@ -312,16 +312,16 @@ public class SoundManager : MonoBehaviour
                     roundThreeComplete = true;
                 }
                 //burn and river
-                else if (Table.instance._board.Count == 5 && Table.instance._burn.Count == 3 && !riverDealt && !burnedThirdCard)
+                else if (Table.instance.board.Count == 5 && Table.instance.burn.Count == 3 && !riverDealt && !burnedThirdCard)
                 {
-                    foreach (Card card in Table.instance._board)
+                    foreach (Card card in Table.instance.board)
                     {
                         if (card.cardFacingUp)
                         {
                             faceUpTableCards++;
                         }
                     }
-                    foreach (Card card in Table.instance._burn)
+                    foreach (Card card in Table.instance.burn)
                     {
                         if (!card.CardIsFaceUp())
                         {

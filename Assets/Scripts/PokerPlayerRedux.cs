@@ -596,57 +596,59 @@ public class PokerPlayerRedux : MonoBehaviour{
 
 	IEnumerator RepositionCardsForReadability(float duration, GameObject card1, GameObject card2, int seatPos)
 	{
-		float timeElapsed = 0;
-		float unitsToMove = 0.1f;
-		Vector3 card1Pos = card1.transform.position;
-		Vector3 card2Pos = card2.transform.position;
-		float distanceBetweenCards = Vector3.Distance(card1Pos, card2Pos);
-		if(distanceBetweenCards < 1)
-		{
-			if(seatPos != 2)
-			{
-				if (card1Pos.x - card2Pos.x > 0)
-				{
-					while (timeElapsed < duration)
-					{
-						timeElapsed += Time.deltaTime;
-						card1.transform.position = Vector3.Lerp(card1Pos, new Vector3(card2Pos.x + unitsToMove, card2Pos.y, card2Pos.z), timeElapsed / duration);
-						yield return null;
-					}
-				}
-				else if (card1Pos.x - card2Pos.x < 0)
-				{
-					while (timeElapsed < duration)
-					{
-						timeElapsed += Time.deltaTime;
-						card1.transform.position = Vector3.Lerp(card1Pos, new Vector3(card2Pos.x - unitsToMove, card2Pos.y, card2Pos.z), timeElapsed / duration);
-						yield return null;
-					}
-				}
-			}
-			else
-			{
-				if (card1Pos.z - card2Pos.z > 0)
-				{
-					while (timeElapsed < duration)
-					{
-						timeElapsed += Time.deltaTime;
-						card1.transform.position = Vector3.Lerp(card1Pos, new Vector3(card2Pos.x, card2Pos.y, card2Pos.z + unitsToMove), timeElapsed / duration);
-						yield return null;
-					}
-				}
-				else if (card1Pos.z - card2Pos.z < 0)
-				{
-					while (timeElapsed < duration)
-					{
-						timeElapsed += Time.deltaTime;
-						card1.transform.position = Vector3.Lerp(card1Pos, new Vector3(card2Pos.x, card2Pos.y, card2Pos.z - unitsToMove), timeElapsed / duration);
-						yield return null;
-					}
-				}
-			}
-		}
-
+        if (card1 != null && card2 != null)
+        {
+            float timeElapsed = 0;
+            float unitsToMove = 0.1f;
+            Vector3 card1Pos = card1.transform.position;
+            Vector3 card2Pos = card2.transform.position;
+            float distanceBetweenCards = Vector3.Distance(card1Pos, card2Pos);
+            if (distanceBetweenCards < 1)
+            {
+                if (seatPos != 2)
+                {
+                    if (card1Pos.x - card2Pos.x > 0)
+                    {
+                        while (timeElapsed < duration)
+                        {
+                            timeElapsed += Time.deltaTime;
+                            card1.transform.position = Vector3.Lerp(card1Pos, new Vector3(card2Pos.x + unitsToMove, card2Pos.y, card2Pos.z), timeElapsed / duration);
+                            yield return null;
+                        }
+                    }
+                    else if (card1Pos.x - card2Pos.x < 0)
+                    {
+                        while (timeElapsed < duration)
+                        {
+                            timeElapsed += Time.deltaTime;
+                            card1.transform.position = Vector3.Lerp(card1Pos, new Vector3(card2Pos.x - unitsToMove, card2Pos.y, card2Pos.z), timeElapsed / duration);
+                            yield return null;
+                        }
+                    }
+                }
+                else
+                {
+                    if (card1Pos.z - card2Pos.z > 0)
+                    {
+                        while (timeElapsed < duration)
+                        {
+                            timeElapsed += Time.deltaTime;
+                            card1.transform.position = Vector3.Lerp(card1Pos, new Vector3(card2Pos.x, card2Pos.y, card2Pos.z + unitsToMove), timeElapsed / duration);
+                            yield return null;
+                        }
+                    }
+                    else if (card1Pos.z - card2Pos.z < 0)
+                    {
+                        while (timeElapsed < duration)
+                        {
+                            timeElapsed += Time.deltaTime;
+                            card1.transform.position = Vector3.Lerp(card1Pos, new Vector3(card2Pos.x, card2Pos.y, card2Pos.z - unitsToMove), timeElapsed / duration);
+                            yield return null;
+                        }
+                    }
+                }
+            }
+        }
 	}
 
 	#endregion
@@ -787,16 +789,16 @@ public class PokerPlayerRedux : MonoBehaviour{
 				}
 				Debug.Assert(testDeck.Count == 50);
 				//remove the cards on the board from the deck and then add them to the fake board.
-				foreach (Card boardCard in Table.instance._board)
+				foreach (Card boardCard in Table.instance.board)
 				{
 					testDeck.Remove(boardCard.cardType);
 					testBoard.Add(boardCard.cardType);
 				}
 				for (int i = 0; i < testDeck.Count; i++)
 				{
-					if(testDeck[i].rank == Table.instance._board[0].cardType.rank)
+					if(testDeck[i].rank == Table.instance.board[0].cardType.rank)
 					{
-						if (testDeck[i].suit == Table.instance._board[0].cardType.suit)
+						if (testDeck[i].suit == Table.instance.board[0].cardType.suit)
 						{
 							testDeck.RemoveAt(i);
 						}
@@ -804,9 +806,9 @@ public class PokerPlayerRedux : MonoBehaviour{
 				}
 				for (int i = 0; i < testDeck.Count; i++)
 				{
-					if (testDeck[i].rank == Table.instance._board[1].cardType.rank)
+					if (testDeck[i].rank == Table.instance.board[1].cardType.rank)
 					{
-						if (testDeck[i].suit == Table.instance._board[1].cardType.suit)
+						if (testDeck[i].suit == Table.instance.board[1].cardType.suit)
 						{
 							testDeck.RemoveAt(i);
 						}
@@ -814,9 +816,9 @@ public class PokerPlayerRedux : MonoBehaviour{
 				}
 				for (int i = 0; i < testDeck.Count; i++)
 				{
-					if (testDeck[i].rank == Table.instance._board[2].cardType.rank)
+					if (testDeck[i].rank == Table.instance.board[2].cardType.rank)
 					{
-						if (testDeck[i].suit == Table.instance._board[2].cardType.suit)
+						if (testDeck[i].suit == Table.instance.board[2].cardType.suit)
 						{
 							testDeck.RemoveAt(i);
 						}
@@ -844,7 +846,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 				}
 				//if we're on the flop, deal out two more card to the board
 				//and take those from the deck
-				if (Table.instance._board.Count == 3)
+				if (Table.instance.board.Count == 3)
 				{
 					for (int i = 0; i < 2; i++)
 					{
@@ -855,7 +857,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 					}
 				}
 				//if we're on the turn, only take out one more card from the deck to the board
-				else if (Table.instance._board.Count == 4)
+				else if (Table.instance.board.Count == 4)
 				{
 					int cardPos = Random.Range(0, testDeck.Count);
 					CardType cardType = testDeck[cardPos];

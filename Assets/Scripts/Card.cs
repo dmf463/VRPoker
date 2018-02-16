@@ -586,8 +586,11 @@ public class Card : InteractionSuperClass {
     //the actual function called in order to trigger the card flip
     public void RotateCard()
     {
-        flippingCard = true;
-        rotationAtFlipStart = transform.localRotation;
+        if (!flippingCard)
+        {
+            flippingCard = true;
+            rotationAtFlipStart = transform.localRotation;
+        }
     }
 
     public bool CardIsFaceUp()
@@ -598,6 +601,7 @@ public class Card : InteractionSuperClass {
         //Debug.DrawRay(transform.position, transform.forward, Color.green);
         //Debug.DrawRay(transform.position, Vector3.down, Color.red);
         //Debug.Log(Vector3.Dot(transform.forward, Vector3.down));
+        //Debug.Log(this.name + " is face up: " + (Vector3.Dot(transform.forward, Vector3.down) > 0));
         return (Vector3.Dot(transform.forward, Vector3.down) > 0);
     }
 
