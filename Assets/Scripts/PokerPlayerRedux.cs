@@ -1216,6 +1216,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             GameObject.Find("P0BetZone"), GameObject.Find("P1BetZone"), GameObject.Find("P2BetZone"), GameObject.Find("P3BetZone"), GameObject.Find("P4BetZone")
         };
         Vector3 tipPos = GameObject.Find("TipZone").transform.position;
+        List<GameObject> betChips = new List<GameObject>();
         List<int> colorChipCount = new List<int>()
         {
 			//blackChipCount, whiteChipCount, blueChipCount, redChipCount
@@ -1382,6 +1383,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                                 newChip.gameObject.tag = "Tip";
                             }
                             newChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
+                            betChips.Add(newChip);
                             Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChip.GetComponent<Chip>().chipData.ChipValue);
                             if (!isTipping) Table.instance.potChips += newChip.GetComponent<Chip>().chipData.ChipValue;
                             parentChip = newChip;
@@ -1417,6 +1419,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                                 newChip.gameObject.tag = "Tip";
                             }
                             newChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
+                            betChips.Add(newChip);
                             Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChip.GetComponent<Chip>().chipData.ChipValue);
                             if(!isTipping) Table.instance.potChips += newChip.GetComponent<Chip>().chipData.ChipValue;
                             parentChip = newChip;
@@ -1465,6 +1468,11 @@ public class PokerPlayerRedux : MonoBehaviour{
             {
                 Destroy(container);
             }
+            else Debug.Log("container has " + container.transform.childCount + " children");
+        }
+        foreach(GameObject chip in betChips)
+        {
+            chip.GetComponent<Chip>().chipForBet = true;
         }
     }
 

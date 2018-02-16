@@ -411,6 +411,7 @@ public class Chip : InteractionSuperClass {
             chipStack = new ChipStack(this);
             inAStack = true;
         }
+        if (!chipForBet) Table.gameState = GameState.Misdeal;
         base.OnAttachedToHand(attachedHand);
     }
 
@@ -429,6 +430,7 @@ public class Chip : InteractionSuperClass {
                                                      transform.position + Random.insideUnitSphere * chipSpawnOffset,
                                                      Quaternion.identity);
                     if(gameObject.tag == "Tip") newChip.GetComponent<MeshRenderer>().material = Services.PokerRules.tipMaterial;
+                    if (chipForBet) newChip.GetComponent<Chip>().chipForBet = true;
                     Services.Dealer.thrownChips.Add(newChip);
                     Rigidbody rb = newChip.gameObject.GetComponent<Rigidbody>();
                     rb.AddForce(hand.GetTrackedObjectVelocity(), ForceMode.Impulse);
@@ -441,7 +443,6 @@ public class Chip : InteractionSuperClass {
             }
         }
     }
-    
 
     //this is just me ease-of-life function for findining the correct prefab
     public GameObject FindChipPrefab(int chipValue)
