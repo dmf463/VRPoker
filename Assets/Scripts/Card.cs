@@ -83,26 +83,15 @@ public class Card : InteractionSuperClass {
     //right now we're using rotation to do that, but that's awkward, and I think we should use a raycast
     public bool cardThrownWrong;
 
-    //basically checked if a card is flipped or not
-    public bool cardIsFlipped;
-
     //these two variables allow us access to the card deck script
     //possibly could use some refactoring
     //maybe make it a singleton so we can just get access to the script
     GameObject cardDeck;
     CardDeckScript deckScript;
 
-    //so this is one of those weird card position redundancies that I think can be solved with a raycast
-    //because right now we have "cardIsFlipped" if we flipped the card
-    //and we have "cardFacingUp" which checks the roation of the card
-    //we have this so that if we pick up a card that is facing up, it stays facing up when we pick it up
-    //it used to turn down because of the way pickups work in VR
+    //basically checked if a card is flipped or not
     public bool cardFacingUp = false;
 
-    //this is one of those super awkward things that I have that I got CLOSE to right, but never quite right
-    //it's supposed to keep track of how many cards I'm currently holding in hand
-    //you'll see what's super awkward about it when you see the code using it
-    static float cardsInHand;
 
     //this is checking to see if the card is both being held, and also touching the table
     //if it is, then it's being laid down and we want to detach it
@@ -112,14 +101,10 @@ public class Card : InteractionSuperClass {
     // Use this for initialization
     void Start () {
 
-        //lalalalalala setting shit in start lalalalalalalala
         cardDeck = GameObject.FindGameObjectWithTag("CardDeck"); //DEF will need to change this for recoupling purposes.
         deckScript = cardDeck.GetComponent<CardDeckScript>();  //gonna need to rework A LOT
-        //cardRay = GetComponent<CardRaycast>();
         rb = GetComponent<Rigidbody>();
         elapsedTimeForCardFlip = 0;
-        //playerHand = GameObject.Find("Hand1").GetComponent<Hand>();
-        cardsInHand = 0;
 
         if (Services.Dealer.OutsideVR)
         {
@@ -133,15 +118,8 @@ public class Card : InteractionSuperClass {
     // Update is called once per frame
     void Update () {
 
-        //yeah, so this was my awkward attempt at beginning a state machine?
-        //I wanted cards to behave in different ways depending on whether we were in dealerMode or shuffleMode?
-        //so I took everything in this update, and put it in a function
-        //and then yeah. that's what I did.
-        //it's weird and this definitely needs refactoring
-        //in fact this whole game could probably benefit from using state machines considering how many states I have
         CardForDealingMode();
         BringCardBack();
-        cardFacingUp = CardIsFaceUp(105, "TheBoard");
         if(yPos != 0 && !is_flying)
         {
             transform.position = new Vector3(transform.position.x, yPos, transform.position.z);
@@ -157,6 +135,8 @@ public class Card : InteractionSuperClass {
     //so this is literally the update function
     public void CardForDealingMode()
     {
+        cardFacingUp = CardIsFaceUp();
+
         if (flippingCard == true)
         {
             elapsedTimeForCardFlip += Time.deltaTime;
@@ -165,8 +145,6 @@ public class Card : InteractionSuperClass {
             {
                 elapsedTimeForCardFlip = 0;
                 flippingCard = false;
-                if (!cardIsFlipped) cardIsFlipped = true;
-                else cardIsFlipped = false;
             }
         }
 
@@ -279,25 +257,6 @@ public class Card : InteractionSuperClass {
         transform.Rotate(randomRot * badThrowVelocity * Time.deltaTime);
     }
 
-    IEnumerator WaitToStopFlying(float time)
-    {
-        yield return new WaitForSeconds(time);
-        //flyingAllowed = false;
-    }
-
-    //so we want to check a few things when we collide with something
-    //regardless of anything, if it collides with something and is no longer flying through the air
-    //we want to stop its rotation
-    //then we want to check whether we should stop the physics from a bad throw
-    //the card is most likely going to collide with the deck, or other cards, in the air if it was thrown wrong
-    //so we want to basically say that if the thing it's hitting is not the deck, or a card, then you can turn off the physics
-    //if we're in shufflingMode, then we want to do this weird thing with card in hand. let me explain
-    //so the idea was that while you're touching the card, and the card is touching the table, you can drag the cards
-    //but that caused some major z-fighting
-    //my solution was to keep track of how many cards I'm currently touching
-    //don't turn off the collision for the first 5, so that they kind of stack on top of each other
-    //but then turn off the collision for ALL the rest, so we can collect the cards and hide the z-fighting
-    //but this doesn't always work. if I grab cards multiple times
     void OnCollisionEnter(Collision other)
     {
         startLerping = true;
@@ -328,15 +287,6 @@ public class Card : InteractionSuperClass {
     //so this is how we check if the card is on the table
     void OnCollisionStay(Collision other)
     {
-        //if (!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && Table.gameState == GameState.NewRound)
-        //{
-        //    Debug.Log("hitting " + other.gameObject.tag);
-        //    if (other.gameObject.tag == "Table" || other.gameObject.tag == "Floor" && rb.velocity.magnitude <= 0.00001 && !cardChecked)
-        //    {
-        //        cardChecked = true;
-        //        StartCoroutine(CheckIfCardIsAtDestination(0, cardThrownNum));
-        //    }
-        //}
         if (other.gameObject.tag == "Table")
         {
             cardOnTable = true;
@@ -354,36 +304,19 @@ public class Card : InteractionSuperClass {
         }
     }
 
-    //so this is where we can drag the cards
-    //if we're in shuffleState and the card is on the table and the hand is touching the card
-    //then the transform of the card is equal to the hand
-    //since this is only true with both those conditions are true, the second you take your hand away, the cards stay where they are
-    //I like this
     void OnTriggerStay(Collider other)
     {
-        //if (Table.dealerState == DealerState.ShufflingState)
-        //{
-            //if (((cardOnTable == true && CardIsDead(this)) || 
-            //      Table.gameState == GameState.CleanUp || Table.gameState == GameState.PostHand) && 
-            //      other.gameObject.tag == "Hand" && !Services.Dealer.handIsOccupied)
-            //{
-            //    transform.position = new Vector3 (other.transform.position.x, transform.position.y, other.transform.position.z);
-            //}
-        //}
+
     }
 
     public bool CardIsDead(Card cardToCheck)
     {
         return Services.Dealer.deadCardsList.Contains(cardToCheck);  
     }
-    //so here's where I was trying to keep track of how many cards I'm touching
-    //this is so fucking awkward it hurts
-    //this is also where we are checking whether the card is being laid down
+
     public override void OnTriggerEnterX(Collider other)
     {
 
-        //if (Table.dealerState == DealerState.ShufflingState)
-        //{
         if(!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && Table.gameState == GameState.NewRound)
         {
             Debug.Log("hitting " + other.gameObject.tag);
@@ -392,21 +325,7 @@ public class Card : InteractionSuperClass {
                 StartCoroutine(CheckIfCardIsAtDestination(0, cardThrownNum));
             }
         }
-        if (other.gameObject.tag == "Hand" && cardOnTable == true)
-        {
-            cardsInHand += 1;
-            //Debug.Log("cardsInHand = " + cardsInHand);
-        }
-        //}
-        //if (other.gameObject.tag == "Board") layingCardsDown = true;
         base.OnTriggerEnterX(other);
-    }
-
-    //the mirror of the last
-    public override void OnTriggerExitX(Collider other)
-    {
-        //if (other.gameObject.tag == "Board") layingCardsDown = false;
-        base.OnTriggerExitX(other);
     }
 
     //part of the interaction class this derives from.
@@ -429,11 +348,11 @@ public class Card : InteractionSuperClass {
         //if(Table.dealerState == DealerState.DealingState)
         //{
         yPos = 0;
-        if (!cardFacingUp || !cardIsFlipped)
+        if (!cardFacingUp)
         {
             transform.rotation = throwingHand.GetAttachmentTransform("CardFaceDown").transform.rotation;
         }
-        else if (cardFacingUp || cardIsFlipped)
+        else if (cardFacingUp)
         {
             transform.rotation = throwingHand.GetAttachmentTransform("CardFaceUp").transform.rotation;
         }
@@ -454,7 +373,7 @@ public class Card : InteractionSuperClass {
         cardPosHeld = transform.position;
         if(Table.gameState == GameState.NewRound)
         {
-            if (CardIsFaceUp(105, "ShufflingArea")) Table.gameState = GameState.Misdeal;
+            if (CardIsFaceUp()) Table.gameState = GameState.Misdeal;
         }
         base.HandAttachedUpdate(attachedHand);
     }
@@ -478,7 +397,7 @@ public class Card : InteractionSuperClass {
         {
             rb = GetComponent<Rigidbody>();
         }
-        if (CardIsFaceUp(90, "ShufflingArea") && cardIsFlipped == false)
+        if (CardIsFaceUp())
         {
             //Debug.Log(this.gameObject.name + " card is facing the wrong way");
             cardThrownWrong = true;
@@ -559,7 +478,7 @@ public class Card : InteractionSuperClass {
                 }
             }
             Debug.Log("badcards count = " + badCardsDebug);
-            if (Services.PokerRules.CardIsInCorrectLocation(this, cardsPulled) && !cardIsFlipped)
+            if (Services.PokerRules.CardIsInCorrectLocation(this, cardsPulled) && !CardIsFaceUp())
             {
                 float badCards = 0;
                 //Services.Dealer.messageText.text = "Card is in correct location";
@@ -669,11 +588,15 @@ public class Card : InteractionSuperClass {
         rotationAtFlipStart = transform.localRotation;
     }
 
-    public bool CardIsFaceUp(float angleThreshold, string comparisonPoint)
+    public bool CardIsFaceUp()
     {
-        float angle = GetCardAngle(comparisonPoint);
-        if (angle > angleThreshold || cardIsFlipped) return true;
-        else return false;
+        //float angle = GetCardAngle(comparisonPoint);
+        //if (angle > angleThreshold || cardIsFlipped) return true;
+        //else return false;
+        //Debug.DrawRay(transform.position, transform.forward, Color.green);
+        //Debug.DrawRay(transform.position, Vector3.down, Color.red);
+        //Debug.Log(Vector3.Dot(transform.forward, Vector3.down));
+        return (Vector3.Dot(transform.forward, Vector3.down) > 0);
     }
 
     public float GetCardAngle(string comparisonPoint)

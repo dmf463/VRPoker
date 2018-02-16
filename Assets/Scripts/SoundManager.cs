@@ -186,7 +186,7 @@ public class SoundManager : MonoBehaviour
                     int cardsFaceUp = 0;
                     for (int i = 0; i < Services.Dealer.cardsTouchingTable.Count; i++)
                     {
-                        if (Services.Dealer.cardsTouchingTable[i].cardIsFlipped) cardsFaceUp++;
+                        if (Services.Dealer.cardsTouchingTable[i].CardIsFaceUp()) cardsFaceUp++;
                     }
                     if (cardsFaceUp >= 5)
                     {
@@ -241,7 +241,7 @@ public class SoundManager : MonoBehaviour
                     roundOneComplete = true;
                 }
                 //put first card in burn pile
-                else if (Table.instance._burn.Count == 1 && !Table.instance._burn[0].cardIsFlipped && !burnedFirstCard)
+                else if (Table.instance._burn.Count == 1 && !Table.instance._burn[0].CardIsFaceUp() && !burnedFirstCard)
                 {
                   //  Debug.Log("Thinks we've burned one card");
                     PlayTutorialAudio(tutorialIndex);
@@ -287,7 +287,7 @@ public class SoundManager : MonoBehaviour
                     }
                     foreach (Card card in Table.instance._burn)
                     {
-                        if (!card.cardIsFlipped)
+                        if (!card.CardIsFaceUp())
                         {
                             cardsBurned++;
                         }
@@ -323,7 +323,7 @@ public class SoundManager : MonoBehaviour
                     }
                     foreach (Card card in Table.instance._burn)
                     {
-                        if (!card.cardIsFlipped)
+                        if (!card.CardIsFaceUp())
                         {
                             cardsBurned++;
                         }

@@ -544,7 +544,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 		List<GameObject> cardsInHand = Table.instance.GetCardGameObjects(SeatPos);
 		for (int i = 0; i < cardsInHand.Count; i++)
 		{
-			if (cardsInHand[i].GetComponent<Card>().cardIsFlipped == false)
+			if (!cardsInHand[i].GetComponent<Card>().CardIsFaceUp())
 			{
 				Physics.IgnoreCollision(cardsInHand[0].gameObject.GetComponent<Collider>(), cardsInHand[1].gameObject.GetComponent<Collider>());
 				Services.Dealer.StartCoroutine(FlipCardsAndMoveTowardsBoard(.5f, cardsInHand[i], (GameObject.Find("TheBoard").GetComponent<Collider>().ClosestPointOnBounds(cardsInHand[i].transform.position) + cardsInHand[i].transform.position) / 2, SeatPos));

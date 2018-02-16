@@ -92,7 +92,7 @@ public class PokerRules : MonoBehaviour {
         {
             if (!Services.Dealer.OutsideVR)
             {
-                if (!Table.instance._board[i].CardIsFaceUp(50, "TheBoard"))
+                if (!Table.instance._board[i].CardIsFaceUp())
                 {
                     Debug.Log("cardAngle = " + Table.instance._board[i].GetCardAngle("TheBoard"));
                     return false;
@@ -101,7 +101,7 @@ public class PokerRules : MonoBehaviour {
         }
         for (int i = 0; i < Table.instance._burn.Count; i++)
         {
-            if (Table.instance._burn[i].CardIsFaceUp(120, "TheBoard"))
+            if (Table.instance._burn[i].CardIsFaceUp())
             {
                 //Debug.Log("cardAngle = " + Table.instance._burn[i].GetCardAngle("TheBoard"));
                 return false;
