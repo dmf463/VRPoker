@@ -19,6 +19,7 @@ public class Card : InteractionSuperClass {
     public int cardThrownNum;
     public bool cardChecked = false;
     float yPos = 0;
+    public static float cardsDropped = 0;
 
     public float checkTime;
 
@@ -156,11 +157,6 @@ public class Card : InteractionSuperClass {
     //so this is literally the update function
     public void CardForDealingMode()
     {
-        //cardFacingUp = CardIsFaceUp(90);
-        //if (flyingAllowed) StartCoroutine(WaitToStopFlying(2));
-        //this is the function that flips the card in your hand
-        //basically while the bool is true, we're constantly setting a new Qauternion, but the x-axis is being lerped
-        //once that's done, flippingCard is no longer true
         if (flippingCard == true)
         {
             elapsedTimeForCardFlip += Time.deltaTime;
@@ -316,6 +312,15 @@ public class Card : InteractionSuperClass {
         {
             Services.Dealer.cardsTouchingTable.Add(this);
             yPos = transform.position.y;
+        }
+        if(other.gameObject.tag == "Floor")
+        {
+            if(Table.gameState != GameState.Misdeal)
+            {
+                Services.PokerRules.CorrectMistakes();
+                cardsDropped++;
+            }
+            if (cardsDropped >= 3) Table.gameState = GameState.Misdeal;
         }
 
     }
