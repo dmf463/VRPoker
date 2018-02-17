@@ -11,6 +11,7 @@ public class Card : InteractionSuperClass {
 
     public float flying_start_time, flight_journey_distance;
     public Vector3 flying_start_position;
+    public bool lerping = false;
 
     public bool is_flying = false;
     public float rotSpeed;
@@ -20,6 +21,8 @@ public class Card : InteractionSuperClass {
     public bool cardChecked = false;
     float yPos = 0;
     public static float cardsDropped = 0;
+    public float floatSpeed;
+    public float floatDistance;
 
     public float checkTime;
 
@@ -114,8 +117,6 @@ public class Card : InteractionSuperClass {
         }
 
     }
-	
-
     // Update is called once per frame
     void Update () {
 
@@ -306,11 +307,6 @@ public class Card : InteractionSuperClass {
         }
     }
 
-    void OnTriggerStay(Collider other)
-    {
-
-    }
-
     public bool CardIsDead(Card cardToCheck)
     {
         return Services.Dealer.deadCardsList.Contains(cardToCheck);  
@@ -329,6 +325,7 @@ public class Card : InteractionSuperClass {
         }
         base.OnTriggerEnterX(other);
     }
+
 
     //part of the interaction class this derives from.
     //if it's an interactable object it NEEDS these functions on it
@@ -464,6 +461,25 @@ public class Card : InteractionSuperClass {
         return false;
     }
 
+    public void InitializeLerp(Vector3 dest)
+    {
+        flying_start_time = Time.time;
+        flight_journey_distance = Vector3.Distance(transform.position, dest);
+        flying_start_position = transform.position;
+        lerping = true;
+    }
+
+    public IEnumerator LerpCard(Vector3 dest, float speed)
+    {
+        while(lerping)
+        {
+            float distCovered = (Time.time - flying_start_time) * speed;
+            float fracJourney = distCovered / flight_journey_distance;
+            transform.position = Vector3.Lerp(transform.position, dest, fracJourney);
+            yield return null;
+        }
+    }
+
     public IEnumerator CheckIfCardIsAtDestination(float time, int cardsPulled)
     {
         yield return new WaitForSeconds(time);
@@ -574,6 +590,12 @@ public class Card : InteractionSuperClass {
         return pos;
     }
 
+    public void FloatInPlace(float speed, float distance)
+    {
+        Debug.Log("FLOATING");
+        Vector3 playerPos = GetPlayerPos() +  new Vector3(0, .25f, 0);
+        transform.position = new Vector3(playerPos.x, playerPos.y + Mathf.PingPong(Time.time / speed, distance), playerPos.z);
+    }
 
     //part of the interaction class this derives from.
     public override void CheckSwipeDirection(Hand hand)

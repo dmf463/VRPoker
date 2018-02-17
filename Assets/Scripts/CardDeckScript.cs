@@ -107,6 +107,7 @@ public class CardDeckScript : InteractionSuperClass {
             Card card = CreateCard(GrabACard(), GameObject.Find("ShufflingArea").transform.position, Quaternion.identity);
             card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
             Services.PokerRules.cardsPulled.Add(card.cardType);
+            card.cardThrownNum = Services.PokerRules.cardsPulled.Count;
         }
         if (Input.GetKey(KeyCode.RightArrow) && cheatTimePassed > cheatKeyDelay)
         {

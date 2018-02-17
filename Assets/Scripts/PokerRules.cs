@@ -43,6 +43,7 @@ public class PokerRules : MonoBehaviour {
 
     void Update()
     {
+
         if (chipGroup.Count > 0)
         {
             PushGroupOfChips();
@@ -380,8 +381,15 @@ public class PokerRules : MonoBehaviour {
     {
         // Debug.Log("CorrectingMistakes");
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-        cardsLogged.Clear();
-        ClearAndDestroyAllLists();
+        for (int i = 0; i < Services.Dealer.players.Count; i++)
+        {
+            if (!Services.Dealer.players[i].playerIsAllIn)
+            {
+                Table.instance.playerCards[i].Clear();
+            }
+        }
+        //ardsLogged.Clear();
+        //ClearAndDestroyAllLists();
         int cardPos;
 
         for (int i = 0; i < cardsPulled.Count; i++)
@@ -395,10 +403,23 @@ public class PokerRules : MonoBehaviour {
                 //Debug.Log("player we're trying to check is + " + player);
                 if (player.PlayerState == PlayerState.Playing)
                 {
+                    GameObject card = null;
+                    Vector3 modPos = new Vector3(0, .025f, 0);
                     if (!player.playerIsAllIn)
                     {
-                        Card newCard = CreateCard(cardsPulled[i], player.cardPos[cardPos].transform.position, player.cardPos[cardPos].transform.rotation);
-                        Table.instance.playerCards[player.SeatPos].Add(newCard);
+                        GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
+                        foreach (GameObject obj in cardsOnTable)
+                        {
+                            if (obj.GetComponent<Card>().cardType.suit == cardsPulled[i].suit && obj.GetComponent<Card>().cardType.rank == cardsPulled[i].rank)
+                            {
+                                card = obj;
+                            }
+                        }
+                        if (card.GetComponent<Card>().CardIsFaceUp()) card.GetComponent<Card>().RotateCard();
+                        card.GetComponent<Card>().InitializeLerp(player.cardPos[cardPos].transform.position);
+                        StartCoroutine(card.GetComponent<Card>().LerpCard(player.cardPos[cardPos].transform.position, 1));
+                        //Card newCard = CreateCard(cardsPulled[i], player.cardPos[cardPos].transform.position, player.cardPos[cardPos].transform.rotation);
+                        StartCoroutine(CorrectionsDone(player, cardPos, card));
                     }
                     //Debug.Log("player we're trying to check is + " + player);
                     //Debug.Log("firstPlayer = " + Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count]);
@@ -406,6 +427,21 @@ public class PokerRules : MonoBehaviour {
                 }
             }
         }
+    }
+
+    IEnumerator CorrectionsDone(PokerPlayerRedux player, int cardPos, GameObject card)
+    {
+        while (card.GetComponent<Card>().lerping)
+        {
+            if (card.transform.position == player.cardPos[cardPos].transform.position)
+            {
+                card.GetComponent<Card>().lerping = false;
+                Table.instance.playerCards[player.SeatPos].Add(card.GetComponent<Card>());
+                Debug.Log("MADE IT");
+            }
+            else yield return null;
+        }
+        yield break;
     }
 
     public bool CardIsInCorrectLocation(Card card, int cardCount)

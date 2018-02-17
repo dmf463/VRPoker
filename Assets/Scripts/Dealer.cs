@@ -27,6 +27,8 @@ public class Dealer : MonoBehaviour
     public bool deckIsDead;
     public bool cleaningCards = false;
     public bool holdRotate = false;
+    private bool doneLerping = false;
+    GameObject cardToCheck;
 
     public List<GameObject> thrownChips = new List<GameObject>();
 
@@ -144,10 +146,6 @@ public class Dealer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(hand1 != null)
-        {
-            //Debug.DrawRay(hand1.transform.position, -transform.right, Color.red);
-        }
         tipIndicator.GetComponent<TextMeshPro>().text = tipCount.ToString();
         WaitingToGrabCardsOn_ThrownDeck();
         WaitingToGrabCardsOn_MisDeal();
@@ -736,29 +734,25 @@ public class Dealer : MonoBehaviour
                 GameObject cardDeck = GameObject.FindGameObjectWithTag("CardDeck");
                 if (first_time)
                 {
+
                     Debug.Log("first time values set");
                     foreach (GameObject card in cardsOnTable)
                     {
-                        card.GetComponent<Card>().flying_start_time = Time.time;
-                        card.GetComponent<Card>().flight_journey_distance = Vector3.Distance(card.transform.position, cardDeck.transform.position + modPos);
-                        card.GetComponent<Card>().flying_start_position = card.transform.position;
+                        card.GetComponent<Card>().InitializeLerp(cardDeck.transform.position + modPos);
                     }
                     first_time = false;
                 }
                 foreach (GameObject card in cardsOnTable)
                 {
-                    //float step = cardMoveSpeed * Time.deltaTime;
-                    float distCovered = (Time.time - card.GetComponent<Card>().flying_start_time) * cardMoveSpeed;
-                    float fracJourney = distCovered / card.GetComponent<Card>().flight_journey_distance;
-                    card.transform.position = Vector3.Lerp(card.transform.position, cardDeck.transform.position + modPos, fracJourney);
+                    StartCoroutine(card.GetComponent<Card>().LerpCard(cardDeck.transform.position + modPos, cardMoveSpeed));
                     if (card.transform.position == cardDeck.transform.position + modPos)
                     {
+                        card.GetComponent<Card>().lerping = false;
                         card.GetComponent<Card>().is_flying = false;
-                        cardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
                         Destroy(card);
+                        cardDeck.GetComponent<CardDeckScript>().MakeDeckLarger();
                     }
                 }
-
                 if (cardsOnTable.Length == 0)
                 {
                     flyingClicked = false;
@@ -768,6 +762,12 @@ public class Dealer : MonoBehaviour
                 }
             }
         }
+    }
+    public void OnFinishCleaning()
+    {
+        cardToCheck.GetComponent<Card>().is_flying = false;
+        GameObject.FindGameObjectWithTag("CardDeck").GetComponent<CardDeckScript>().MakeDeckLarger();
+        Destroy(cardToCheck);
     }
 
     public void WaitingToGrabCardsOn_ThrownDeck()
