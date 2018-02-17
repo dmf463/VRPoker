@@ -806,6 +806,7 @@ public class Dealer : MonoBehaviour
                 float timeSinceClick = Time.time - startUpTime;
                 GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
                 GameObject cardDeck = GameObject.Find("ShufflingArea");
+                float handDistance = Vector3.Distance(hand1.transform.position, hand2.transform.position);
 
                 if (timeSinceClick <= flyTime)
                 {
@@ -826,9 +827,15 @@ public class Dealer : MonoBehaviour
                 else if (timeSinceClick <= flyTime + 0.5f || holdRotate)
                 {
                     Vector3 rotPos = GameObject.Find("Table").transform.position;
+                    if (holdRotate)
+                    {
+                        handDistance = Mathf.Pow(handDistance * 2, 2.5f);
+                    }
+                    else handDistance = 1;
+
                     foreach (GameObject card in cardsOnTable)
                     {
-                        card.transform.RotateAround(rotPos, Vector3.up, cardMoveSpeed * 40 * Time.deltaTime);
+                        card.transform.RotateAround(rotPos, Vector3.up, cardMoveSpeed * 40 * Time.deltaTime * handDistance);
                         Vector3 randomRot = new Vector3(UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360));
                         card.transform.Rotate(randomRot * cardMoveSpeed * Time.deltaTime);
                     }
