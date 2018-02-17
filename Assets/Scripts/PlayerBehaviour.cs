@@ -70,8 +70,14 @@ public class PlayerBehaviour {
     //we should go back to the generic one and make percentage variables that we can adjust in individual players
     public void MINNIE_FoldCallRaiseDecision(float returnRate, PokerPlayerRedux player)
     {
+        if (Services.TextManager.inTutorial)
+        {
+            player.Call();
+            player.turnComplete = true;
+            player.actedThisRound = true;
+        }
         //Debug.Log("Player " + SeatPos + " has a HS " + HandStrength);
-        if (Table.gameState == GameState.PreFlop)
+        else if (Table.gameState == GameState.PreFlop)
         {
             if (((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4)) && player.HandStrength > 12)
             {
@@ -335,8 +341,14 @@ public class PlayerBehaviour {
     //we should go back to the generic one and make percentage variables that we can adjust in individual players
     public void FLOYD_FoldCallRaiseDecision(float returnRate, PokerPlayerRedux player)
     {
+        if (Services.TextManager.inTutorial)
+        {
+            player.Call();
+            player.turnComplete = true;
+            player.actedThisRound = true;
+        }
         //Debug.Log("Player " + SeatPos + " has a HS " + HandStrength);
-        if (Table.gameState == GameState.PreFlop)
+        else if (Table.gameState == GameState.PreFlop)
         {
             if (((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4)) && player.HandStrength > 10) //if you're close to losing and have a good hand, go all in
             {
@@ -614,8 +626,14 @@ public class PlayerBehaviour {
     //we should go back to the generic one and make percentage variables that we can adjust in individual players
     public void CASEY_FoldCallRaiseDecision(float returnRate, PokerPlayerRedux player)
     {
+        if (Services.TextManager.inTutorial)
+        {
+            player.Call();
+            player.turnComplete = true;
+            player.actedThisRound = true;
+        }
         //Debug.Log("Player " + SeatPos + " has a HS " + HandStrength);
-        if (Table.gameState == GameState.PreFlop)
+        else if (Table.gameState == GameState.PreFlop)
         {
             if (((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4)) && player.HandStrength > 12)
             {
@@ -871,8 +889,14 @@ public class PlayerBehaviour {
     //we should go back to the generic one and make percentage variables that we can adjust in individual players
     public void ZOMBIE_FoldCallRaiseDecision(float returnRate, PokerPlayerRedux player)
     {
+        if (Services.TextManager.inTutorial)
+        {
+            player.Call();
+            player.turnComplete = true;
+            player.actedThisRound = true;
+        }
         //Debug.Log("Player " + SeatPos + " has a HS " + HandStrength);
-        if (Table.gameState == GameState.PreFlop)
+        else if (Table.gameState == GameState.PreFlop)
         {
             if (((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * Random.Range(3, 8))) && player.HandStrength > Random.Range(10, 13))
             {
@@ -1128,8 +1152,14 @@ public class PlayerBehaviour {
     //we should go back to the generic one and make percentage variables that we can adjust in individual players
     public void NATHANIEL_FoldCallRaiseDecision(float returnRate, PokerPlayerRedux player)
     {
+        if (Services.TextManager.inTutorial)
+        {
+            player.Call();
+            player.turnComplete = true;
+            player.actedThisRound = true;
+        }
         //Debug.Log("Player " + SeatPos + " has a HS " + HandStrength);
-        if (Table.gameState == GameState.PreFlop)
+        else if (Table.gameState == GameState.PreFlop)
         {
             if (((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4)) && player.HandStrength > 12)
             {
