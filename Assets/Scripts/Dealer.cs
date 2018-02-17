@@ -144,6 +144,10 @@ public class Dealer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(hand1 != null)
+        {
+            //Debug.DrawRay(hand1.transform.position, -transform.right, Color.red);
+        }
         tipIndicator.GetComponent<TextMeshPro>().text = tipCount.ToString();
         WaitingToGrabCardsOn_ThrownDeck();
         WaitingToGrabCardsOn_MisDeal();

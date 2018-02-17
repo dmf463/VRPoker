@@ -90,6 +90,7 @@ public class SteamVR_LaserPointer : MonoBehaviour
         SteamVR_TrackedController controller = GetComponent<SteamVR_TrackedController>();
 
         Ray raycast = new Ray(transform.position, transform.forward);
+        Debug.DrawRay(transform.position, transform.forward);
         RaycastHit hit;
         bool bHit = Physics.Raycast(raycast, out hit);
 
