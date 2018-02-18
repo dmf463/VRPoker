@@ -33,73 +33,38 @@ public class Card : InteractionSuperClass {
 
     private Vector3 cardPosHeld;
     private Vector3 cardPosOnRelease;
-
-    //if the card is touching the table, this is true
     bool cardHitPlayer;
     bool cardOnTable;
-
     public bool cardMarkedForDestruction;
 
-    //this is the threshold by which we check whether we have a fast spin, or a slow spin
-    //it COULD be proportional to the velocity of the throw
-    //but people really liked the card spin, and I think it's okay to dramaticize some things for the game
     const float MAGNITUDE_THRESHOLD = 2.5f;
 
-    //speaks for itself
     float throwingVelocity;
     Rigidbody rb;
     
     //the bools used so that they only start the torque once
     bool startingFastTorque;
     bool startingSlowTorque;
-
-    //how much the torque should actually be
     public float fastTorque;
     public float slowTorque;
-
-    //how long it should spin for
     public float torqueDuration;
 
-    //the bool to start the lerp
+    //lerping variables    
     bool startLerping;
-
-    //lerping variables
     float elapsedTimeForThrowTorque;
-
-    //these are the variables for flipping the card
-    //we have a time limit, a duration, and a bool
     float elapsedTimeForCardFlip;
     public float flipDuration;
     bool flippingCard = false;
     Quaternion rotationAtFlipStart;
 
-    //this reference is literally only used in order to instantiate a new deck
-    //this is not really useful, and probably doesn't belong here
-    //Hand playerHand;
-    
-    //same with this, it turns out I have a CreateNewDeck function on the cards
-    //which I GUESS makes sense, because it's possible the deck could be destroyed
-    //and the cards make up the deck, but then why wouldn't I just use the deckHand and throwingHand?
     GameObject newCardDeck;
-
-    //this is the bool that's triggered if, on detach hand, the card is facing in an awkward way
-    //right now we're using rotation to do that, but that's awkward, and I think we should use a raycast
     public bool cardThrownWrong;
-
-    //these two variables allow us access to the card deck script
-    //possibly could use some refactoring
-    //maybe make it a singleton so we can just get access to the script
     GameObject cardDeck;
     CardDeckScript deckScript;
 
     //basically checked if a card is flipped or not
     public bool cardFacingUp = false;
     public bool cardWasManuallyFlipped = false;
-
-
-    //this is checking to see if the card is both being held, and also touching the table
-    //if it is, then it's being laid down and we want to detach it
-    //public bool layingCardsDown;
    
 
     // Use this for initialization
@@ -205,8 +170,6 @@ public class Card : InteractionSuperClass {
         }
     }
 
-    //this basically just makes a new deck by destroying all the cards on the table
-    //and putting a new deck in your hand
     public void InstantiateNewDeck()
     {
         GameObject[] oldCards = GameObject.FindGameObjectsWithTag("PlayingCard");
@@ -226,9 +189,6 @@ public class Card : InteractionSuperClass {
         Table.dealerState = DealerState.DealingState;
     }
 
-    //all the physics that act on the card when you throw it bad
-    //it's kind of a lot
-    //but it works?
     public void ThrewSingleCardBadPhysics()
     {
         startingFastTorque = false;
@@ -246,9 +206,6 @@ public class Card : InteractionSuperClass {
         transform.Rotate(randomRot * badThrowVelocity * Time.deltaTime);
     }
 
-    //this is the physics for each card when you throw the entire deck
-    //it's kind of a lot
-    //but it works?
     public void ThrewWholeDeckPhysics()
     {
         startingFastTorque = false;
@@ -287,7 +244,6 @@ public class Card : InteractionSuperClass {
 
     }
 
-    //so this is how we check if the card is on the table
     void OnCollisionStay(Collision other)
     {
         if (other.gameObject.tag == "Table")
@@ -326,22 +282,11 @@ public class Card : InteractionSuperClass {
         base.OnTriggerEnterX(other);
     }
 
-
-    //part of the interaction class this derives from.
-    //if it's an interactable object it NEEDS these functions on it
-    //that's why I had it derive from the InteractionSuperClass
     public override void HandHoverUpdate(Hand hand)
     {
         base.HandHoverUpdate(hand);
     }
 
-    //part of the interaction class this derives from.
-    //if it's an interactable object it NEEDS these functions on it
-    //that's why I had it derive from the InteractionSuperClass
-    //also here we've added some extra code so that the card faces the correct way when you pick it up
-    //you'll notice the "GetAttachmentTransform"
-    //that's basically an object on the Player object that the Valve.InteractionSystems can reference
-    //also, when we attach a card to the hand, we reset the slow and fast torque so that if we throw it, it still spins
     public override void OnAttachedToHand(Hand attachedHand)
     {
         //if(Table.dealerState == DealerState.DealingState)
@@ -355,18 +300,12 @@ public class Card : InteractionSuperClass {
         {
             transform.rotation = throwingHand.GetAttachmentTransform("CardFaceUp").transform.rotation;
         }
-        //resetting the torque so they throw properly each time
         fastTorque = 3;
         slowTorque = .25f;
-        //}
 
         base.OnAttachedToHand(attachedHand);
     }
 
-    //part of the interaction class this derives from.
-    //if it's an interactable object it NEEDS these functions on it
-    //that's why I had it derive from the InteractionSuperClass
-    //also added in that if layCardsDown is equal to true we can let go of the card
     public override void HandAttachedUpdate(Hand attachedHand)
     {
         cardPosHeld = transform.position;
@@ -377,10 +316,6 @@ public class Card : InteractionSuperClass {
         base.HandAttachedUpdate(attachedHand);
     }
 
-    //part of the interaction class this derives from.
-    //if it's an interactable object it NEEDS these functions on it
-    //that's why I had it derive from the InteractionSuperClass
-    //notice the giant bug alert? this could probably be fixed with a RayCast
     public override void OnDetachedFromHand(Hand hand)
     {
         if (!Services.PokerRules.thrownCards.Contains(gameObject) && Table.gameState == GameState.NewRound)
@@ -403,18 +338,8 @@ public class Card : InteractionSuperClass {
         }
         Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cards[Random.Range(0, Services.SoundManager.cards.Length)], 0.25f, Random.Range(0.95f, 1.05f), transform.position);
         StartCoroutine(CheckVelocity(.025f));
-        //if (Table.gameState == GameState.NewRound)
-        //{
-        //    StartCoroutine(CheckIfFaceUpPreFlop(2));
-        //}
         base.OnDetachedFromHand(hand);
     }
-
-    //IEnumerator CheckIfFaceUpPreFlop(float time)
-    //{
-    //    yield return new WaitForSeconds(time);
-    //    if (CardIsFaceUp(150, )) Table.gameState = GameState.Misdeal;
-    //}
 
     //basically we want to give some time for the card to actually LEAVE the hand before we check the velocity
     //it's this that lets us know whether the card was thrown hard or soft
@@ -475,7 +400,7 @@ public class Card : InteractionSuperClass {
         {
             float distCovered = (Time.time - flying_start_time) * speed;
             float fracJourney = distCovered / flight_journey_distance;
-            transform.position = Vector3.Lerp(transform.position, dest, fracJourney);
+            transform.position = Vector3.Lerp(flying_start_position, dest, fracJourney);
             yield return null;
         }
     }

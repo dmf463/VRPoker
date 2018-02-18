@@ -139,7 +139,6 @@ public class Dealer : MonoBehaviour
             {
                 Services.SoundManager.PlayTutorialAudio(0);
             }
-            //OutsideVR = true;
         }
     }
 
@@ -159,7 +158,7 @@ public class Dealer : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Table.instance.DebugHandsAndChips();
-            //cleaningCards = true;
+            cleaningCards = true;
         }
         if (Input.GetKeyDown(KeyCode.X))
         {
