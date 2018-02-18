@@ -159,7 +159,7 @@ public class Dealer : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Table.instance.DebugHandsAndChips();
-            cleaningCards = true;
+            //cleaningCards = true;
         }
         if (Input.GetKeyDown(KeyCode.X))
         {
@@ -744,7 +744,7 @@ public class Dealer : MonoBehaviour
                 }
                 foreach (GameObject card in cardsOnTable)
                 {
-                    StartCoroutine(card.GetComponent<Card>().LerpCard(cardDeck.transform.position + modPos, cardMoveSpeed));
+                    StartCoroutine(card.GetComponent<Card>().LerpCardPos(cardDeck.transform.position + modPos, cardMoveSpeed));
                     if (card.transform.position == cardDeck.transform.position + modPos)
                     {
                         card.GetComponent<Card>().lerping = false;

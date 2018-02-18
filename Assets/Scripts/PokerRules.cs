@@ -52,39 +52,76 @@ public class PokerRules : MonoBehaviour {
         {
             IndicateCardPlacement(cardsPulled.Count);
         }
+        CheckCardPlacement();
+    }
 
-        if (Table.gameState == GameState.PreFlop)
+    public void CheckCardPlacement()
+    {
+        #region NormalChecking
+        if (!Services.Dealer.OutsideVR)
         {
-            if (/*(cardsPulled.Count - 1 == flopCards ||*/ Table.instance.board.Count == 3 && Table.instance.burn.Count == 1 && !checkedForCorrections && thrownCards.Count == 0)
+            if (Table.gameState == GameState.PreFlop)
             {
-                if (CardsAreFacingCorrectDirection())
+                if (Table.instance.board.Count == 3 && Table.instance.burn.Count == 1 && !checkedForCorrections && thrownCards.Count == 0)
+                {
+                    if (CardsAreFacingCorrectDirection())
+                    {
+                        StartCoroutine(CheckFlopMistakes(1));
+                    }
+                }
+            }
+            else if (Table.gameState == GameState.Flop)
+            {
+                if (Table.instance.board.Count == 4 && Table.instance.burn.Count == 2 && !checkedForCorrections && thrownCards.Count == 0)
+                {
+                    if (CardsAreFacingCorrectDirection())
+                    {
+                        Debug.Log("checking turn");
+                        StartCoroutine(CheckTurnMistakes(1));
+                    }
+                }
+            }
+            else if (Table.gameState == GameState.Turn)
+            {
+                if (Table.instance.board.Count == 5 && Table.instance.burn.Count == 3 && !checkedForCorrections && thrownCards.Count == 0)
+                {
+                    if (CardsAreFacingCorrectDirection())
+                    {
+                        Debug.Log("checking river");
+                        StartCoroutine(CheckRiverMistakes(1));
+                    }
+                }
+            }
+        }
+        #endregion
+        #region OutsideVR Checking
+        else
+        {
+            if (Table.gameState == GameState.PreFlop)
+            {
+                if ((cardsPulled.Count - 1 == flopCards || Table.instance.board.Count == 3) && !checkedForCorrections && thrownCards.Count == 0)
                 {
                     StartCoroutine(CheckFlopMistakes(1));
                 }
             }
-        }
-        else if (Table.gameState == GameState.Flop)
-        {
-            if (/*(cardsPulled.Count - 1 == turnCard ||*/ Table.instance.board.Count == 4 && Table.instance.burn.Count == 2 && !checkedForCorrections && thrownCards.Count == 0)
+            else if (Table.gameState == GameState.Flop)
             {
-                if (CardsAreFacingCorrectDirection())
+                if ((cardsPulled.Count - 1 == turnCard || Table.instance.board.Count == 4) && !checkedForCorrections && thrownCards.Count == 0)
                 {
                     Debug.Log("checking turn");
                     StartCoroutine(CheckTurnMistakes(1));
                 }
             }
-        }
-        else if (Table.gameState == GameState.Turn)
-        {
-            if (/*(cardsPulled.Count - 1 == riverCard ||*/ Table.instance.board.Count == 5 && Table.instance.burn.Count == 3 && !checkedForCorrections && thrownCards.Count == 0)
+            else if (Table.gameState == GameState.Turn)
             {
-                if (CardsAreFacingCorrectDirection())
+                if ((cardsPulled.Count - 1 == riverCard || Table.instance.board.Count == 5) &&  !checkedForCorrections && thrownCards.Count == 0)
                 {
                     Debug.Log("checking river");
                     StartCoroutine(CheckRiverMistakes(1));
                 }
             }
         }
+        #endregion
     }
 
     public bool CardsAreFacingCorrectDirection()
@@ -388,8 +425,6 @@ public class PokerRules : MonoBehaviour {
                 Table.instance.playerCards[i].Clear();
             }
         }
-        //ardsLogged.Clear();
-        //ClearAndDestroyAllLists();
         int cardPos;
 
         for (int i = 0; i < cardsPulled.Count; i++)
@@ -407,19 +442,11 @@ public class PokerRules : MonoBehaviour {
                     Vector3 modPos = new Vector3(0, .025f, 0);
                     if (!player.playerIsAllIn)
                     {
-                        GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
-                        foreach (GameObject obj in cardsOnTable)
-                        {
-                            if (obj.GetComponent<Card>().cardType.suit == cardsPulled[i].suit && obj.GetComponent<Card>().cardType.rank == cardsPulled[i].rank)
-                            {
-                                card = obj;
-                            }
-                        }
+                        card = GetCardObject(i);
                         if (card.GetComponent<Card>().CardIsFaceUp()) card.GetComponent<Card>().RotateCard();
                         card.GetComponent<Card>().InitializeLerp(player.cardPos[cardPos].transform.position);
-                        StartCoroutine(card.GetComponent<Card>().LerpCard(player.cardPos[cardPos].transform.position, 1));
-                        //Card newCard = CreateCard(cardsPulled[i], player.cardPos[cardPos].transform.position, player.cardPos[cardPos].transform.rotation);
-                        StartCoroutine(CorrectionsDone(player, cardPos, card));
+                        StartCoroutine(card.GetComponent<Card>().LerpCardPos(player.cardPos[cardPos].transform.position, 1));
+                        StartCoroutine(CorrectionsDone(player.cardPos[cardPos].transform.position, card, playerDestinations[playerIndex], card.GetComponent<Card>()));
                     }
                     //Debug.Log("player we're trying to check is + " + player);
                     //Debug.Log("firstPlayer = " + Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count]);
@@ -429,19 +456,145 @@ public class PokerRules : MonoBehaviour {
         }
     }
 
-    IEnumerator CorrectionsDone(PokerPlayerRedux player, int cardPos, GameObject card)
+    public void CorrectMistakes()
+    {
+        // Debug.Log("CorrectingMistakes");
+        SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+        Table.instance.board.Clear();
+        Table.instance.burn.Clear();
+
+        for (int i = 0; i < cardsPulled.Count; i++)
+        {
+            if (i == burnCard1)
+            {
+                Vector3 burnPos = GameObject.Find("BurnCards").transform.position;
+                Quaternion burnRot = GameObject.Find("BurnCards").transform.rotation;
+                GameObject cardObj = GetCardObject(i);
+                Card card = cardObj.GetComponent<Card>();
+                if (card.CardIsFaceUp()) card.RotateCard();
+                card.InitializeLerp(burnPos);
+                StartCoroutine(card.LerpCardPos(burnPos, 1));
+                StartCoroutine(card.LerpCardRot(burnRot, 1));
+                StartCoroutine(CorrectionsDone(burnPos, cardObj, Destination.burn, card));
+            }
+            else if (i > burnCard1 && i <= flopCards)
+            {
+                if (i == burnCard1 + 1)
+                {
+                    Vector3 flopPos = boardPos[0].transform.position;
+                    Quaternion flopRot = boardPos[0].transform.rotation;
+                    GameObject cardObj = GetCardObject(i);
+                    Card card = cardObj.GetComponent<Card>();
+                    if (!card.CardIsFaceUp()) card.RotateCard();
+                    card.InitializeLerp(flopPos);
+                    StartCoroutine(card.LerpCardPos(flopPos, 1));
+                    StartCoroutine(card.LerpCardRot(flopRot, 1));
+                    StartCoroutine(CorrectionsDone(flopPos, cardObj, Destination.board, card));
+                }
+                else if (i == burnCard1 + 2)
+                {
+                    Vector3 flopPos = boardPos[1].transform.position;
+                    Quaternion flopRot = boardPos[1].transform.rotation;
+                    GameObject cardObj = GetCardObject(i);
+                    Card card = cardObj.GetComponent<Card>();
+                    if (!card.CardIsFaceUp()) card.RotateCard();
+                    card.InitializeLerp(flopPos);
+                    StartCoroutine(card.LerpCardPos(flopPos, 1));
+                    StartCoroutine(card.LerpCardRot(flopRot, 1));
+                    StartCoroutine(CorrectionsDone(flopPos, cardObj, Destination.board, card));
+                }
+                else if (i == burnCard1 + 3)
+                {
+                    Vector3 flopPos = boardPos[2].transform.position;
+                    Quaternion flopRot = boardPos[2].transform.rotation;
+                    GameObject cardObj = GetCardObject(i);
+                    Card card = cardObj.GetComponent<Card>();
+                    if (!card.CardIsFaceUp()) card.RotateCard();
+                    card.InitializeLerp(flopPos);
+                    StartCoroutine(card.LerpCardPos(flopPos, 1));
+                    StartCoroutine(card.LerpCardRot(flopRot, 1));
+                    StartCoroutine(CorrectionsDone(flopPos, cardObj, Destination.board, card));
+                }
+            }
+            else if (i == burnCard2)
+            {
+                Vector3 burnPos = GameObject.Find("BurnCards").transform.position;
+                Quaternion burnRot = GameObject.Find("BurnCards").transform.rotation;
+                GameObject cardObj = GetCardObject(i);
+                Card card = cardObj.GetComponent<Card>();
+                if (card.CardIsFaceUp()) card.RotateCard();
+                card.InitializeLerp(burnPos);
+                StartCoroutine(card.LerpCardPos(burnPos, 1));
+                StartCoroutine(card.LerpCardRot(burnRot, 1));
+                StartCoroutine(CorrectionsDone(burnPos, cardObj, Destination.burn, card));
+            }
+            else if (i == turnCard)
+            {
+                Vector3 turnPos = boardPos[3].transform.position;
+                Quaternion turnRot = boardPos[3].transform.rotation;
+                GameObject cardObj = GetCardObject(i);
+                Card card = cardObj.GetComponent<Card>();
+                if (!card.CardIsFaceUp()) card.RotateCard();
+                card.InitializeLerp(turnPos);
+                StartCoroutine(card.LerpCardPos(turnPos, 1));
+                StartCoroutine(card.LerpCardRot(turnRot, 1));
+                StartCoroutine(CorrectionsDone(turnPos, cardObj, Destination.board, card));
+            }
+            else if (i == burnCard3)
+            {
+                Vector3 burnPos = GameObject.Find("BurnCards").transform.position;
+                Quaternion burnRot = GameObject.Find("BurnCards").transform.rotation;
+                GameObject cardObj = GetCardObject(i);
+                Card card = cardObj.GetComponent<Card>();
+                if (card.CardIsFaceUp()) card.RotateCard();
+                card.InitializeLerp(burnPos);
+                StartCoroutine(card.LerpCardPos(burnPos, 1));
+                StartCoroutine(card.LerpCardRot(burnRot, 1));
+                StartCoroutine(CorrectionsDone(burnPos, cardObj, Destination.burn, card));
+            }
+            else if (i == riverCard)
+            {
+                Vector3 riverPos = boardPos[4].transform.position;
+                Quaternion riverRot = boardPos[4].transform.rotation;
+                GameObject cardObj = GetCardObject(i);
+                Card card = cardObj.GetComponent<Card>();
+                if (!card.CardIsFaceUp()) card.RotateCard();
+                card.InitializeLerp(riverPos);
+                StartCoroutine(card.LerpCardPos(riverPos, 1));
+                StartCoroutine(card.LerpCardRot(riverRot, 1));
+                StartCoroutine(CorrectionsDone(riverPos, cardObj, Destination.board, card));
+            }
+        }
+        SetCardIndicator();
+    }
+
+    IEnumerator CorrectionsDone(Vector3 pos, GameObject cardObj, Destination dest, Card card)
     {
         while (card.GetComponent<Card>().lerping)
         {
-            if (card.transform.position == player.cardPos[cardPos].transform.position)
+            if (card.transform.position == pos)
             {
                 card.GetComponent<Card>().lerping = false;
-                Table.instance.playerCards[player.SeatPos].Add(card.GetComponent<Card>());
+                Table.instance.AddCardTo(dest, card);
                 Debug.Log("MADE IT");
             }
             else yield return null;
         }
         yield break;
+    }
+
+    public GameObject GetCardObject(int i)
+    {
+        GameObject cardHolder = null;
+        GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
+        foreach (GameObject obj in cardsOnTable)
+        {
+            if (obj.GetComponent<Card>().cardType.suit == cardsPulled[i].suit && obj.GetComponent<Card>().cardType.rank == cardsPulled[i].rank)
+            {
+                cardHolder = obj;
+            }
+        }
+        return cardHolder;
     }
 
     public bool CardIsInCorrectLocation(Card card, int cardCount)
@@ -458,85 +611,6 @@ public class PokerRules : MonoBehaviour {
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
         int playerIndex = Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardCount);
         return Services.Dealer.players[playerIndex];
-    }
-
-    public void CorrectMistakes()
-    {
-        // Debug.Log("CorrectingMistakes");
-        SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-        cardsLogged.Clear();
-        ClearAndDestroyAllLists();
-        int cardPos;
-
-        for (int i = 0; i < cardsPulled.Count; i++)
-        {
-            if (i <= playerCards) //playerCards = 9
-            {
-                if (i >= (Services.Dealer.PlayerAtTableCount())) cardPos = 1;
-                else cardPos = 0;
-                int playerIndex = Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(i + 1);
-                PokerPlayerRedux player = Services.Dealer.players[playerIndex];
-                //Debug.Log("player we're trying to check is + " + player);
-                if (player.PlayerState == PlayerState.Playing)
-                {
-                    if (!player.playerIsAllIn)
-                    {
-                        Card newCard = CreateCard(cardsPulled[i], player.cardPos[cardPos].transform.position, player.cardPos[cardPos].transform.rotation);
-                        Table.instance.playerCards[player.SeatPos].Add(newCard);
-                    }
-                    //Debug.Log("player we're trying to check is + " + player);
-                    //Debug.Log("firstPlayer = " + Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count]);
-                    //Debug.Log("cardCount after replacing" + Table.instance.playerCards[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].Count);
-                }
-            }
-            else if (i == burnCard1)
-            {
-                GameObject burnPos = GameObject.Find("BurnCards");
-                Card newCard = CreateCard(cardsPulled[i], burnPos.transform.position, burnPos.transform.rotation);
-                Table.instance.AddCardTo(Destination.burn, newCard);
-            }
-            else if (i > burnCard1 && i <= flopCards)
-            {
-                if (i == burnCard1 + 1)
-                {
-                    Card newCard = CreateCard(cardsPulled[i], boardPos[0].transform.position, boardPos[0].transform.rotation);
-                    Table.instance.AddCardTo(Destination.board, newCard);
-                }
-                else if (i == burnCard1 + 2)
-                {
-                    Card newCard = CreateCard(cardsPulled[i], boardPos[1].transform.position, boardPos[1].transform.rotation);
-                    Table.instance.AddCardTo(Destination.board, newCard);
-                }
-                else if (i == burnCard1 + 3)
-                {
-                    Card newCard = CreateCard(cardsPulled[i], boardPos[2].transform.position, boardPos[2].transform.rotation);
-                    Table.instance.AddCardTo(Destination.board, newCard);
-                }
-            }
-            else if (i == burnCard2)
-            {
-                GameObject burnPos = GameObject.Find("BurnCards");
-                Card newCard = CreateCard(cardsPulled[i], burnPos.transform.position, burnPos.transform.rotation);
-                Table.instance.AddCardTo(Destination.burn, newCard);
-            }
-            else if (i == turnCard)
-            {
-                Card newCard = CreateCard(cardsPulled[i], boardPos[3].transform.position, boardPos[3].transform.rotation);
-                Table.instance.AddCardTo(Destination.board, newCard);
-            }
-            else if (i == burnCard3)
-            {
-                GameObject burnPos = GameObject.Find("BurnCards");
-                Card newCard = CreateCard(cardsPulled[i], burnPos.transform.position, burnPos.transform.rotation);
-                Table.instance.AddCardTo(Destination.burn, newCard);
-            }
-            else if (i == riverCard)
-            {
-                Card newCard = CreateCard(cardsPulled[i], boardPos[4].transform.position, boardPos[4].transform.rotation);
-                Table.instance.AddCardTo(Destination.board, newCard);
-            }
-        }
-        SetCardIndicator();
     }
 
     public Card CreateCard(CardType cardType, Vector3 position, Quaternion rotation)

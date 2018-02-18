@@ -469,13 +469,24 @@ public class Card : InteractionSuperClass {
         lerping = true;
     }
 
-    public IEnumerator LerpCard(Vector3 dest, float speed)
+    public IEnumerator LerpCardPos(Vector3 dest, float speed)
     {
         while(lerping)
         {
             float distCovered = (Time.time - flying_start_time) * speed;
             float fracJourney = distCovered / flight_journey_distance;
             transform.position = Vector3.Lerp(transform.position, dest, fracJourney);
+            yield return null;
+        }
+    }
+
+    public IEnumerator LerpCardRot(Quaternion dest, float speed)
+    {
+        while (lerping)
+        {
+            float distCovered = (Time.time - flying_start_time) * speed;
+            float fracJourney = distCovered / flight_journey_distance;
+            transform.rotation = Quaternion.Lerp(transform.rotation, dest, fracJourney);
             yield return null;
         }
     }
