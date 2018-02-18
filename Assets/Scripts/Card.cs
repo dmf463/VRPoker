@@ -65,6 +65,8 @@ public class Card : InteractionSuperClass {
     //basically checked if a card is flipped or not
     public bool cardFacingUp = false;
     public bool cardWasManuallyFlipped = false;
+
+    public bool isFloating = false;
    
 
     // Use this for initialization
@@ -85,12 +87,19 @@ public class Card : InteractionSuperClass {
     // Update is called once per frame
     void Update () {
 
+        if (Services.PokerRules.CardIsInCorrectLocation(this, Services.PokerRules.cardsPulled.Count) || (Services.Dealer.OutsideVR && Services.Dealer.playerToAct != null))
+        {
+            if (yPos == 0)
+            {
+                yPos = transform.position.y;
+                rb.useGravity = false;
+                rb.constraints = RigidbodyConstraints.FreezeRotation;
+            }
+            FloatInPlace(floatSpeed, floatDistance);
+        }
+
         CardForDealingMode();
         BringCardBack();
-        if(yPos != 0 && !is_flying)
-        {
-            transform.position = new Vector3(transform.position.x, yPos, transform.position.z);
-        }
         if(Vector3.Distance(transform.position, GameObject.Find("ShufflingArea").transform.position) > 10)
         {
             Vector3 pos = GameObject.Find("ShufflingArea").transform.position;
@@ -230,7 +239,6 @@ public class Card : InteractionSuperClass {
         if(other.gameObject.tag == "Table")
         {
             Services.Dealer.cardsTouchingTable.Add(this);
-            yPos = transform.position.y;
         }
         if(other.gameObject.tag == "Floor")
         {
@@ -249,7 +257,6 @@ public class Card : InteractionSuperClass {
         if (other.gameObject.tag == "Table")
         {
             cardOnTable = true;
-            yPos = transform.position.y;
         }
     }
 
@@ -258,7 +265,6 @@ public class Card : InteractionSuperClass {
         if (other.gameObject.tag == "Table")
         {
             cardOnTable = false;
-            yPos = 0;
             Services.Dealer.cardsTouchingTable.Remove(this);
         }
     }
@@ -291,7 +297,6 @@ public class Card : InteractionSuperClass {
     {
         //if(Table.dealerState == DealerState.DealingState)
         //{
-        yPos = 0;
         if (!cardFacingUp)
         {
             transform.rotation = throwingHand.GetAttachmentTransform("CardFaceDown").transform.rotation;
@@ -529,8 +534,7 @@ public class Card : InteractionSuperClass {
     public void FloatInPlace(float speed, float distance)
     {
         Debug.Log("FLOATING");
-        Vector3 playerPos = GetPlayerPos() +  new Vector3(0, .25f, 0);
-        transform.position = new Vector3(playerPos.x, playerPos.y + Mathf.PingPong(Time.time / speed, distance), playerPos.z);
+        transform.position = new Vector3(transform.position.x, yPos + Mathf.PingPong(Time.time / speed, distance), transform.position.z);
     }
 
     //part of the interaction class this derives from.
