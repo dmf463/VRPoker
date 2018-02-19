@@ -67,6 +67,7 @@ public class Card : InteractionSuperClass {
     public bool cardWasManuallyFlipped = false;
 
     public bool isFloating = false;
+    bool straighteningCards = false;
    
 
     // Use this for initialization
@@ -91,6 +92,7 @@ public class Card : InteractionSuperClass {
         {
             if (yPos == 0)
             {
+                StraightenOutCards();
                 yPos = transform.position.y;
                 rb.useGravity = false;
                 rb.constraints = RigidbodyConstraints.FreezeRotation;
@@ -531,10 +533,51 @@ public class Card : InteractionSuperClass {
         return pos;
     }
 
+    public PokerPlayerRedux GetCardOwner()
+    {
+        int playerIndex = Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(Services.PokerRules.cardsPulled.Count);
+        return Services.Dealer.players[playerIndex];
+    }
+
     public void FloatInPlace(float speed, float distance)
     {
-        Debug.Log("FLOATING");
+        Debug.Log("FLOATING WITH Y POS: " + yPos);
         transform.position = new Vector3(transform.position.x, yPos + Mathf.PingPong(Time.time / speed, distance), transform.position.z);
+    }
+
+    public void StraightenOutCards()
+    {
+        straighteningCards = true;
+        Vector3 endPos;
+        Quaternion endRot;
+        PokerPlayerRedux player = GetCardOwner();
+        if(Table.instance.playerCards[player.SeatPos].Count == 1)
+        {
+            endPos = player.cardPos[0].transform.position;
+            endRot = player.cardPos[0].transform.rotation;
+        }
+        else
+        {
+            endPos = player.cardPos[1].transform.position;
+            endRot = player.cardPos[1].transform.rotation;
+        }
+        InitializeLerp(endPos);
+        StartCoroutine(LerpCardPos(endPos, 0.25f));
+        StartCoroutine(LerpCardRot(endRot, 0.25f));
+        StartCoroutine(StopStraightening(endPos));
+    }
+
+    IEnumerator StopStraightening(Vector3 pos)
+    {
+        while (straighteningCards)
+        {
+            if (transform.position == pos)
+            {
+                straighteningCards = false;
+            }
+            else yield return null;
+        }
+        yield break;
     }
 
     //part of the interaction class this derives from.

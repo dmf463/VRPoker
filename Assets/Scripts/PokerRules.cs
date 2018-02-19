@@ -414,7 +414,7 @@ public class PokerRules : MonoBehaviour {
         Table.instance.burn.Clear();
     }
 
-    public void CorrectMistakesPreFlop()
+    public void CorrectMistakesPreFlop(float speed)
     {
         // Debug.Log("CorrectingMistakes");
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
@@ -445,7 +445,7 @@ public class PokerRules : MonoBehaviour {
                         card = GetCardObject(i);
                         if (card.GetComponent<Card>().CardIsFaceUp()) card.GetComponent<Card>().RotateCard();
                         card.GetComponent<Card>().InitializeLerp(player.cardPos[cardPos].transform.position);
-                        StartCoroutine(card.GetComponent<Card>().LerpCardPos(player.cardPos[cardPos].transform.position, 1));
+                        StartCoroutine(card.GetComponent<Card>().LerpCardPos(player.cardPos[cardPos].transform.position, speed));
                         StartCoroutine(CorrectionsDone(player.cardPos[cardPos].transform.position, card, playerDestinations[playerIndex], card.GetComponent<Card>()));
                     }
                     //Debug.Log("player we're trying to check is + " + player);
@@ -720,7 +720,7 @@ public class PokerRules : MonoBehaviour {
 
     public void PlayTone()
     {
-        if (toneCount < 0) toneCount = 0;
+        if (toneCount < 0 || toneCount > Services.SoundManager.cardTones.Length - 1) toneCount = 0;
         if (Table.gameState == GameState.NewRound)
         {
             SetCardPlacement(Services.Dealer.PlayerAtTableCount());
