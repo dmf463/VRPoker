@@ -5,7 +5,7 @@ using UnityEngine;
 //controls all the sounds
 public class SoundManager : MonoBehaviour
 {
-	public TextAsset dialogueFile;
+	public TextAsset dialogueFile; //the text file we draw our dialogue from
 
 	public PokerPlayerRedux casey;// rosa
 	public PokerPlayerRedux zombie;// gonzalo
@@ -37,8 +37,8 @@ public class SoundManager : MonoBehaviour
     int tutorialIndex = 1;
     AudioClip nextAudio;
 
-    //TUTORIAL STUFF 
-   
+#region TUTORIAL STUFF 
+
     public int handCounter = 1; //which hand are we on? First, second, third.... 
     public int roundsFinished = 0; //how many rounds of betting have we finished this hand
     public bool roundOneComplete = false;
@@ -67,6 +67,7 @@ public class SoundManager : MonoBehaviour
     public bool cheatingEngaged = false;
     public bool letEmLoose = false;
 
+#endregion
 
 
     public List <AudioData> tutorialAudioFiles = new List <AudioData>();
@@ -92,7 +93,7 @@ public class SoundManager : MonoBehaviour
 
 	void Awake()
 	{
-		
+        
 	}
 
     void Start()

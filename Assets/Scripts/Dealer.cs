@@ -112,12 +112,13 @@ public class Dealer : MonoBehaviour
         //this is where we intialize all our services stuff
         Services.PrefabDB = Resources.Load<PrefabDB>("Prefabs/PrefabDB");
         Services.SoundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
-		Services.DialogueDataManager = new DialogueDataManager();
+        Services.DialogueDataManager = new DialogueDataManager();
         Services.Dealer = this;
         Services.PokerRules = GameObject.Find("PokerRules").GetComponent<PokerRules>();
 		Services.PlayerBehaviour = new PlayerBehaviour();
 		Services.DialogueDataManager.ParseDialogueFile((Services.SoundManager.dialogueFile));
         Services.TextManager = GameObject.Find("TableGraphics").GetComponent<TextManager>();
+       
     }
 
     // Use this for initialization
@@ -1004,7 +1005,7 @@ public class Dealer : MonoBehaviour
 			players[i].SeatPos = i;
 			players[i].PlayerState = PlayerState.Playing;
 			activePlayers.Add(players[i]);
-			Debug.Log ("Adding " + players[i] + " to active players!");
+			//Debug.Log ("Adding " + players[i] + " to active players!");
             List<int> startingStack  = players[i].SetChipStacks(chipCount);
             Table.instance.AddChipTo(playerDestinations[i], chipCount);
             players[i].CreateAndOrganizeChipStacks(startingStack);

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class DialogueDataManager
 {
 	private Dictionary<List<PlayerName>, List<Conversation>> dialogueDict; 
-	//dictionary keys are lists of pokerPlayers still in the game, values are lists of conversations for those combinations
+	//dictionary keys are lists of poker players still in the game, values are lists of conversations for those combinations
 
 
 	public void Awake()
@@ -59,7 +59,7 @@ public class DialogueDataManager
 		//List<Conversation> conversationList = new List<Conversation>(); //list of conversations to add to the dictionary
 		for (int i = 2; i < fileRows.Length; i++)  //for each row in our array, ignoring the first two rows
 		{
-			Debug.Log("Line " + i);
+			//Debug.Log("Line " + i);
 			fileRow = fileRows [i]; //set filerow to equal that row
 			rowEntries = fileRow.Split (entrySeparator); //set entries by splitting the row using our entry separator
 			if(rowEntries.Length < 8)
@@ -70,14 +70,16 @@ public class DialogueDataManager
 
 			for (int j = 0; j < 5; j++)
 			{
-				Debug.Log("Row " + j + " " + rowEntries[j]);
+				//Debug.Log("Row " + j + " " + rowEntries[j]);
 				if (rowEntries[j] != "")	
 				{
-					conversantList.Add(GetConversantNameFromString(rowEntries[j]));
+                    PlayerName conversant = GetConversantNameFromString(rowEntries[j]);
+                    conversantList.Add(conversant);
+                    Debug.Log("Added conversant: " + conversant);
 				}
 			}
 
-			Debug.Log(conversantList);
+
 
 			List<PlayerLine> playerLinesList = new List<PlayerLine>(); //list to hold
 
