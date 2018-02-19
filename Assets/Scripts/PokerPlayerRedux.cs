@@ -281,10 +281,10 @@ public class PokerPlayerRedux : MonoBehaviour{
         int lastBet = Services.Dealer.LastBet;
         if (lastBet == 0) lastBet = Services.Dealer.BigBlind; 
 		float potOdds = amountToRaise / (amountToRaise + potSize);
-        Debug.Log(gameObject.name + " has an HS of " + HandStrength + " and pot odds of " + potOdds + " in round " + Table.gameState);
+        //Debug.Log(gameObject.name + " has an HS of " + HandStrength + " and pot odds of " + potOdds + " in round " + Table.gameState);
         if (Table.gameState > GameState.PreFlop && Table.gameState != GameState.Misdeal) Debug.Assert(HandStrength <= 1);
         float returnRate = HandStrength / potOdds;
-        Debug.Log(gameObject.name + " has a return rate of " + returnRate);
+        //Debug.Log(gameObject.name + " has a return rate of " + returnRate);
 		return returnRate;
 	}
 

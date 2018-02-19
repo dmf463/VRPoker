@@ -549,7 +549,7 @@ public class Dealer : MonoBehaviour
     {
         if (Table.gameState != GameState.Misdeal)
         {
-            Debug.Log("CheckingPreFlopMistakes");
+            //Debug.Log("CheckingPreFlopMistakes");
             yield return new WaitForSeconds(time);
             int cardCountForPreFlop = 0;
             bool misdeal = false;
@@ -580,10 +580,10 @@ public class Dealer : MonoBehaviour
             else
             {
                 Debug.Log("correctingMistakes because cardCountForPreflop != cardsPulled");
-                Services.PokerRules.CorrectMistakesPreFlop(0.25f);
+                Services.PokerRules.CorrectMistakesPreFlop(1f);
                 Table.gameState = GameState.PreFlop;
             }
-            Debug.Log("ending the check");
+            //Debug.Log("ending the check");
             checkedPreFlopCardCount = false;
         }
     }
@@ -715,6 +715,7 @@ public class Dealer : MonoBehaviour
                         Destroy(card.GetComponent<ConstantForce>());
                         Destroy(card.GetComponent<BoxCollider>());
                         Destroy(card.GetComponent<Rigidbody>());
+                        card.GetComponent<Card>().readyToFloat = false;
                         card.GetComponent<Card>().is_flying = true;
                     }
                 }
@@ -788,7 +789,9 @@ public class Dealer : MonoBehaviour
                         card.GetComponent<Card>().rotSpeed = UnityEngine.Random.Range(500, 1500);
                         Destroy(card.GetComponent<ConstantForce>());
                         card.GetComponent<Rigidbody>().useGravity = false;
+                        card.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
                         Destroy(card.GetComponent<BoxCollider>());
+                        card.GetComponent<Card>().readyToFloat = false;
                         card.GetComponent<Card>().is_flying = true;
                     }
                 }
@@ -850,12 +853,14 @@ public class Dealer : MonoBehaviour
                             card.GetComponent<Card>().flying_start_time = Time.time;
                             card.GetComponent<Card>().flight_journey_distance = Vector3.Distance(card.transform.position, cardDeck.transform.position);
                             card.GetComponent<Card>().flying_start_position = card.transform.position;
+                            card.GetComponent<Card>().lerping = false;
                         }
                         first_time = false;
                     }
                     foreach (GameObject card in cardsOnTable)
                     {
                         //float step = cardMoveSpeed * Time.deltaTime;
+                        card.GetComponent<Card>().lerping = false;
                         float distCovered = (Time.time - card.GetComponent<Card>().flying_start_time) * (cardMoveSpeed * 5);
                         float fracJourney = distCovered / card.GetComponent<Card>().flight_journey_distance;
                         card.transform.position = Vector3.Lerp(card.GetComponent<Card>().flying_start_position, cardDeck.transform.position, fracJourney);

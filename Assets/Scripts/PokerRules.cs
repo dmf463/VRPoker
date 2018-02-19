@@ -446,6 +446,7 @@ public class PokerRules : MonoBehaviour {
                         if (card.GetComponent<Card>().CardIsFaceUp()) card.GetComponent<Card>().RotateCard();
                         card.GetComponent<Card>().InitializeLerp(player.cardPos[cardPos].transform.position);
                         StartCoroutine(card.GetComponent<Card>().LerpCardPos(player.cardPos[cardPos].transform.position, speed));
+                        StartCoroutine(card.GetComponent<Card>().LerpCardRot(card.GetComponent<Card>().GetCardRot(player), speed * 2));
                         StartCoroutine(CorrectionsDone(player.cardPos[cardPos].transform.position, card, playerDestinations[playerIndex], card.GetComponent<Card>()));
                     }
                     //Debug.Log("player we're trying to check is + " + player);
@@ -576,6 +577,7 @@ public class PokerRules : MonoBehaviour {
             {
                 card.GetComponent<Card>().lerping = false;
                 Table.instance.AddCardTo(dest, card);
+                card.readyToFloat = true;
                 Debug.Log("MADE IT");
             }
             else yield return null;
