@@ -11,7 +11,10 @@ public class Card : InteractionSuperClass {
 
     public float flying_start_time, flight_journey_distance;
     public Vector3 flying_start_position;
+    public Quaternion flying_start_rotation;
     public bool lerping = false;
+    public bool readyToFloat = false;
+    public bool rotateOnAdd = false;
 
     public bool is_flying = false;
     public float rotSpeed;
@@ -88,21 +91,10 @@ public class Card : InteractionSuperClass {
     // Update is called once per frame
     void Update () {
 
-        if (Services.PokerRules.CardIsInCorrectLocation(this, Services.PokerRules.cardsPulled.Count) || (Services.Dealer.OutsideVR && Services.Dealer.playerToAct != null))
-        {
-            if (yPos == 0)
-            {
-                StraightenOutCards();
-                yPos = transform.position.y;
-                rb.useGravity = false;
-                rb.constraints = RigidbodyConstraints.FreezeRotation;
-            }
-            FloatInPlace(floatSpeed, floatDistance);
-        }
-
         CardForDealingMode();
         BringCardBack();
-        if(Vector3.Distance(transform.position, GameObject.Find("ShufflingArea").transform.position) > 10)
+        FloatInPlace(floatSpeed, floatDistance);
+        if(Vector3.Distance(transform.position, GameObject.Find("ShufflingArea").transform.position) > 20)
         {
             Vector3 pos = GameObject.Find("ShufflingArea").transform.position;
             transform.position = new Vector3(pos.x, pos.y, pos.z);
@@ -168,6 +160,12 @@ public class Card : InteractionSuperClass {
                 if (elapsedTimeForThrowTorque >= torqueDuration)
                 {
                     startLerping = false;
+                    if (Table.gameState == GameState.NewRound)
+                    {
+                        rotateOnAdd = true;
+                        StartCoroutine(LerpCardRotOnAdd(GetCardRot(), .25f));
+                        StartCoroutine(StopRotating(GetCardRot()));
+                    }
                 }
 
             }
@@ -398,6 +396,7 @@ public class Card : InteractionSuperClass {
         flying_start_time = Time.time;
         flight_journey_distance = Vector3.Distance(transform.position, dest);
         flying_start_position = transform.position;
+        flying_start_rotation = transform.rotation;
         lerping = true;
     }
 
@@ -423,12 +422,59 @@ public class Card : InteractionSuperClass {
         }
     }
 
+    public IEnumerator LerpCardRotOnAdd(Quaternion dest, float speed)
+    {
+        while (rotateOnAdd)
+        {
+            float distCovered = (Time.time - flying_start_time) * speed;
+            float fracJourney = distCovered / flight_journey_distance;
+            transform.rotation = Quaternion.Lerp(transform.rotation, dest, fracJourney);
+            yield return null;
+        }
+    }
+
+
+    IEnumerator StopRotating(Quaternion rot)
+    {
+        while (rotateOnAdd)
+        {
+            if (transform.rotation == rot)
+            {
+                Debug.Log("done straightening");
+                rotateOnAdd = false;
+            }
+            else yield return null;
+        }
+        yield break;
+    }
+
+    public void StraightenOutCards()
+    {
+        Vector3 endPos = GetCardPos();
+        Quaternion endRot = GetCardRot();
+        InitializeLerp(endPos);
+        StartCoroutine(LerpCardPos(endPos, 0.25f));
+        //StartCoroutine(LerpCardRot(endRot, 0.25f));
+        StartCoroutine(StopStraightening(endPos));
+    }
+
+    IEnumerator StopStraightening(Vector3 pos)
+    {
+        while (lerping)
+        {
+            if (transform.position == pos)
+            {
+                Debug.Log("done straightening");
+                lerping = false;
+            }
+            else yield return null;
+        }
+        yield break;
+    }
+
     public IEnumerator CheckIfCardIsAtDestination(float time, int cardsPulled)
     {
         yield return new WaitForSeconds(time);
-        //if (!cardChecked)
-        //{
-        //    cardChecked = true;
         Debug.Log("thrownCardsList = " + Services.PokerRules.thrownCards.Count);
         float badCardsDebug = 0;
         for (int i = Services.PokerRules.thrownCards.Count - 1; i >= 0; i--)
@@ -456,7 +502,16 @@ public class Card : InteractionSuperClass {
             if (badCards == 0 && !CardsAreFlying(gameObject))
             {
                 Services.PokerRules.thrownCards.Clear();
-            }
+                if (yPos == 0)
+                {
+                    StraightenOutCards();
+                    startLerping = true;
+                    elapsedTimeForThrowTorque = 0;
+                    yPos = GetCardPos().y;
+                    GetComponent<BoxCollider>().enabled = false;
+                    rb.constraints = RigidbodyConstraints.FreezeAll;
+                }
+        }
             else
             {
                 thrownWrong = true;
@@ -488,7 +543,6 @@ public class Card : InteractionSuperClass {
             Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[8], .05f);
         }
     }
-    //}
 
     public void BringCardBack()
     {
@@ -541,43 +595,46 @@ public class Card : InteractionSuperClass {
 
     public void FloatInPlace(float speed, float distance)
     {
-        Debug.Log("FLOATING WITH Y POS: " + yPos);
-        transform.position = new Vector3(transform.position.x, yPos + Mathf.PingPong(Time.time / speed, distance), transform.position.z);
+        if (readyToFloat && !Services.Dealer.killingCards && !Services.Dealer.cleaningCards)
+        {
+            if(rb != null) rb.useGravity = false;
+            transform.position = new Vector3(transform.position.x, yPos + Mathf.PingPong(Time.time / speed, distance), transform.position.z);
+        }
+        else
+        {
+            if (rb != null) rb.useGravity = true;
+        }
     }
 
-    public void StraightenOutCards()
+
+    public Vector3 GetCardPos()
     {
-        straighteningCards = true;
-        Vector3 endPos;
-        Quaternion endRot;
         PokerPlayerRedux player = GetCardOwner();
-        if(Table.instance.playerCards[player.SeatPos].Count == 1)
+        Vector3 endPos;
+        if (Table.instance.playerCards[player.SeatPos].Count == 1)
         {
             endPos = player.cardPos[0].transform.position;
-            endRot = player.cardPos[0].transform.rotation;
         }
         else
         {
             endPos = player.cardPos[1].transform.position;
-            endRot = player.cardPos[1].transform.rotation;
         }
-        InitializeLerp(endPos);
-        StartCoroutine(LerpCardPos(endPos, 0.25f));
-        StartCoroutine(LerpCardRot(endRot, 0.25f));
-        StartCoroutine(StopStraightening(endPos));
+        return endPos;
     }
 
-    IEnumerator StopStraightening(Vector3 pos)
+    public Quaternion GetCardRot()
     {
-        while (straighteningCards)
+        PokerPlayerRedux player = GetCardOwner();
+        Quaternion endRot;
+        if (Table.instance.playerCards[player.SeatPos].Count == 1)
         {
-            if (transform.position == pos)
-            {
-                straighteningCards = false;
-            }
-            else yield return null;
+            endRot = player.cardPos[0].transform.rotation;
         }
-        yield break;
+        else
+        {
+            endRot = player.cardPos[1].transform.rotation;
+        }
+        return endRot;
     }
 
     //part of the interaction class this derives from.
@@ -604,13 +661,6 @@ public class Card : InteractionSuperClass {
 
     public bool CardIsFaceUp()
     {
-        //float angle = GetCardAngle(comparisonPoint);
-        //if (angle > angleThreshold || cardIsFlipped) return true;
-        //else return false;
-        //Debug.DrawRay(transform.position, transform.forward, Color.green);
-        //Debug.DrawRay(transform.position, Vector3.down, Color.red);
-        //Debug.Log(Vector3.Dot(transform.forward, Vector3.down));
-        //Debug.Log(this.name + " is face up: " + (Vector3.Dot(transform.forward, Vector3.down) > 0));
         return (Vector3.Dot(transform.forward, Vector3.down) > 0);
     }
 

@@ -72,7 +72,7 @@ public class PlayerGazeTrigger : MonoBehaviour
                 if (timeRemaining <= 0.5f && !pokerPlayer.playerLookedAt)
                 {
                     pokerPlayer.playerLookedAt = true;
-                    Debug.Log("Ready to invoke next player");
+                    //Debug.Log("Ready to invoke next player");
                     onEyeGazeComplete.Invoke();
                 }
             }

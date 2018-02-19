@@ -28,7 +28,7 @@ public class HandRaycast : MonoBehaviour {
         {
             if(Services.Dealer.playerToAct != null)
             {
-                Debug.Log("RayHit transform = " + rayHit.transform.gameObject.name);
+                //Debug.Log("RayHit transform = " + rayHit.transform.gameObject.name);
                 if (transform.position.y >= heightThreshold.y)
                 {
                     if (rayHit.transform == Services.Dealer.playerToAct.gameObject.GetComponentInChildren<PlayerGazeTrigger>().gameObject.transform) //are we looking at this thing
