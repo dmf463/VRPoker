@@ -114,12 +114,12 @@ public class SoundManager : MonoBehaviour
     {
         Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.tutorialAudioFiles[index].audio, 1f, 1f);
         Services.SoundManager.tutorialAudioFiles[index].hasBeenPlayed = true;
-        StartCoroutine(WaitToResetBool(Services.SoundManager.tutorialAudioFiles[index].audio.length, Services.SoundManager.tutorialAudioFiles[index]));
+        StartCoroutine(WaitForClipToFinishPlaying(Services.SoundManager.tutorialAudioFiles[index].audio.length, Services.SoundManager.tutorialAudioFiles[index]));
     }
 
 
 
-    IEnumerator WaitToResetBool(float time, AudioData clip)
+    IEnumerator WaitForClipToFinishPlaying(float time, AudioData clip)
     {
         yield return new WaitForSeconds(time);   
         clip.finishedPlaying = true;

@@ -62,19 +62,19 @@ public class DialogueDataManager
 			//Debug.Log("Line " + i);
 			fileRow = fileRows [i]; //set filerow to equal that row
 			rowEntries = fileRow.Split (entrySeparator); //set entries by splitting the row using our entry separator
-			if(rowEntries.Length < 8)
+			if(rowEntries.Length < 8) //if there are less than eight entries, meaning in this case that there is not enough information to form a conversation
 			{
 				continue;
 			}
 			List<PlayerName> conversantList = new List<PlayerName>(); //list to hold the players who are in the conversation
 
-			for (int j = 0; j < 5; j++)
+			for (int j = 0; j < 5; j++) //for the first 5 columns
 			{
 				//Debug.Log("Row " + j + " " + rowEntries[j]);
-				if (rowEntries[j] != "")	
+				if (rowEntries[j] != "")	//if the row entry isn't blank
 				{
-                    PlayerName conversant = GetConversantNameFromString(rowEntries[j]);
-                    conversantList.Add(conversant);
+                    PlayerName conversant = GetConversantNameFromString(rowEntries[j]); // use the entry to get the name of one of our conversants
+                    conversantList.Add(conversant); //add this name to our list of conversants for this conversation
                     Debug.Log("Added conversant: " + conversant);
 				}
 			}
@@ -85,10 +85,12 @@ public class DialogueDataManager
 
 			for (int j = 5; j < rowEntries.Length; j += 3) // for each set of player line data (three cells) in our entries
 			{
-				string playerNameText = rowEntries [j];
-				string lineText = rowEntries [j+1];
-				string audioFileText =  rowEntries [j+2];
-				PlayerLine line = new PlayerLine(playerNameText, lineText, audioFileText); //create a player line and assign the next three entries
+				string playerNameText = rowEntries [j]; //gets the string for the player name
+                string lineText = rowEntries [j+1]; //gets the text to be spoken, this isn't currently used in the game but will be needed for subtitles
+				string audioFileText = rowEntries [j+2]; //the string for the audiofile name
+                AudioClip audioFile = Resources.Load("Audio/Voice/" + audioFileText) as AudioClip; //gets the audiofile from resources using the string name 
+                Debug.Log(audioFile); 
+				PlayerLine line = new PlayerLine(playerNameText, lineText, audioFile); //create a player line and assign the next three entries
 				playerLinesList.Add(line); //add line to list of player lines
 			}
 
@@ -133,6 +135,9 @@ public class DialogueDataManager
 			return PlayerName.None;
 		}
 	}
+
+
+
 }
 
 
@@ -152,12 +157,12 @@ public class PlayerLine //class for each player line
 {
 	public string mainText; //the text the character is speaking
 	public string playerName; //the name of the charater speaking
-	public string audioFileName; //the name of the associated audiofile
+    public AudioClip audioFile; //the name of the associated audiofile
 
-	public PlayerLine(string _playerName, string _mainText, string _audioFileName) //constructor for player line
+    public PlayerLine(string _playerName, string _mainText, AudioClip _audioFile) //constructor for player line
 	{
 		_playerName = playerName;
 		_mainText = mainText;
-		_audioFileName = audioFileName;
+		_audioFile = audioFile;
 	}
 }
