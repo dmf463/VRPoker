@@ -597,7 +597,9 @@ public class Card : InteractionSuperClass {
     {
         if (readyToFloat && !Services.Dealer.killingCards && !Services.Dealer.cleaningCards)
         {
+            if (yPos == 0) yPos = GetCardPos().y;
             if(rb != null) rb.useGravity = false;
+            rb.constraints = RigidbodyConstraints.FreezeAll;
             transform.position = new Vector3(transform.position.x, yPos + Mathf.PingPong(Time.time / speed, distance), transform.position.z);
         }
         else
@@ -625,6 +627,20 @@ public class Card : InteractionSuperClass {
     public Quaternion GetCardRot()
     {
         PokerPlayerRedux player = GetCardOwner();
+        Quaternion endRot;
+        if (Table.instance.playerCards[player.SeatPos].Count == 1)
+        {
+            endRot = player.cardPos[0].transform.rotation;
+        }
+        else
+        {
+            endRot = player.cardPos[1].transform.rotation;
+        }
+        return endRot;
+    }
+
+    public Quaternion GetCardRot(PokerPlayerRedux player)
+    {
         Quaternion endRot;
         if (Table.instance.playerCards[player.SeatPos].Count == 1)
         {

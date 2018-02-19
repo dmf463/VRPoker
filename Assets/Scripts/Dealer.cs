@@ -579,7 +579,7 @@ public class Dealer : MonoBehaviour
             else
             {
                 Debug.Log("correctingMistakes because cardCountForPreflop != cardsPulled");
-                Services.PokerRules.CorrectMistakesPreFlop(0.25f);
+                Services.PokerRules.CorrectMistakesPreFlop(1f);
                 Table.gameState = GameState.PreFlop;
             }
             //Debug.Log("ending the check");
