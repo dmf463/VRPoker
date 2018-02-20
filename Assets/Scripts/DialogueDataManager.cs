@@ -55,58 +55,68 @@ public class DialogueDataManager
 		string[] rowSeparator = new string[] { "\r\n", "\r", "\n"};  //array of row separators, all are on line end
 		char[] entrySeparator = new char[] { '\t' }; //array of entry separators, specifically tab-separated
 
+        List<PlayerName> conversantList = new List<PlayerName>(); //list to hold the players who are in the conversation
+        List<PlayerLine> playerLinesList = new List<PlayerLine>(); //list to hold the player lines for this conversation
+        int requiredRound = 0;
 
 		fileRows = fileFullString.Split (rowSeparator, System.StringSplitOptions.None); //set filerows by splitting our file using row separator
 
         //List<Conversation> conversationList = new List<Conversation>(); //list of conversations to add to the dictionary
         for (int i = 0; i < fileRows.Length; i++)  //for each row in our array
         {
-            //Debug.Log("Line " + i);
             fileRow = fileRows[i]; //set filerow to equal that row
             rowEntries = fileRow.Split(entrySeparator); //set entries by splitting the row using our entry separator
-            List<PlayerName> conversantList = new List<PlayerName>(); //list to hold the players who are in the conversation
-            List<PlayerLine> playerLinesList = new List<PlayerLine>(); //list to hold the player lines for this conversation
-            int requiredRound = 0;
-            if (rowEntries.Length < 3) //if there are less than three entries, meaning in this case that there is not enough information to form a conversation
+            if (rowEntries[0] != null && rowEntries[0] != "")
             {
-                continue;
-            }
-            if (rowEntries[0] == "Convo") //if we are starting a conversation
-            {
-                conversantList.Clear();//clear our previous lists
-                playerLinesList.Clear();
-                for (int j = 1; j < 3; j++) //for the second and third column
+
+                //Debug.Log("Line " + i);
+           
+
+                if (rowEntries.Length < 3) //if there are less than three entries, meaning in this case that there is not enough information to form a conversation
                 {
-                    //Debug.Log("Row " + j + " " + rowEntries[j]);
-                    if (rowEntries[j] != "")    //if the row entry isn't blank
-                    {
-                        PlayerName conversant = GetConversantNameFromString(rowEntries[j]); // use the entry to get the name of one of our conversants
-                        conversantList.Add(conversant); //add this name to our list of conversants required for this conversation
-                        Debug.Log("Added conversant: " + conversant);
-                    }
+                    continue;
                 }
-                int.TryParse(rowEntries[3], out requiredRound);
-            } 
-            else if (rowEntries.Length == 3 && rowEntries[0] != "Convo" && rowEntries[0] != "End") //if we aren't starting or finishing a convo
-            {
-                for (int j = 0; j < rowEntries.Length; j ++) // for each set of player line data (three cells) in our entries
+                if (rowEntries[0] == "Convo") //if we are starting a conversation
                 {
-                    string playerNameText = rowEntries[j]; //gets the string for the player name
-                    string lineText = rowEntries[j + 1]; //gets the text to be spoken, this isn't currently used in the game but will be needed for subtitles
-                    string audioFileText = rowEntries[j + 2]; //the string for the audiofile name
-                    AudioClip audioFile = Resources.Load("Audio/Voice/" + audioFileText) as AudioClip; //gets the audiofile from resources using the string name 
-                    Debug.Log(audioFile);  
+                    Debug.Log("Convo");
+                    conversantList.Clear();//clear our previous lists
+                    playerLinesList.Clear();
+                    for (int j = 1; j < 3; j++) //for the second and third column
+                    {
+                        //Debug.Log("Row " + j + " " + rowEntries[j]);
+                        if (rowEntries[j] != "")    //if the row entry isn't blank
+                        {
+                            PlayerName conversant = GetConversantNameFromString(rowEntries[j]); // use the entry to get the name of one of our conversants
+                            conversantList.Add(conversant); //add this name to our list of conversants required for this conversation
+                            Debug.Log("Added conversant: " + conversant);
+                        }
+                    }
+                    int.TryParse(rowEntries[3], out requiredRound);
+                }
+                else if (rowEntries.Length > 2 && rowEntries[0] != "Convo" && rowEntries[0] != "End") //if we aren't starting or finishing a convo
+                {
+                    //for (int j = 0; j < rowEntries.Length; j ++) // for each set of player line data (three cells) in our entries
+                    //{
+                    Debug.Log("PlayerLine");
+                    string playerNameText = rowEntries[0]; //gets the string for the player name
+                    string lineText = rowEntries[1]; //gets the text to be spoken, this isn't currently used in the game but will be needed for subtitles
+                    string audioFileText = rowEntries[2]; //the string for the audiofile name
+                                                          //Log(audioFileText);
+                    AudioClip audioFile = Resources.Load("Audio/Voice/TutorialVO/" + audioFileText) as AudioClip; //gets the audiofile from resources using the string name 
+                    Debug.Log(audioFile);
                     AudioSource audioSource = GetAudioSourceFromString(playerNameText); //get the correct audio source based on the players name
+
                     PlayerLine line = new PlayerLine(playerNameText, lineText, audioSource, audioFile); //create a player line and assign the next three entries
                     playerLinesList.Add(line); //add line to list of player lines
+                                               //}
+                }
+                else if (rowEntries[0] == "End") //if we have reached the end of a conversation
+                {
+                    Debug.Log(("End"));
+                    Conversation conversation = new Conversation(playerLinesList, requiredRound, false); //create a conversation to contain the player lines and required round
+                    AddDialogueEntry(conversantList, conversation, dialogueDict); //add the conversant list and player lines list to the dialogue dictionary
                 }
             }
-            else if (rowEntries[0] == "End") //if we have reached the end of a conversation
-            {
-                Conversation conversation = new Conversation(playerLinesList, requiredRound, false); //create a conversation to contain the player lines and required round
-                AddDialogueEntry(conversantList, conversation, dialogueDict); //add the conversant list and player lines list to the dialogue dictionary
-            }
-
         }
 	}
 
