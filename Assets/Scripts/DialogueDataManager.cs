@@ -58,47 +58,55 @@ public class DialogueDataManager
 
 		fileRows = fileFullString.Split (rowSeparator, System.StringSplitOptions.None); //set filerows by splitting our file using row separator
 
-		//List<Conversation> conversationList = new List<Conversation>(); //list of conversations to add to the dictionary
-		for (int i = 2; i < fileRows.Length; i++)  //for each row in our array, ignoring the first two rows
-		{
-			//Debug.Log("Line " + i);
-			fileRow = fileRows [i]; //set filerow to equal that row
-			rowEntries = fileRow.Split (entrySeparator); //set entries by splitting the row using our entry separator
-			if(rowEntries.Length < 8) //if there are less than eight entries, meaning in this case that there is not enough information to form a conversation
-			{
-				continue;
-			}
-			List<PlayerName> conversantList = new List<PlayerName>(); //list to hold the players who are in the conversation
+        //List<Conversation> conversationList = new List<Conversation>(); //list of conversations to add to the dictionary
+        for (int i = 0; i < fileRows.Length; i++)  //for each row in our array
+        {
+            //Debug.Log("Line " + i);
+            fileRow = fileRows[i]; //set filerow to equal that row
+            rowEntries = fileRow.Split(entrySeparator); //set entries by splitting the row using our entry separator
+            List<PlayerName> conversantList = new List<PlayerName>(); //list to hold the players who are in the conversation
+            List<PlayerLine> playerLinesList = new List<PlayerLine>(); //list to hold the player lines for this conversation
+            int requiredRound = 0;
+            if (rowEntries.Length < 3) //if there are less than three entries, meaning in this case that there is not enough information to form a conversation
+            {
+                continue;
+            }
+            if (rowEntries[0] == "Convo") //if we are starting a conversation
+            {
+                conversantList.Clear();//clear our previous lists
+                playerLinesList.Clear();
+                for (int j = 1; j < 3; j++) //for the second and third column
+                {
+                    //Debug.Log("Row " + j + " " + rowEntries[j]);
+                    if (rowEntries[j] != "")    //if the row entry isn't blank
+                    {
+                        PlayerName conversant = GetConversantNameFromString(rowEntries[j]); // use the entry to get the name of one of our conversants
+                        conversantList.Add(conversant); //add this name to our list of conversants required for this conversation
+                        Debug.Log("Added conversant: " + conversant);
+                    }
+                }
+                int.TryParse(rowEntries[3], out requiredRound);
+            } 
+            else if (rowEntries.Length == 3 && rowEntries[0] != "Convo" && rowEntries[0] != "End") //if we aren't starting or finishing a convo
+            {
+                for (int j = 0; j < rowEntries.Length; j ++) // for each set of player line data (three cells) in our entries
+                {
+                    string playerNameText = rowEntries[j]; //gets the string for the player name
+                    string lineText = rowEntries[j + 1]; //gets the text to be spoken, this isn't currently used in the game but will be needed for subtitles
+                    string audioFileText = rowEntries[j + 2]; //the string for the audiofile name
+                    AudioClip audioFile = Resources.Load("Audio/Voice/" + audioFileText) as AudioClip; //gets the audiofile from resources using the string name 
+                    Debug.Log(audioFile);
+                    PlayerLine line = new PlayerLine(playerNameText, lineText, audioFile); //create a player line and assign the next three entries
+                    playerLinesList.Add(line); //add line to list of player lines
+                }
+            }
+            else if (rowEntries[0] == "End") //if we have reached the end of a conversation
+            {
+                Conversation conversation = new Conversation(playerLinesList, requiredRound, false); //create a conversation to contain the player lines and required round
+                AddDialogueEntry(conversantList, conversation, dialogueDict); //add the conversant list and player lines list to the dialogue dictionary
+            }
 
-			for (int j = 0; j < 5; j++) //for the first 5 columns
-			{
-				//Debug.Log("Row " + j + " " + rowEntries[j]);
-				if (rowEntries[j] != "")	//if the row entry isn't blank
-				{
-                    PlayerName conversant = GetConversantNameFromString(rowEntries[j]); // use the entry to get the name of one of our conversants
-                    conversantList.Add(conversant); //add this name to our list of conversants required for this conversation
-                    Debug.Log("Added conversant: " + conversant);
-				}
-			}
-
-
-
-			List<PlayerLine> playerLinesList = new List<PlayerLine>(); //list to hold
-
-			for (int j = 5; j < rowEntries.Length; j += 3) // for each set of player line data (three cells) in our entries
-			{
-				string playerNameText = rowEntries [j]; //gets the string for the player name
-                string lineText = rowEntries [j+1]; //gets the text to be spoken, this isn't currently used in the game but will be needed for subtitles
-				string audioFileText = rowEntries [j+2]; //the string for the audiofile name
-                AudioClip audioFile = Resources.Load("Audio/Voice/" + audioFileText) as AudioClip; //gets the audiofile from resources using the string name 
-                Debug.Log(audioFile); 
-				PlayerLine line = new PlayerLine(playerNameText, lineText, audioFile); //create a player line and assign the next three entries
-				playerLinesList.Add(line); //add line to list of player lines
-			}
-
-			Conversation conversation = new Conversation (playerLinesList); //create a conversation to contain the the list of conversants and player lines
-			AddDialogueEntry(conversantList, conversation, dialogueDict); //add the conversant list and player lines list to the dialogue dictionary
-		}
+        }
 	}
 
 	
@@ -116,6 +124,14 @@ public class DialogueDataManager
 		}
 	}
 
+    public void ReadyConversation()
+    {
+        GetConversantNamesFromActivePlayers();
+        Conversation myConvo = GetConversationWithNames(conversants);
+
+        
+    }
+
     public void GetConversantNamesFromActivePlayers() 
     {
         potentialConversants.Clear(); //clean slate for lists
@@ -132,10 +148,11 @@ public class DialogueDataManager
             potentialConversants.Remove(randomName); //remove them from the potential conversant list so we don't get them again
 
         }
-        foreach (PlayerName name in conversants)
+        foreach (PlayerName name in conversants) 
         {
             Debug.Log("Added " + name + " to list of conversants");
         }
+
     }
 
 	PlayerName GetConversantNameFromString (string nameString)
@@ -159,18 +176,45 @@ public class DialogueDataManager
 		}
 	}
 
+    public Conversation GetConversationWithNames (List<PlayerName> names) //using the names of our chosen conversants
+    {
+        if(dialogueDict.ContainsKey(names)) // if our dialogue dictionary contains them as a key
+        {
+            List<Conversation> possibleConversations = dialogueDict[names]; //list of conversations that match the key
+            int correctConversation = possibleConversations.Count;  //the conversation we'll want to play, set at first to the last in the list
+            for (int i = 0; i < possibleConversations.Count; i++) //for each conversation in the list
+            {
+                if(!possibleConversations[i].hasBeenPlayed && //if the conversation hasn't yet played
+                   possibleConversations[i].minRequiredRound < correctConversation) //and if the conversation comes earlier than our currently chosen conversation
+                {
+                    correctConversation = i; //update the correct conversation to be this new, earlier convo
+                }
+            }
+
+            return possibleConversations[correctConversation]; //return the convo, the earliest that has not yet been played
+        }
+        else //if the dialogue dict does not contain the names as a key
+        {
+            return null;
+        }
+    }
+
 }
 
 
 
 public class Conversation //class for each conversation between players
 {
-	
+    
 	private List<PlayerLine> playerLines; // a list of the player lines in the convo
+    public int minRequiredRound; //the minimum round it can be before this convo can play
+    public bool hasBeenPlayed = false;
 
-	public Conversation (List<PlayerLine> _playerLines)
+	public Conversation (List<PlayerLine> _playerLines, int _minRequiredRound, bool _hasBeenPlayed)
 	{
 		_playerLines = playerLines;
+        _minRequiredRound = minRequiredRound;
+        _hasBeenPlayed = hasBeenPlayed;
 	}
 }
 

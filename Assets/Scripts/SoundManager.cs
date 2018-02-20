@@ -113,6 +113,10 @@ public class SoundManager : MonoBehaviour
     public void PlayConversation()
     {
         
+        Services.DialogueDataManager.ReadyConversation();
+       
+
+
     }
 
     public void PlayTutorialAudio(int index)
