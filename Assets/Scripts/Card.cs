@@ -9,7 +9,7 @@ using Valve.VR.InteractionSystem;
 //2) all the physics of the card
 public class Card : InteractionSuperClass {
 
-    public float flying_start_time, flight_journey_distance;
+    public float flying_start_time, flight_journey_distance, flight_journey_angle;
     public Vector3 flying_start_position;
     public Quaternion flying_start_rotation;
     public bool lerping = false;
@@ -159,15 +159,16 @@ public class Card : InteractionSuperClass {
             if (startLerping == true)
             {
                 elapsedTimeForThrowTorque += Time.deltaTime;
-                fastTorque = Mathf.Lerp(fastTorque, 0, elapsedTimeForThrowTorque / torqueDuration);
-                slowTorque = Mathf.Lerp(slowTorque, 0, elapsedTimeForThrowTorque / torqueDuration);
                 if (elapsedTimeForThrowTorque >= torqueDuration)
                 {
                     startLerping = false;
                     if (Table.gameState == GameState.NewRound)
                     {
                         rotateOnAdd = true;
-                        StartCoroutine(LerpCardRotOnAdd(GetCardRot(), .25f));
+                        //startingFastTorque = false;
+                        //startingSlowTorque = false;
+                        InitializeLerpForTorqueFlair(GetCardRot());
+                        StartCoroutine(LerpCardRotOnAdd(GetCardRot(), 1));
                         StartCoroutine(StopRotating(GetCardRot()));
                     }
                 }
@@ -245,7 +246,7 @@ public class Card : InteractionSuperClass {
 
     void OnCollisionEnter(Collision other)
     {
-        if (!Services.Dealer.OutsideVR)
+        if (!Services.Dealer.OutsideVR && !startLerping)
         {
             startLerping = true;
             elapsedTimeForThrowTorque = 0;
@@ -299,7 +300,7 @@ public class Card : InteractionSuperClass {
 
         if(!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && Table.gameState == GameState.NewRound)
         {
-            Debug.Log("hitting " + other.gameObject.tag);
+            //Debug.Log("hitting " + other.gameObject.tag);
             if (other.gameObject.tag == "PlayerFace")
             {
                 StartCoroutine(CheckIfCardIsAtDestination(0, cardThrownNum));
@@ -325,8 +326,8 @@ public class Card : InteractionSuperClass {
         {
             transform.rotation = throwingHand.GetAttachmentTransform("CardFaceUp").transform.rotation;
         }
-        fastTorque = 3;
-        slowTorque = .25f;
+        fastTorque = 4;
+        slowTorque = .5f;
 
         base.OnAttachedToHand(attachedHand);
     }
@@ -343,7 +344,6 @@ public class Card : InteractionSuperClass {
 
     public override void OnDetachedFromHand(Hand hand)
     {
-        Debug.Log("This is being called");
         if (!Services.PokerRules.thrownCards.Contains(gameObject) && Table.gameState == GameState.NewRound)
         {
             Services.PokerRules.thrownCards.Add(gameObject);
@@ -373,25 +373,28 @@ public class Card : InteractionSuperClass {
     {
         yield return new WaitForSeconds(time);
         //Debug.Log("rb.velocity.magnitude = " + rb.velocity.magnitude);
-        throwingVelocity = rb.velocity.magnitude;
-        cardPosOnRelease = transform.position;
-        float yDifference = cardPosHeld.y - cardPosOnRelease.y;
-        if (yDifference < -0.1f)
+        if (rb != null)
         {
-            Debug.Log("yDifference for up, down, and then out = " + yDifference);
-            cardThrownWrong = true;
-        }
-        if (rb.velocity.magnitude > MAGNITUDE_THRESHOLD)
-        {
-            startingFastTorque = true;
-        }
-        else
-        {
-            startingSlowTorque = true;
-        }
-        if (!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && Table.gameState == GameState.NewRound && !Services.Dealer.OutsideVR)
-        {
-            StartCoroutine(CheckIfCardIsAtDestination(checkTime, cardThrownNum));
+            throwingVelocity = rb.velocity.magnitude;
+            cardPosOnRelease = transform.position;
+            float yDifference = cardPosHeld.y - cardPosOnRelease.y;
+            if (yDifference < -0.1f)
+            {
+                Debug.Log("yDifference for up, down, and then out = " + yDifference);
+                cardThrownWrong = true;
+            }
+            if (rb.velocity.magnitude > MAGNITUDE_THRESHOLD)
+            {
+                startingFastTorque = true;
+            }
+            else
+            {
+                startingSlowTorque = true;
+            }
+            if (!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && Table.gameState == GameState.NewRound && !Services.Dealer.OutsideVR)
+            {
+                StartCoroutine(CheckIfCardIsAtDestination(checkTime, cardThrownNum));
+            }
         }
     }
 
@@ -421,6 +424,15 @@ public class Card : InteractionSuperClass {
         lerping = true;
     }
 
+    public void InitializeLerpForTorqueFlair(Quaternion dest)
+    {
+        flying_start_time = Time.time;
+        flight_journey_angle = Quaternion.Angle(transform.rotation, dest);
+        flying_start_position = transform.position;
+        flying_start_rotation = transform.rotation;
+        rotateOnAdd = true;
+    }
+
     public IEnumerator LerpCardPos(Vector3 dest, float speed)
     {
         while(lerping)
@@ -448,7 +460,9 @@ public class Card : InteractionSuperClass {
         while (rotateOnAdd)
         {
             float distCovered = (Time.time - flying_start_time) * speed;
-            float fracJourney = distCovered / flight_journey_distance;
+            float fracJourney = distCovered / flight_journey_angle;
+            fastTorque = Mathf.Lerp(fastTorque, 0, fracJourney);
+            slowTorque = Mathf.Lerp(slowTorque, 0, fracJourney);
             transform.rotation = Quaternion.Lerp(transform.rotation, dest, fracJourney);
             yield return null;
         }
@@ -462,6 +476,8 @@ public class Card : InteractionSuperClass {
             if (transform.rotation == rot)
             {
                 Debug.Log("done straightening");
+                fastTorque = 0;
+                slowTorque = 0;
                 rotateOnAdd = false;
             }
             else yield return null;
@@ -485,7 +501,7 @@ public class Card : InteractionSuperClass {
         {
             if (transform.position == pos)
             {
-                Debug.Log("done straightening");
+                //Debug.Log("done straightening");
                 lerping = false;
             }
             else yield return null;
@@ -505,12 +521,12 @@ public class Card : InteractionSuperClass {
                 badCardsDebug++;
             }
         }
-        Debug.Log("badcards count = " + badCardsDebug);
+        //Debug.Log("badcards count = " + badCardsDebug);
         if (Services.PokerRules.CardIsInCorrectLocation(this, cardsPulled) && !CardIsFaceUp())
         {
             float badCards = 0;
             //Services.Dealer.messageText.text = "Card is in correct location";
-            Debug.Log("Card is in correct location");
+            //Debug.Log("Card is in correct location");
             for (int i = Services.PokerRules.thrownCards.Count - 1; i >= 0; i--)
             {
                 if (Services.PokerRules.thrownCards[i].GetComponent<Card>().thrownWrong ||
@@ -526,8 +542,12 @@ public class Card : InteractionSuperClass {
                 if (yPos == 0)
                 {
                     StraightenOutCards();
-                    startLerping = true;
-                    elapsedTimeForThrowTorque = 0;
+                    readyToFloat = true;
+                    if (!startLerping)
+                    {
+                        startLerping = true;
+                        elapsedTimeForThrowTorque = 0;
+                    }
                     yPos = GetCardPos().y;
                     GetComponent<BoxCollider>().enabled = false;
                     rb.constraints = RigidbodyConstraints.FreezeAll;
@@ -569,7 +589,7 @@ public class Card : InteractionSuperClass {
     {
         if (thrownWrong && !Services.Dealer.killingCards && !Services.Dealer.cleaningCards)
         {
-            Debug.Log("cardsPulled = " + Services.PokerRules.cardsPulled.Count);
+            //Debug.Log("cardsPulled = " + Services.PokerRules.cardsPulled.Count);
             if (Services.PokerRules.thrownCards.Contains(gameObject))
             {
                 is_flying = true;

@@ -605,7 +605,7 @@ public class PokerRules : MonoBehaviour {
         card.cardChecked = true;
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
         int playerIndex = Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardCount);
-        Debug.Log("correct location for card is " + Services.Dealer.players[playerIndex].playerName);
+        //Debug.Log("correct location for card is " + Services.Dealer.players[playerIndex].playerName);
         return Table.instance.playerCards[playerIndex].Contains(card);
     }
 

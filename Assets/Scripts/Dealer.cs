@@ -707,7 +707,7 @@ public class Dealer : MonoBehaviour
     {
         if (cleaningCards)
         {
-            Debug.Log("entering CleaningCards");
+            //Debug.Log("entering CleaningCards");
             if (!flyingClicked)
             {
                 flyingClicked = true;
@@ -741,7 +741,7 @@ public class Dealer : MonoBehaviour
                 if (first_time)
                 {
 
-                    Debug.Log("first time values set");
+                    //Debug.Log("first time values set");
                     foreach (GameObject card in cardsOnTable)
                     {
                         card.GetComponent<Card>().InitializeLerp(cardDeck.transform.position + modPos);
@@ -780,7 +780,7 @@ public class Dealer : MonoBehaviour
     {
         if (killingCards)
         {
-            Debug.Log("entering KillingCards");
+            //Debug.Log("entering KillingCards");
             if (!flyingClicked)
             {
                 flyingClicked = true;
