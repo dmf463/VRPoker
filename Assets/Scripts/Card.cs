@@ -16,6 +16,8 @@ public class Card : InteractionSuperClass {
     public bool readyToFloat = false;
     public bool rotateOnAdd = false;
 
+    public bool testingTorque;
+
     public bool is_flying = false;
     public float rotSpeed;
     public bool thrownWrong = false;
@@ -91,9 +93,11 @@ public class Card : InteractionSuperClass {
     // Update is called once per frame
     void Update () {
 
+        TestTorque();
         CardForDealingMode();
         BringCardBack();
         FloatInPlace(floatSpeed, floatDistance);
+        if (Input.GetKeyDown(KeyCode.P)) testingTorque = true;
         if(Vector3.Distance(transform.position, GameObject.Find("ShufflingArea").transform.position) > 20)
         {
             Vector3 pos = GameObject.Find("ShufflingArea").transform.position;
@@ -179,6 +183,19 @@ public class Card : InteractionSuperClass {
         }
     }
 
+
+    //WHAT I WANT:
+    //WHEN YOU THROW THE CARD, IT KEEPS IT'S THROW ROTATION, BUT THEN LERPS TO THE PROPER ROTATION.
+    //PROBLEM, IF YOU'RE LERPING, WE CAN'T CHANGE IT'S ROTATION
+    public void TestTorque()
+    {
+        if (testingTorque)
+        {
+            Debug.Log("testing torque");
+            transform.parent.Rotate(Vector3.forward * (fastTorque * 20));
+        }
+    }
+
     public void InstantiateNewDeck()
     {
         GameObject[] oldCards = GameObject.FindGameObjectsWithTag("PlayingCard");
@@ -228,8 +245,11 @@ public class Card : InteractionSuperClass {
 
     void OnCollisionEnter(Collision other)
     {
-        startLerping = true;
-        elapsedTimeForThrowTorque = 0;
+        if (!Services.Dealer.OutsideVR)
+        {
+            startLerping = true;
+            elapsedTimeForThrowTorque = 0;
+        }
         if (cardThrownWrong == true && other.gameObject.tag != "CardDeck" && other.gameObject.tag != "PlayingCard") 
         {
             gameObject.GetComponent<ConstantForce>().enabled = false;
@@ -323,6 +343,7 @@ public class Card : InteractionSuperClass {
 
     public override void OnDetachedFromHand(Hand hand)
     {
+        Debug.Log("This is being called");
         if (!Services.PokerRules.thrownCards.Contains(gameObject) && Table.gameState == GameState.NewRound)
         {
             Services.PokerRules.thrownCards.Add(gameObject);
@@ -368,7 +389,7 @@ public class Card : InteractionSuperClass {
         {
             startingSlowTorque = true;
         }
-        if (!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && Table.gameState == GameState.NewRound)
+        if (!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && Table.gameState == GameState.NewRound && !Services.Dealer.OutsideVR)
         {
             StartCoroutine(CheckIfCardIsAtDestination(checkTime, cardThrownNum));
         }
@@ -589,7 +610,7 @@ public class Card : InteractionSuperClass {
 
     public PokerPlayerRedux GetCardOwner()
     {
-        int playerIndex = Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(Services.PokerRules.cardsPulled.Count);
+        int playerIndex = Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardThrownNum);
         return Services.Dealer.players[playerIndex];
     }
 

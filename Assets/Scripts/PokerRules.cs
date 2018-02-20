@@ -443,10 +443,11 @@ public class PokerRules : MonoBehaviour {
                     if (!player.playerIsAllIn)
                     {
                         card = GetCardObject(i);
+                        card.GetComponent<Card>().testingTorque = true;
                         if (card.GetComponent<Card>().CardIsFaceUp()) card.GetComponent<Card>().RotateCard();
                         card.GetComponent<Card>().InitializeLerp(player.cardPos[cardPos].transform.position);
                         StartCoroutine(card.GetComponent<Card>().LerpCardPos(player.cardPos[cardPos].transform.position, speed));
-                        StartCoroutine(card.GetComponent<Card>().LerpCardRot(card.GetComponent<Card>().GetCardRot(player), speed * 2));
+                        StartCoroutine(card.GetComponent<Card>().LerpCardRot(card.GetComponent<Card>().GetCardRot(), speed * 2));
                         StartCoroutine(CorrectionsDone(player.cardPos[cardPos].transform.position, card, playerDestinations[playerIndex], card.GetComponent<Card>()));
                     }
                     //Debug.Log("player we're trying to check is + " + player);
