@@ -109,14 +109,19 @@ public class SoundManager : MonoBehaviour
        
     }
 
+
+    public void PlayConversation()
+    {
+        
+    }
+
     public void PlayTutorialAudio(int index)
 
     {
-        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.tutorialAudioFiles[index].audio, 1f, 1f);
-        Services.SoundManager.tutorialAudioFiles[index].hasBeenPlayed = true;
-        StartCoroutine(WaitForClipToFinishPlaying(Services.SoundManager.tutorialAudioFiles[index].audio.length, Services.SoundManager.tutorialAudioFiles[index]));
+        GenerateSourceAndPlay(tutorialAudioFiles[index].audio, 1f, 1f);
+        tutorialAudioFiles[index].hasBeenPlayed = true;
+        StartCoroutine(WaitForClipToFinishPlaying(tutorialAudioFiles[index].audio.length, tutorialAudioFiles[index]));
     }
-
 
 
     IEnumerator WaitForClipToFinishPlaying(float time, AudioData clip)

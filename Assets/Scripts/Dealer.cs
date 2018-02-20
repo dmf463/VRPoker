@@ -169,6 +169,11 @@ public class Dealer : MonoBehaviour
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            Services.DialogueDataManager.GetConversantNamesFromActivePlayers();
+        }
+
         if (playersReady)
         {
             Services.PokerRules.SetCardIndicator();

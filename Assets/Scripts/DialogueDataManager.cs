@@ -6,8 +6,10 @@ using UnityEngine.UI;
 
 public class DialogueDataManager
 {
-	private Dictionary<List<PlayerName>, List<Conversation>> dialogueDict; 
-	//dictionary keys are lists of poker players still in the game, values are lists of conversations for those combinations
+	private Dictionary<List<PlayerName>, List<Conversation>> dialogueDict;
+    //dictionary keys are lists of poker players still in the game, values are lists of conversations for those combinations
+    private List<PlayerName> conversants = new List<PlayerName>();
+    private List<PlayerName> potentialConversants = new List<PlayerName>(); //create a list to hold the names of the players we could potentially start a conversation with
 
 
 	public void Awake()
@@ -74,7 +76,7 @@ public class DialogueDataManager
 				if (rowEntries[j] != "")	//if the row entry isn't blank
 				{
                     PlayerName conversant = GetConversantNameFromString(rowEntries[j]); // use the entry to get the name of one of our conversants
-                    conversantList.Add(conversant); //add this name to our list of conversants for this conversation
+                    conversantList.Add(conversant); //add this name to our list of conversants required for this conversation
                     Debug.Log("Added conversant: " + conversant);
 				}
 			}
@@ -114,6 +116,27 @@ public class DialogueDataManager
 		}
 	}
 
+    public void GetConversantNamesFromActivePlayers() 
+    {
+        potentialConversants.Clear(); //clean slate for lists
+        conversants.Clear();
+
+        for (int i = 0; i < Services.Dealer.activePlayers.Count; i++) //populate that list with the names of our active players
+        {
+            potentialConversants.Add(Services.Dealer.activePlayers[i].playerName);
+        }
+        for (int i = 0; i < 2; i++)
+        {
+            PlayerName randomName = potentialConversants[Random.Range(0, potentialConversants.Count)]; // randomly choose one of our potential conversants
+            conversants.Add(randomName); //add them to our list of conversants
+            potentialConversants.Remove(randomName); //remove them from the potential conversant list so we don't get them again
+
+        }
+        foreach (PlayerName name in conversants)
+        {
+            Debug.Log("Added " + name + " to list of conversants");
+        }
+    }
 
 	PlayerName GetConversantNameFromString (string nameString)
 	{  //uses the player name strings from the file to find the correct player names in the game
@@ -136,9 +159,8 @@ public class DialogueDataManager
 		}
 	}
 
-
-
 }
+
 
 
 public class Conversation //class for each conversation between players
