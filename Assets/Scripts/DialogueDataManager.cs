@@ -95,8 +95,9 @@ public class DialogueDataManager
                     string lineText = rowEntries[j + 1]; //gets the text to be spoken, this isn't currently used in the game but will be needed for subtitles
                     string audioFileText = rowEntries[j + 2]; //the string for the audiofile name
                     AudioClip audioFile = Resources.Load("Audio/Voice/" + audioFileText) as AudioClip; //gets the audiofile from resources using the string name 
-                    Debug.Log(audioFile);
-                    PlayerLine line = new PlayerLine(playerNameText, lineText, audioFile); //create a player line and assign the next three entries
+                    Debug.Log(audioFile);  
+                    AudioSource audioSource = GetAudioSourceFromString(playerNameText); //get the correct audio source based on the players name
+                    PlayerLine line = new PlayerLine(playerNameText, lineText, audioSource, audioFile); //create a player line and assign the next three entries
                     playerLinesList.Add(line); //add line to list of player lines
                 }
             }
@@ -124,12 +125,12 @@ public class DialogueDataManager
 		}
 	}
 
-    public void ReadyConversation()
+    public Conversation ReadyConversation()
     {
         GetConversantNamesFromActivePlayers();
-        Conversation myConvo = GetConversationWithNames(conversants);
+        Conversation convoToPlay = GetConversationWithNames(conversants);
 
-        
+        return convoToPlay;
     }
 
     public void GetConversantNamesFromActivePlayers() 
@@ -176,6 +177,29 @@ public class DialogueDataManager
 		}
 	}
 
+    AudioSource GetAudioSourceFromString(string nameString)
+    {  //uses the player name strings from the file to find the correct audio sources for the audio files
+        string str = nameString.ToUpper().Trim(); //turns all letters in string to uppercase and removes spaces on either side
+
+        switch (str)
+        {
+            case "CASEY":
+                return Services.SoundManager.caseySource;
+            case "FLOYD":
+                return Services.SoundManager.floydSource;
+            case "MINNIE":
+                return Services.SoundManager.minnieSource;
+            case "NATHANIEL":
+                return Services.SoundManager.nathanielSource;
+            case "ZOMBIE":
+                return Services.SoundManager.zombieSource;
+            default:
+                return null;
+        }
+    }
+
+
+
     public Conversation GetConversationWithNames (List<PlayerName> names) //using the names of our chosen conversants
     {
         if(dialogueDict.ContainsKey(names)) // if our dialogue dictionary contains them as a key
@@ -206,7 +230,7 @@ public class DialogueDataManager
 public class Conversation //class for each conversation between players
 {
     
-	private List<PlayerLine> playerLines; // a list of the player lines in the convo
+	public List<PlayerLine> playerLines; // a list of the player lines in the convo
     public int minRequiredRound; //the minimum round it can be before this convo can play
     public bool hasBeenPlayed = false;
 
@@ -223,12 +247,14 @@ public class PlayerLine //class for each player line
 {
 	public string mainText; //the text the character is speaking
 	public string playerName; //the name of the charater speaking
+    public AudioSource audioSource;
     public AudioClip audioFile; //the name of the associated audiofile
 
-    public PlayerLine(string _playerName, string _mainText, AudioClip _audioFile) //constructor for player line
+    public PlayerLine(string _playerName, string _mainText, AudioSource _audioSource, AudioClip _audioFile) //constructor for player line
 	{
 		_playerName = playerName;
 		_mainText = mainText;
+        _audioSource = audioSource;
 		_audioFile = audioFile;
 	}
 }

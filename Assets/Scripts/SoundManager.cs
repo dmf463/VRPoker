@@ -113,10 +113,27 @@ public class SoundManager : MonoBehaviour
     public void PlayConversation()
     {
         
-        Services.DialogueDataManager.ReadyConversation();
-       
+        Conversation convoAudio = Services.DialogueDataManager.ReadyConversation(); //find us an appropriate conversation from our dictionary
+        StartCoroutine(PlayConversationLines(convoAudio)); //plays through the lines in our chosen conversation
 
 
+    }
+
+    IEnumerator PlayConversationLines(Conversation convo)
+    {
+        for (int i = 0; i < convo.playerLines.Count; i++) //for each line in our conversation
+        {
+            
+            AudioClip audioLine = convo.playerLines[i].audioFile; //get the audio to play
+            AudioSource playerSpeaking = convo.playerLines[i].audioSource; // get the source to play at
+            GetSourceAndPlay(playerSpeaking, audioLine); //pass these and play
+
+            while (playerSpeaking.isPlaying) //don't move to the next line while our current source is still playing
+            {
+                yield return null;
+            }
+            convo.hasBeenPlayed = true; //once all lines have been played, set the bool on the conversation so that we don't choose it again
+        }
     }
 
     public void PlayTutorialAudio(int index)
