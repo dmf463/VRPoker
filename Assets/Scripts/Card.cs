@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR; //we need this for SteamVR
 using Valve.VR.InteractionSystem;
+using SpriteGlow;
 
 //this script pretty much holds two things
 //1) the actual card value of the card
@@ -15,6 +16,15 @@ public class Card : InteractionSuperClass {
     public bool lerping = false;
     public bool readyToFloat = false;
     public bool rotateOnAdd = false;
+
+    float glowMax = 2;
+    float glowMin = 1;
+    public float glowSpeed;
+    SpriteGlowEffect glowScript;
+    bool readyToPulse = false;
+    public bool callingPulse;
+    public GameObject pulse;
+    float startTime;
 
     public bool testingTorque;
 
@@ -46,7 +56,7 @@ public class Card : InteractionSuperClass {
 
     float throwingVelocity;
     Rigidbody rb;
-    
+
     //the bools used so that they only start the torque once
     bool startingFastTorque;
     bool startingSlowTorque;
@@ -73,11 +83,12 @@ public class Card : InteractionSuperClass {
 
     public bool isFloating = false;
     bool straighteningCards = false;
-   
+
 
     // Use this for initialization
-    void Start () {
+    void Start() {
 
+        glowScript = pulse.GetComponent<SpriteGlowEffect>();
         cardDeck = GameObject.FindGameObjectWithTag("CardDeck"); //DEF will need to change this for recoupling purposes.
         deckScript = cardDeck.GetComponent<CardDeckScript>();  //gonna need to rework A LOT
         rb = GetComponent<Rigidbody>();
@@ -91,21 +102,21 @@ public class Card : InteractionSuperClass {
 
     }
     // Update is called once per frame
-    void Update () {
+    void Update() {
 
-        TestTorque();
+        PulseGlow();
         CardForDealingMode();
         BringCardBack();
         FloatInPlace(floatSpeed, floatDistance);
         if (Input.GetKeyDown(KeyCode.P)) testingTorque = true;
-        if(Vector3.Distance(transform.position, GameObject.Find("ShufflingArea").transform.position) > 20)
+        if (Vector3.Distance(transform.position, GameObject.Find("ShufflingArea").transform.position) > 20)
         {
             Vector3 pos = GameObject.Find("ShufflingArea").transform.position;
             transform.position = new Vector3(pos.x, pos.y, pos.z);
             rb.velocity = Vector3.zero;
         }
 
-}
+    }
     //so this is literally the update function
     public void CardForDealingMode()
     {
@@ -125,7 +136,7 @@ public class Card : InteractionSuperClass {
 
 
         if (!is_flying)
-        { 
+        {
             if (rb.isKinematic == false && cardThrownWrong == true && deckScript.deckWasThrown == false)
                 ThrewSingleCardBadPhysics();
 
@@ -205,7 +216,7 @@ public class Card : InteractionSuperClass {
             Destroy(deadCard);
         }
         deckScript.deckWasThrown = false;
-        if(GameObject.FindGameObjectWithTag("CardDeck") != null)
+        if (GameObject.FindGameObjectWithTag("CardDeck") != null)
         {
             Destroy(GameObject.FindGameObjectWithTag("CardDeck")); //maybe could pool the card decks
         }
@@ -251,19 +262,19 @@ public class Card : InteractionSuperClass {
             startLerping = true;
             elapsedTimeForThrowTorque = 0;
         }
-        if (cardThrownWrong == true && other.gameObject.tag != "CardDeck" && other.gameObject.tag != "PlayingCard") 
+        if (cardThrownWrong == true && other.gameObject.tag != "CardDeck" && other.gameObject.tag != "PlayingCard")
         {
             gameObject.GetComponent<ConstantForce>().enabled = false;
             cardThrownWrong = false;
         }
 
-        if(other.gameObject.tag == "Table")
+        if (other.gameObject.tag == "Table")
         {
             Services.Dealer.cardsTouchingTable.Add(this);
         }
-        if(other.gameObject.tag == "Floor")
+        if (other.gameObject.tag == "Floor")
         {
-            if(Table.gameState != GameState.Misdeal)
+            if (Table.gameState != GameState.Misdeal)
             {
                 Services.PokerRules.CorrectMistakes();
                 cardsDropped++;
@@ -292,13 +303,13 @@ public class Card : InteractionSuperClass {
 
     public bool CardIsDead(Card cardToCheck)
     {
-        return Services.Dealer.deadCardsList.Contains(cardToCheck);  
+        return Services.Dealer.deadCardsList.Contains(cardToCheck);
     }
 
     public override void OnTriggerEnterX(Collider other)
     {
 
-        if(!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && Table.gameState == GameState.NewRound)
+        if (!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && Table.gameState == GameState.NewRound)
         {
             //Debug.Log("hitting " + other.gameObject.tag);
             if (other.gameObject.tag == "PlayerFace")
@@ -335,7 +346,7 @@ public class Card : InteractionSuperClass {
     public override void HandAttachedUpdate(Hand attachedHand)
     {
         cardPosHeld = transform.position;
-        if(Table.gameState == GameState.NewRound)
+        if (Table.gameState == GameState.NewRound)
         {
             if (CardIsFaceUp()) Table.gameState = GameState.Misdeal;
         }
@@ -398,7 +409,7 @@ public class Card : InteractionSuperClass {
         }
     }
 
-    
+
     public bool CardsAreFlying(GameObject card)
     {
         GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
@@ -406,7 +417,7 @@ public class Card : InteractionSuperClass {
         {
             if (cardsOnTable[i].GetComponent<Card>().is_flying)
             {
-                if(card != cardsOnTable[i])
+                if (card != cardsOnTable[i])
                 {
                     return true;
                 }
@@ -435,7 +446,7 @@ public class Card : InteractionSuperClass {
 
     public IEnumerator LerpCardPos(Vector3 dest, float speed)
     {
-        while(lerping)
+        while (lerping)
         {
             float distCovered = (Time.time - flying_start_time) * speed;
             float fracJourney = distCovered / flight_journey_distance;
@@ -552,7 +563,7 @@ public class Card : InteractionSuperClass {
                     GetComponent<BoxCollider>().enabled = false;
                     rb.constraints = RigidbodyConstraints.FreezeAll;
                 }
-        }
+            }
             else
             {
                 thrownWrong = true;
@@ -601,7 +612,7 @@ public class Card : InteractionSuperClass {
                     is_flying = false;
                     thrownWrong = false;
                     Services.PokerRules.thrownCards.Remove(gameObject);
-                    foreach(GameObject card in Services.PokerRules.thrownCards)
+                    foreach (GameObject card in Services.PokerRules.thrownCards)
                     {
                         StartCoroutine(card.GetComponent<Card>().CheckIfCardIsAtDestination(0, Services.PokerRules.cardsPulled.Count));
                     }
@@ -639,7 +650,7 @@ public class Card : InteractionSuperClass {
         if (readyToFloat && !Services.Dealer.killingCards && !Services.Dealer.cleaningCards)
         {
             if (yPos == 0) yPos = GetCardPos().y;
-            if(rb != null) rb.useGravity = false;
+            if (rb != null) rb.useGravity = false;
             rb.constraints = RigidbodyConstraints.FreezeAll;
             transform.position = new Vector3(transform.position.x, yPos + Mathf.PingPong(Time.time / speed, distance), transform.position.z);
         }
@@ -727,5 +738,36 @@ public class Card : InteractionSuperClass {
         Vector3 targetDir = obj.position - transform.position;
         return Vector3.Angle(targetDir, -transform.forward);
     }
+
+    public void PulseGlow()
+    {
+ 
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            callingPulse = true;
+            startTime = Time.time;
+
+        }
+        if (callingPulse)
+        {
+            pulse.SetActive(true);
+            float previousBrightness = glowScript.GlowBrightness;
+            glowScript.GlowBrightness = PingPong(glowSpeed * (startTime - Time.time), glowMin, glowMax);
+            float currentBrightness = glowScript.GlowBrightness;
+            Debug.Log("glow Brightness = " + glowScript.GlowBrightness + ", and currentBrightness = " + previousBrightness);
+            if (currentBrightness < previousBrightness)
+            {
+                callingPulse = false;
+                glowScript.GlowBrightness = 1.0f;
+                pulse.SetActive(false);
+            }
+        }
+    }
+
+    float PingPong(float time, float minLength, float maxLength)
+    {
+        return Mathf.PingPong(time, maxLength - minLength) + minLength;
+    }
+
 
 }
