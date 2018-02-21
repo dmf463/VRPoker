@@ -66,22 +66,22 @@ public class DialogueDataManager
         {
             fileRow = fileRows[i]; //set filerow to equal that row
             rowEntries = fileRow.Split(entrySeparator); //set entries by splitting the row using our entry separator
-            if (rowEntries[0] != null && rowEntries[0] != "")
+            string ident = rowEntries[0];
+            if (ident != null && ident != "")
             {
-
-                //Debug.Log("Line " + i);
-           
-
                 if (rowEntries.Length < 3) //if there are less than three entries, meaning in this case that there is not enough information to form a conversation
                 {
                     continue;
                 }
-                if (rowEntries[0] == "Convo") //if we are starting a conversation
+                else if (ident == "Convo") //if we are starting a conversation
                 {
                     Debug.Log("Convo");
-                    conversantList.Clear();//clear our previous lists
-                    playerLinesList.Clear();
-                    for (int j = 1; j < 3; j++) //for the second and third column
+
+                    int.TryParse(rowEntries[1], out requiredRound);
+
+                    Debug.Log("required Round" + rowEntries[1]);
+                
+                    for (int j = 2; j < rowEntries.Length; j++) //from the third column onward
                     {
                         //Debug.Log("Row " + j + " " + rowEntries[j]);
                         if (rowEntries[j] != "")    //if the row entry isn't blank
@@ -91,30 +91,31 @@ public class DialogueDataManager
                             Debug.Log("Added conversant: " + conversant);
                         }
                     }
-                    int.TryParse(rowEntries[3], out requiredRound);
                 }
-                else if (rowEntries.Length > 2 && rowEntries[0] != "Convo" && rowEntries[0] != "End") //if we aren't starting or finishing a convo
+                else if (ident == "End") //if we have reached the end of a conversation
                 {
-                    //for (int j = 0; j < rowEntries.Length; j ++) // for each set of player line data (three cells) in our entries
-                    //{
+                    Debug.Log(("End"));
+                    Conversation conversation = new Conversation(playerLinesList, requiredRound, false); //create a conversation to contain the player lines and required round
+                    AddDialogueEntry(conversantList, conversation, dialogueDict); //add the conversant list and player lines list to the dialogue dictionary
+                    conversantList.Clear();//clear our previous lists
+                    playerLinesList.Clear();
+                }
+                else if (ident == "Line") //if it's a player line
+                {
                     Debug.Log("PlayerLine");
-                    string playerNameText = rowEntries[0]; //gets the string for the player name
-                    string lineText = rowEntries[1]; //gets the text to be spoken, this isn't currently used in the game but will be needed for subtitles
-                    string audioFileText = rowEntries[2]; //the string for the audiofile name
+                    string playerNameText = rowEntries[1]; //gets the string for the player name
+                    string lineText = rowEntries[2]; //gets the text to be spoken, this isn't currently used in the game but will be needed for subtitles
+                    string audioFileText = rowEntries[3]; //the string for the audiofile name
                                                           //Log(audioFileText);
                     AudioClip audioFile = Resources.Load("Audio/Voice/TutorialVO/" + audioFileText) as AudioClip; //gets the audiofile from resources using the string name 
                     Debug.Log(audioFile);
                     AudioSource audioSource = GetAudioSourceFromString(playerNameText); //get the correct audio source based on the players name
 
                     PlayerLine line = new PlayerLine(playerNameText, lineText, audioSource, audioFile); //create a player line and assign the next three entries
-                    playerLinesList.Add(line); //add line to list of player lines
-                                               //}
+                    playerLinesList.Add(line); //add line to list of player lines                          
                 }
-                else if (rowEntries[0] == "End") //if we have reached the end of a conversation
-                {
-                    Debug.Log(("End"));
-                    Conversation conversation = new Conversation(playerLinesList, requiredRound, false); //create a conversation to contain the player lines and required round
-                    AddDialogueEntry(conversantList, conversation, dialogueDict); //add the conversant list and player lines list to the dialogue dictionary
+                else {
+                    Debug.Log("Failed on ident " + ident);
                 }
             }
         }
@@ -210,11 +211,12 @@ public class DialogueDataManager
 
 
 
-    public Conversation GetConversationWithNames (List<PlayerName> names) //using the names of our chosen conversants
+    public Conversation GetConversationWithNames (List<PlayerName> namesKey) //using the names of our chosen conversants
     {
-        if(dialogueDict.ContainsKey(names)) // if our dialogue dictionary contains them as a key
+        Debug.Log(namesKey[0] + ", " + namesKey[1]);
+        if(dialogueDict.ContainsKey(namesKey)) // if our dialogue dictionary contains them as a key
         {
-            List<Conversation> possibleConversations = dialogueDict[names]; //list of conversations that match the key
+            List<Conversation> possibleConversations = dialogueDict[namesKey]; //list of conversations that match the key
             int correctConversation = possibleConversations.Count;  //the conversation we'll want to play, set at first to the last in the list
             for (int i = 0; i < possibleConversations.Count; i++) //for each conversation in the list
             {
@@ -224,11 +226,13 @@ public class DialogueDataManager
                     correctConversation = i; //update the correct conversation to be this new, earlier convo
                 }
             }
-
+            Debug.Log(possibleConversations[correctConversation].playerLines[0]);
             return possibleConversations[correctConversation]; //return the convo, the earliest that has not yet been played
+
         }
         else //if the dialogue dict does not contain the names as a key
         {
+            Debug.Log("dictionary does not contain key");
             return null;
         }
     }

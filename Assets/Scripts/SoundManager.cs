@@ -121,6 +121,7 @@ public class SoundManager : MonoBehaviour
 
     IEnumerator PlayConversationLines(Conversation convo)
     {
+
         for (int i = 0; i < convo.playerLines.Count; i++) //for each line in our conversation
         {
             
