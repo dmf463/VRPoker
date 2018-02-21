@@ -1470,7 +1470,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             {
                 Destroy(container);
             }
-            else Debug.Log("container has " + container.transform.childCount + " children");
+            //else Debug.Log("container has " + container.transform.childCount + " children");
         }
         foreach(GameObject chip in betChips)
         {
