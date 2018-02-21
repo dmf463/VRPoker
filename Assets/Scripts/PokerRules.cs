@@ -579,7 +579,7 @@ public class PokerRules : MonoBehaviour {
                 card.GetComponent<Card>().lerping = false;
                 Table.instance.AddCardTo(dest, card);
                 card.readyToFloat = true;
-                Debug.Log("MADE IT");
+                //Debug.Log("MADE IT");
             }
             else yield return null;
         }

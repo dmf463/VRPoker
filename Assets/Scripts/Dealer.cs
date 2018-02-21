@@ -722,6 +722,7 @@ public class Dealer : MonoBehaviour
                         Destroy(card.GetComponent<Rigidbody>());
                         card.GetComponent<Card>().readyToFloat = false;
                         card.GetComponent<Card>().is_flying = true;
+                        card.GetComponent<Card>().StartPulse();
                     }
                 }
             }
@@ -769,12 +770,6 @@ public class Dealer : MonoBehaviour
             }
         }
     }
-    public void OnFinishCleaning()
-    {
-        cardToCheck.GetComponent<Card>().is_flying = false;
-        GameObject.FindGameObjectWithTag("CardDeck").GetComponent<CardDeckScript>().MakeDeckLarger();
-        Destroy(cardToCheck);
-    }
 
     public void WaitingToGrabCardsOn_ThrownDeck()
     {
@@ -798,6 +793,7 @@ public class Dealer : MonoBehaviour
                         Destroy(card.GetComponent<BoxCollider>());
                         card.GetComponent<Card>().readyToFloat = false;
                         card.GetComponent<Card>().is_flying = true;
+                        card.GetComponent<Card>().StartPulse();
                     }
                 }
             }

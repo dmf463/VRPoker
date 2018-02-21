@@ -90,6 +90,8 @@ public class Card : InteractionSuperClass {
         deckScript = cardDeck.GetComponent<CardDeckScript>();  //gonna need to rework A LOT
         rb = GetComponent<Rigidbody>();
         elapsedTimeForCardFlip = 0;
+        floatDistance += Random.Range(0.001f, 0.005f);
+        floatSpeed += Random.Range(1, 50);
 
         if (Services.Dealer.OutsideVR)
         {
@@ -277,7 +279,7 @@ public class Card : InteractionSuperClass {
                 Services.PokerRules.CorrectMistakes();
                 cardsDropped++;
             }
-            if (cardsDropped >= 3) Table.gameState = GameState.Misdeal;
+            if (cardsDropped >= 5) Table.gameState = GameState.Misdeal;
         }
 
     }
