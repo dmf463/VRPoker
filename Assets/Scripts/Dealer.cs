@@ -374,8 +374,8 @@ public class Dealer : MonoBehaviour
             {
                 if (deckIsDead) killingCards = true;
                 else cleaningCards = true;
-                Debug.Log("killingCards = " + killingCards);
-                Debug.Log("cleaningCards = " + cleaningCards);
+                //Debug.Log("killingCards = " + killingCards);
+                //Debug.Log("cleaningCards = " + cleaningCards);
             }
         }
     }
@@ -578,19 +578,19 @@ public class Dealer : MonoBehaviour
             }
             else if (cardCountForPreFlop == Services.PokerRules.cardsPulled.Count)
             {
-                Debug.Log("got all the right cards");
-                Debug.Log("cardsPulled = " + Services.PokerRules.cardsPulled.Count);
-                Debug.Log("thrownCards = " + Services.PokerRules.thrownCards.Count);
+                //Debug.Log("got all the right cards");
+                //Debug.Log("cardsPulled = " + Services.PokerRules.cardsPulled.Count);
+                //Debug.Log("thrownCards = " + Services.PokerRules.thrownCards.Count);
                 Table.gameState = GameState.PreFlop;
             }
             else if (Services.PokerRules.cardsPulled.Count > players.Count * 2 && !Services.Dealer.OutsideVR)
             {
-                Debug.Log("Dealt too many cards");
+                //Debug.Log("Dealt too many cards");
                 Table.gameState = GameState.Misdeal;
             }
             else
             {
-                Debug.Log("correctingMistakes because cardCountForPreflop != cardsPulled");
+                //Debug.Log("correctingMistakes because cardCountForPreflop != cardsPulled");
                 Services.PokerRules.CorrectMistakesPreFlop(1f);
                 Table.gameState = GameState.PreFlop;
             }
@@ -629,7 +629,7 @@ public class Dealer : MonoBehaviour
     public void StartRound()
     {
 		
-        Debug.Log("Starting round " + Table.gameState);
+        //Debug.Log("Starting round " + Table.gameState);
         SetCurrentAndLastBet();
         foreach (PokerPlayerRedux player in players) player.timesRaisedThisRound = 0;
         raisesInRound = 0;
@@ -640,12 +640,12 @@ public class Dealer : MonoBehaviour
                 playerToAct = FindFirstPlayerToAct(0);
             }
             else playerToAct = FindFirstPlayerToAct(3);
-            Debug.Log("player to act = " + playerToAct);
+            //Debug.Log("player to act = " + playerToAct);
         }
         else
         {
             playerToAct = FindFirstPlayerToAct(1);
-            Debug.Log("player to act = " + playerToAct);
+            //Debug.Log("player to act = " + playerToAct);
         }
         //(playerToAct != null) playerToAct.
         //StartCoroutine(playerAction(playerToAct));
@@ -657,7 +657,7 @@ public class Dealer : MonoBehaviour
 
     public PokerPlayerRedux FindFirstPlayerToAct(int distance)
     {
-        Debug.Log("FindingFirstPlayerToAct");
+        //Debug.Log("FindingFirstPlayerToAct");
         PokerPlayerRedux player;
         player = PlayerSeatsAwayFromDealerAmongstLivePlayers(distance);
         if(player.PlayerState == PlayerState.NotPlaying || player.playerIsAllIn || player.PlayerState == PlayerState.Eliminated || player.currentBet > 0)

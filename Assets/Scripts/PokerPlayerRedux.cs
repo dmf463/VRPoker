@@ -442,7 +442,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                 Bet(betToCall, false);
                 currentBet = betToCall + currentBet;
                 Services.Dealer.LastBet = currentBet;
-                Debug.Log("Player " + SeatPos + " called " + betToCall);
+                //Debug.Log("Player " + SeatPos + " called " + betToCall);
                 //Debug.Log("and the pot is now at " + Table.instance.potChips);
             }
         }

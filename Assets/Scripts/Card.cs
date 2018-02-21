@@ -17,14 +17,12 @@ public class Card : InteractionSuperClass {
     public bool readyToFloat = false;
     public bool rotateOnAdd = false;
 
-    float glowMax = 2;
-    float glowMin = 1;
     public float glowSpeed;
-    SpriteGlowEffect glowScript;
-    bool readyToPulse = false;
+    public float maxGlow;
     public bool callingPulse;
-    public GameObject pulse;
+    float pingPongCount = 0;
     float startTime;
+    float emission;
 
     public bool testingTorque;
 
@@ -88,7 +86,6 @@ public class Card : InteractionSuperClass {
     // Use this for initialization
     void Start() {
 
-        glowScript = pulse.GetComponent<SpriteGlowEffect>();
         cardDeck = GameObject.FindGameObjectWithTag("CardDeck"); //DEF will need to change this for recoupling purposes.
         deckScript = cardDeck.GetComponent<CardDeckScript>();  //gonna need to rework A LOT
         rb = GetComponent<Rigidbody>();
@@ -104,6 +101,7 @@ public class Card : InteractionSuperClass {
     // Update is called once per frame
     void Update() {
 
+        if (Input.GetKeyDown(KeyCode.G)) StartPulse();
         PulseGlow();
         CardForDealingMode();
         BringCardBack();
@@ -259,8 +257,8 @@ public class Card : InteractionSuperClass {
     {
         if (!Services.Dealer.OutsideVR && !startLerping)
         {
-            startLerping = true;
-            elapsedTimeForThrowTorque = 0;
+            //startLerping = true;
+            //elapsedTimeForThrowTorque = 0;
         }
         if (cardThrownWrong == true && other.gameObject.tag != "CardDeck" && other.gameObject.tag != "PlayingCard")
         {
@@ -355,6 +353,7 @@ public class Card : InteractionSuperClass {
 
     public override void OnDetachedFromHand(Hand hand)
     {
+        StartPulse();
         if (!Services.PokerRules.thrownCards.Contains(gameObject) && Table.gameState == GameState.NewRound)
         {
             Services.PokerRules.thrownCards.Add(gameObject);
@@ -486,7 +485,7 @@ public class Card : InteractionSuperClass {
         {
             if (transform.rotation == rot)
             {
-                Debug.Log("done straightening");
+                //Debug.Log("done straightening");
                 fastTorque = 0;
                 slowTorque = 0;
                 rotateOnAdd = false;
@@ -523,7 +522,7 @@ public class Card : InteractionSuperClass {
     public IEnumerator CheckIfCardIsAtDestination(float time, int cardsPulled)
     {
         yield return new WaitForSeconds(time);
-        Debug.Log("thrownCardsList = " + Services.PokerRules.thrownCards.Count);
+        //Debug.Log("thrownCardsList = " + Services.PokerRules.thrownCards.Count);
         float badCardsDebug = 0;
         for (int i = Services.PokerRules.thrownCards.Count - 1; i >= 0; i--)
         {
@@ -566,11 +565,12 @@ public class Card : InteractionSuperClass {
             }
             else
             {
+                StartPulse();
                 thrownWrong = true;
                 Table.instance.RemoveCardFrom(this);
                 Services.PokerRules.cardsLogged.Remove(this);
                 Services.PokerRules.cardsPulled.Remove(cardType);
-                Debug.Log("Removing " + cardType.rank + " of " + cardType.suit);
+                //Debug.Log("Removing " + cardType.rank + " of " + cardType.suit);
                 cardDeck.GetComponent<CardDeckScript>().cardsInDeck.Add(cardType);
                 flying_start_time = Time.time;
                 flight_journey_distance = Vector3.Distance(transform.position, cardDeck.transform.position);
@@ -581,12 +581,13 @@ public class Card : InteractionSuperClass {
         }
         else
         {
-            Debug.Log("card is in wrong location");
+            StartPulse();
+            //Debug.Log("card is in wrong location");
             thrownWrong = true;
             Table.instance.RemoveCardFrom(this);
             Services.PokerRules.cardsLogged.Remove(this);
             Services.PokerRules.cardsPulled.Remove(cardType);
-            Debug.Log("Removing " + cardType.rank + " of " + cardType.suit);
+            //Debug.Log("Removing " + cardType.rank + " of " + cardType.suit);
             cardDeck.GetComponent<CardDeckScript>().cardsInDeck.Add(cardType);
             flying_start_time = Time.time;
             flight_journey_distance = Vector3.Distance(transform.position, cardDeck.transform.position);
@@ -739,27 +740,32 @@ public class Card : InteractionSuperClass {
         return Vector3.Angle(targetDir, -transform.forward);
     }
 
+    public void StartPulse()
+    {
+        callingPulse = true;
+        startTime = Time.time;
+        pingPongCount = 0;
+        emission = 0;
+    }
+
     public void PulseGlow()
     {
- 
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            callingPulse = true;
-            startTime = Time.time;
-
-        }
         if (callingPulse)
         {
-            pulse.SetActive(true);
-            float previousBrightness = glowScript.GlowBrightness;
-            glowScript.GlowBrightness = PingPong(glowSpeed * (startTime - Time.time), glowMin, glowMax);
-            float currentBrightness = glowScript.GlowBrightness;
-            Debug.Log("glow Brightness = " + glowScript.GlowBrightness + ", and currentBrightness = " + previousBrightness);
-            if (currentBrightness < previousBrightness)
+            Color baseColor = new Vector4(0.8235294f, 0.1574394f, 0.5570934f, 0);
+            float previousEmission = emission;
+            emission = PingPong(glowSpeed * (startTime - Time.time), 0, maxGlow);
+            float currentEmission = emission;
+            Color finalColor = baseColor * Mathf.LinearToGammaSpace(emission);
+            GetComponent<Renderer>().material.SetColor("_EmissionColor", finalColor);
+            if(currentEmission < previousEmission)
+            {
+                pingPongCount++;
+            }
+            else if(currentEmission > previousEmission && pingPongCount >= 1)
             {
                 callingPulse = false;
-                glowScript.GlowBrightness = 1.0f;
-                pulse.SetActive(false);
+                GetComponent<Renderer>().material.SetColor("_EmissionColor", Color.black);
             }
         }
     }
