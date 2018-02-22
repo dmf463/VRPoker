@@ -6,6 +6,9 @@ using Valve.VR.InteractionSystem;
 
 public class Chip : InteractionSuperClass {
 
+    public Transform myTarget;  // drag the target here
+    //GameObject cannonball;  // drag the cannonball prefab here
+    public float flyTime;  // elevation angle
 
     public float flying_start_time, flight_journey_distance;
     public Vector3 flying_start_position;
@@ -464,8 +467,29 @@ public class Chip : InteractionSuperClass {
         }
     }
 
-    //this is just me ease-of-life function for findining the correct prefab
-    public GameObject FindChipPrefab(int chipValue)
+public Vector3 BallisticVel(Transform target, float time)
+    {
+        //angle, target, time
+        target = GameObject.Find("TipZone").transform;
+        float startY = transform.position.y;
+        float yAcceleration = Physics.gravity.y;
+        float targetY = target.position.y;
+        float yVel = ((targetY - startY) / time) - (yAcceleration * time / 2);
+
+        float startX = transform.position.x;
+        float targetX = target.position.x;
+        float xVel = ((targetX - startX) / time);
+
+        float startZ = transform.position.z;
+        float targetZ = target.position.z;
+        float zVel = ((targetZ - startZ) / time);
+
+        return new Vector3(xVel, yVel, zVel);
+
+    }
+
+//this is just me ease-of-life function for findining the correct prefab
+public GameObject FindChipPrefab(int chipValue)
     {
         GameObject chipPrefab = null;
         switch (chipValue)
