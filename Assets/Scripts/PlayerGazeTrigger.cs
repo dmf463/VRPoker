@@ -23,7 +23,7 @@ public class PlayerGazeTrigger : MonoBehaviour
     float startTime;
     Ray cameraRay;
     RaycastHit cameraRayHit;
-
+    bool lerpDownEye = false;
     // Use this for initialization
     void Start()
     {
@@ -59,8 +59,6 @@ public class PlayerGazeTrigger : MonoBehaviour
                     progressImage.fillAmount = 1;
                 }
             }
-
-
         }
     }
 

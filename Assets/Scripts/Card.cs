@@ -176,7 +176,6 @@ public class Card : InteractionSuperClass {
                     startLerping = false;
                     if (Table.gameState == GameState.NewRound && !firstTime)
                     {
-                        Debug.Log("STARTING COROUTINES");
                         firstTime = true;
                         InitializeLerpForTorqueFlair(GetCardRot());
                         StartCoroutine(LerpCardRotOnAdd(GetCardRot(), 1));
@@ -392,7 +391,6 @@ public class Card : InteractionSuperClass {
             float yDifference = cardPosHeld.y - cardPosOnRelease.y;
             if (yDifference < -0.1f)
             {
-                Debug.Log("yDifference for up, down, and then out = " + yDifference);
                 cardThrownWrong = true;
             }
             if (rb.velocity.magnitude > MAGNITUDE_THRESHOLD)
@@ -449,7 +447,6 @@ public class Card : InteractionSuperClass {
     {
         while (lerping)
         {
-            Debug.Log("LerpCardPos in Lerp");
             float distCovered = (Time.time - flying_start_time) * speed;
             float fracJourney = distCovered / flight_journey_distance;
             transform.position = Vector3.Lerp(flying_start_position, dest, fracJourney);
@@ -461,7 +458,6 @@ public class Card : InteractionSuperClass {
     {
         while (lerping)
         {
-            Debug.Log("LerpCardRot");
             float distCovered = (Time.time - flying_start_time) * speed;
             float fracJourney = distCovered / flight_journey_distance;
             transform.rotation = Quaternion.Lerp(transform.rotation, dest, fracJourney);
@@ -475,7 +471,6 @@ public class Card : InteractionSuperClass {
         {
             float distCovered = (Time.time - flying_start_time) * speed;
             float fracJourney = distCovered / flight_journey_angle;
-            Debug.Log("LerpCardRotOnAdd from " + cardType.rank + " of " + cardType.suit);
             fastTorque = Mathf.Lerp(fastTorque, 0, fracJourney);
             slowTorque = Mathf.Lerp(slowTorque, 0, fracJourney);
             transform.rotation = Quaternion.Lerp(transform.rotation, dest, fracJourney);
@@ -488,7 +483,6 @@ public class Card : InteractionSuperClass {
     {
         while (rotateOnAdd)
         {
-            Debug.Log("StopRotating");
             float angle = Quaternion.Angle(transform.rotation, rot);
             if (Mathf.Approximately(angle, 0))
             {
@@ -517,7 +511,6 @@ public class Card : InteractionSuperClass {
     {
         while (lerping)
         {
-            Debug.Log("Stop lerping");
             if (transform.position == pos)
             {
                 lerping = false;

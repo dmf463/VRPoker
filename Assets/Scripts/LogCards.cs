@@ -102,10 +102,10 @@ public class LogCards : MonoBehaviour
                 {
                     Debug.Log(other.gameObject.name + " is already logged");
                 }
-                //else if (other.gameObject.GetComponent<Rigidbody>().isKinematic)
-                //{
-                //    Debug.Log("is Kinematic");
-                //}
+                else if (other.gameObject.GetComponent<Rigidbody>().isKinematic)
+                {
+                    Debug.Log("is Kinematic");
+                }
                 else if (Services.Dealer.deadCardsList.Contains(other.GetComponent<Card>()))
                 {
                     Debug.Log(other.gameObject.name + "card is dead");
@@ -121,6 +121,7 @@ public class LogCards : MonoBehaviour
                     //Debug.Log(other.gameObject.name + " went into " + this.gameObject.name);
                     other.GetComponent<Card>().fastTorque = 0;
                     other.GetComponent<Card>().slowTorque = 0;
+                    Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, .05f, false);
                     Services.PokerRules.PlayTone();
                 }
                 //}
@@ -154,6 +155,7 @@ public class LogCards : MonoBehaviour
                     Table.instance.AddCardTo(Destination.burn, other.GetComponent<Card>());
                     Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
                     //Debug.Log(other.gameObject.name + "Card went into " + this.gameObject.name);
+                    Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, .05f, false);
                     Services.PokerRules.PlayTone();
                     other.GetComponent<Card>().fastTorque = 0;
                     other.GetComponent<Card>().slowTorque = 0;
