@@ -295,7 +295,7 @@ public class Dealer : MonoBehaviour
                 {
                     if (players[i].Hand != null)
                     {
-                        if(!players[i].flippedCards) players[i].FlipCards();
+                        if(!players[i].flippedCards) players[i].PushInCards();
                         Debug.Log("player" + players[i].SeatPos + 
                                   "is the " + players[i].PlayerState + 
                                   " with (a) " + players[i].Hand.HandValues.PokerHand + 
@@ -921,7 +921,7 @@ public class Dealer : MonoBehaviour
             {
                 if (players[i].playerIsAllIn == true)
                 {
-                    players[i].FlipCards();
+                    players[i].PushInCards();
                 }
             }
         }
@@ -970,7 +970,7 @@ public class Dealer : MonoBehaviour
                     {
                         if (players[i].Hand != null)
                         {
-                            players[i].FlipCards();
+                            players[i].PushInCards();
                         }
                     }
                 }

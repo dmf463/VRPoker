@@ -416,7 +416,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                     Services.Dealer.playersReady = true;
                     Services.Dealer.playersHaveBeenEvaluated = true;
                     //Services.Dealer.WaitForWinnersToGetPaid();
-                    Services.Dealer.players[i].FlipCards();
+                    Services.Dealer.players[i].PushInCards();
                     Services.Dealer.StartCoroutine(Services.Dealer.WaitForWinnersToGetPaid());
 
                 }
@@ -538,42 +538,43 @@ public class PokerPlayerRedux : MonoBehaviour{
 	//and then we call the coroutine that actually lerps the flip
 	//once the cards are flipped, we call another coroutine that repositions them for readability
 	//the flipping works fine, but we need to fine tune the WaitForReposition coroutine
-	public void FlipCards()
+	public void PushInCards()
 	{
         flippedCards = true;
 		List<GameObject> cardsInHand = Table.instance.GetCardGameObjects(SeatPos);
-		for (int i = 0; i < cardsInHand.Count; i++)
-		{
-			if (!cardsInHand[i].GetComponent<Card>().CardIsFaceUp())
-			{
-				Physics.IgnoreCollision(cardsInHand[0].gameObject.GetComponent<Collider>(), cardsInHand[1].gameObject.GetComponent<Collider>());
-				Services.Dealer.StartCoroutine(FlipCardsAndMoveTowardsBoard(.5f, cardsInHand[i], (GameObject.Find("TheBoard").GetComponent<Collider>().ClosestPointOnBounds(cardsInHand[i].transform.position) + cardsInHand[i].transform.position) / 2, SeatPos));
-			}
-			Services.Dealer.StartCoroutine(WaitForReposition(.5f, .5f, cardsInHand[0], cardsInHand[1], SeatPos));
-		}
+        for (int i = 0; i < cardsInHand.Count; i++)
+        {
+            Physics.IgnoreCollision(cardsInHand[0].gameObject.GetComponent<Collider>(), cardsInHand[1].gameObject.GetComponent<Collider>());
+            Services.Dealer.StartCoroutine
+                (FlipCardsAndMoveTowardsBoard(.5f, cardsInHand[i], 
+                (GameObject.Find("TheBoard").GetComponent<Collider>().ClosestPointOnBounds(cardsInHand[i].transform.position) + cardsInHand[i].transform.position) / 2, 
+                 SeatPos));
+            Services.Dealer.StartCoroutine(WaitForReposition(.5f, .5f, cardsInHand[0], cardsInHand[1], SeatPos));
+        }
 	}
 
-	//does what the name says. we pass the parameters which are unique to each players
-	//we want to make sure the cards all flip TOWARDS the board, so we have to math
-	//we get the initial position of the cards, and the initial rotation
-	//then we get the target rotation of the cards using trig.
-	//I kinda don't know exactly how that works, and it doesn't even work super right. 
-	//but it's necessary because we want the cards to flip properly for each player
-	//then we just lerp that shit
-	IEnumerator FlipCardsAndMoveTowardsBoard(float duration, GameObject card, Vector3 targetPos, int seatPos)
-	{
-		float timeElapsed = 0;
-		Vector3 initialPos = card.transform.position;
-		Quaternion initialRot = card.transform.rotation;
-		float targetYRot = Mathf.Atan2(targetPos.x - initialPos.x, targetPos.z - initialPos.z) * Mathf.Rad2Deg;
-		while (timeElapsed < duration)
-		{
-			timeElapsed += Time.deltaTime;
-			card.transform.rotation = Quaternion.Lerp(initialRot, Quaternion.Euler(90, targetYRot, initialRot.eulerAngles.z), timeElapsed / duration);
-			card.transform.position = Vector3.Lerp(initialPos, targetPos, timeElapsed / duration);
-			yield return null;
-		}
-	}
+    //does what the name says. we pass the parameters which are unique to each players
+    //we want to make sure the cards all flip TOWARDS the board, so we have to math
+    //we get the initial position of the cards, and the initial rotation
+    //then we get the target rotation of the cards using trig.
+    //I kinda don't know exactly how that works, and it doesn't even work super right. 
+    //but it's necessary because we want the cards to flip properly for each player
+    //then we just lerp that shit
+    IEnumerator FlipCardsAndMoveTowardsBoard(float duration, GameObject card, Vector3 targetPos, int seatPos)
+    {
+        float timeElapsed = 0;
+        Vector3 initialPos = card.transform.position;
+        Quaternion initialRot = card.transform.rotation;
+        float targetYRot = Mathf.Atan2(targetPos.x - initialPos.x, targetPos.z - initialPos.z) * Mathf.Rad2Deg;
+        while (timeElapsed < duration)
+        {
+            timeElapsed += Time.deltaTime;
+            card.transform.rotation = Quaternion.Lerp(initialRot, Quaternion.Euler(90, targetYRot, initialRot.eulerAngles.z), timeElapsed / duration);
+            card.transform.position = Vector3.Lerp(initialPos, targetPos, timeElapsed / duration);
+            yield return null;
+        }
+        Card cs = card.GetComponent<Card>(); //cs = cardScript
+    }
 
 	//this calls the proper coroutine, which allows the cards to be spread apart so that they aren't overlapping
 	//we want to have a WaitForSeconds because we need the cards to be flipped before we can reposition them
@@ -624,7 +625,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                             card1.transform.position = Vector3.Lerp(card1Pos, new Vector3(card2Pos.x - unitsToMove, card2Pos.y, card2Pos.z), timeElapsed / duration);
                             yield return null;
                         }
-                    }
+                    }                       
                 }
                 else
                 {

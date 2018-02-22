@@ -16,6 +16,7 @@ public class Card : InteractionSuperClass {
     public bool lerping = false;
     public bool readyToFloat = false;
     public bool rotateOnAdd = false;
+    public bool firstTime = false;
 
     public float glowSpeed;
     public float maxGlow;
@@ -173,11 +174,10 @@ public class Card : InteractionSuperClass {
                 if (elapsedTimeForThrowTorque >= torqueDuration)
                 {
                     startLerping = false;
-                    if (Table.gameState == GameState.NewRound)
+                    if (Table.gameState == GameState.NewRound && !firstTime)
                     {
-                        rotateOnAdd = true;
-                        //startingFastTorque = false;
-                        //startingSlowTorque = false;
+                        Debug.Log("STARTING COROUTINES");
+                        firstTime = true;
                         InitializeLerpForTorqueFlair(GetCardRot());
                         StartCoroutine(LerpCardRotOnAdd(GetCardRot(), 1));
                         StartCoroutine(StopRotating(GetCardRot()));
@@ -449,6 +449,7 @@ public class Card : InteractionSuperClass {
     {
         while (lerping)
         {
+            Debug.Log("LerpCardPos in Lerp");
             float distCovered = (Time.time - flying_start_time) * speed;
             float fracJourney = distCovered / flight_journey_distance;
             transform.position = Vector3.Lerp(flying_start_position, dest, fracJourney);
@@ -460,6 +461,7 @@ public class Card : InteractionSuperClass {
     {
         while (lerping)
         {
+            Debug.Log("LerpCardRot");
             float distCovered = (Time.time - flying_start_time) * speed;
             float fracJourney = distCovered / flight_journey_distance;
             transform.rotation = Quaternion.Lerp(transform.rotation, dest, fracJourney);
@@ -473,6 +475,7 @@ public class Card : InteractionSuperClass {
         {
             float distCovered = (Time.time - flying_start_time) * speed;
             float fracJourney = distCovered / flight_journey_angle;
+            Debug.Log("LerpCardRotOnAdd from " + cardType.rank + " of " + cardType.suit);
             fastTorque = Mathf.Lerp(fastTorque, 0, fracJourney);
             slowTorque = Mathf.Lerp(slowTorque, 0, fracJourney);
             transform.rotation = Quaternion.Lerp(transform.rotation, dest, fracJourney);
@@ -485,12 +488,15 @@ public class Card : InteractionSuperClass {
     {
         while (rotateOnAdd)
         {
-            if (transform.rotation == rot)
+            Debug.Log("StopRotating");
+            float angle = Quaternion.Angle(transform.rotation, rot);
+            if (Mathf.Approximately(angle, 0))
             {
                 //Debug.Log("done straightening");
+                rotateOnAdd = false;
+                firstTime = false;
                 fastTorque = 0;
                 slowTorque = 0;
-                rotateOnAdd = false;
             }
             else yield return null;
         }
@@ -504,16 +510,16 @@ public class Card : InteractionSuperClass {
         InitializeLerp(endPos);
         StartCoroutine(LerpCardPos(endPos, 0.25f));
         //StartCoroutine(LerpCardRot(endRot, 0.25f));
-        StartCoroutine(StopStraightening(endPos));
+        StartCoroutine(StopLerp(endPos));
     }
 
-    IEnumerator StopStraightening(Vector3 pos)
+    public IEnumerator StopLerp(Vector3 pos)
     {
         while (lerping)
         {
+            Debug.Log("Stop lerping");
             if (transform.position == pos)
             {
-                //Debug.Log("done straightening");
                 lerping = false;
             }
             else yield return null;
@@ -682,6 +688,7 @@ public class Card : InteractionSuperClass {
     public Quaternion GetCardRot()
     {
         PokerPlayerRedux player = GetCardOwner();
+        Debug.Log(cardType.rank + " of " + cardType.suit + " belongs to " + player.playerName);
         Quaternion endRot;
         if (Table.instance.playerCards[player.SeatPos].Count == 1)
         {

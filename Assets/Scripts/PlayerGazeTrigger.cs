@@ -10,7 +10,6 @@ public class PlayerGazeTrigger : MonoBehaviour
 {
 
     float timeRemaining;
-    //float timeSpanForQuestion = 3;
     float timeSpanForEye;
     public float rayDistance;
     public LayerMask mask;
@@ -21,6 +20,9 @@ public class PlayerGazeTrigger : MonoBehaviour
     public Image questionMark;
     bool eyeActivated = false;
     bool questionMarkActivated = false;
+    float startTime;
+    Ray cameraRay;
+    RaycastHit cameraRayHit;
 
     // Use this for initialization
     void Start()
@@ -33,6 +35,7 @@ public class PlayerGazeTrigger : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if (!Services.Dealer.OutsideVR)
         {
             //update our UI image
@@ -47,9 +50,10 @@ public class PlayerGazeTrigger : MonoBehaviour
             {
                 if (!eyeActivated)
                 {
+                    startTime = Time.time;
                     eyeActivated = true;
                     if (Table.gameState == GameState.PreFlop) timeSpanForEye = 1.5f;
-                    else timeSpanForEye = 1;
+                    else timeSpanForEye = .5f;
                     timeRemaining = timeSpanForEye;
                     progressImage.GetComponent<CardIndicatorLerp>().enabled = true;
                     progressImage.fillAmount = 1;
@@ -62,32 +66,51 @@ public class PlayerGazeTrigger : MonoBehaviour
 
     public void HittingTarget()
     {
-        if (pokerPlayer == Services.Dealer.playerToAct)
+        cameraRay = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+        cameraRayHit = new RaycastHit();
+        if (Physics.Raycast(cameraRay, out cameraRayHit, rayDistance, mask))
         {
-            if (Table.gameState == GameState.PreFlop)
+            if (cameraRayHit.transform == this.transform)
             {
-                timeRemaining = Mathf.Max((timeRemaining - Time.deltaTime), 0); //after 1 second, this variable will be 0f;
-                progressImage.fillAmount = timeRemaining / timeSpanForEye;
-                //Debug.Log("time remaining = " + timeRemaining + " and fillAmount = " + progressImage.fillAmount);
-                if (timeRemaining <= 0.5f && !pokerPlayer.playerLookedAt)
+                if (pokerPlayer == Services.Dealer.playerToAct)
                 {
-                    pokerPlayer.playerLookedAt = true;
-                    //Debug.Log("Ready to invoke next player");
-                    onEyeGazeComplete.Invoke();
-                }
-            }
-            else
-            {
-                timeRemaining = Mathf.Clamp01(timeRemaining - Time.deltaTime);
-                progressImage.fillAmount = timeRemaining;
-                //Debug.Log("time remaining = " + timeRemaining + " and fillAmount = " + progressImage.fillAmount);
-                if (timeRemaining <= 0 && !pokerPlayer.playerLookedAt)
-                {
-                    pokerPlayer.playerLookedAt = true;
-                    Debug.Log("Ready to invoke next player");
-                    timeRemaining = timeSpanForEye;
-                    progressImage.fillAmount = 0;
-                    onEyeGazeComplete.Invoke();
+                    if (Table.gameState == GameState.PreFlop)
+                    {
+                        //timeRemaining = Mathf.Max((timeRemaining - Time.deltaTime), 0); //after 1 second, this variable will be 0f;
+                        //progressImage.fillAmount = timeRemaining / timeSpanForEye;
+                        ////Debug.Log("time remaining = " + timeRemaining + " and fillAmount = " + progressImage.fillAmount);
+                        //if (timeRemaining <= 0.5f && !pokerPlayer.playerLookedAt)
+                        //{
+                        //    pokerPlayer.playerLookedAt = true;
+                        //    //Debug.Log("Ready to invoke next player");
+                        //    onEyeGazeComplete.Invoke();
+                        //}
+                        if (!pokerPlayer.playerLookedAt)
+                        {
+                            pokerPlayer.playerLookedAt = true;
+                            progressImage.fillAmount = 0;
+                            onEyeGazeComplete.Invoke();
+                        }
+                    }
+                    else
+                    {
+                        //timeRemaining = Mathf.Max((timeRemaining - Time.deltaTime), 0);
+                        //progressImage.fillAmount = timeRemaining / timeSpanForEye;
+                        ////Debug.Log("time remaining = " + timeRemaining + " and fillAmount = " + progressImage.fillAmount);
+                        //if (timeRemaining <= 0 && !pokerPlayer.playerLookedAt)
+                        //{
+                        //    pokerPlayer.playerLookedAt = true;
+                        //    Debug.Log("Ready to invoke next player");
+                        //    timeRemaining = timeSpanForEye;
+                        //    onEyeGazeComplete.Invoke();
+                        //}
+                        if (!pokerPlayer.playerLookedAt)
+                        {
+                            pokerPlayer.playerLookedAt = true;
+                            progressImage.fillAmount = 0;
+                            onEyeGazeComplete.Invoke();
+                        }
+                    }
                 }
             }
         }
