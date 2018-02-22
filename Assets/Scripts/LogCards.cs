@@ -165,9 +165,10 @@ public class LogCards : MonoBehaviour
         #endregion
     }
 
+
     public void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.tag == "PlayingCard")
+        if (other.gameObject.tag == "PlayingCard" && this.gameObject.name != "BurnCards" && this.gameObject.name != "TheBoard") 
         {
             //Debug.Log("Distance between objects is " + Vector3.Distance(other.gameObject.transform.position, transform.position));
             if (GetComponent<Collider>().bounds.Contains(other.ClosestPointOnBounds(transform.position)))
