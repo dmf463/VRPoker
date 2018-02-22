@@ -7,14 +7,14 @@ public class SoundManager : MonoBehaviour
 {
 	public TextAsset dialogueFile; //the text file we draw our dialogue from
 
+    [Header("Poker Players")]
 	public PokerPlayerRedux casey;// rosa
 	public PokerPlayerRedux zombie;// gonzalo
 	public PokerPlayerRedux minnie;// minnie
-	public PokerPlayerRedux nathaniel;// Nathaniel
+	public PokerPlayerRedux nathaniel;// nathaniel
 	public PokerPlayerRedux floyd;// floyd
 
-	public AudioSource tutorial;
-
+    [Header("Player Audio Sources")]
 	public AudioSource caseySource; 
 	public AudioSource zombieSource;
 	public AudioSource minnieSource;
@@ -22,23 +22,12 @@ public class SoundManager : MonoBehaviour
 	public AudioSource floydSource;
 
 
-	public AudioClip[] aside1Index;
-	public AudioClip[] aside2Index;
-	public AudioClip[] aside3Index;
-	public AudioClip[] aside5Index;
-	public AudioClip[] aside6Index;
-
-	public AudioClip[] lowAside1Index;
-	public AudioClip[] lowAside2Index;
-	public AudioClip[] lowAside3Index;
-	public AudioClip[] lowAside4Index;
-
+    #region TUTORIAL STUFF 
+    public AudioSource tutorial;
 	public AudioClip[] tutorialAudio;
     int tutorialIndex = 1;
-    AudioClip nextAudio;
-
-#region TUTORIAL STUFF 
-
+    public List<AudioData> tutorialAudioFiles = new List<AudioData>();
+   
     public int handCounter = 1; //which hand are we on? First, second, third.... 
     public int roundsFinished = 0; //how many rounds of betting have we finished this hand
     public bool roundOneComplete = false;
@@ -67,12 +56,23 @@ public class SoundManager : MonoBehaviour
     public bool cheatingEngaged = false;
     public bool letEmLoose = false;
 
-#endregion
-
-
-    public List <AudioData> tutorialAudioFiles = new List <AudioData>();
-
+    #endregion
+    [Header("Conversations")]
     public bool conversationIsPlaying;
+
+    #region Old Audio 
+
+    public AudioClip[] aside1Index;
+    public AudioClip[] aside2Index;
+    public AudioClip[] aside3Index;
+    public AudioClip[] aside5Index;
+    public AudioClip[] aside6Index;
+
+    public AudioClip[] lowAside1Index;
+    public AudioClip[] lowAside2Index;
+    public AudioClip[] lowAside3Index;
+    public AudioClip[] lowAside4Index;
+
     public bool aside1Played;
     public bool aside2Played;
 	public bool aside3Played;
@@ -84,7 +84,9 @@ public class SoundManager : MonoBehaviour
 	public bool lowAside3Played;
 	public bool lowAside4Played;
 
-    [Header("SoundEffects")]
+    #endregion
+
+    [Header("Sound Effects")]
 	public AudioClip[] chips;
     public AudioClip[] cards;
     public AudioClip[] cardTones;
@@ -106,20 +108,24 @@ public class SoundManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       
+      
     }
 
 
     public void PlayConversation()
     {
-        
-        Conversation convoAudio = Services.DialogueDataManager.ReadyConversation(); //find us an appropriate conversation from our dictionary
-        StartCoroutine(PlayConversationLines(convoAudio)); //plays through the lines in our chosen conversation
-
-
+        if (!conversationIsPlaying)
+        {
+            conversationIsPlaying = true;
+            Conversation convoAudio = Services.DialogueDataManager.ReadyConversation(); //find us an appropriate conversation from our dictionary
+            if (convoAudio != null)
+            {
+                StartCoroutine(PlayConversationLines(convoAudio)); //plays through the lines in our chosen conversation
+            }
+        }
     }
 
-    IEnumerator PlayConversationLines(Conversation convo)
+    IEnumerator PlayConversationLines(Conversation convo) //coroutine for playing conversation audio lines
     {
 
         for (int i = 0; i < convo.playerLines.Count; i++) //for each line in our conversation
@@ -133,24 +139,12 @@ public class SoundManager : MonoBehaviour
             {
                 yield return null;
             }
+            conversationIsPlaying = false;
             convo.hasBeenPlayed = true; //once all lines have been played, set the bool on the conversation so that we don't choose it again
         }
     }
 
-    public void PlayTutorialAudio(int index)
-
-    {
-        GenerateSourceAndPlay(tutorialAudioFiles[index].audio, 1f, 1f);
-        tutorialAudioFiles[index].hasBeenPlayed = true;
-        StartCoroutine(WaitForClipToFinishPlaying(tutorialAudioFiles[index].audio.length, tutorialAudioFiles[index]));
-    }
-
-
-    IEnumerator WaitForClipToFinishPlaying(float time, AudioData clip)
-    {
-        yield return new WaitForSeconds(time);   
-        clip.finishedPlaying = true;
-    }
+   
 
 
     public void GenerateSourceAndPlay(AudioClip clip, float volume, float pitch = 1)
@@ -180,6 +174,7 @@ public class SoundManager : MonoBehaviour
 	{
         PokerPlayerRedux player = source.gameObject.GetComponentInParent<PokerPlayerRedux>();
         player.playerIsInConversation = true;
+       // Debug.Log(player + " is in conversation: " + player.playerIsInConversation);
 		source.clip = clip;
 		source.Play();
         StartCoroutine(PlayerStopsTalking(clip.length, player));
@@ -191,6 +186,29 @@ public class SoundManager : MonoBehaviour
         source.Play();
     }
 
+    IEnumerator PlayerStopsTalking(float time, PokerPlayerRedux player)
+    {
+        yield return new WaitForSeconds(time);
+        player.playerIsInConversation = false;
+    }
+
+
+
+    #region TUTORIAL FUNCTIONS
+    public void PlayTutorialAudio(int index)
+
+    {
+        GenerateSourceAndPlay(tutorialAudioFiles[index].audio, 1f, 1f);
+        tutorialAudioFiles[index].hasBeenPlayed = true;
+        StartCoroutine(WaitForClipToFinishPlaying(tutorialAudioFiles[index].audio.length, tutorialAudioFiles[index]));
+    }
+
+
+    IEnumerator WaitForClipToFinishPlaying(float time, AudioData clip)
+    {
+        yield return new WaitForSeconds(time);
+        clip.finishedPlaying = true;
+    }
 
     public void CheckForTutorialAudioToBePlayed()
     {
@@ -416,31 +434,31 @@ public class SoundManager : MonoBehaviour
             }
         }
     }
+#endregion
 
 
 
 
+    //	public void PlayAsideConversation(int convo)
+    //	{
+    //		if(convo == 0){
+    //            if(!aside1Played) StartCoroutine("Aside1");
+    //		}
+    //		if(convo == 1){
+    //            if(!aside2Played) StartCoroutine("Aside2");
+    //		}
+    //		if(convo == 2){
+    //			if(!aside3Played) StartCoroutine("Aside3");
+    //		}
+    //		if(convo == 3){
+    //			if(!aside5Played) StartCoroutine("Aside5");
+    //		}
+    //		if(convo == 4){
+    //			if(!aside6Played) StartCoroutine("Aside6");
+    //		}
+    //	}
 
-//	public void PlayAsideConversation(int convo)
-//	{
-//		if(convo == 0){
-//            if(!aside1Played) StartCoroutine("Aside1");
-//		}
-//		if(convo == 1){
-//            if(!aside2Played) StartCoroutine("Aside2");
-//		}
-//		if(convo == 2){
-//			if(!aside3Played) StartCoroutine("Aside3");
-//		}
-//		if(convo == 3){
-//			if(!aside5Played) StartCoroutine("Aside5");
-//		}
-//		if(convo == 4){
-//			if(!aside6Played) StartCoroutine("Aside6");
-//		}
-//	}
-
-	public void PlayAsideConversation(PokerPlayerRedux player)
+    public void PlayAsideConversation(PokerPlayerRedux player)
 	{
 		if (player == casey){
 			int convo = UnityEngine.Random.Range(0, 3);
@@ -536,11 +554,7 @@ public class SoundManager : MonoBehaviour
 		}
 	}
 
-    IEnumerator PlayerStopsTalking(float time, PokerPlayerRedux player)
-    {
-        yield return new WaitForSeconds(time);
-        player.playerIsInConversation = false;
-    }
+   
 
 	IEnumerator Aside1 (){ //floyd initiates toward minnie
 
