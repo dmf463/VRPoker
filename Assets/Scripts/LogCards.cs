@@ -119,6 +119,9 @@ public class LogCards : MonoBehaviour
                     Table.instance.AddCardTo(Destination.board, other.GetComponent<Card>());
                     Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
                     //Debug.Log(other.gameObject.name + " went into " + this.gameObject.name);
+                    other.GetComponent<Card>().fastTorque = 0;
+                    other.GetComponent<Card>().slowTorque = 0;
+                    Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, .05f, false);
                     Services.PokerRules.PlayTone();
                 }
                 //}
@@ -152,7 +155,10 @@ public class LogCards : MonoBehaviour
                     Table.instance.AddCardTo(Destination.burn, other.GetComponent<Card>());
                     Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
                     //Debug.Log(other.gameObject.name + "Card went into " + this.gameObject.name);
+                    Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, .05f, false);
                     Services.PokerRules.PlayTone();
+                    other.GetComponent<Card>().fastTorque = 0;
+                    other.GetComponent<Card>().slowTorque = 0;
                 }
             }
         }

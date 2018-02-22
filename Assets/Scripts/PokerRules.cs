@@ -448,7 +448,7 @@ public class PokerRules : MonoBehaviour {
                         card.GetComponent<Card>().InitializeLerp(player.cardPos[cardPos].transform.position);
                         StartCoroutine(card.GetComponent<Card>().LerpCardPos(player.cardPos[cardPos].transform.position, speed));
                         StartCoroutine(card.GetComponent<Card>().LerpCardRot(card.GetComponent<Card>().GetCardRot(), speed * 2));
-                        StartCoroutine(CorrectionsDone(player.cardPos[cardPos].transform.position, card, playerDestinations[playerIndex], card.GetComponent<Card>()));
+                        StartCoroutine(CorrectionsDone(player.cardPos[cardPos].transform.position, card, playerDestinations[playerIndex], card.GetComponent<Card>(), true));
                     }
                     //Debug.Log("player we're trying to check is + " + player);
                     //Debug.Log("firstPlayer = " + Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count]);
@@ -458,128 +458,133 @@ public class PokerRules : MonoBehaviour {
         }
     }
 
+    public void PositionBoardAndBurnCards(int cardNum, float speed, bool correction)
+    {
+        SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+        cardNum = cardNum - 1;
+        if (cardNum == burnCard1)
+        {
+            Vector3 burnPos = GameObject.Find("BurnCards").transform.position;
+            Quaternion burnRot = GameObject.Find("BurnCards").transform.rotation;
+            GameObject cardObj = GetCardObject(cardNum);
+            Card card = cardObj.GetComponent<Card>();
+            if (card.CardIsFaceUp()) card.RotateCard();
+            card.InitializeLerp(burnPos);
+            StartCoroutine(card.LerpCardPos(burnPos, speed));
+            StartCoroutine(card.LerpCardRot(burnRot, speed));
+            StartCoroutine(CorrectionsDone(burnPos, cardObj, Destination.burn, card, correction));
+        }
+        else if (cardNum > burnCard1 && cardNum <= flopCards)
+        {
+            if (cardNum == burnCard1 + 1)
+            {
+                Vector3 flopPos = boardPos[0].transform.position;
+                Quaternion flopRot = boardPos[0].transform.rotation;
+                GameObject cardObj = GetCardObject(cardNum);
+                Card card = cardObj.GetComponent<Card>();
+                if (!card.CardIsFaceUp()) card.RotateCard();
+                card.InitializeLerp(flopPos);
+                StartCoroutine(card.LerpCardPos(flopPos, speed));
+                StartCoroutine(card.LerpCardRot(flopRot, speed));
+                StartCoroutine(CorrectionsDone(flopPos, cardObj, Destination.board, card, correction));
+            }
+            else if (cardNum == burnCard1 + 2)
+            {
+                Vector3 flopPos = boardPos[1].transform.position;
+                Quaternion flopRot = boardPos[1].transform.rotation;
+                GameObject cardObj = GetCardObject(cardNum);
+                Card card = cardObj.GetComponent<Card>();
+                if (!card.CardIsFaceUp()) card.RotateCard();
+                card.InitializeLerp(flopPos);
+                StartCoroutine(card.LerpCardPos(flopPos, speed));
+                StartCoroutine(card.LerpCardRot(flopRot, speed));
+                StartCoroutine(CorrectionsDone(flopPos, cardObj, Destination.board, card, correction));
+            }
+            else if (cardNum == burnCard1 + 3)
+            {
+                Vector3 flopPos = boardPos[2].transform.position;
+                Quaternion flopRot = boardPos[2].transform.rotation;
+                GameObject cardObj = GetCardObject(cardNum);
+                Card card = cardObj.GetComponent<Card>();
+                if (!card.CardIsFaceUp()) card.RotateCard();
+                card.InitializeLerp(flopPos);
+                StartCoroutine(card.LerpCardPos(flopPos, speed));
+                StartCoroutine(card.LerpCardRot(flopRot, speed));
+                StartCoroutine(CorrectionsDone(flopPos, cardObj, Destination.board, card, correction));
+            }
+        }
+        else if (cardNum == burnCard2)
+        {
+            Vector3 burnPos = GameObject.Find("BurnCards").transform.position;
+            Quaternion burnRot = GameObject.Find("BurnCards").transform.rotation;
+            GameObject cardObj = GetCardObject(cardNum);
+            Card card = cardObj.GetComponent<Card>();
+            if (card.CardIsFaceUp()) card.RotateCard();
+            card.InitializeLerp(burnPos);
+            StartCoroutine(card.LerpCardPos(burnPos, speed));
+            StartCoroutine(card.LerpCardRot(burnRot, speed));
+            StartCoroutine(CorrectionsDone(burnPos, cardObj, Destination.burn, card, correction));
+        }
+        else if (cardNum == turnCard)
+        {
+            Vector3 turnPos = boardPos[3].transform.position;
+            Quaternion turnRot = boardPos[3].transform.rotation;
+            GameObject cardObj = GetCardObject(cardNum);
+            Card card = cardObj.GetComponent<Card>();
+            if (!card.CardIsFaceUp()) card.RotateCard();
+            card.InitializeLerp(turnPos);
+            StartCoroutine(card.LerpCardPos(turnPos, speed));
+            StartCoroutine(card.LerpCardRot(turnRot, speed));
+            StartCoroutine(CorrectionsDone(turnPos, cardObj, Destination.board, card, correction));
+        }
+        else if (cardNum == burnCard3)
+        {
+            Vector3 burnPos = GameObject.Find("BurnCards").transform.position;
+            Quaternion burnRot = GameObject.Find("BurnCards").transform.rotation;
+            GameObject cardObj = GetCardObject(cardNum);
+            Card card = cardObj.GetComponent<Card>();
+            if (card.CardIsFaceUp()) card.RotateCard();
+            card.InitializeLerp(burnPos);
+            StartCoroutine(card.LerpCardPos(burnPos, speed));
+            StartCoroutine(card.LerpCardRot(burnRot, speed));
+            StartCoroutine(CorrectionsDone(burnPos, cardObj, Destination.burn, card, correction));
+        }
+        else if (cardNum == riverCard)
+        {
+            Vector3 riverPos = boardPos[4].transform.position;
+            Quaternion riverRot = boardPos[4].transform.rotation;
+            GameObject cardObj = GetCardObject(cardNum);
+            Card card = cardObj.GetComponent<Card>();
+            if (!card.CardIsFaceUp()) card.RotateCard();
+            card.InitializeLerp(riverPos);
+            StartCoroutine(card.LerpCardPos(riverPos, speed));
+            StartCoroutine(card.LerpCardRot(riverRot, speed));
+            StartCoroutine(CorrectionsDone(riverPos, cardObj, Destination.board, card, correction));
+        }
+    }
+
     public void CorrectMistakes()
     {
         // Debug.Log("CorrectingMistakes");
-        SetCardPlacement(Services.Dealer.PlayerAtTableCount());
         Table.instance.board.Clear();
         Table.instance.burn.Clear();
-
         for (int i = 0; i < cardsPulled.Count; i++)
         {
-            if (i == burnCard1)
-            {
-                Vector3 burnPos = GameObject.Find("BurnCards").transform.position;
-                Quaternion burnRot = GameObject.Find("BurnCards").transform.rotation;
-                GameObject cardObj = GetCardObject(i);
-                Card card = cardObj.GetComponent<Card>();
-                if (card.CardIsFaceUp()) card.RotateCard();
-                card.InitializeLerp(burnPos);
-                StartCoroutine(card.LerpCardPos(burnPos, 1));
-                StartCoroutine(card.LerpCardRot(burnRot, 1));
-                StartCoroutine(CorrectionsDone(burnPos, cardObj, Destination.burn, card));
-            }
-            else if (i > burnCard1 && i <= flopCards)
-            {
-                if (i == burnCard1 + 1)
-                {
-                    Vector3 flopPos = boardPos[0].transform.position;
-                    Quaternion flopRot = boardPos[0].transform.rotation;
-                    GameObject cardObj = GetCardObject(i);
-                    Card card = cardObj.GetComponent<Card>();
-                    if (!card.CardIsFaceUp()) card.RotateCard();
-                    card.InitializeLerp(flopPos);
-                    StartCoroutine(card.LerpCardPos(flopPos, 1));
-                    StartCoroutine(card.LerpCardRot(flopRot, 1));
-                    StartCoroutine(CorrectionsDone(flopPos, cardObj, Destination.board, card));
-                }
-                else if (i == burnCard1 + 2)
-                {
-                    Vector3 flopPos = boardPos[1].transform.position;
-                    Quaternion flopRot = boardPos[1].transform.rotation;
-                    GameObject cardObj = GetCardObject(i);
-                    Card card = cardObj.GetComponent<Card>();
-                    if (!card.CardIsFaceUp()) card.RotateCard();
-                    card.InitializeLerp(flopPos);
-                    StartCoroutine(card.LerpCardPos(flopPos, 1));
-                    StartCoroutine(card.LerpCardRot(flopRot, 1));
-                    StartCoroutine(CorrectionsDone(flopPos, cardObj, Destination.board, card));
-                }
-                else if (i == burnCard1 + 3)
-                {
-                    Vector3 flopPos = boardPos[2].transform.position;
-                    Quaternion flopRot = boardPos[2].transform.rotation;
-                    GameObject cardObj = GetCardObject(i);
-                    Card card = cardObj.GetComponent<Card>();
-                    if (!card.CardIsFaceUp()) card.RotateCard();
-                    card.InitializeLerp(flopPos);
-                    StartCoroutine(card.LerpCardPos(flopPos, 1));
-                    StartCoroutine(card.LerpCardRot(flopRot, 1));
-                    StartCoroutine(CorrectionsDone(flopPos, cardObj, Destination.board, card));
-                }
-            }
-            else if (i == burnCard2)
-            {
-                Vector3 burnPos = GameObject.Find("BurnCards").transform.position;
-                Quaternion burnRot = GameObject.Find("BurnCards").transform.rotation;
-                GameObject cardObj = GetCardObject(i);
-                Card card = cardObj.GetComponent<Card>();
-                if (card.CardIsFaceUp()) card.RotateCard();
-                card.InitializeLerp(burnPos);
-                StartCoroutine(card.LerpCardPos(burnPos, 1));
-                StartCoroutine(card.LerpCardRot(burnRot, 1));
-                StartCoroutine(CorrectionsDone(burnPos, cardObj, Destination.burn, card));
-            }
-            else if (i == turnCard)
-            {
-                Vector3 turnPos = boardPos[3].transform.position;
-                Quaternion turnRot = boardPos[3].transform.rotation;
-                GameObject cardObj = GetCardObject(i);
-                Card card = cardObj.GetComponent<Card>();
-                if (!card.CardIsFaceUp()) card.RotateCard();
-                card.InitializeLerp(turnPos);
-                StartCoroutine(card.LerpCardPos(turnPos, 1));
-                StartCoroutine(card.LerpCardRot(turnRot, 1));
-                StartCoroutine(CorrectionsDone(turnPos, cardObj, Destination.board, card));
-            }
-            else if (i == burnCard3)
-            {
-                Vector3 burnPos = GameObject.Find("BurnCards").transform.position;
-                Quaternion burnRot = GameObject.Find("BurnCards").transform.rotation;
-                GameObject cardObj = GetCardObject(i);
-                Card card = cardObj.GetComponent<Card>();
-                if (card.CardIsFaceUp()) card.RotateCard();
-                card.InitializeLerp(burnPos);
-                StartCoroutine(card.LerpCardPos(burnPos, 1));
-                StartCoroutine(card.LerpCardRot(burnRot, 1));
-                StartCoroutine(CorrectionsDone(burnPos, cardObj, Destination.burn, card));
-            }
-            else if (i == riverCard)
-            {
-                Vector3 riverPos = boardPos[4].transform.position;
-                Quaternion riverRot = boardPos[4].transform.rotation;
-                GameObject cardObj = GetCardObject(i);
-                Card card = cardObj.GetComponent<Card>();
-                if (!card.CardIsFaceUp()) card.RotateCard();
-                card.InitializeLerp(riverPos);
-                StartCoroutine(card.LerpCardPos(riverPos, 1));
-                StartCoroutine(card.LerpCardRot(riverRot, 1));
-                StartCoroutine(CorrectionsDone(riverPos, cardObj, Destination.board, card));
-            }
+            PositionBoardAndBurnCards(i, 1, true);
         }
         SetCardIndicator();
     }
 
-    IEnumerator CorrectionsDone(Vector3 pos, GameObject cardObj, Destination dest, Card card)
+    IEnumerator CorrectionsDone(Vector3 pos, GameObject cardObj, Destination dest, Card card, bool correction)
     {
         while (card.GetComponent<Card>().lerping)
         {
             if (card.transform.position == pos)
             {
                 card.GetComponent<Card>().lerping = false;
-                Table.instance.AddCardTo(dest, card);
+                if(correction) Table.instance.AddCardTo(dest, card);
                 card.readyToFloat = true;
-                Debug.Log("MADE IT");
+                //Debug.Log("MADE IT");
             }
             else yield return null;
         }

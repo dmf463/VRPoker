@@ -16,6 +16,7 @@ public class Card : InteractionSuperClass {
     public bool lerping = false;
     public bool readyToFloat = false;
     public bool rotateOnAdd = false;
+    public bool firstTime = false;
 
     public float glowSpeed;
     public float maxGlow;
@@ -90,6 +91,8 @@ public class Card : InteractionSuperClass {
         deckScript = cardDeck.GetComponent<CardDeckScript>();  //gonna need to rework A LOT
         rb = GetComponent<Rigidbody>();
         elapsedTimeForCardFlip = 0;
+        floatDistance += Random.Range(0.001f, 0.005f);
+        floatSpeed += Random.Range(1, 50);
 
         if (Services.Dealer.OutsideVR)
         {
@@ -171,11 +174,9 @@ public class Card : InteractionSuperClass {
                 if (elapsedTimeForThrowTorque >= torqueDuration)
                 {
                     startLerping = false;
-                    if (Table.gameState == GameState.NewRound)
+                    if (Table.gameState == GameState.NewRound && !firstTime)
                     {
-                        rotateOnAdd = true;
-                        //startingFastTorque = false;
-                        //startingSlowTorque = false;
+                        firstTime = true;
                         InitializeLerpForTorqueFlair(GetCardRot());
                         StartCoroutine(LerpCardRotOnAdd(GetCardRot(), 1));
                         StartCoroutine(StopRotating(GetCardRot()));
@@ -277,7 +278,7 @@ public class Card : InteractionSuperClass {
                 Services.PokerRules.CorrectMistakes();
                 cardsDropped++;
             }
-            if (cardsDropped >= 3) Table.gameState = GameState.Misdeal;
+            if (cardsDropped >= 5) Table.gameState = GameState.Misdeal;
         }
 
     }
@@ -390,7 +391,6 @@ public class Card : InteractionSuperClass {
             float yDifference = cardPosHeld.y - cardPosOnRelease.y;
             if (yDifference < -0.1f)
             {
-                Debug.Log("yDifference for up, down, and then out = " + yDifference);
                 cardThrownWrong = true;
             }
             if (rb.velocity.magnitude > MAGNITUDE_THRESHOLD)
@@ -483,12 +483,14 @@ public class Card : InteractionSuperClass {
     {
         while (rotateOnAdd)
         {
-            if (transform.rotation == rot)
+            float angle = Quaternion.Angle(transform.rotation, rot);
+            if (Mathf.Approximately(angle, 0))
             {
                 //Debug.Log("done straightening");
+                rotateOnAdd = false;
+                firstTime = false;
                 fastTorque = 0;
                 slowTorque = 0;
-                rotateOnAdd = false;
             }
             else yield return null;
         }
@@ -502,16 +504,15 @@ public class Card : InteractionSuperClass {
         InitializeLerp(endPos);
         StartCoroutine(LerpCardPos(endPos, 0.25f));
         //StartCoroutine(LerpCardRot(endRot, 0.25f));
-        StartCoroutine(StopStraightening(endPos));
+        StartCoroutine(StopLerp(endPos));
     }
 
-    IEnumerator StopStraightening(Vector3 pos)
+    public IEnumerator StopLerp(Vector3 pos)
     {
         while (lerping)
         {
             if (transform.position == pos)
             {
-                //Debug.Log("done straightening");
                 lerping = false;
             }
             else yield return null;
@@ -680,6 +681,7 @@ public class Card : InteractionSuperClass {
     public Quaternion GetCardRot()
     {
         PokerPlayerRedux player = GetCardOwner();
+        Debug.Log(cardType.rank + " of " + cardType.suit + " belongs to " + player.playerName);
         Quaternion endRot;
         if (Table.instance.playerCards[player.SeatPos].Count == 1)
         {

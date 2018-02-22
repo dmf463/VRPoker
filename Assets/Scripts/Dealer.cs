@@ -301,7 +301,7 @@ public class Dealer : MonoBehaviour
                 {
                     if (players[i].Hand != null)
                     {
-                        if(!players[i].flippedCards) players[i].FlipCards();
+                        if(!players[i].flippedCards) players[i].PushInCards();
                         Debug.Log("player" + players[i].SeatPos + 
                                   "is the " + players[i].PlayerState + 
                                   " with (a) " + players[i].Hand.HandValues.PokerHand + 
@@ -728,6 +728,7 @@ public class Dealer : MonoBehaviour
                         Destroy(card.GetComponent<Rigidbody>());
                         card.GetComponent<Card>().readyToFloat = false;
                         card.GetComponent<Card>().is_flying = true;
+                        card.GetComponent<Card>().StartPulse();
                     }
                 }
             }
@@ -775,12 +776,6 @@ public class Dealer : MonoBehaviour
             }
         }
     }
-    public void OnFinishCleaning()
-    {
-        cardToCheck.GetComponent<Card>().is_flying = false;
-        GameObject.FindGameObjectWithTag("CardDeck").GetComponent<CardDeckScript>().MakeDeckLarger();
-        Destroy(cardToCheck);
-    }
 
     public void WaitingToGrabCardsOn_ThrownDeck()
     {
@@ -804,6 +799,7 @@ public class Dealer : MonoBehaviour
                         Destroy(card.GetComponent<BoxCollider>());
                         card.GetComponent<Card>().readyToFloat = false;
                         card.GetComponent<Card>().is_flying = true;
+                        card.GetComponent<Card>().StartPulse();
                     }
                 }
             }
@@ -931,7 +927,7 @@ public class Dealer : MonoBehaviour
             {
                 if (players[i].playerIsAllIn == true)
                 {
-                    players[i].FlipCards();
+                    players[i].PushInCards();
                 }
             }
         }
@@ -980,7 +976,7 @@ public class Dealer : MonoBehaviour
                     {
                         if (players[i].Hand != null)
                         {
-                            players[i].FlipCards();
+                            players[i].PushInCards();
                         }
                     }
                 }
