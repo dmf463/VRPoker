@@ -174,6 +174,12 @@ public class Dealer : MonoBehaviour
             Services.SoundManager.PlayConversation();
         }
 
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            AudioClip audioFile = Resources.Load("Audio/Voice/TutorialVO/tutorial0.wav") as AudioClip; //gets the audiofile from resources using the string name 
+                Debug.Log(audioFile);  
+        }
+
         if (playersReady)
         {
             Services.PokerRules.SetCardIndicator();
