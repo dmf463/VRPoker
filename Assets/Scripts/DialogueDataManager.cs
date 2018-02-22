@@ -8,6 +8,7 @@ public class DialogueDataManager
 {
     private Dictionary<List<PlayerName>, List<Conversation>> dialogueDict;
     //dictionary keys are lists of poker players still in the game, values are lists of conversations for those combinations
+    public List<PlayerName> conversationKeys = new List<PlayerName>();
     private List<PlayerName> conversants = new List<PlayerName>();
     private List<PlayerName> potentialConversants = new List<PlayerName>(); //create a list to hold the names of the players we could potentially start a conversation with
 
@@ -17,7 +18,8 @@ public class DialogueDataManager
 		//ParseDialogueFile(Services.SoundManager.dialogueFile); //immediately parse the text file containing our dialogue
 	}
 
-    public void Update(){
+    public void Update()
+    {
         
     }
 
@@ -113,7 +115,7 @@ public class DialogueDataManager
                     string lineText = rowEntries[2]; //gets the text to be spoken, this isn't currently used in the game but will be needed for subtitles
                     string audioFileText = rowEntries[3]; //the string for the audiofile name
                                                           //Log(audioFileText);
-                    AudioClip audioFile = Resources.Load("Audio/Voice/TutorialVO/" + audioFileText) as AudioClip; //gets the audiofile from resources using the string name 
+                    AudioClip audioFile = Resources.Load("Audio/Voice/Current/" + audioFileText) as AudioClip; //gets the audiofile from resources using the string name 
                     //Debug.Log(audioFile);
                     AudioSource audioSource = GetAudioSourceFromString(playerNameText); //get the correct audio source based on the players name
 
@@ -159,13 +161,14 @@ public class DialogueDataManager
     {
         potentialConversants.Clear(); //clean slate for lists
         conversants.Clear();
+        Debug.Log("Getting Conversants");
 
         for (int i = 0; i < Services.Dealer.activePlayers.Count; i++) //populate that list with the names of our active players
         {
             potentialConversants.Add(Services.Dealer.activePlayers[i].playerName);
         }
 
-        int conversantCount = Random.Range(2, Services.Dealer.activePlayers.Count + 1); //choose a random number (min two) of active players as conversants
+        int conversantCount = Random.Range(2, Services.Dealer.activePlayers.Count); //choose a random number (min two) of active players as conversants
 
         for (int i = 0; i < conversantCount; i++)
         {
@@ -253,10 +256,11 @@ public class DialogueDataManager
         else //if the dialogue dict does not contain the names as a key
         {
             Debug.Log("dictionary does not contain key");
+
+            Services.SoundManager.conversationIsPlaying = false;
             return null;
         }
     }
-
 }
 
 
