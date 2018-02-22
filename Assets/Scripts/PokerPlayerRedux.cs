@@ -1308,8 +1308,10 @@ public class PokerPlayerRedux : MonoBehaviour{
                         }
                         else
                         {
-                            newChip = GameObject.Instantiate(chipToMake, tipPos + offSet, Quaternion.Euler(-90, 0, 0));
+                            newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
                             newChip.GetComponent<MeshRenderer>().material = Services.PokerRules.tipMaterial;
+                            Chip _chip = newChip.GetComponent<Chip>();
+                            newChip.GetComponent<Rigidbody>().velocity = _chip.BallisticVel(_chip.myTarget, _chip.flyTime);
                         }
                         newChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
                         if(!isTipping) Services.Dealer.chipsInPot.Add(newChip.GetComponent<Chip>());
@@ -1333,7 +1335,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             }
             else
             {
-                chipContainer = GameObject.Instantiate(new GameObject(), tipPos + containerOffset, playerBetZones[SeatPos].transform.rotation);
+                chipContainer = GameObject.Instantiate(new GameObject(), playerBetZones[SeatPos].transform.position + containerOffset, playerBetZones[SeatPos].transform.rotation);
             }
             if(!isTipping) chipContainer.tag = "TipContainer";
             else chipContainer.tag = "Container";
@@ -1381,9 +1383,11 @@ public class PokerPlayerRedux : MonoBehaviour{
                             }
                             else
                             {
-                                newChip = GameObject.Instantiate(chipToMake, tipPos + offSet, Quaternion.Euler(-90, 0, 0));
+                                newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
                                 newChip.GetComponent<MeshRenderer>().material = Services.PokerRules.tipMaterial;
                                 newChip.gameObject.tag = "Tip";
+                                Chip _chip = newChip.GetComponent<Chip>();
+                                newChip.GetComponent<Rigidbody>().velocity = _chip.BallisticVel(_chip.myTarget, _chip.flyTime);
                             }
                             newChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
                             betChips.Add(newChip);
@@ -1417,9 +1421,11 @@ public class PokerPlayerRedux : MonoBehaviour{
                             }
                             else
                             {
-                                newChip = GameObject.Instantiate(chipToMake, tipPos + offSet, Quaternion.Euler(-90, 0, 0));
+                                newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
                                 newChip.GetComponent<MeshRenderer>().material = Services.PokerRules.tipMaterial;
                                 newChip.gameObject.tag = "Tip";
+                                Chip _chip = newChip.GetComponent<Chip>();
+                                newChip.GetComponent<Rigidbody>().velocity = _chip.BallisticVel(_chip.myTarget, _chip.flyTime);
                             }
                             newChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
                             betChips.Add(newChip);
