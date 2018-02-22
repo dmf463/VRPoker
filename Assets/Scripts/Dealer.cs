@@ -171,7 +171,14 @@ public class Dealer : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.K))
         {
-            Services.SoundManager.PlayConversation();
+            if (!Services.SoundManager.conversationIsPlaying)
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    Services.SoundManager.PlayConversation();
+                    Debug.Log(gameObject + " started a conversation.");
+                }
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.D))

@@ -116,7 +116,7 @@ public class SoundManager : MonoBehaviour
     {
         if (!conversationIsPlaying)
         {
-            conversationIsPlaying = true;
+            //conversationIsPlaying = true;
             Conversation convoAudio = Services.DialogueDataManager.ReadyConversation(); //find us an appropriate conversation from our dictionary
             if (convoAudio != null)
             {

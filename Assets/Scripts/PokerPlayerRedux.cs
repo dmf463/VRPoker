@@ -1564,7 +1564,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                 {
                     //Services.SoundManager.PlayAsideConversation(UnityEngine.Random.Range(0, 5));
                     //Services.SoundManager.PlayAsideConversation(this);
-                    for (int i = 0; i < 20; i++)
+                    for (int i = 0; i < 100; i++)
                     {
                         Services.SoundManager.PlayConversation();
                         Debug.Log(gameObject + " started a conversation.");

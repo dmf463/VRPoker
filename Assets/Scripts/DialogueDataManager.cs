@@ -250,7 +250,9 @@ public class DialogueDataManager
             }
             if (correctConversation == -1) return null;
             //Debug.Log(possibleConversations[correctConversation].playerLines[0]);
+            Services.SoundManager.conversationIsPlaying = true;
             return possibleConversations[correctConversation]; //return the convo, the earliest that has not yet been played
+            
 
         }
         else //if the dialogue dict does not contain the names as a key
