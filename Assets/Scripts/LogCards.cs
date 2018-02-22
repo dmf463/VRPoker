@@ -102,10 +102,10 @@ public class LogCards : MonoBehaviour
                 {
                     Debug.Log(other.gameObject.name + " is already logged");
                 }
-                else if (other.gameObject.GetComponent<Rigidbody>().isKinematic)
-                {
-                    Debug.Log("is Kinematic");
-                }
+                //else if (other.gameObject.GetComponent<Rigidbody>().isKinematic)
+                //{
+                //    Debug.Log("is Kinematic");
+                //}
                 else if (Services.Dealer.deadCardsList.Contains(other.GetComponent<Card>()))
                 {
                     Debug.Log(other.gameObject.name + "card is dead");
@@ -163,6 +163,31 @@ public class LogCards : MonoBehaviour
             }
         }
         #endregion
+    }
+
+    public void OnTriggerStay(Collider other)
+    {
+        if (this.gameObject.name == "TheBoard" && Services.Dealer.playerToAct == null &&
+               Table.gameState != GameState.CleanUp &&
+                Table.gameState != GameState.PostHand &&
+                Table.gameState != GameState.NewRound)
+        {
+           if(Table.instance.board.Contains(other.GetComponent<Card>()) && !other.GetComponent<Card>().readyToFloat)
+            {
+                Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, .05f, false);
+            }
+
+        }
+        else if (this.gameObject.name == "BurnCards" && Services.Dealer.playerToAct == null &&
+             Table.gameState != GameState.CleanUp &&
+             Table.gameState != GameState.PostHand &&
+             Table.gameState != GameState.NewRound)
+        {
+            if (Table.instance.burn.Contains(other.GetComponent<Card>()) && !other.GetComponent<Card>().readyToFloat)
+            {
+                Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, .05f, false);
+            }
+        }
     }
 
 

@@ -1551,17 +1551,21 @@ public class PokerPlayerRedux : MonoBehaviour{
         if (!playerAudioSource.isPlaying && !playerIsInConversation && !Services.Dealer.inTutorial)
         {
             //Services.SoundManager.GetSourceAndPlay(playerAudioSource, foldAudio);
-            float chanceOfConvo = Random.Range(0, 100);
-            if (chanceOfConvo < 25f)
-            {
+           // float chanceOfConvo = Random.Range(0, 100);
+            //if (chanceOfConvo < 25f)
+            //{
                 if (!Services.SoundManager.conversationIsPlaying)
                 {
                     //Services.SoundManager.PlayAsideConversation(UnityEngine.Random.Range(0, 5));
                     //Services.SoundManager.PlayAsideConversation(this);
-                    Services.SoundManager.PlayConversation();
-                    Debug.Log(gameObject + " started a conversation.");
+                    for (int i = 0; i < 20; i++)
+                    {
+                        Services.SoundManager.PlayConversation();
+                        Debug.Log(gameObject + " started a conversation.");
+                    }
+                    
                 }
-            }
+            //}
             else
             {
                 if (Services.SoundManager.conversationIsPlaying)
