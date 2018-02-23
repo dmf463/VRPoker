@@ -80,15 +80,6 @@ public class PlayerGazeTrigger : MonoBehaviour
                 {
                     if (Table.gameState == GameState.PreFlop)
                     {
-                        //timeRemaining = Mathf.Max((timeRemaining - Time.deltaTime), 0); //after 1 second, this variable will be 0f;
-                        //progressImage.fillAmount = timeRemaining / timeSpanForEye;
-                        ////Debug.Log("time remaining = " + timeRemaining + " and fillAmount = " + progressImage.fillAmount);
-                        //if (timeRemaining <= 0.5f && !pokerPlayer.playerLookedAt)
-                        //{
-                        //    pokerPlayer.playerLookedAt = true;
-                        //    //Debug.Log("Ready to invoke next player");
-                        //    onEyeGazeComplete.Invoke();
-                        //}
                         if (!pokerPlayer.playerLookedAt)
                         {
                             pokerPlayer.playerLookedAt = true;
@@ -97,16 +88,6 @@ public class PlayerGazeTrigger : MonoBehaviour
                     }
                     else
                     {
-                        //timeRemaining = Mathf.Max((timeRemaining - Time.deltaTime), 0);
-                        //progressImage.fillAmount = timeRemaining / timeSpanForEye;
-                        ////Debug.Log("time remaining = " + timeRemaining + " and fillAmount = " + progressImage.fillAmount);
-                        //if (timeRemaining <= 0 && !pokerPlayer.playerLookedAt)
-                        //{
-                        //    pokerPlayer.playerLookedAt = true;
-                        //    Debug.Log("Ready to invoke next player");
-                        //    timeRemaining = timeSpanForEye;
-                        //    onEyeGazeComplete.Invoke();
-                        //}
                         if (!pokerPlayer.playerLookedAt)
                         {
                             pokerPlayer.playerLookedAt = true;
