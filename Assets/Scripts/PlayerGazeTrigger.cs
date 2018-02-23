@@ -14,20 +14,25 @@ public class PlayerGazeTrigger : MonoBehaviour
     public float rayDistance;
     public LayerMask mask;
     public UnityEvent onEyeGazeComplete;
-    public UnityEvent onQuestionMarkGazeComplete;
     PokerPlayerRedux pokerPlayer;
     public Image progressImage;
-    public Image questionMark;
     bool eyeActivated = false;
-    bool questionMarkActivated = false;
     float startTime;
     Ray cameraRay;
     RaycastHit cameraRayHit;
-    bool lerpDownEye = false;
+
+    bool callingPulse = false;
+    int pingPongCount = 0;
+    float emission = 0;
+    float glowSpeed = 10;
+    float maxGlow = 2;
+    Color startColor;
+
     // Use this for initialization
     void Start()
     {
         pokerPlayer = GetComponentInParent<PokerPlayerRedux>();
+        startColor = new Vector4(252, 255, 208, 255);
         
         //Debug.Log("PokerPlayer = " + pokerPlayer);
     }
@@ -35,7 +40,7 @@ public class PlayerGazeTrigger : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        PulseGlow();
         if (!Services.Dealer.OutsideVR)
         {
             //update our UI image
@@ -51,6 +56,7 @@ public class PlayerGazeTrigger : MonoBehaviour
                 if (!eyeActivated)
                 {
                     startTime = Time.time;
+                    progressImage.GetComponent<Image>().color = startColor;
                     eyeActivated = true;
                     if (Table.gameState == GameState.PreFlop) timeSpanForEye = 1.5f;
                     else timeSpanForEye = .5f;
@@ -86,8 +92,7 @@ public class PlayerGazeTrigger : MonoBehaviour
                         if (!pokerPlayer.playerLookedAt)
                         {
                             pokerPlayer.playerLookedAt = true;
-                            progressImage.fillAmount = 0;
-                            onEyeGazeComplete.Invoke();
+                            StartPulse();
                         }
                     }
                     else
@@ -105,12 +110,48 @@ public class PlayerGazeTrigger : MonoBehaviour
                         if (!pokerPlayer.playerLookedAt)
                         {
                             pokerPlayer.playerLookedAt = true;
-                            progressImage.fillAmount = 0;
-                            onEyeGazeComplete.Invoke();
+                            StartPulse();
                         }
                     }
                 }
             }
         }
+    }
+    public void StartPulse()
+    {
+        callingPulse = true;
+        startTime = Time.time;
+        pingPongCount = 0;
+        emission = 0;
+    }
+
+    public void PulseGlow()
+    {
+        if (callingPulse)
+        {
+            Color baseColor = new Vector4(0.8235294f, 0.1574394f, 0.5570934f, 255);
+            float previousEmission = emission;
+            emission = PingPong(glowSpeed * (startTime - Time.time), 0, maxGlow);
+            float currentEmission = emission;
+            Color finalColor = (baseColor * Mathf.LinearToGammaSpace(emission));
+            finalColor.a = 255;
+            progressImage.GetComponent<Image>().color = finalColor;
+            if (currentEmission < previousEmission)
+            {
+                pingPongCount++;
+            }
+            else if (currentEmission > previousEmission && pingPongCount >= 1)
+            {
+                callingPulse = false;
+                progressImage.GetComponent<Image>().color = startColor;
+                onEyeGazeComplete.Invoke();
+                progressImage.fillAmount = 0;
+            }
+        }
+    }
+
+    float PingPong(float time, float minLength, float maxLength)
+    {
+        return Mathf.PingPong(time, maxLength - minLength) + minLength;
     }
 }
