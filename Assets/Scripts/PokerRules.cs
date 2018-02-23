@@ -416,7 +416,7 @@ public class PokerRules : MonoBehaviour {
 
     public void CorrectMistakesPreFlop(float speed)
     {
-        // Debug.Log("CorrectingMistakes");
+        Debug.Log("CorrectingMistakes");
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
         for (int i = 0; i < Services.Dealer.players.Count; i++)
         {

@@ -1567,7 +1567,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                     for (int i = 0; i < 100; i++)
                     {
                         Services.SoundManager.PlayConversation();
-                        Debug.Log(gameObject + " started a conversation.");
+                        //Debug.Log(gameObject + " started a conversation.");
                     }
                     
                 }
@@ -1583,7 +1583,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                     playerAudioSource.volume = 1f;
                 }
                 Services.SoundManager.GetSourceAndPlay(playerAudioSource, foldAudio);
-                Debug.Log(gameObject + " said fold.");
+                //Debug.Log(gameObject + " said fold.");
             }
 
         }

@@ -7,7 +7,6 @@ using Valve.VR.InteractionSystem;
 public class Chip : InteractionSuperClass {
 
     public Transform myTarget;  // drag the target here
-    //GameObject cannonball;  // drag the cannonball prefab here
     public float flyTime;  // elevation angle
 
     public float flying_start_time, flight_journey_distance;
@@ -18,8 +17,6 @@ public class Chip : InteractionSuperClass {
     public float rotSpeed;
     public bool isTip = false;
     public bool isLerping = false;
-    //super important, this is how much the chip costs, we set this in chipConfig and assign it at start
-    //public int chipValue;
 
     public ChipData chipData;
 
