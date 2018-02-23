@@ -428,7 +428,6 @@ public class SoundManager : MonoBehaviour
                 {
                     PlayTutorialAudio(tutorialIndex);
                     Table.instance.RestartRound();
-                    Services.Dealer.inTutorial = false;
                 }
 
             }
@@ -436,27 +435,6 @@ public class SoundManager : MonoBehaviour
     }
 #endregion
 
-
-
-
-    //	public void PlayAsideConversation(int convo)
-    //	{
-    //		if(convo == 0){
-    //            if(!aside1Played) StartCoroutine("Aside1");
-    //		}
-    //		if(convo == 1){
-    //            if(!aside2Played) StartCoroutine("Aside2");
-    //		}
-    //		if(convo == 2){
-    //			if(!aside3Played) StartCoroutine("Aside3");
-    //		}
-    //		if(convo == 3){
-    //			if(!aside5Played) StartCoroutine("Aside5");
-    //		}
-    //		if(convo == 4){
-    //			if(!aside6Played) StartCoroutine("Aside6");
-    //		}
-    //	}
 
     public void PlayAsideConversation(PokerPlayerRedux player)
 	{

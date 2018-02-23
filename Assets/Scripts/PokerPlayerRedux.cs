@@ -362,29 +362,25 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public void DetermineAction(float returnRate, PokerPlayerRedux player)
     {
-        if (Services.Dealer.inTutorial) Call();
-        else
+        switch (playerName)
         {
-            switch (playerName)
-            {
-                case PlayerName.Casey:
-                    Services.PlayerBehaviour.CASEY_DetermineAction(returnRate, player);
-                    break;
-                case PlayerName.Zombie:
-                    Services.PlayerBehaviour.ZOMBIE_DetermineAction(returnRate, player);
-                    break;
-                case PlayerName.Minnie:
-                    Services.PlayerBehaviour.MINNIE_DetermineAction(returnRate, player);
-                    break;
-                case PlayerName.Nathaniel:
-                    Services.PlayerBehaviour.NATHANIEL_DetermineAction(returnRate, player);
-                    break;
-                case PlayerName.Floyd:
-                    Services.PlayerBehaviour.FLOYD_DetermineAction(returnRate, player);
-                    break;
-                default:
-                    break;
-            }
+            case PlayerName.Casey:
+                Services.PlayerBehaviour.CASEY_DetermineAction(returnRate, player);
+                break;
+            case PlayerName.Zombie:
+                Services.PlayerBehaviour.ZOMBIE_DetermineAction(returnRate, player);
+                break;
+            case PlayerName.Minnie:
+                Services.PlayerBehaviour.MINNIE_DetermineAction(returnRate, player);
+                break;
+            case PlayerName.Nathaniel:
+                Services.PlayerBehaviour.NATHANIEL_DetermineAction(returnRate, player);
+                break;
+            case PlayerName.Floyd:
+                Services.PlayerBehaviour.FLOYD_DetermineAction(returnRate, player);
+                break;
+            default:
+                break;
         }
     }
     public void Fold()
@@ -998,8 +994,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             Bet(tipAmount, true);
             if (!playerAudioSource.isPlaying &&
                 !playerIsInConversation &&
-                !Services.SoundManager.conversationIsPlaying &&
-                !Services.Dealer.inTutorial)
+                !Services.SoundManager.conversationIsPlaying)
             {
                 Services.SoundManager.GetSourceAndPlay(playerAudioSource, tipAudio);
             }
@@ -1012,8 +1007,7 @@ public class PokerPlayerRedux : MonoBehaviour{
         {
             if (!playerAudioSource.isPlaying &&
                 !playerIsInConversation &&
-                !Services.SoundManager.conversationIsPlaying &&
-                !Services.Dealer.inTutorial)
+                !Services.SoundManager.conversationIsPlaying)
             {
                 Services.SoundManager.GetSourceAndPlay(playerAudioSource, wrongChipsAudio);
             }
@@ -1538,7 +1532,7 @@ public class PokerPlayerRedux : MonoBehaviour{
     //def gonna need to refactor
     public void SayCheck()
     {
-        if (!playerAudioSource.isPlaying && !playerIsInConversation && !Services.Dealer.inTutorial)
+        if (!playerAudioSource.isPlaying && !playerIsInConversation)
         {
             if (Services.SoundManager.conversationIsPlaying)
             {
@@ -1554,7 +1548,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public void SayFold()
     {
-        if (!playerAudioSource.isPlaying && !playerIsInConversation && !Services.Dealer.inTutorial)
+        if (!playerAudioSource.isPlaying && !playerIsInConversation)
         {
             //Services.SoundManager.GetSourceAndPlay(playerAudioSource, foldAudio);
            // float chanceOfConvo = Random.Range(0, 100);
@@ -1592,7 +1586,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public void SayRaise()
     {
-        if (!playerAudioSource.isPlaying && !playerIsInConversation && !Services.Dealer.inTutorial)
+        if (!playerAudioSource.isPlaying && !playerIsInConversation)
         {
             if (Services.SoundManager.conversationIsPlaying)
             {
@@ -1608,7 +1602,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public void SayBet()
     {
-        if (!playerAudioSource.isPlaying && !playerIsInConversation && !Services.Dealer.inTutorial)
+        if (!playerAudioSource.isPlaying && !playerIsInConversation)
         {
             if (Services.SoundManager.conversationIsPlaying)
             {
@@ -1624,7 +1618,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public void SayCall()
     {
-        if (!playerAudioSource.isPlaying && !playerIsInConversation && !Services.Dealer.inTutorial)
+        if (!playerAudioSource.isPlaying && !playerIsInConversation)
         {
             if (Services.SoundManager.conversationIsPlaying)
             {
@@ -1640,7 +1634,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public void SayAllIn()
     {
-        if (!playerAudioSource.isPlaying && !playerIsInConversation && !Services.Dealer.inTutorial)
+        if (!playerAudioSource.isPlaying && !playerIsInConversation)
         {
             if (Services.SoundManager.conversationIsPlaying)
             {
@@ -1657,7 +1651,7 @@ public class PokerPlayerRedux : MonoBehaviour{
     //determines which reaction to have
     public void WinnerReactions()
     {
-        if (!playerAudioSource.isPlaying && !playerIsInConversation && !Services.SoundManager.conversationIsPlaying && !Services.Dealer.inTutorial)
+        if (!playerAudioSource.isPlaying && !playerIsInConversation && !Services.SoundManager.conversationIsPlaying)
         {
             Services.SoundManager.GetSourceAndPlay(playerAudioSource, winAudio);
         }

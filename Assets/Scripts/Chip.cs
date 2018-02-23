@@ -18,6 +18,14 @@ public class Chip : InteractionSuperClass {
     public bool isTip = false;
     public bool isLerping = false;
 
+    bool callingPulse = false;
+    bool stopPulse = false;
+    int pingPongCount = 0;
+    float emission = 0;
+    float glowSpeed = 1;
+    float maxGlow = 2;
+    float startTime;
+
     public ChipData chipData;
 
     public bool isAtDestination = false;
@@ -117,6 +125,11 @@ public class Chip : InteractionSuperClass {
 	void Update () {
 
         if (chipStack != null) stackValue = chipStack.stackValue;
+        PulseGlow();
+        if(Table.gameState == GameState.ShowDown && chipForBet && !callingPulse && !stopPulse)
+        {
+            StartPulse();
+        }
     }
 
     void FixedUpdate()
@@ -155,6 +168,7 @@ public class Chip : InteractionSuperClass {
                             Vector3 dest = hand.transform.TransformPoint(Services.PokerRules.chipPositionWhenPushing[spotIndex]);
                             if (!pushingChip && Services.PokerRules.chipGroup.Count <= 10)
                             {
+                                maxGlow = 1;
                                 Services.PokerRules.chipGroup.Add(this);
                                 GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
                                 foreach (GameObject chip in allChips)
@@ -173,6 +187,7 @@ public class Chip : InteractionSuperClass {
                         {
                             if (pushingChip && (handPushingChip.transform.position.y - transform.position.y) > HEIGHT_THRESHOLD)
                             {
+                                maxGlow = 2;
                                 Services.PokerRules.chipGroup.Clear();
                                 GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
                                 foreach (GameObject chip in allChips)
@@ -195,6 +210,7 @@ public class Chip : InteractionSuperClass {
                         handPushingChip = null;
                         pushingChip = false;
                         spotIndex = 0;
+                        stopPulse = true;
                         //InitializeLerp(gameObject, owner.GetComponentInChildren<LogCards>().gameObject.transform.position);
                     }
                     else if (Table.gameState == GameState.PostHand)
@@ -212,6 +228,7 @@ public class Chip : InteractionSuperClass {
                         Services.Dealer.handIsOccupied = false;
                         spotIndex = 0;
                         Services.PokerRules.chipsBeingPushed = 0;
+                        stopPulse = true;
                     }
                 }
             }
@@ -507,6 +524,46 @@ public GameObject FindChipPrefab(int chipValue)
                 break;
         }
         return chipPrefab;
+    }
+
+    public void StartPulse()
+    {
+        callingPulse = true;
+        startTime = Time.time;
+        pingPongCount = 0;
+        emission = 0;
+    }
+
+    public void PulseGlow()
+    {
+        if (callingPulse)
+        {
+            Color baseColor = new Vector4(0.8235294f, 0.1574394f, 0.5570934f, 0);
+            float previousEmission = emission;
+            emission = PingPong(glowSpeed * (startTime - Time.time), 0, maxGlow);
+            float currentEmission = emission;
+            Color finalColor = baseColor * Mathf.LinearToGammaSpace(emission);
+            GetComponent<Renderer>().material.SetColor("_EmissionColor", finalColor);
+            if (stopPulse)
+            {
+                callingPulse = false;
+                GetComponent<Renderer>().material.SetColor("_EmissionColor", Color.black);
+            }
+            //if (currentEmission < previousEmission)
+            //{
+            //    pingPongCount++;
+            //}
+            //else if (currentEmission > previousEmission && pingPongCount >= 1)
+            //{
+            //    callingPulse = false;
+            //    GetComponent<Renderer>().material.SetColor("_EmissionColor", Color.black);
+            //}
+        }
+    }
+
+    float PingPong(float time, float minLength, float maxLength)
+    {
+        return Mathf.PingPong(time, maxLength - minLength) + minLength;
     }
 
 }

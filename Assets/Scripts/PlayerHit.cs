@@ -8,19 +8,16 @@ public class PlayerHit : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         GameObject cardDeck = GameObject.FindGameObjectWithTag("CardDeck");
-        if(cardDeck != null)
+        if (cardDeck != null)
         {
             CardDeckScript deckScript = cardDeck.GetComponent<CardDeckScript>();
             if ((other.gameObject.tag == "PlayingCard" && !deckScript.deckWasThrown) || other.gameObject.tag == "Chip" || other.gameObject.tag == "Hand")
             {
-                if (!Services.Dealer.inTutorial)
-                {
-                    PokerPlayerRedux player = GetComponentInParent<PokerPlayerRedux>();
-                    //Debug.Log("WE HIT SOMETHING");
-                    AudioClip hitSound = player.cardHitAudio;
-                    Services.SoundManager.GetSourceAndPlay(player.playerAudioSource, hitSound);
-                    Table.gameState = GameState.Misdeal;
-                }
+                PokerPlayerRedux player = GetComponentInParent<PokerPlayerRedux>();
+                //Debug.Log("WE HIT SOMETHING");
+                AudioClip hitSound = player.cardHitAudio;
+                Services.SoundManager.GetSourceAndPlay(player.playerAudioSource, hitSound);
+                Table.gameState = GameState.Misdeal;
             }
         }
     }

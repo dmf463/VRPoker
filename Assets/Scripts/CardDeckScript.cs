@@ -518,7 +518,7 @@ public class CardDeckScript : InteractionSuperClass {
     {
         yield return new WaitForSeconds(time);
         PokerPlayerRedux randomPlayer = Services.Dealer.players[Random.Range(0, Services.Dealer.players.Count)];
-        if (!randomPlayer.playerAudioSource.isPlaying && !randomPlayer.playerIsInConversation && !Services.SoundManager.conversationIsPlaying && !Services.Dealer.inTutorial)
+        if (!randomPlayer.playerAudioSource.isPlaying && !randomPlayer.playerIsInConversation && !Services.SoundManager.conversationIsPlaying)
         {
             Services.Dealer.misdealAudioPlayed = true;
             Services.SoundManager.GetSourceAndPlay(randomPlayer.playerAudioSource, randomPlayer.fiftyTwoAudio);

@@ -36,9 +36,6 @@ public class Dealer : MonoBehaviour
     public List<Card> deadCardsList = new List<Card>();
     //we set this to true if we're outside VR so we can text
     public bool OutsideVR = false;
-
-    //TUTORIAL STUFF 
-    public bool inTutorial = true;
  
     bool first_time = true;
 
@@ -132,15 +129,6 @@ public class Dealer : MonoBehaviour
         Table.dealerState = DealerState.DealingState;
         lastGameState = GameState.NewRound;
         startingGameState = new PokerGameData(0, players);
-        Services.TextManager.inTutorial = true;
-
-        if (inTutorial)
-        {
-            if (Services.SoundManager.handCounter == 1 && Services.SoundManager.tutorialAudioFiles[0].hasBeenPlayed == false)
-            {
-                Services.SoundManager.PlayTutorialAudio(0);
-            }
-        }
     }
 
     // Update is called once per frame
@@ -149,7 +137,7 @@ public class Dealer : MonoBehaviour
         tipIndicator.GetComponent<TextMeshPro>().text = tipCount.ToString();
         WaitingToGrabCardsOn_ThrownDeck();
         WaitingToGrabCardsOn_MisDeal();
-        RunTutorial();
+        //RunTutorial();
         IncreaseBlinds();
         CheckGameState();
 
@@ -366,10 +354,8 @@ public class Dealer : MonoBehaviour
                     !players[i].playerIsInConversation &&
                     !Services.SoundManager.conversationIsPlaying)
                 {
-                    if (!inTutorial)
-                    {
-                        Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].misdealAudio);
-                    }
+
+                    Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].misdealAudio);
                 }
             }
             //messageText.text = "You misdealt the hand, click both triggers to restart the round.";
@@ -387,116 +373,116 @@ public class Dealer : MonoBehaviour
         }
     }
 
-    public void RunTutorial()
-    {
-        if (inTutorial)
-        {
-            Services.SoundManager.CheckForTutorialAudioToBePlayed();
-            #region Tutorial sound 
-            //    if (roundCounter == 1)
-            //    {
-            //        //player picks up deck for first time 
-            //        if (Services.SoundManager.tutorialAudioFiles[0].finishedPlaying &&
-            //          havePickedUpDeckOnce &&
-            //          Services.SoundManager.tutorialAudioFiles[1].hasBeenPlayed == false)
-            //        {
-            //            Services.SoundManager.PlayTutorialAudio(1);
+    //public void RunTutorial()
+    //{
+    //    if (inTutorial)
+    //    {
+    //        Services.SoundManager.CheckForTutorialAudioToBePlayed();
+    //        #region Tutorial sound 
+    //        //    if (roundCounter == 1)
+    //        //    {
+    //        //        //player picks up deck for first time 
+    //        //        if (Services.SoundManager.tutorialAudioFiles[0].finishedPlaying &&
+    //        //          havePickedUpDeckOnce &&
+    //        //          Services.SoundManager.tutorialAudioFiles[1].hasBeenPlayed == false)
+    //        //        {
+    //        //            Services.SoundManager.PlayTutorialAudio(1);
 
-            //        }
-            //        //player deals face up card to each player 
-            //        else if (Services.SoundManager.tutorialAudioFiles[1].finishedPlaying &&
-            //          cardsTouchingTable.Count >= 5 &&
-            //          !Services.SoundManager.tutorialAudioFiles[2].hasBeenPlayed)
-            //        {
-            //            int cardsFaceUp = 0;
-            //            for (int i = 0; i < cardsTouchingTable.Count; i++)
-            //            {
-            //                if (cardsTouchingTable[i].cardIsFlipped) cardsFaceUp++;
-            //            }
-            //            if (cardsFaceUp >= 5)
-            //            {
-            //                Services.SoundManager.PlayTutorialAudio(2);
-            //            }
-            //        }
-            //        //player placed dealer button in correct place 
-            //        else if (Services.SoundManager.tutorialAudioFiles[2].finishedPlaying &&
-            //          !Services.SoundManager.tutorialAudioFiles[3].hasBeenPlayed)
-            //        {
-            //            Services.SoundManager.PlayTutorialAudio(3);
-            //        }
-            //        //player collects cards into deck 
-            //        else if (Services.SoundManager.tutorialAudioFiles[3].finishedPlaying &&
-            //          haveShuffledOnce &&
-            //          !Services.SoundManager.tutorialAudioFiles[5].hasBeenPlayed)
-            //        {
-            //            Services.SoundManager.PlayTutorialAudio(5);
-            //        }
-            //        //player deals 2 cards to each character 
-            //        else if (Services.SoundManager.tutorialAudioFiles[5].finishedPlaying &&
-            //          Table.gameState == GameState.PreFlop &&
-            //          !Services.SoundManager.tutorialAudioFiles[6].hasBeenPlayed)
-            //        {
-            //            Services.SoundManager.PlayTutorialAudio(6);
-            //        }
-            //        //looks at first player 
-            //        else if (Services.SoundManager.tutorialAudioFiles[6].finishedPlaying &&
-            //          !Services.SoundManager.tutorialAudioFiles[7].hasBeenPlayed)
-            //        {
-            //            Services.SoundManager.PlayTutorialAudio(7);
-            //        }
-            //        //round over 
-            //        else if (Services.SoundManager.tutorialAudioFiles[7].finishedPlaying &&
-            //          !Services.SoundManager.tutorialAudioFiles[8].hasBeenPlayed)
-            //        {
-            //            Services.SoundManager.PlayTutorialAudio(8);
-            //        }
-            //        //player puts cards in burn pile 
-            //        else if (Services.SoundManager.tutorialAudioFiles[8].finishedPlaying &&
-            //          !Services.SoundManager.tutorialAudioFiles[9].hasBeenPlayed)
-            //        {
-            //            Services.SoundManager.PlayTutorialAudio(9);
-            //        }
-            //        //puts 3 cards in center 
-            //        else if (Services.SoundManager.tutorialAudioFiles[9].finishedPlaying &&
-            //          !Services.SoundManager.tutorialAudioFiles[10].hasBeenPlayed)
-            //        {
-            //            Services.SoundManager.PlayTutorialAudio(10);
-            //        }
-            //        //round over 
-            //        else if (Services.SoundManager.tutorialAudioFiles[10].finishedPlaying &&
-            //          !Services.SoundManager.tutorialAudioFiles[11].hasBeenPlayed)
-            //        {
-            //            Services.SoundManager.PlayTutorialAudio(11);
-            //        }
-            //        //puts card in center 
-            //        else if (Services.SoundManager.tutorialAudioFiles[11].finishedPlaying &&
-            //          !Services.SoundManager.tutorialAudioFiles[12].hasBeenPlayed)
-            //        {
-            //            Services.SoundManager.PlayTutorialAudio(12);
-            //        }
-            //        //round over 
-            //        else if (Services.SoundManager.tutorialAudioFiles[12].finishedPlaying &&
-            //          !Services.SoundManager.tutorialAudioFiles[13].hasBeenPlayed)
-            //        {
-            //            Services.SoundManager.PlayTutorialAudio(13);
-            //        }
-            //        //end of round 
-            //        else if (Services.SoundManager.tutorialAudioFiles[13].finishedPlaying &&
-            //          !Services.SoundManager.tutorialAudioFiles[14].hasBeenPlayed)
-            //        {
-            //            Services.SoundManager.PlayTutorialAudio(14);
-            //        }
-            //        //player pushes chips to the winner 
-            //        else if (Services.SoundManager.tutorialAudioFiles[14].finishedPlaying &&
-            //          !Services.SoundManager.tutorialAudioFiles[15].hasBeenPlayed)
-            //        {
-            //            Services.SoundManager.PlayTutorialAudio(15);
-            //        }
+    //        //        }
+    //        //        //player deals face up card to each player 
+    //        //        else if (Services.SoundManager.tutorialAudioFiles[1].finishedPlaying &&
+    //        //          cardsTouchingTable.Count >= 5 &&
+    //        //          !Services.SoundManager.tutorialAudioFiles[2].hasBeenPlayed)
+    //        //        {
+    //        //            int cardsFaceUp = 0;
+    //        //            for (int i = 0; i < cardsTouchingTable.Count; i++)
+    //        //            {
+    //        //                if (cardsTouchingTable[i].cardIsFlipped) cardsFaceUp++;
+    //        //            }
+    //        //            if (cardsFaceUp >= 5)
+    //        //            {
+    //        //                Services.SoundManager.PlayTutorialAudio(2);
+    //        //            }
+    //        //        }
+    //        //        //player placed dealer button in correct place 
+    //        //        else if (Services.SoundManager.tutorialAudioFiles[2].finishedPlaying &&
+    //        //          !Services.SoundManager.tutorialAudioFiles[3].hasBeenPlayed)
+    //        //        {
+    //        //            Services.SoundManager.PlayTutorialAudio(3);
+    //        //        }
+    //        //        //player collects cards into deck 
+    //        //        else if (Services.SoundManager.tutorialAudioFiles[3].finishedPlaying &&
+    //        //          haveShuffledOnce &&
+    //        //          !Services.SoundManager.tutorialAudioFiles[5].hasBeenPlayed)
+    //        //        {
+    //        //            Services.SoundManager.PlayTutorialAudio(5);
+    //        //        }
+    //        //        //player deals 2 cards to each character 
+    //        //        else if (Services.SoundManager.tutorialAudioFiles[5].finishedPlaying &&
+    //        //          Table.gameState == GameState.PreFlop &&
+    //        //          !Services.SoundManager.tutorialAudioFiles[6].hasBeenPlayed)
+    //        //        {
+    //        //            Services.SoundManager.PlayTutorialAudio(6);
+    //        //        }
+    //        //        //looks at first player 
+    //        //        else if (Services.SoundManager.tutorialAudioFiles[6].finishedPlaying &&
+    //        //          !Services.SoundManager.tutorialAudioFiles[7].hasBeenPlayed)
+    //        //        {
+    //        //            Services.SoundManager.PlayTutorialAudio(7);
+    //        //        }
+    //        //        //round over 
+    //        //        else if (Services.SoundManager.tutorialAudioFiles[7].finishedPlaying &&
+    //        //          !Services.SoundManager.tutorialAudioFiles[8].hasBeenPlayed)
+    //        //        {
+    //        //            Services.SoundManager.PlayTutorialAudio(8);
+    //        //        }
+    //        //        //player puts cards in burn pile 
+    //        //        else if (Services.SoundManager.tutorialAudioFiles[8].finishedPlaying &&
+    //        //          !Services.SoundManager.tutorialAudioFiles[9].hasBeenPlayed)
+    //        //        {
+    //        //            Services.SoundManager.PlayTutorialAudio(9);
+    //        //        }
+    //        //        //puts 3 cards in center 
+    //        //        else if (Services.SoundManager.tutorialAudioFiles[9].finishedPlaying &&
+    //        //          !Services.SoundManager.tutorialAudioFiles[10].hasBeenPlayed)
+    //        //        {
+    //        //            Services.SoundManager.PlayTutorialAudio(10);
+    //        //        }
+    //        //        //round over 
+    //        //        else if (Services.SoundManager.tutorialAudioFiles[10].finishedPlaying &&
+    //        //          !Services.SoundManager.tutorialAudioFiles[11].hasBeenPlayed)
+    //        //        {
+    //        //            Services.SoundManager.PlayTutorialAudio(11);
+    //        //        }
+    //        //        //puts card in center 
+    //        //        else if (Services.SoundManager.tutorialAudioFiles[11].finishedPlaying &&
+    //        //          !Services.SoundManager.tutorialAudioFiles[12].hasBeenPlayed)
+    //        //        {
+    //        //            Services.SoundManager.PlayTutorialAudio(12);
+    //        //        }
+    //        //        //round over 
+    //        //        else if (Services.SoundManager.tutorialAudioFiles[12].finishedPlaying &&
+    //        //          !Services.SoundManager.tutorialAudioFiles[13].hasBeenPlayed)
+    //        //        {
+    //        //            Services.SoundManager.PlayTutorialAudio(13);
+    //        //        }
+    //        //        //end of round 
+    //        //        else if (Services.SoundManager.tutorialAudioFiles[13].finishedPlaying &&
+    //        //          !Services.SoundManager.tutorialAudioFiles[14].hasBeenPlayed)
+    //        //        {
+    //        //            Services.SoundManager.PlayTutorialAudio(14);
+    //        //        }
+    //        //        //player pushes chips to the winner 
+    //        //        else if (Services.SoundManager.tutorialAudioFiles[14].finishedPlaying &&
+    //        //          !Services.SoundManager.tutorialAudioFiles[15].hasBeenPlayed)
+    //        //        {
+    //        //            Services.SoundManager.PlayTutorialAudio(15);
+    //        //        }
 
-            //    }
-            #endregion
-        }
-    }
+    //        //    }
+    //        #endregion
+    //    }
+    //}
 
     void IncreaseBlinds()
     {
@@ -1243,10 +1229,10 @@ public class Dealer : MonoBehaviour
     //this gets called like a million times
     public void GivePlayersWinnings()
     {
-        int winnerChipStack = 0;    
+        int winnerChipStack = 0;
         foreach (PokerPlayerRedux player in players)
         {
-            if(player.PlayerState == PlayerState.Winner)
+            if (player.PlayerState == PlayerState.Winner)
             {
                 //Debug.Log("chipCountToCheckWhenWinning = " + player.ChipCountToCheckWhenWinning + " and potAmountToGiveWinner = " + potAmountToGiveWinner);
                 winnerChipStack = player.ChipCountToCheckWhenWinning + player.chipsWon;
@@ -1265,10 +1251,10 @@ public class Dealer : MonoBehaviour
                     player.HasBeenPaid = true;
                 }
             }
-            else if(player.PlayerState == PlayerState.Loser)
+            else if (player.PlayerState == PlayerState.Loser)
             {
                 winnerChipStack = player.ChipCountToCheckWhenWinning + potAmountToGiveWinner;
-                if(player.chipCount == winnerChipStack)
+                if (player.chipCount == winnerChipStack)
                 {
                     //messageText.text = "I think you messed up, I didn't win this money.";
                 }
@@ -1285,30 +1271,27 @@ public class Dealer : MonoBehaviour
             winnersPaid = 0;
             numberOfWinners = 0;
 
-			for (int i = 0; i < players.Count; i++) 
-			{
+            for (int i = 0; i < players.Count; i++)
+            {
                 int winnerCount = 0;
-				if(players[i].PlayerState == PlayerState.Winner)
-				{
+                if (players[i].PlayerState == PlayerState.Winner)
+                {
                     for (int playersChecked = 0; playersChecked < players.Count; playersChecked++)
                     {
-                        if(players[playersChecked].PlayerState == PlayerState.Winner)
+                        if (players[playersChecked].PlayerState == PlayerState.Winner)
                         {
                             winnerCount++;
                         }
                     }
-					if(!players[i].playerAudioSource.isPlaying && 
-                       !players[i].playerIsInConversation && 
+                    if (!players[i].playerAudioSource.isPlaying &&
+                       !players[i].playerIsInConversation &&
                        !Services.SoundManager.conversationIsPlaying &&
                        winnerCount < 2)
-					{
-                        if (!inTutorial)
-                        {
-                            Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].tipAudio);
-                        }
+                    {
+                        Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].tipAudio);
                     }
-				}
-			}
+                }
+            }
         }
     }
 
