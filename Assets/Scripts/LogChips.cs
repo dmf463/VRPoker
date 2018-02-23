@@ -77,7 +77,7 @@ public class LogChips : MonoBehaviour
                                     other.GetComponent<Chip>().owner = Services.Dealer.players[i];
                                     ChipStack chipStack;
                                     chipStack = other.GetComponent<Chip>().chipStack;
-                                    Debug.Log("adding chipStack of " + chipStack.stackValue);
+                                    //Debug.Log("adding chipStack of " + chipStack.stackValue);
                                     Table.instance.AddChipTo(playerDestinations[i], chipStack.stackValue);
                                     other.GetComponent<Chip>().isAtDestination = true;
                                 }
@@ -112,7 +112,7 @@ public class LogChips : MonoBehaviour
         {
             if (Services.Dealer.playersHaveBeenEvaluated)
             {
-                Debug.Log("chip is leaving");
+                //Debug.Log("chip is leaving");
                 for (int i = 0; i < playerNames.Count; i++)
                 {
                     if(player != null)

@@ -388,7 +388,10 @@ public class PokerPlayerRedux : MonoBehaviour{
         SayFold();
         foreach (Card card in Table.instance.playerCards[SeatPos])
         {
-            card.transform.position = Table.instance.playerFoldZones[SeatPos].transform.position;
+            //card.transform.position = Table.instance.playerFoldZones[SeatPos].transform.position;
+            card.InitializeLerp(GameObject.Find("BurnCards").transform.position);
+            StartCoroutine(card.LerpCardPos(GameObject.Find("BurnCards").transform.position, 3));
+            StartCoroutine(card.StopLerp(GameObject.Find("BurnCards").transform.position));
             card.cardMarkedForDestruction = false;
             Services.Dealer.deadCardsList.Add(card);
         }

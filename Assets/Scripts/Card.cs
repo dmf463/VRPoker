@@ -654,6 +654,7 @@ public class Card : InteractionSuperClass {
             if (yPos == 0) yPos = GetCardPos().y;
             if (rb != null) rb.useGravity = false;
             rb.constraints = RigidbodyConstraints.FreezeAll;
+            GetComponent<BoxCollider>().enabled = false;
             transform.position = new Vector3(transform.position.x, yPos + Mathf.PingPong(Time.time / speed, distance), transform.position.z);
         }
         else
@@ -661,7 +662,6 @@ public class Card : InteractionSuperClass {
             if (rb != null) rb.useGravity = true;
         }
     }
-
 
     public Vector3 GetCardPos()
     {
@@ -740,6 +740,11 @@ public class Card : InteractionSuperClass {
         Transform obj = GameObject.Find(comparisonPoint).transform;
         Vector3 targetDir = obj.position - transform.position;
         return Vector3.Angle(targetDir, -transform.forward);
+    }
+
+    public void FloatAroundAfterFold()
+    {
+
     }
 
     public void StartPulse()
