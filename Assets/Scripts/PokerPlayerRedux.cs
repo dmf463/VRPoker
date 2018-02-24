@@ -391,7 +391,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             //card.transform.position = Table.instance.playerFoldZones[SeatPos].transform.position;
             card.InitializeLerp(GameObject.Find("BurnCards").transform.position);
             StartCoroutine(card.LerpCardPos(GameObject.Find("BurnCards").transform.position, 3));
-            StartCoroutine(card.StopLerp(GameObject.Find("BurnCards").transform.position));
+            StartCoroutine(card.StopFoldLerp(GameObject.Find("BurnCards").transform.position));
             card.cardMarkedForDestruction = false;
             Services.Dealer.deadCardsList.Add(card);
         }

@@ -24,6 +24,14 @@ public class Card : InteractionSuperClass {
     float pingPongCount = 0;
     float startTime;
     float emission;
+    public bool foldedCards = false;
+
+    private float radius;
+    private float theta;
+    private float height;
+    Vector3 centerPoint;
+    public float noiseMagnitude;
+    public float noiseSpeed;
 
     public bool testingTorque;
 
@@ -87,6 +95,7 @@ public class Card : InteractionSuperClass {
     // Use this for initialization
     void Start() {
 
+        centerPoint = GameObject.Find("BurnCards").transform.position;
         cardDeck = GameObject.FindGameObjectWithTag("CardDeck"); //DEF will need to change this for recoupling purposes.
         deckScript = cardDeck.GetComponent<CardDeckScript>();  //gonna need to rework A LOT
         rb = GetComponent<Rigidbody>();
@@ -104,7 +113,12 @@ public class Card : InteractionSuperClass {
     // Update is called once per frame
     void Update() {
 
-        if (Input.GetKeyDown(KeyCode.G)) StartPulse();
+        if (foldedCards)
+        {
+            //Vector3 rotPos = GameObject.Find("BurnCards").transform.position;
+            //transform.RotateAround(rotPos, Vector3.up, 40 * Time.deltaTime);
+            transform.position = RotateWithPerlinNoise();
+        }
         PulseGlow();
         CardForDealingMode();
         BringCardBack();
@@ -117,6 +131,19 @@ public class Card : InteractionSuperClass {
             rb.velocity = Vector3.zero;
         }
 
+    }
+
+    public Vector3 RotateWithPerlinNoise()
+    {
+        theta += 2 * Time.deltaTime;
+        Vector3 center = new Vector3(centerPoint.x, 0, centerPoint.z);
+        Vector3 pos = new Vector3(radius * Mathf.Sin(theta), height, radius * Mathf.Cos(theta)) + center;
+        Vector3 perlinOffset = noiseMagnitude * new Vector3(
+            Mathf.PerlinNoise(0, noiseSpeed * Time.time), 
+            Mathf.PerlinNoise(10000,noiseSpeed * Time.time), 
+            Mathf.PerlinNoise(20000, noiseSpeed*Time.time));
+        pos += perlinOffset;
+        return pos;
     }
     //so this is literally the update function
     public void CardForDealingMode()
@@ -514,6 +541,22 @@ public class Card : InteractionSuperClass {
             if (transform.position == pos)
             {
                 lerping = false;
+            }
+            else yield return null;
+        }
+        yield break;
+    }
+
+    public IEnumerator StopFoldLerp(Vector3 pos)
+    {
+        while (lerping)
+        {
+            if (Vector3.Distance(transform.position, pos) < Random.Range(0, 0.125f))
+            {
+                lerping = false;
+                foldedCards = true;
+                radius = Vector3.Distance(transform.position, pos);
+                theta = Mathf.Atan2(transform.position.z, transform.position.x);
             }
             else yield return null;
         }
