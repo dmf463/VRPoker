@@ -443,7 +443,6 @@ public class PokerRules : MonoBehaviour {
                     if (!player.playerIsAllIn)
                     {
                         card = GetCardObject(i);
-                        card.GetComponent<Card>().testingTorque = true;
                         if (card.GetComponent<Card>().CardIsFaceUp()) card.GetComponent<Card>().RotateCard();
                         card.GetComponent<Card>().InitializeLerp(player.cardPos[cardPos].transform.position);
                         StartCoroutine(card.GetComponent<Card>().LerpCardPos(player.cardPos[cardPos].transform.position, speed));
@@ -458,10 +457,20 @@ public class PokerRules : MonoBehaviour {
         }
     }
 
+    public void CorrectMistakes()
+    {
+        Table.instance.board.Clear();
+        Table.instance.burn.Clear();
+        for (int i = 0; i < cardsPulled.Count; i++)
+        {
+            PositionBoardAndBurnCards(i, 1, true);
+        }
+        SetCardIndicator();
+    }
+
     public void PositionBoardAndBurnCards(int cardNum, float speed, bool correction)
     {
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-        cardNum = cardNum - 1;
         if (cardNum == burnCard1)
         {
             Vector3 burnPos = GameObject.Find("BurnCards").transform.position;
@@ -563,18 +572,6 @@ public class PokerRules : MonoBehaviour {
         }
     }
 
-    public void CorrectMistakes()
-    {
-        // Debug.Log("CorrectingMistakes");
-        Table.instance.board.Clear();
-        Table.instance.burn.Clear();
-        for (int i = 0; i < cardsPulled.Count; i++)
-        {
-            PositionBoardAndBurnCards(i, 1, true);
-        }
-        SetCardIndicator();
-    }
-
     IEnumerator CorrectionsDone(Vector3 pos, GameObject cardObj, Destination dest, Card card, bool correction)
     {
         while (card.GetComponent<Card>().lerping)
@@ -583,7 +580,7 @@ public class PokerRules : MonoBehaviour {
             {
                 card.GetComponent<Card>().lerping = false;
                 if(correction) Table.instance.AddCardTo(dest, card);
-                card.readyToFloat = true;
+                if(dest != Destination.burn) card.readyToFloat = true;
                 //Debug.Log("MADE IT");
             }
             else yield return null;
@@ -591,15 +588,16 @@ public class PokerRules : MonoBehaviour {
         yield break;
     }
 
-    public GameObject GetCardObject(int i)
+    public GameObject GetCardObject(int cardNum)
     {
         GameObject cardHolder = null;
         GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
         foreach (GameObject obj in cardsOnTable)
         {
-            if (obj.GetComponent<Card>().cardType.suit == cardsPulled[i].suit && obj.GetComponent<Card>().cardType.rank == cardsPulled[i].rank)
+            if (obj.GetComponent<Card>().cardType.suit == cardsPulled[cardNum].suit && obj.GetComponent<Card>().cardType.rank == cardsPulled[cardNum].rank)
             {
                 cardHolder = obj;
+                Debug.Log("Grabbing the " + cardHolder.GetComponent<Card>().cardType.rank + " of " + cardHolder.GetComponent<Card>().cardType.suit);
             }
         }
         return cardHolder;
@@ -791,6 +789,25 @@ public class PokerRules : MonoBehaviour {
         else if (Table.gameState == GameState.River)
         {
             toneCount = 0;
+        }
+    }
+
+    public void ChangeHeight()
+    {
+        GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
+        for (int i = 0; i < cardsOnTable.Length; i++)
+        {
+            Card card1 = cardsOnTable[i].GetComponent<Card>();
+            Card card2 = cardsOnTable[(i + 1) % cardsOnTable.Length].GetComponent<Card>();
+            if (card1.foldedCards && card2.foldedCards)
+            {
+                if (Mathf.Approximately(card2.transform.position.y, card1.transform.position.y))
+                {
+                    Debug.Log("changing height");
+                    card1.height += 0.01f;
+                    card2.height -= 0.01f;
+                }
+            }
         }
     }
 }

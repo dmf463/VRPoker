@@ -10,53 +10,73 @@ using SpriteGlow;
 //2) all the physics of the card
 public class Card : InteractionSuperClass {
 
+    [HideInInspector]
     public float flying_start_time, flight_journey_distance, flight_journey_angle;
+    [HideInInspector]
     public Vector3 flying_start_position;
+    [HideInInspector]
     public Quaternion flying_start_rotation;
+    [HideInInspector]
     public bool lerping = false;
+    [HideInInspector]
     public bool readyToFloat = false;
+    [HideInInspector]
     public bool rotateOnAdd = false;
+    [HideInInspector]
     public bool firstTime = false;
 
     public float glowSpeed;
     public float maxGlow;
+    [HideInInspector]
     public bool callingPulse;
     float pingPongCount = 0;
     float startTime;
     float emission;
+    [HideInInspector]
     public bool foldedCards = false;
+    [HideInInspector]
+    public bool changedHeight = false;
 
     private float radius;
     private float theta;
-    private float height;
+    [HideInInspector]
+    public float height;
     Vector3 centerPoint;
     public float noiseMagnitude;
     public float noiseSpeed;
+    public float rotationSpeed;
 
-    public bool testingTorque;
-
+    [HideInInspector]
     public bool is_flying = false;
+    [HideInInspector]
     public float rotSpeed;
+    [HideInInspector]
     public bool thrownWrong = false;
     int cardsCaught = 0;
+    [HideInInspector]
     public int cardThrownNum;
+    [HideInInspector]
     public bool cardChecked = false;
     float yPos = 0;
     public static float cardsDropped = 0;
     public float floatSpeed;
     public float floatDistance;
 
+    [HideInInspector]
     public float checkTime;
 
     //this is the actual information for the card
+    [HideInInspector]
     public CardType cardType;
 
+    [HideInInspector]
     public bool stillTouchingCollider = false;
 
     private Vector3 cardPosHeld;
     private Vector3 cardPosOnRelease;
     bool cardHitPlayer;
     bool cardOnTable;
+    [HideInInspector]
     public bool cardMarkedForDestruction;
 
     const float MAGNITUDE_THRESHOLD = 2.5f;
@@ -80,14 +100,18 @@ public class Card : InteractionSuperClass {
     Quaternion rotationAtFlipStart;
 
     GameObject newCardDeck;
+    [HideInInspector]
     public bool cardThrownWrong;
     GameObject cardDeck;
     CardDeckScript deckScript;
 
     //basically checked if a card is flipped or not
+    [HideInInspector]
     public bool cardFacingUp = false;
+    [HideInInspector]
     public bool cardWasManuallyFlipped = false;
 
+    [HideInInspector]
     public bool isFloating = false;
     bool straighteningCards = false;
 
@@ -95,6 +119,8 @@ public class Card : InteractionSuperClass {
     // Use this for initialization
     void Start() {
 
+        noiseMagnitude += Random.Range(-0.075f, 0.02f);
+        rotationSpeed += Random.Range(0, .2f);
         centerPoint = GameObject.Find("BurnCards").transform.position;
         cardDeck = GameObject.FindGameObjectWithTag("CardDeck"); //DEF will need to change this for recoupling purposes.
         deckScript = cardDeck.GetComponent<CardDeckScript>();  //gonna need to rework A LOT
@@ -115,15 +141,15 @@ public class Card : InteractionSuperClass {
 
         if (foldedCards)
         {
-            //Vector3 rotPos = GameObject.Find("BurnCards").transform.position;
-            //transform.RotateAround(rotPos, Vector3.up, 40 * Time.deltaTime);
             transform.position = RotateWithPerlinNoise();
+            if(!callingPulse && Table.gameState < GameState.ShowDown) StartPulse();
+            maxGlow = 1;
+            glowSpeed = .5f;
         }
         PulseGlow();
         CardForDealingMode();
         BringCardBack();
         FloatInPlace(floatSpeed, floatDistance);
-        if (Input.GetKeyDown(KeyCode.P)) testingTorque = true;
         if (Vector3.Distance(transform.position, GameObject.Find("ShufflingArea").transform.position) > 20)
         {
             Vector3 pos = GameObject.Find("ShufflingArea").transform.position;
@@ -135,8 +161,9 @@ public class Card : InteractionSuperClass {
 
     public Vector3 RotateWithPerlinNoise()
     {
-        theta += 2 * Time.deltaTime;
+        theta += rotationSpeed * Time.deltaTime;
         Vector3 center = new Vector3(centerPoint.x, 0, centerPoint.z);
+        Services.PokerRules.ChangeHeight();
         Vector3 pos = new Vector3(radius * Mathf.Sin(theta), height, radius * Mathf.Cos(theta)) + center;
         Vector3 perlinOffset = noiseMagnitude * new Vector3(
             Mathf.PerlinNoise(0, noiseSpeed * Time.time), 
@@ -218,19 +245,6 @@ public class Card : InteractionSuperClass {
                 CheckSwipeDirection(throwingHand);
                 CheckTouchDown();
             }
-        }
-    }
-
-
-    //WHAT I WANT:
-    //WHEN YOU THROW THE CARD, IT KEEPS IT'S THROW ROTATION, BUT THEN LERPS TO THE PROPER ROTATION.
-    //PROBLEM, IF YOU'RE LERPING, WE CAN'T CHANGE IT'S ROTATION
-    public void TestTorque()
-    {
-        if (testingTorque)
-        {
-            Debug.Log("testing torque");
-            transform.parent.Rotate(Vector3.forward * (fastTorque * 20));
         }
     }
 
@@ -551,11 +565,12 @@ public class Card : InteractionSuperClass {
     {
         while (lerping)
         {
-            if (Vector3.Distance(transform.position, pos) < Random.Range(0, 0.125f))
+            if (Vector3.Distance(transform.position, pos) < Random.Range(0, .09f))
             {
                 lerping = false;
                 foldedCards = true;
                 radius = Vector3.Distance(transform.position, pos);
+                height = transform.position.y;
                 theta = Mathf.Atan2(transform.position.z, transform.position.x);
             }
             else yield return null;
@@ -692,17 +707,20 @@ public class Card : InteractionSuperClass {
 
     public void FloatInPlace(float speed, float distance)
     {
-        if (readyToFloat && !Services.Dealer.killingCards && !Services.Dealer.cleaningCards)
+        if (!foldedCards && !Services.Dealer.killingCards && !Services.Dealer.cleaningCards)
         {
-            if (yPos == 0) yPos = GetCardPos().y;
-            if (rb != null) rb.useGravity = false;
-            rb.constraints = RigidbodyConstraints.FreezeAll;
-            GetComponent<BoxCollider>().enabled = false;
-            transform.position = new Vector3(transform.position.x, yPos + Mathf.PingPong(Time.time / speed, distance), transform.position.z);
-        }
-        else
-        {
-            if (rb != null) rb.useGravity = true;
+            if (readyToFloat)
+            {
+                if (yPos == 0) yPos = GetCardPos().y;
+                if (rb != null) rb.useGravity = false;
+                rb.constraints = RigidbodyConstraints.FreezeAll;
+                GetComponent<BoxCollider>().enabled = false;
+                transform.position = new Vector3(transform.position.x, yPos + Mathf.PingPong(Time.time / speed, distance), transform.position.z);
+            }
+            else
+            {
+                if (rb != null) rb.useGravity = true;
+            }
         }
     }
 
@@ -724,7 +742,7 @@ public class Card : InteractionSuperClass {
     public Quaternion GetCardRot()
     {
         PokerPlayerRedux player = GetCardOwner();
-        Debug.Log(cardType.rank + " of " + cardType.suit + " belongs to " + player.playerName);
+        //Debug.Log(cardType.rank + " of " + cardType.suit + " belongs to " + player.playerName);
         Quaternion endRot;
         if (Table.instance.playerCards[player.SeatPos].Count == 1)
         {
@@ -783,11 +801,6 @@ public class Card : InteractionSuperClass {
         Transform obj = GameObject.Find(comparisonPoint).transform;
         Vector3 targetDir = obj.position - transform.position;
         return Vector3.Angle(targetDir, -transform.forward);
-    }
-
-    public void FloatAroundAfterFold()
-    {
-
     }
 
     public void StartPulse()
