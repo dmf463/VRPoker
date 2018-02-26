@@ -37,7 +37,10 @@ public class Card : InteractionSuperClass {
     [HideInInspector]
     public bool changedHeight = false;
 
-    private float radius;
+    [HideInInspector]
+    public float radius;
+    [HideInInspector]
+    public float constRadius;
     private float theta;
     [HideInInspector]
     public float height;
@@ -45,6 +48,8 @@ public class Card : InteractionSuperClass {
     public float noiseMagnitude;
     public float noiseSpeed;
     public float rotationSpeed;
+    public float cardMoveSpeed;
+    public bool lerpedRadius;
 
     [HideInInspector]
     public bool is_flying = false;
@@ -141,7 +146,7 @@ public class Card : InteractionSuperClass {
 
         if (foldedCards)
         {
-            transform.position = RotateWithPerlinNoise();
+            transform.position = RotateWithPerlinNoise(rotationSpeed);
             if(!callingPulse && Table.gameState < GameState.ShowDown) StartPulse();
             maxGlow = 1;
             glowSpeed = .5f;
@@ -159,9 +164,9 @@ public class Card : InteractionSuperClass {
 
     }
 
-    public Vector3 RotateWithPerlinNoise()
+    public Vector3 RotateWithPerlinNoise(float speed)
     {
-        theta += rotationSpeed * Time.deltaTime;
+        theta += speed * Time.deltaTime;
         Vector3 center = new Vector3(centerPoint.x, 0, centerPoint.z);
         Services.PokerRules.ChangeHeight();
         Vector3 pos = new Vector3(radius * Mathf.Sin(theta), height, radius * Mathf.Cos(theta)) + center;
@@ -171,6 +176,13 @@ public class Card : InteractionSuperClass {
             Mathf.PerlinNoise(20000, noiseSpeed*Time.time));
         pos += perlinOffset;
         return pos;
+    }
+
+    public Vector3 ManualRotation(float speed, Vector3 pos)
+    {
+        theta += speed * Time.deltaTime;
+        Vector3 center = new Vector3(pos.x, 0, pos.z);
+        return new Vector3(radius * Mathf.Sin(theta), transform.position.y, radius * Mathf.Cos(theta)) + center;
     }
     //so this is literally the update function
     public void CardForDealingMode()
@@ -569,13 +581,27 @@ public class Card : InteractionSuperClass {
             {
                 lerping = false;
                 foldedCards = true;
-                radius = Vector3.Distance(transform.position, pos);
-                height = transform.position.y;
-                theta = Mathf.Atan2(transform.position.z, transform.position.x);
+                InitializeRotation(pos, false);
             }
             else yield return null;
         }
         yield break;
+    }
+
+    public void InitializeRotation(Vector3 pos, bool forFlight)
+    {
+        height = transform.position.y;
+        if (forFlight) radius = ChangeRadiusForHeight(pos);
+        else radius = Vector3.Distance(transform.position, pos);
+        constRadius = radius;
+        //theta = Mathf.Atan2(transform.position.z - pos.z, transform.position.x - pos.x);
+        theta = Mathf.Atan2(transform.position.x - pos.x, transform.position.z - pos.z);
+    }
+
+    public float ChangeRadiusForHeight(Vector3 pos)
+    {
+        Vector3 newPos = new Vector3(pos.x, height, pos.z);
+        return Vector3.Distance(transform.position, newPos);
     }
 
     public IEnumerator CheckIfCardIsAtDestination(float time, int cardsPulled)

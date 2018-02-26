@@ -30,6 +30,15 @@ public class Dealer : MonoBehaviour
     private bool doneLerping = false;
     GameObject cardToCheck;
 
+    private float radius;
+    private float theta;
+    [HideInInspector]
+    public float height;
+    Vector3 centerPoint;
+    public float noiseMagnitude;
+    public float noiseSpeed;
+    public float rotationSpeed;
+
     public List<GameObject> thrownChips = new List<GameObject>();
 
     [HideInInspector]
@@ -781,11 +790,12 @@ public class Dealer : MonoBehaviour
                 startUpTime = Time.time;
                 GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
                 GameObject cardDeck = GameObject.Find("ShufflingArea");
-                if(cardsOnTable.Length != 0)
+                if (cardsOnTable.Length != 0)
                 {
                     foreach (GameObject card in cardsOnTable)
                     {
                         card.GetComponent<Card>().rotSpeed = UnityEngine.Random.Range(500, 1500);
+                        card.GetComponent<Card>().cardMoveSpeed = UnityEngine.Random.Range(0.25f, 1.25f);
                         Destroy(card.GetComponent<ConstantForce>());
                         card.GetComponent<Rigidbody>().useGravity = false;
                         card.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
@@ -793,6 +803,7 @@ public class Dealer : MonoBehaviour
                         card.GetComponent<Card>().readyToFloat = false;
                         card.GetComponent<Card>().is_flying = true;
                         card.GetComponent<Card>().StartPulse();
+
                     }
                 }
             }
@@ -810,37 +821,48 @@ public class Dealer : MonoBehaviour
                 GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
                 GameObject cardDeck = GameObject.Find("ShufflingArea");
                 float handDistance = Vector3.Distance(hand1.transform.position, hand2.transform.position);
+                Vector3 newRotPos = Vector3.zero;
 
                 if (timeSinceClick <= flyTime)
                 {
                     Vector3 rotPos = GameObject.Find("Table").transform.position;
                     foreach (GameObject card in cardsOnTable)
                     {
+                        //card.GetComponent<Card>().InitializeRotation(rotPos, true);
+                        //card.transform.position = card.GetComponent<Card>().ManualRotation(card.GetComponent<Card>().cardMoveSpeed, rotPos);
                         card.transform.RotateAround(rotPos, Vector3.up, cardMoveSpeed * card.GetComponent<Card>().rotSpeed * Time.deltaTime);
                         Vector3 randomRot = new Vector3(UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360));
                         card.transform.Rotate(randomRot * cardMoveSpeed * 2 * Time.deltaTime);
-                        float step = cardMoveSpeed * 2 * Time.deltaTime;
+                        float step = card.GetComponent<Card>().cardMoveSpeed * 2 * Time.deltaTime;
                         if (card.transform.position.y < Camera.main.transform.position.y + 0.25f)
                         {
                             card.transform.position = Vector3.MoveTowards(card.transform.position, rotPos + new Vector3(0 + rotPos.x, 1 + rotPos.y, 0 + rotPos.z), step);
+                        }
+                        else
+                        {
+                            newRotPos = new Vector3(rotPos.x, transform.position.y, rotPos.z);
+                            card.GetComponent<Card>().InitializeRotation(newRotPos, true);
                         }
                     }
                     holdRotate = true;
                 }
                 else if (timeSinceClick <= flyTime + 0.5f || holdRotate)
                 {
-                    Vector3 rotPos = GameObject.Find("Table").transform.position;
+                    
                     if (holdRotate)
                     {
-                        handDistance = Mathf.Pow(handDistance * 2, 2.5f);
+                        handDistance = Mathf.Pow(handDistance, 1.5f);
                     }
                     else handDistance = 1;
-
+                    if (handDistance >= 1.5f) handDistance = 1.5f;
+                    Vector3 rotPos = GameObject.Find("Table").transform.position;
                     foreach (GameObject card in cardsOnTable)
                     {
-                        card.transform.RotateAround(rotPos, Vector3.up, cardMoveSpeed * 40 * Time.deltaTime * handDistance);
+                        card.GetComponent<Card>().radius = card.GetComponent<Card>().constRadius + handDistance;
+                        card.transform.position = card.GetComponent<Card>().ManualRotation(card.GetComponent<Card>().rotSpeed / 200 * handDistance, rotPos);
+                        //card.transform.RotateAround(rotPos, Vector3.up, cardMoveSpeed * 40 * Time.deltaTime * handDistance);
                         Vector3 randomRot = new Vector3(UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360));
-                        card.transform.Rotate(randomRot * cardMoveSpeed * Time.deltaTime);
+                        card.transform.Rotate(randomRot * handDistance * Time.deltaTime);
                     }
                     StartCoroutine(HoldForSpin());
                 }
@@ -848,6 +870,7 @@ public class Dealer : MonoBehaviour
                 {
                     if (first_time)
                     {
+                        Debug.Log("handdistance = " + handDistance);
                         foreach (GameObject card in cardsOnTable)
                         {
                             card.GetComponent<Card>().flying_start_time = Time.time;
