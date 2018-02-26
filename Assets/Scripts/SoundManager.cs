@@ -116,7 +116,7 @@ public class SoundManager : MonoBehaviour
     {
         if (!conversationIsPlaying)
         {
-            //conversationIsPlaying = true;
+            conversationIsPlaying = true;
             Conversation convoAudio = Services.DialogueDataManager.ReadyConversation(); //find us an appropriate conversation from our dictionary
             if (convoAudio != null)
             {
@@ -130,7 +130,7 @@ public class SoundManager : MonoBehaviour
 
         for (int i = 0; i < convo.playerLines.Count; i++) //for each line in our conversation
         {
-            
+
             AudioClip audioLine = convo.playerLines[i].audioFile; //get the audio to play
             AudioSource playerSpeaking = convo.playerLines[i].audioSource; // get the source to play at
             GetSourceAndPlay(playerSpeaking, audioLine); //pass these and play
@@ -139,9 +139,10 @@ public class SoundManager : MonoBehaviour
             {
                 yield return null;
             }
-            conversationIsPlaying = false;
-            convo.hasBeenPlayed = true; //once all lines have been played, set the bool on the conversation so that we don't choose it again
         }
+        conversationIsPlaying = false;
+        convo.hasBeenPlayed = true; //once all lines have been played, set the bool on the conversation so that we don't choose it again
+
     }
 
    
