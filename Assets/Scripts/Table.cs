@@ -44,6 +44,11 @@ public class Table {
        GameObject.Find("P0BetZone"), GameObject.Find("P1BetZone"), GameObject.Find("P2BetZone"), GameObject.Find("P3BetZone"), GameObject.Find("P4BetZone")
     };
 
+    public List<GameObject> dealerPositions = new List<GameObject>
+    {
+       GameObject.Find("P0Dealer"), GameObject.Find("P1Dealer"), GameObject.Find("P2Dealer"), GameObject.Find("P3Dealer"), GameObject.Find("P4Dealer")
+    };
+
     public List<GameObject> playerFoldZones = new List<GameObject>
     {
         GameObject.Find("P0FoldZone"), GameObject.Find("P1FoldZone"), GameObject.Find("P2FoldZone"), GameObject.Find("P3FoldZone"), GameObject.Find("P4FoldZone")
@@ -79,7 +84,7 @@ public class Table {
     {
         if (GameObject.FindGameObjectWithTag("DealerButton") == null)
         {
-            GameObject dealerButton = GameObject.Instantiate(Services.PrefabDB.DealerButton, playerBetZones[dealerPos].transform.position, Quaternion.identity);
+            GameObject dealerButton = GameObject.Instantiate(Services.PrefabDB.DealerButton, dealerPositions[dealerPos].transform.position, Quaternion.identity);
         }
         else
         {
