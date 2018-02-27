@@ -133,7 +133,7 @@ public class Dealer : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        chipPositionInPot = CreateChipPositions(GameObject.Find("TipZone").transform.position, 0.06f, 0.075f, 5, 25, GameObject.Find("TipZone").transform.position.y);
+        chipPositionInPot = CreateChipPositions(GameObject.Find("TipZone").transform.position, 0.075f, 0.06f, 5, 10, GameObject.Find("TipZone").transform.position.y);
         tipCount = 0;
         playerDestinations = Table.instance.playerDestinations;
         InitializePlayers(startingChipCount);
@@ -1679,6 +1679,10 @@ public class Dealer : MonoBehaviour
             yield return null;
         }
         Services.PokerRules.ConsolidateStack(chipsInPot);
+        for (int i = 0; i < chipsInPot.Count; i++)
+        {
+            chipsInPot[i].gameObject.transform.position = chipPositionInPot[i];
+        }
         yield break;
     }
 

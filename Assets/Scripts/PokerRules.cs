@@ -471,7 +471,7 @@ public class PokerRules : MonoBehaviour {
     public void PositionBoardAndBurnCards(int cardNum, float speed, bool correction)
     {
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-        cardNum = cardNum - 1;
+        if(!Services.Dealer.OutsideVR) cardNum = cardNum - 1;
         if (cardNum == burnCard1)
         {
             Vector3 burnPos = GameObject.Find("BurnCards").transform.position;
