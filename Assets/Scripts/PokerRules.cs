@@ -668,26 +668,26 @@ public class PokerRules : MonoBehaviour {
         }
     }
 
-    public void ConsolidateStack()
+    public void ConsolidateStack(List<Chip> chipsToConsolidate)
     {
-        if (chipGroup.Count > 1)
+        if (chipsToConsolidate.Count > 1)
         {
-            for (int i = 0; i < chipGroup.Count; i++)
+            for (int i = 0; i < chipsToConsolidate.Count; i++)
             {
-                Chip chip = chipGroup[i];
+                Chip chip = chipsToConsolidate[i];
                 if (chip.chipStack != null && chip.chipStack.chips.Count < 10)
                 {
-                    for (int chipToCheck = 0; chipToCheck < chipGroup.Count; chipToCheck++)
+                    for (int chipToCheck = 0; chipToCheck < chipsToConsolidate.Count; chipToCheck++)
                     {
                         if (chipToCheck != i)
                         {
-                            if (chipGroup[chipToCheck].chipStack != null && chipGroup[chipToCheck].chipData.ChipValue == chip.chipData.ChipValue)
+                            if (chipsToConsolidate[chipToCheck].chipStack != null && chipsToConsolidate[chipToCheck].chipData.ChipValue == chip.chipData.ChipValue)
                             {
                                 for (int chipsToAdd = 0; chipsToAdd < chip.chipStack.chips.Count; chipsToAdd++)
                                 {
-                                    chipGroup[chipToCheck].chipStack.AddToStackInHand(chip.chipStack.chips[chipsToAdd]);
+                                    chipsToConsolidate[chipToCheck].chipStack.AddToStackInHand(chip.chipStack.chips[chipsToAdd]);
                                 }
-                                chipGroup.Remove(chip);
+                                chipsToConsolidate.Remove(chip);
                                 Destroy(chip.gameObject);
                                 break;
                             }

@@ -181,7 +181,7 @@ public class Chip : InteractionSuperClass {
                                 Services.Dealer.handIsOccupied = true;
                                 spotIndex = Services.PokerRules.chipsBeingPushed;
                                 Services.PokerRules.chipsBeingPushed += 1;
-                                Services.PokerRules.ConsolidateStack();
+                                Services.PokerRules.ConsolidateStack(Services.PokerRules.chipGroup);
                             }
                         }
                         else

@@ -1008,6 +1008,7 @@ public class Dealer : MonoBehaviour
                     chipsInPot[i].GetComponent<Chip>().InitializeLerp(chipPositionInPot[i]);
                     StartCoroutine(chipsInPot[i].GetComponent<Chip>().LerpChipPos(chipPositionInPot[i], 1));
                     StartCoroutine(chipsInPot[i].GetComponent<Chip>().StopLerp(chipPositionInPot[i]));
+                    StartCoroutine(ConsolidateChipsAfterTheyMoveToPot());
                 }
                 playerToAct.playerSpotlight.SetActive(false);
                 playerToAct = null;
@@ -1669,6 +1670,25 @@ public class Dealer : MonoBehaviour
         }
 
         return listOfPositions;
+    }
+
+    IEnumerator ConsolidateChipsAfterTheyMoveToPot()
+    {
+        while (ChipsAreLerping())
+        {
+            yield return null;
+        }
+        Services.PokerRules.ConsolidateStack(chipsInPot);
+        yield break;
+    }
+
+    public bool ChipsAreLerping()
+    {
+        foreach (Chip chip in chipsInPot)
+        {
+            if (chip.lerping) return true;
+        }
+        return false;
     }
 
     public GameObject FindChipPrefab(int chipValue)
