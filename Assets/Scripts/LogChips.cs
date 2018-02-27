@@ -69,7 +69,7 @@ public class LogChips : MonoBehaviour
                     {
                         if (Services.Dealer.players[i].PlayerState == PlayerState.Winner)
                         {
-                            if (Services.Dealer.players[i].chipCount != Services.Dealer.players[i].chipsWon + Services.Dealer.players[i].ChipCountToCheckWhenWinning && 
+                            if (Services.Dealer.players[i].chipCount != (Services.Dealer.players[i].chipsWon + Services.Dealer.players[i].ChipCountToCheckWhenWinning) && 
                                !Services.Dealer.players[i].gaveTip)
                             {
                                 if (other.GetComponent<Chip>().chipStack != null)
@@ -123,13 +123,11 @@ public class LogChips : MonoBehaviour
                             Debug.Log("TURNING TIMER OFF");
                         }
                     }
-                    if (gameObject.name == playerNames[i] &&
-                        Services.Dealer.players[i].PlayerState == PlayerState.Winner &&
-                        Services.Dealer.players[i].chipCount != Services.Dealer.players[i].chipsWon + Services.Dealer.players[i].ChipCountToCheckWhenWinning &&
-                        !other.GetComponent<Chip>().isAtDestination)
+                    if (gameObject.name == playerNames[i] && Services.Dealer.players[i].PlayerState == PlayerState.Winner)
                     {
-                        if (other.GetComponent<Chip>().chipStack != null && !other.GetComponent<Chip>().isAtDestination)
+                        if (other.GetComponent<Chip>().chipStack != null)
                         {
+                            other.GetComponent<Chip>().isAtDestination = false;
                             ChipStack chipStack;
                             chipStack = other.GetComponent<Chip>().chipStack;
                             Debug.Log("removed chip");

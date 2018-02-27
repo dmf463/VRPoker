@@ -11,6 +11,7 @@ public class Chip : InteractionSuperClass {
 
     public float flying_start_time, flight_journey_distance;
     public Vector3 flying_start_position;
+    public bool lerping;
     public PokerPlayerRedux owner;
 
     public bool is_flying = false;
@@ -211,11 +212,9 @@ public class Chip : InteractionSuperClass {
                         pushingChip = false;
                         spotIndex = 0;
                         stopPulse = true;
-                        //InitializeLerp(gameObject, owner.GetComponentInChildren<LogCards>().gameObject.transform.position);
                     }
                     else if (Table.gameState == GameState.PostHand)
                     {
-                        //InitializeLerp(gameObject, owner.GetComponentInChildren<LogCards>().gameObject.transform.position);
                         Services.PokerRules.chipGroup.Clear();
                         GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
                         foreach (GameObject chip in allChips)
@@ -266,11 +265,7 @@ public class Chip : InteractionSuperClass {
         Debug.Log("LERP DONE");
         yield break;
     }
-    //on collision, we want to check:
-    //a) is the object a chip?
-    //b) is that chip in a stack?
-    //if it's not in a stack, then we need to set up the chip to make a new chipstack
-    //if it IS in a stack, then we want to set it up to be added to the stack it hit
+   
     void OnCollisionEnter(Collision other)
     {
         //Debug.Log("hitting " + other.gameObject.name);
@@ -305,15 +300,6 @@ public class Chip : InteractionSuperClass {
         }
     }
 
-    //so when the chip is in your hand, literally as soon as you pickup a chip, it becomes a chipstack of 1
-    //first, we don't want to do ANYTHING to the chip in your hand if you're holding the max chipstack size
-    //if we're not then we're basically saying:
-        //if we're touching a chip, and the chip can be grabbed
-        //and that chip has been set as an incoming chip
-        //then we add that chip to the chipstack in your hand
-        //if we're touching a stack with the stack in hand, we add those chips to your stack
-    //finally, whenever we're holding a chip, we want to be checking the "press position" of the controller holding the chip
-    //this way we know whether we're calling the dropChip function or not
     public override void HandAttachedUpdate(Hand attachedHand)
     {
 
@@ -549,21 +535,44 @@ public GameObject FindChipPrefab(int chipValue)
                 callingPulse = false;
                 GetComponent<Renderer>().material.SetColor("_EmissionColor", Color.black);
             }
-            //if (currentEmission < previousEmission)
-            //{
-            //    pingPongCount++;
-            //}
-            //else if (currentEmission > previousEmission && pingPongCount >= 1)
-            //{
-            //    callingPulse = false;
-            //    GetComponent<Renderer>().material.SetColor("_EmissionColor", Color.black);
-            //}
         }
     }
 
     float PingPong(float time, float minLength, float maxLength)
     {
         return Mathf.PingPong(time, maxLength - minLength) + minLength;
+    }
+
+    public void InitializeLerp(Vector3 dest)
+    {
+        flying_start_time = Time.time;
+        flight_journey_distance = Vector3.Distance(transform.position, dest);
+        flying_start_position = transform.position;
+        lerping = true;
+    }
+
+    public IEnumerator LerpChipPos(Vector3 dest, float speed)
+    {
+        while (lerping)
+        {
+            float distCovered = (Time.time - flying_start_time) * speed;
+            float fracJourney = distCovered / flight_journey_distance;
+            transform.position = Vector3.Lerp(flying_start_position, dest, fracJourney);
+            yield return null;
+        }
+    }
+
+    public IEnumerator StopLerp(Vector3 pos)
+    {
+        while (lerping)
+        {
+            if (transform.position == pos)
+            {
+                lerping = false;
+            }
+            else yield return null;
+        }
+        yield break;
     }
 
 }

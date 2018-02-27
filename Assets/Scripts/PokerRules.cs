@@ -675,7 +675,7 @@ public class PokerRules : MonoBehaviour {
             for (int i = 0; i < chipGroup.Count; i++)
             {
                 Chip chip = chipGroup[i];
-                if (chip.chipStack != null)
+                if (chip.chipStack != null && chip.chipStack.chips.Count < 10)
                 {
                     for (int chipToCheck = 0; chipToCheck < chipGroup.Count; chipToCheck++)
                     {
@@ -702,7 +702,7 @@ public class PokerRules : MonoBehaviour {
                         {
                             if (chipGroup[chipToCheck].chipStack != null)
                             {
-                                if (chipGroup[chipToCheck].chipData.ChipValue == chip.chipData.ChipValue)
+                                if (chipGroup[chipToCheck].chipData.ChipValue == chip.chipData.ChipValue && chipGroup[chipToCheck].chipStack.chips.Count < 10)
                                 {
                                     chipGroup[chipToCheck].chipStack.AddToStackInHand(chip.chipData);
                                     chipGroup.Remove(chip);

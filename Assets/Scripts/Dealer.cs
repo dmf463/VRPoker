@@ -14,6 +14,9 @@ using TMPro;
 //PokerPlayerRedux handles all the functions and info that a poker player would need to play
 public class Dealer : MonoBehaviour
 {
+    public List<Vector3> chipPositionInPot;
+    public int chipsMoved;
+
     public int tipCount;
     public GameObject tipIndicator;
     public int startingChipCount;
@@ -130,6 +133,7 @@ public class Dealer : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        chipPositionInPot = CreateChipPositions(GameObject.Find("TipZone").transform.position, 0.06f, 0.075f, 5, 25, GameObject.Find("TipZone").transform.position.y);
         tipCount = 0;
         playerDestinations = Table.instance.playerDestinations;
         InitializePlayers(startingChipCount);
@@ -999,7 +1003,12 @@ public class Dealer : MonoBehaviour
                 Debug.Log(Table.gameState + " Finished");
 
                 Services.SoundManager.roundsFinished++; //increment int for tutorial vo based on when players are done betting
-               
+                for (int i = 0; i < chipsInPot.Count; i++)
+                {
+                    chipsInPot[i].GetComponent<Chip>().InitializeLerp(chipPositionInPot[i]);
+                    StartCoroutine(chipsInPot[i].GetComponent<Chip>().LerpChipPos(chipPositionInPot[i], 1));
+                    StartCoroutine(chipsInPot[i].GetComponent<Chip>().StopLerp(chipPositionInPot[i]));
+                }
                 playerToAct.playerSpotlight.SetActive(false);
                 playerToAct = null;
                 playersReady = true;
@@ -1172,8 +1181,8 @@ public class Dealer : MonoBehaviour
             }
             else winningPlayers[i].chipsWon = potAmountToGiveWinner;
             potRemaining -= winningPlayers[i].chipsWon;
+            Debug.Log("chipCountToCheckWhenWinning = " + winningPlayers[i].ChipCountToCheckWhenWinning + " and potAmountToGiveWinner = " + potAmountToGiveWinner);
         }
-        //PROBLEM AREA FOR GAZE SPLIT
         if (winningPlayers.Count >= 2)
         {
             foreach (Chip chip in chipsInPot)
@@ -1217,7 +1226,6 @@ public class Dealer : MonoBehaviour
                 }
             }
         }
-
         while (!winnersHaveBeenPaid)
         {
             GivePlayersWinnings();
@@ -1257,7 +1265,6 @@ public class Dealer : MonoBehaviour
         {
             if (player.PlayerState == PlayerState.Winner)
             {
-                //Debug.Log("chipCountToCheckWhenWinning = " + player.ChipCountToCheckWhenWinning + " and potAmountToGiveWinner = " + potAmountToGiveWinner);
                 winnerChipStack = player.ChipCountToCheckWhenWinning + player.chipsWon;
                 ////
                 //
@@ -1584,13 +1591,8 @@ public class Dealer : MonoBehaviour
                     {
                         chipStackSize++;
                         stacksCreated++;
-                        //if(stacksCreated >= stackRowMax)
-                        //{
-                        //    stacksCreated = 0;
-                        //    offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.z + .01f, 0, 0);
-                        //}
-                        //Debug.Log("ChipToMake = " + chipToMake);
                         parentChip = Instantiate(chipToMake, chipContainer.transform.position, Quaternion.identity) as GameObject;
+                        chipsInPot.Add(parentChip.GetComponent<Chip>());
                         parentChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
                         parentChip.transform.parent = chipContainer.transform;
                         parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
@@ -1599,7 +1601,6 @@ public class Dealer : MonoBehaviour
                         {
                             parentChip.AddComponent<Rigidbody>();
                         }
-                        //incrementStackBy = parentChip.gameObject.GetComponent<Collider>().bounds.size.y;
                         incrementStackBy = parentChip.transform.localScale.z;
                         parentChip.transform.localPosition = offSet;
                         offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.x + .01f, 0, 0);
@@ -1611,17 +1612,10 @@ public class Dealer : MonoBehaviour
                     }
                     else if (chipStackSize >= stackCountMax)
                     {
-                        //Debug.Log("creating new stack cause max stack count reached");
                         chipStackSize = 0;
                         stacksCreated++;
-                        //if (stacksCreated >= stackRowMax)
-                        //{
-                        //    Debug.Log("moving row forward");
-                        //    stacksCreated = 0;
-                        //    offSet += new Vector3(0, 0, (parentChip.GetComponent<Collider>().bounds.size.x + .01f) * 1.5f);
-                        //}
-                        //parentChip = organizedChips[chipStacks][chipIndex];
                         parentChip = Instantiate(chipToMake, chipContainer.transform.position, Quaternion.identity) as GameObject;
+                        chipsInPot.Add(parentChip.GetComponent<Chip>());
                         parentChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
                         parentChip.transform.parent = chipContainer.transform;
                         parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
@@ -1630,7 +1624,6 @@ public class Dealer : MonoBehaviour
                         {
                             parentChip.AddComponent<Rigidbody>();
                         }
-                        //incrementStackBy = parentChip.gameObject.GetComponent<Collider>().bounds.size.y;
                         incrementStackBy = parentChip.transform.localScale.z;
                         parentChip.transform.localPosition = offSet;
                         offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.x + .01f, 0, 0);
@@ -1655,6 +1648,27 @@ public class Dealer : MonoBehaviour
         }
         Vector3 trueOffset = firstStackPos - lastStackPos;
         chipContainer.transform.position += trueOffset / 2;
+    }
+
+    private List<Vector3> CreateChipPositions(Vector3 startPosition, float xIncrement, float zIncrement, int maxRowSize, int maxColumnSize, float yPos)
+    {
+        List<Vector3> listOfPositions = new List<Vector3>();
+        float xOffset;
+        float zOffset;
+        for (int i = 0; i < maxColumnSize; i++)
+        {
+            if (i % 2 == 0)
+            {
+                zOffset = (((i % maxRowSize) / 2) + 0.5f) * -zIncrement;
+            }
+            else zOffset = (((i % maxRowSize) / 2) + 0.5f) * zIncrement;
+
+            xOffset = (i / maxRowSize) * xIncrement;
+
+            listOfPositions.Add(new Vector3(startPosition.x + xOffset, yPos, startPosition.z + zOffset));
+        }
+
+        return listOfPositions;
     }
 
     public GameObject FindChipPrefab(int chipValue)
