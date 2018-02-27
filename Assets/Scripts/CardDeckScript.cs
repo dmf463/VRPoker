@@ -538,12 +538,12 @@ public class CardDeckScript : InteractionSuperClass {
     //when we swipe up we set grabbingHighCard to true
     public override void OnTiltUp()
     {
-        if (!cardPreview.activeSelf)
-        {
-            cardPreview.SetActive(true);
-            cardNum = 0;
-            StartCoroutine(WaitToScroll(.5f));
-        }
+        //if (!cardPreview.activeSelf)
+        //{
+        //    cardPreview.SetActive(true);
+        //    cardNum = 0;
+        //    StartCoroutine(WaitToScroll(.5f));
+        //}
         base.OnTiltUp();
     }
 

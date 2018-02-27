@@ -10,6 +10,10 @@ using SpriteGlow;
 //2) all the physics of the card
 public class Card : InteractionSuperClass {
 
+    private Light lighting;
+    private float startLightAngle;
+    private Color startLightColor;
+    private Transform startTransform;
     [HideInInspector]
     public float flying_start_time, flight_journey_distance, flight_journey_angle;
     [HideInInspector]
@@ -124,6 +128,9 @@ public class Card : InteractionSuperClass {
     // Use this for initialization
     void Start() {
 
+        lighting = GameObject.Find("LampLight").GetComponent<Light>();
+        startLightAngle = lighting.spotAngle;
+        startTransform = lighting.gameObject.transform;
         noiseMagnitude += Random.Range(-0.075f, 0.02f);
         rotationSpeed += Random.Range(0, .2f);
         centerPoint = GameObject.Find("BurnCards").transform.position;
@@ -397,6 +404,10 @@ public class Card : InteractionSuperClass {
 
     public override void HandAttachedUpdate(Hand attachedHand)
     {
+        if (LookingAtCard())
+        {
+            //PUT SHIT HERE BUT IT WORKS
+        }
         cardPosHeld = transform.position;
         if (Table.gameState == GameState.NewRound)
         {
@@ -820,6 +831,11 @@ public class Card : InteractionSuperClass {
     public bool CardIsFaceUp()
     {
         return (Vector3.Dot(transform.forward, Vector3.down) > 0);
+    }
+
+    public bool LookingAtCard()
+    {
+        return Vector3.Dot(transform.forward, Camera.main.transform.forward) > 0;
     }
 
     public float GetCardAngle(string comparisonPoint)
