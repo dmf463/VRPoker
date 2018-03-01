@@ -14,6 +14,7 @@ using TMPro;
 //PokerPlayerRedux handles all the functions and info that a poker player would need to play
 public class Dealer : MonoBehaviour
 {
+    public Light lighting;
     public List<Vector3> chipPositionInPot;
     public int chipsMoved;
 
@@ -32,6 +33,7 @@ public class Dealer : MonoBehaviour
     public bool holdRotate = false;
     private bool doneLerping = false;
     GameObject cardToCheck;
+    public bool isCheating;
 
     private float radius;
     private float theta;
@@ -1003,7 +1005,7 @@ public class Dealer : MonoBehaviour
                 Debug.Log(Table.gameState + " Finished");
 
                 Services.SoundManager.roundsFinished++; //increment int for tutorial vo based on when players are done betting
-                for (int i = 0; i < chipsInPot.Count; i++)
+                for (int i = chipsInPot.Count - 1; i > 0; i--)
                 {
                     chipsInPot[i].GetComponent<Chip>().InitializeLerp(chipPositionInPot[i]);
                     StartCoroutine(chipsInPot[i].GetComponent<Chip>().LerpChipPos(chipPositionInPot[i], 1));

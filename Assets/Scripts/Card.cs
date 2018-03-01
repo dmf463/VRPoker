@@ -10,10 +10,6 @@ using SpriteGlow;
 //2) all the physics of the card
 public class Card : InteractionSuperClass {
 
-    private Light lighting;
-    private float startLightAngle;
-    private Color startLightColor;
-    private Transform startTransform;
     [HideInInspector]
     public float flying_start_time, flight_journey_distance, flight_journey_angle;
     [HideInInspector]
@@ -71,7 +67,6 @@ public class Card : InteractionSuperClass {
     public float floatSpeed;
     public float floatDistance;
 
-    [HideInInspector]
     public float checkTime;
 
     //this is the actual information for the card
@@ -128,9 +123,6 @@ public class Card : InteractionSuperClass {
     // Use this for initialization
     void Start() {
 
-        lighting = GameObject.Find("LampLight").GetComponent<Light>();
-        startLightAngle = lighting.spotAngle;
-        startTransform = lighting.gameObject.transform;
         noiseMagnitude += Random.Range(-0.075f, 0.02f);
         rotationSpeed += Random.Range(0, .2f);
         centerPoint = GameObject.Find("BurnCards").transform.position;
@@ -194,7 +186,10 @@ public class Card : InteractionSuperClass {
     //so this is literally the update function
     public void CardForDealingMode()
     {
-        cardFacingUp = CardIsFaceUp();
+        if (!Services.Dealer.isCheating)
+        {
+            cardFacingUp = CardIsFaceUp();
+        }
 
         if (flippingCard == true)
         {
@@ -331,7 +326,7 @@ public class Card : InteractionSuperClass {
         {
             Services.Dealer.cardsTouchingTable.Add(this);
         }
-        if (other.gameObject.tag == "Floor")
+        if (other.gameObject.tag == "Floor" && !Services.Dealer.isCheating)
         {
             if (Table.gameState != GameState.Misdeal)
             {
@@ -363,6 +358,12 @@ public class Card : InteractionSuperClass {
     public bool CardIsDead(Card cardToCheck)
     {
         return Services.Dealer.deadCardsList.Contains(cardToCheck);
+    }
+
+    public void StopCheating()
+    {
+        Services.Dealer.lighting.gameObject.SetActive(true);
+        Services.Dealer.isCheating = false;
     }
 
     public override void OnTriggerEnterX(Collider other)
@@ -406,12 +407,13 @@ public class Card : InteractionSuperClass {
     {
         if (LookingAtCard())
         {
-            //PUT SHIT HERE BUT IT WORKS
+            Services.Dealer.lighting.gameObject.SetActive(false);
+            Services.Dealer.isCheating = true;
         }
         cardPosHeld = transform.position;
         if (Table.gameState == GameState.NewRound)
         {
-            if (CardIsFaceUp()) Table.gameState = GameState.Misdeal;
+            if (CardIsFaceUp() && !Services.Dealer.isCheating) Table.gameState = GameState.Misdeal;
         }
         base.HandAttachedUpdate(attachedHand);
     }
@@ -419,11 +421,11 @@ public class Card : InteractionSuperClass {
     public override void OnDetachedFromHand(Hand hand)
     {
         StartPulse();
-        if (!Services.PokerRules.thrownCards.Contains(gameObject) && Table.gameState == GameState.NewRound)
+        if (!Services.PokerRules.thrownCards.Contains(gameObject) && Table.gameState == GameState.NewRound && !Services.Dealer.isCheating)
         {
             Services.PokerRules.thrownCards.Add(gameObject);
         }
-        if (!Services.PokerRules.cardsPulled.Contains(cardType) && Table.gameState != GameState.Misdeal)
+        if (!Services.PokerRules.cardsPulled.Contains(cardType) && Table.gameState != GameState.Misdeal && !Services.Dealer.isCheating)
         {
             Services.PokerRules.cardsPulled.Add(cardType);
             cardThrownNum = Services.PokerRules.cardsPulled.Count;
@@ -465,7 +467,7 @@ public class Card : InteractionSuperClass {
             {
                 startingSlowTorque = true;
             }
-            if (!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && Table.gameState == GameState.NewRound && !Services.Dealer.OutsideVR)
+            if (!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && Table.gameState == GameState.NewRound && !Services.Dealer.OutsideVR && !Services.Dealer.isCheating)
             {
                 StartCoroutine(CheckIfCardIsAtDestination(checkTime, cardThrownNum));
             }

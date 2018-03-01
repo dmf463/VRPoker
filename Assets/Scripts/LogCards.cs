@@ -42,8 +42,8 @@ public class LogCards : MonoBehaviour
             for (int i = 0; i < playerNames.Count; i++)
             {
                 //when we get to the match, we know which place to put this into
-                if (gameObject.name == playerNames[i] && 
-                    Table.gameState == GameState.NewRound && 
+                if (gameObject.name == playerNames[i] &&
+                    Table.gameState == GameState.NewRound &&
                     Services.Dealer.players[i].PlayerState != PlayerState.Eliminated &&
                     !other.GetComponent<Card>().thrownWrong)
                 {
@@ -74,11 +74,18 @@ public class LogCards : MonoBehaviour
                         if (!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && Table.gameState == GameState.NewRound)
                         {
 
-                                Table.instance.AddCardTo(playerDestinations[i], other.GetComponent<Card>());
-                                //other.GetComponent<Card>().is_flying = false;
-                                Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
-                                Services.PokerRules.PlayTone();
-                                Debug.Log(other.gameObject.name + " went into " + playerNames[i]);
+                            Table.instance.AddCardTo(playerDestinations[i], other.GetComponent<Card>());
+                            //other.GetComponent<Card>().is_flying = false;
+                            Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
+                            Services.PokerRules.PlayTone();
+                            Debug.Log(other.gameObject.name + " went into " + playerNames[i]);
+                            if (Services.Dealer.isCheating)
+                            {
+                                Services.PokerRules.cardsPulled.Add(other.GetComponent<Card>().cardType);
+                                other.GetComponent<Card>().cardThrownNum = Services.PokerRules.cardsPulled.Count;
+                                StartCoroutine(other.GetComponent<Card>().CheckIfCardIsAtDestination(.275f, other.GetComponent<Card>().cardThrownNum));
+                            }
+                            other.GetComponent<Card>().StopCheating();
                         }
                     }
                 }
@@ -123,8 +130,15 @@ public class LogCards : MonoBehaviour
                     //Debug.Log(other.gameObject.name + " went into " + this.gameObject.name);
                     other.GetComponent<Card>().fastTorque = 0;
                     other.GetComponent<Card>().slowTorque = 0;
-                    Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, .05f, false);
                     Services.PokerRules.PlayTone();
+                    if (Services.Dealer.isCheating)
+                    {
+                        Services.PokerRules.cardsPulled.Add(other.GetComponent<Card>().cardType);
+                        other.GetComponent<Card>().cardThrownNum = Services.PokerRules.cardsPulled.Count;
+                        Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, .05f, false);
+                    }
+                    else Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, .05f, false);
+                    other.GetComponent<Card>().StopCheating();
                 }
                 //}
 
@@ -161,10 +175,17 @@ public class LogCards : MonoBehaviour
                     Table.instance.AddCardTo(Destination.burn, other.GetComponent<Card>());
                     Services.PokerRules.cardsLogged.Add(other.GetComponent<Card>());
                     //Debug.Log(other.gameObject.name + "Card went into " + this.gameObject.name);
-                    Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, .05f, false);
                     Services.PokerRules.PlayTone();
                     other.GetComponent<Card>().fastTorque = 0;
                     other.GetComponent<Card>().slowTorque = 0;
+                    if (Services.Dealer.isCheating)
+                    {
+                        Services.PokerRules.cardsPulled.Add(other.GetComponent<Card>().cardType);
+                        other.GetComponent<Card>().cardThrownNum = Services.PokerRules.cardsPulled.Count;
+                        Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, .05f, false);
+                    }
+                    else Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, .05f, false);
+                    other.GetComponent<Card>().StopCheating();
                 }
             }
         }
