@@ -213,7 +213,6 @@ public class LogCards : MonoBehaviour
 
                         Table.instance.RemoveCard(playerDestinations[i], other.GetComponent<Card>());
                         Services.PokerRules.cardsLogged.Remove(other.GetComponent<Card>());
-                        Services.PokerRules.toneCount--;
                         Services.PokerRules.PlayTone();
                         Debug.Log(other.gameObject.name + " is gone from " + playerNames[i]);
                     }
