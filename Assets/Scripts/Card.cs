@@ -143,6 +143,7 @@ public class Card : InteractionSuperClass {
     // Update is called once per frame
     void Update() {
 
+        if (Table.gameState == GameState.Misdeal) StopCheating();
         if (foldedCards)
         {
             transform.position = RotateWithPerlinNoise(rotationSpeed);
