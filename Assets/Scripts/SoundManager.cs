@@ -250,7 +250,6 @@ public class SoundManager : MonoBehaviour
                     PlayTutorialAudio(tutorialIndex);
                     tutorialIndex++;
                     dealerButtonMoved = true;
-                    Table.gameState = GameState.CleanUp;
                 }
 
                 //player collects cards into deck 

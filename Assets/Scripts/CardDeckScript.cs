@@ -252,7 +252,7 @@ public class CardDeckScript : InteractionSuperClass {
                 Destroy(cardDeck);
                 Services.Dealer.deckIsDead = true;
                 Debug.Log("Destroyed Deck");
-                if(Table.gameState != GameState.CleanUp || Table.gameState != GameState.PostHand)
+                if(Table.gameState != GameState.PostHand)
                 {
                     Table.gameState = GameState.Misdeal;
                 }

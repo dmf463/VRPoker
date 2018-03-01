@@ -10,6 +10,7 @@ using SpriteGlow;
 //2) all the physics of the card
 public class Card : InteractionSuperClass {
 
+    private float testingDot;
     [HideInInspector]
     public float flying_start_time, flight_journey_distance, flight_journey_angle;
     [HideInInspector]
@@ -200,7 +201,6 @@ public class Card : InteractionSuperClass {
             {
                 elapsedTimeForCardFlip = 0;
                 flippingCard = false;
-                cardWasManuallyFlipped = true;
             }
         }
 
@@ -406,7 +406,7 @@ public class Card : InteractionSuperClass {
 
     public override void HandAttachedUpdate(Hand attachedHand)
     {
-        if (LookingAtCard())
+        if (LookingAtCard() && !cardWasManuallyFlipped)
         {
             Services.Dealer.lighting.gameObject.SetActive(false);
             Services.Dealer.isCheating = true;
@@ -828,6 +828,7 @@ public class Card : InteractionSuperClass {
         {
             flippingCard = true;
             rotationAtFlipStart = transform.localRotation;
+            cardWasManuallyFlipped = true;
         }
     }
 
@@ -838,7 +839,19 @@ public class Card : InteractionSuperClass {
 
     public bool LookingAtCard()
     {
-        return Vector3.Dot(transform.forward, Camera.main.transform.forward) > 0;
+        //if(testingDot == 0)
+        //{
+        //    testingDot = Vector3.Dot(transform.forward, Camera.main.transform.forward);
+        //}
+        //else
+        //{
+        //    if(testingDot < Vector3.Dot(transform.forward, Camera.main.transform.forward))
+        //    {
+        //        testingDot = Vector3.Dot(transform.forward, Camera.main.transform.forward);
+        //    }
+        //}
+        //Debug.Log("highest testingDot = " + testingDot);
+        return Vector3.Dot(transform.forward, Camera.main.transform.forward) > 0.5f;
     }
 
     public float GetCardAngle(string comparisonPoint)
