@@ -18,6 +18,11 @@ public class PlayerBehaviour {
 
         if (minimumRaise == 0) minimumRaise = Services.Dealer.BigBlind;
         if (Table.gameState >= GameState.Turn) minimumRaise = Table.instance.potChips / 4;
+        int remainder = minimumRaise % ChipConfig.RED_CHIP_VALUE;
+        if(remainder > 0)
+        {
+            minimumRaise = (minimumRaise - remainder) + ChipConfig.RED_CHIP_VALUE;
+        }
 
         if (Table.gameState == GameState.PreFlop)
         {

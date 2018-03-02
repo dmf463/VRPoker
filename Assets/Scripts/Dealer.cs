@@ -135,7 +135,7 @@ public class Dealer : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        chipPositionInPot = CreateChipPositions(GameObject.Find("TipZone").transform.position, 0.075f, 0.06f, 5, 10, GameObject.Find("TipZone").transform.position.y);
+        chipPositionInPot = CreateChipPositions(GameObject.Find("TipZone").transform.position, 0.075f, 0.06f, 5, 50, GameObject.Find("TipZone").transform.position.y);
         tipCount = 0;
         playerDestinations = Table.instance.playerDestinations;
         InitializePlayers(startingChipCount);
@@ -193,6 +193,10 @@ public class Dealer : MonoBehaviour
         if (playersReady)
         {
             Services.PokerRules.SetCardIndicator();
+        }
+        if((int)Table.gameState - (int)lastGameState  > 1 && Table.gameState < GameState.ShowDown) //if we went from like the flop to the river
+        {
+            Table.gameState = GameState.Misdeal;
         }
         //this resets bools necessary to start new rounds
         //once both of these are true, then the next round will start
@@ -348,10 +352,6 @@ public class Dealer : MonoBehaviour
                 checkedPreFlopCardCount = true;
                 StartCoroutine(CheckForMistakesPreFlop(1.5f));
             }
-        }
-        else if (Table.gameState == GameState.CleanUp)
-        {
-            //messageText.text = "I guess everyone folded, woohoo!";
         }
         else if(Table.gameState == GameState.PostHand)
         {
@@ -1005,7 +1005,7 @@ public class Dealer : MonoBehaviour
                 Debug.Log(Table.gameState + " Finished");
 
                 Services.SoundManager.roundsFinished++; //increment int for tutorial vo based on when players are done betting
-                for (int i = chipsInPot.Count - 1; i > 0; i--)
+                for (int i = chipsInPot.Count - 1; i >= 0; i--)
                 {
                     chipsInPot[i].GetComponent<Chip>().InitializeLerp(chipPositionInPot[i]);
                     StartCoroutine(chipsInPot[i].GetComponent<Chip>().LerpChipPos(chipPositionInPot[i], 1));

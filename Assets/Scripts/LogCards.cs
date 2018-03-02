@@ -83,7 +83,7 @@ public class LogCards : MonoBehaviour
                             {
                                 Services.PokerRules.cardsPulled.Add(other.GetComponent<Card>().cardType);
                                 other.GetComponent<Card>().cardThrownNum = Services.PokerRules.cardsPulled.Count;
-                                StartCoroutine(other.GetComponent<Card>().CheckIfCardIsAtDestination(.275f, other.GetComponent<Card>().cardThrownNum));
+                                StartCoroutine(other.GetComponent<Card>().CheckIfCardIsAtDestination(.25f, other.GetComponent<Card>().cardThrownNum));
                             }
                             other.GetComponent<Card>().StopCheating();
                         }
@@ -92,7 +92,6 @@ public class LogCards : MonoBehaviour
             }
             //if the card is going into TheBoard
             if (this.gameObject.name == "TheBoard" && Services.Dealer.playerToAct == null &&
-                Table.gameState != GameState.CleanUp &&
                  Table.gameState != GameState.PostHand &&
                  Table.gameState != GameState.NewRound)
             {
@@ -115,10 +114,10 @@ public class LogCards : MonoBehaviour
                 {
                     Debug.Log(other.gameObject.name + "card is dead");
                 }
-                else if (!other.GetComponent<Card>().CardIsFaceUp())
-                {
-                    //Debug.Log("card is faceDown");
-                }
+                //else if (!other.GetComponent<Card>().CardIsFaceUp())
+                //{
+                //    //Debug.Log("card is faceDown");
+                //}
                 else
                 {
                     if (other.gameObject.GetComponent<Rigidbody>().isKinematic)
@@ -144,7 +143,6 @@ public class LogCards : MonoBehaviour
 
             }
             else if (this.gameObject.name == "BurnCards" && Services.Dealer.playerToAct == null &&
-                 Table.gameState != GameState.CleanUp &&
                  Table.gameState != GameState.PostHand &&
                  Table.gameState != GameState.NewRound)
             {
@@ -162,10 +160,10 @@ public class LogCards : MonoBehaviour
                 {
                     // Debug.Log(other.gameObject.name + "card is dead");
                 }
-                else if (other.GetComponent<Card>().CardIsFaceUp())
-                {
-                    //Debug.Log("card is face up");
-                }
+                //else if (other.GetComponent<Card>().CardIsFaceUp())
+                //{
+                //    //Debug.Log("card is face up");
+                //}
                 else
                 {
                     if (other.gameObject.GetComponent<Rigidbody>().isKinematic)
@@ -215,7 +213,6 @@ public class LogCards : MonoBehaviour
 
                         Table.instance.RemoveCard(playerDestinations[i], other.GetComponent<Card>());
                         Services.PokerRules.cardsLogged.Remove(other.GetComponent<Card>());
-                        Services.PokerRules.toneCount--;
                         Services.PokerRules.PlayTone();
                         Debug.Log(other.gameObject.name + " is gone from " + playerNames[i]);
                     }

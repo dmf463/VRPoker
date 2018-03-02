@@ -131,6 +131,11 @@ public class Chip : InteractionSuperClass {
         {
             StartPulse();
         }
+        if(Vector3.Distance(transform.position,GameObject.Find("TipZone").transform.position) > 20)
+        {
+            transform.position = GameObject.Find("TipZone").transform.position;
+            rb.velocity = new Vector3(0, 0, 0);
+        }
     }
 
     void FixedUpdate()
@@ -204,9 +209,17 @@ public class Chip : InteractionSuperClass {
                             }
                         }
                     }
-                    else if(isAtDestination && Services.PokerRules.chipGroup.Contains(this))
+                    else if(isAtDestination)
                     {
-                        Services.PokerRules.chipGroup.Remove(this);
+                        if (Services.PokerRules.chipGroup.Contains(this))
+                        {
+                            Services.PokerRules.chipGroup.Remove(this);
+                        }
+                        GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
+                        foreach (GameObject chip in allChips)
+                        {
+                            Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), chip.GetComponent<Collider>(), false);
+                        }
                         timesToSplit = 0;
                         handPushingChip = null;
                         pushingChip = false;
@@ -281,6 +294,11 @@ public class Chip : InteractionSuperClass {
                 isTouchingStack = true;
                 incomingStack = other.gameObject.GetComponent<Chip>();
             }
+        }
+        if(other.gameObject.tag == "Floor" && Table.gameState != GameState.Misdeal && chipForBet)
+        {
+            transform.position = GameObject.Find("TipZone").transform.position;
+            rb.velocity = new Vector3(0, 0, 0);
         }
     }
 
