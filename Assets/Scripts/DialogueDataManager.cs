@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 public class DialogueDataManager
 {
-    private Dictionary<List<PlayerName>, List<Conversation>> dialogueDict;
+    
+    private Dictionary<List<PlayerName>, List<Conversation>> convoDict;
     //dictionary keys are lists of poker players still in the game, values are lists of conversations for those combinations
     public List<PlayerName> conversationKeys = new List<PlayerName>();
     private List<PlayerName> conversants = new List<PlayerName>();
@@ -48,11 +49,11 @@ public class DialogueDataManager
 			return hashcode;
 		}
 	}
-		
 
-	public void ParseDialogueFile(TextAsset dialogueFile) //parser for dialogue text file
+    #region TextFileParser
+    public void ParseDialogueFile(TextAsset dialogueFile) //parser for dialogue text file
 	{
-        dialogueDict = new Dictionary<List<PlayerName>, List<Conversation>> (new ListComparer<PlayerName>()); //our dictionary of dialogue
+        convoDict = new Dictionary<List<PlayerName>, List<Conversation>> (new ListComparer<PlayerName>()); //our dictionary of dialogue
 		string fileFullString = dialogueFile.text; //the raw text of the file
 		string[] fileRows; //array of rows of our spreadsheet
 		string[] rowEntries; //array of entries in our spreadsheet
@@ -127,23 +128,23 @@ public class DialogueDataManager
                 }
             }
         }
-        foreach(KeyValuePair<List<PlayerName>, List<Conversation>> pair in dialogueDict){
+        foreach(KeyValuePair<List<PlayerName>, List<Conversation>> pair in convoDict){
             //Debug.Log(pair.Key[0] + " " + pair.Key[1]);
         }
 	}
+#endregion
 
-	
-	void AddDialogueEntry(List<PlayerName> playerList, Conversation conversationToAdd)
+    void AddDialogueEntry(List<PlayerName> playerList, Conversation conversationToAdd)
 	{ //adds a new key/value entry in our dialogue dictionary
-		if (dialogueDict.ContainsKey (playerList))
+		if (convoDict.ContainsKey (playerList))
 		{ //if the dictionary already contains the passed in key (list of players)
-			dialogueDict [playerList].Add(conversationToAdd); //add the conversation to that key
+			convoDict [playerList].Add(conversationToAdd); //add the conversation to that key
 		} 
 		else 
 		{
 			List<Conversation> conversationList = new List<Conversation>(); 
 			conversationList.Add (conversationToAdd);
-			dialogueDict.Add (playerList, conversationList);
+			convoDict.Add (playerList, conversationList);
 
             //Debug.Log("adding entry number: "  + dialogueDict.Count() + " " + playerList[0] + " " + playerList[1]);
 		}
@@ -236,9 +237,9 @@ public class DialogueDataManager
             Debug.Log("Player in conversation: " + name);
         }
         //Debug.Log("num keys in dict: " + dialogueDict.Keys.Count);
-        if(dialogueDict.ContainsKey(namesKey)) // if our dialogue dictionary contains them as a key
+        if(convoDict.ContainsKey(namesKey)) // if our dialogue dictionary contains them as a key
         {
-            List<Conversation> possibleConversations = dialogueDict[namesKey]; //list of conversations that match the key
+            List<Conversation> possibleConversations = convoDict[namesKey]; //list of conversations that match the key
             int correctConversation = -1;  //the conversation we'll want to play, set at first to the last in the list
             for (int i = 0; i < possibleConversations.Count; i++) //for each conversation in the list
             {
@@ -272,6 +273,7 @@ public class Conversation //class for each conversation between players
     
 	public List<PlayerLine> playerLines; // a list of the player lines in the convo
     public int minRequiredRound; //the minimum round it can be before this convo can play
+    public List<string> requirements;
     public bool hasBeenPlayed = false;
 
 	public Conversation (List<PlayerLine> _playerLines, int _minRequiredRound, bool _hasBeenPlayed)
