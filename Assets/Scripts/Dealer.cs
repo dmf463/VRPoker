@@ -194,10 +194,6 @@ public class Dealer : MonoBehaviour
         {
             Services.PokerRules.SetCardIndicator();
         }
-        if((int)Table.gameState - (int)lastGameState  > 1 && Table.gameState < GameState.ShowDown) //if we went from like the flop to the river
-        {
-            Table.gameState = GameState.Misdeal;
-        }
         //this resets bools necessary to start new rounds
         //once both of these are true, then the next round will start
         if (playersReady && Table.gameState != lastGameState)

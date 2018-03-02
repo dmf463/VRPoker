@@ -421,28 +421,40 @@ public class Card : InteractionSuperClass {
 
     public override void OnDetachedFromHand(Hand hand)
     {
-        StartPulse();
-        if (!Services.PokerRules.thrownCards.Contains(gameObject) && Table.gameState == GameState.NewRound && !Services.Dealer.isCheating)
+        Debug.Log("Hand touching deck = " + handTouchingDeck);
+        CardDeckScript deck = GameObject.FindGameObjectWithTag("CardDeck").GetComponent<CardDeckScript>();
+        if (deck.safeToPutCardBack)
         {
-            Services.PokerRules.thrownCards.Add(gameObject);
+            deck.cardsInDeck.Add(cardType);
+            deck.MakeDeckLarger();
+            deck.safeToPutCardBack = false;
+            Destroy(gameObject);
         }
-        if (!Services.PokerRules.cardsPulled.Contains(cardType) && Table.gameState != GameState.Misdeal && !Services.Dealer.isCheating)
+        else
         {
-            Services.PokerRules.cardsPulled.Add(cardType);
-            cardThrownNum = Services.PokerRules.cardsPulled.Count;
+            StartPulse();
+            if (!Services.PokerRules.thrownCards.Contains(gameObject) && Table.gameState == GameState.NewRound && !Services.Dealer.isCheating)
+            {
+                Services.PokerRules.thrownCards.Add(gameObject);
+            }
+            if (!Services.PokerRules.cardsPulled.Contains(cardType) && Table.gameState != GameState.Misdeal && !Services.Dealer.isCheating)
+            {
+                Services.PokerRules.cardsPulled.Add(cardType);
+                cardThrownNum = Services.PokerRules.cardsPulled.Count;
+            }
+            if (rb == null)
+            {
+                rb = GetComponent<Rigidbody>();
+            }
+            if (CardIsFaceUp() && !cardWasManuallyFlipped)
+            {
+                //Debug.Log(this.gameObject.name + " card is facing the wrong way");
+                cardThrownWrong = true;
+            }
+            Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cards[Random.Range(0, Services.SoundManager.cards.Length)], 0.25f, Random.Range(0.95f, 1.05f), transform.position);
+            StartCoroutine(CheckVelocity(.025f));
+            base.OnDetachedFromHand(hand);
         }
-        if (rb == null)
-        {
-            rb = GetComponent<Rigidbody>();
-        }
-        if (CardIsFaceUp() && !cardWasManuallyFlipped)
-        {
-            //Debug.Log(this.gameObject.name + " card is facing the wrong way");
-            cardThrownWrong = true;
-        }
-        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cards[Random.Range(0, Services.SoundManager.cards.Length)], 0.25f, Random.Range(0.95f, 1.05f), transform.position);
-        StartCoroutine(CheckVelocity(.025f));
-        base.OnDetachedFromHand(hand);
     }
 
     //basically we want to give some time for the card to actually LEAVE the hand before we check the velocity
