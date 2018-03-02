@@ -817,7 +817,7 @@ public class Card : InteractionSuperClass {
 
     public override void TouchingTrackPad()
     {
-        RotateCard();
+        //RotateCard();
         base.TouchingTrackPad();
     }
 
