@@ -421,9 +421,13 @@ public class Card : InteractionSuperClass {
 
     public override void OnDetachedFromHand(Hand hand)
     {
-        Debug.Log("Hand touching deck = " + handTouchingDeck);
-        CardDeckScript deck = GameObject.FindGameObjectWithTag("CardDeck").GetComponent<CardDeckScript>();
-        if (deck.safeToPutCardBack)
+        CardDeckScript deck;
+        if (!Services.Dealer.killingCards || Services.Dealer.cleaningCards)
+        {
+            deck = GameObject.FindGameObjectWithTag("CardDeck").GetComponent<CardDeckScript>();
+        }
+        else deck = null;
+        if (deck != null && deck.safeToPutCardBack)
         {
             deck.cardsInDeck.Add(cardType);
             deck.MakeDeckLarger();
@@ -479,6 +483,10 @@ public class Card : InteractionSuperClass {
             else
             {
                 startingSlowTorque = true;
+            }
+            if (!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && !Services.Dealer.OutsideVR && !Services.Dealer.isCheating)
+            {
+                StartCoroutine(CheckIfCardThrownAtWrongTime(checkTime, cardThrownNum));
             }
             if (!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && Table.gameState == GameState.NewRound && !Services.Dealer.OutsideVR && !Services.Dealer.isCheating)
             {
@@ -630,6 +638,19 @@ public class Card : InteractionSuperClass {
         return Vector3.Distance(transform.position, newPos);
     }
 
+    public IEnumerator CheckIfCardThrownAtWrongTime(float time, int cardspulled)
+    {
+        yield return new WaitForSeconds(time);
+        Debug.Log("PLAYER TO ACT = " + Services.Dealer.playerToAct);
+        if (Services.Dealer.playerToAct != null)
+        {
+            Debug.Log("PLAYER TO ACT = " + Services.Dealer.playerToAct);
+            StartPulse();
+            Services.PokerRules.thrownCards.Add(gameObject);
+            CleanUpCardInfo(this);
+        }
+    }
+
     public IEnumerator CheckIfCardIsAtDestination(float time, int cardsPulled)
     {
         yield return new WaitForSeconds(time);
@@ -677,35 +698,30 @@ public class Card : InteractionSuperClass {
             else
             {
                 StartPulse();
-                thrownWrong = true;
-                Table.instance.RemoveCardFrom(this);
-                Services.PokerRules.cardsLogged.Remove(this);
-                Services.PokerRules.cardsPulled.Remove(cardType);
-                //Debug.Log("Removing " + cardType.rank + " of " + cardType.suit);
-                cardDeck.GetComponent<CardDeckScript>().cardsInDeck.Add(cardType);
-                flying_start_time = Time.time;
-                flight_journey_distance = Vector3.Distance(transform.position, cardDeck.transform.position);
-                flying_start_position = transform.position;
-                Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[7], .05f);
-                Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[8], .05f);
+                CleanUpCardInfo(this);
             }
         }
         else
         {
             StartPulse();
-            //Debug.Log("card is in wrong location");
-            thrownWrong = true;
-            Table.instance.RemoveCardFrom(this);
-            Services.PokerRules.cardsLogged.Remove(this);
-            Services.PokerRules.cardsPulled.Remove(cardType);
-            //Debug.Log("Removing " + cardType.rank + " of " + cardType.suit);
-            cardDeck.GetComponent<CardDeckScript>().cardsInDeck.Add(cardType);
-            flying_start_time = Time.time;
-            flight_journey_distance = Vector3.Distance(transform.position, cardDeck.transform.position);
-            flying_start_position = transform.position;
-            Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[7], .05f);
-            Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[8], .05f);
+            CleanUpCardInfo(this);
         }
+    }
+
+    public void CleanUpCardInfo(Card card)
+    {
+        //Debug.Log("card is in wrong location");
+        thrownWrong = true;
+        Table.instance.RemoveCardFrom(card);
+        Services.PokerRules.cardsLogged.Remove(card);
+        Services.PokerRules.cardsPulled.Remove(cardType);
+        //Debug.Log("Removing " + cardType.rank + " of " + cardType.suit);
+        cardDeck.GetComponent<CardDeckScript>().cardsInDeck.Add(cardType);
+        flying_start_time = Time.time;
+        flight_journey_distance = Vector3.Distance(transform.position, cardDeck.transform.position);
+        flying_start_position = transform.position;
+        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[7], .05f);
+        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[8], .05f);
     }
 
     public void BringCardBack()

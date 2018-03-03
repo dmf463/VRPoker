@@ -62,9 +62,9 @@ public class PokerRules : MonoBehaviour {
         {
             if (Table.gameState == GameState.PreFlop)
             {
-                if (Table.instance.board.Count == 3 && Table.instance.burn.Count == 1 && !checkedForCorrections && thrownCards.Count == 0)
+                if (Table.instance.board.Count == 3 && Table.instance.burn.Count == 1 && Services.Dealer.readyForCards && thrownCards.Count == 0)
                 {
-                    if (CardsAreFacingCorrectDirection())
+                    if (CardsAreFacingCorrectDirection() && !checkedForCorrections )
                     {
                         StartCoroutine(CheckFlopMistakes(1));
                     }
@@ -72,9 +72,9 @@ public class PokerRules : MonoBehaviour {
             }
             else if (Table.gameState == GameState.Flop)
             {
-                if (Table.instance.board.Count == 4 && Table.instance.burn.Count == 2 && !checkedForCorrections && thrownCards.Count == 0)
+                if (Table.instance.board.Count == 4 && Table.instance.burn.Count == 2 && Services.Dealer.readyForCards  && thrownCards.Count == 0)
                 {
-                    if (CardsAreFacingCorrectDirection())
+                    if (CardsAreFacingCorrectDirection() && !checkedForCorrections)
                     {
                         Debug.Log("checking turn");
                         StartCoroutine(CheckTurnMistakes(1));
@@ -83,9 +83,9 @@ public class PokerRules : MonoBehaviour {
             }
             else if (Table.gameState == GameState.Turn)
             {
-                if (Table.instance.board.Count == 5 && Table.instance.burn.Count == 3 && !checkedForCorrections && thrownCards.Count == 0)
+                if (Table.instance.board.Count == 5 && Table.instance.burn.Count == 3 && Services.Dealer.readyForCards && thrownCards.Count == 0)
                 {
-                    if (CardsAreFacingCorrectDirection())
+                    if (CardsAreFacingCorrectDirection() && !checkedForCorrections)
                     {
                         Debug.Log("checking river");
                         StartCoroutine(CheckRiverMistakes(1));

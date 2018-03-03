@@ -17,6 +17,7 @@ public class Dealer : MonoBehaviour
     public Light lighting;
     public List<Vector3> chipPositionInPot;
     public int chipsMoved;
+    public bool readyForCards = false;
 
     public int tipCount;
     public GameObject tipIndicator;
@@ -199,6 +200,7 @@ public class Dealer : MonoBehaviour
         if (playersReady && Table.gameState != lastGameState)
         {
             Debug.Log("starting round");
+            readyForCards = false;
             roundStarted = false;
             playersReady = false;
             Services.PokerRules.TurnOffAllIndicators();
@@ -1011,6 +1013,7 @@ public class Dealer : MonoBehaviour
                 playerToAct.playerSpotlight.SetActive(false);
                 playerToAct = null;
                 playersReady = true;
+                readyForCards = true;
             }
         }
     }
