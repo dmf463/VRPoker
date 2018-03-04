@@ -242,31 +242,43 @@ public class PokerPlayerRedux : MonoBehaviour{
             {
                 turnComplete = false;
                 List<CardType> sortedCards = Table.instance.SortPlayerCardsAtFlop(SeatPos);
-                HandEvaluator playerHand = new HandEvaluator(sortedCards);
-                playerHand.EvaluateHandAtFlop();
-                Hand = playerHand;
-                DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
-                StartCoroutine(SetNextPlayer());
+                if (sortedCards == null) Table.gameState = GameState.Misdeal;
+                else
+                {
+                    HandEvaluator playerHand = new HandEvaluator(sortedCards);
+                    playerHand.EvaluateHandAtFlop();
+                    Hand = playerHand;
+                    DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
+                    StartCoroutine(SetNextPlayer());
+                }
             }
             else if (Table.gameState == GameState.Turn)
             {
                 turnComplete = false;
                 List<CardType> sortedCards = Table.instance.SortPlayerCardsAtTurn(SeatPos);
-                HandEvaluator playerHand = new HandEvaluator(sortedCards);
-                playerHand.EvaluateHandAtTurn();
-                Hand = playerHand;
-                DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
-                StartCoroutine(SetNextPlayer());
+                if (sortedCards == null) Table.gameState = GameState.Misdeal;
+                else
+                {
+                    HandEvaluator playerHand = new HandEvaluator(sortedCards);
+                    playerHand.EvaluateHandAtTurn();
+                    Hand = playerHand;
+                    DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
+                    StartCoroutine(SetNextPlayer());
+                }
             }
             else if (Table.gameState == GameState.River)
             {
                 turnComplete = false;
                 List<CardType> sortedCards = Table.instance.SortPlayerCardsAtRiver(SeatPos);
-                HandEvaluator playerHand = new HandEvaluator(sortedCards);
-                playerHand.EvaluateHandAtRiver();
-                Hand = playerHand;
-                DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
-                StartCoroutine(SetNextPlayer());
+                if (sortedCards == null) Table.gameState = GameState.Misdeal;
+                else
+                {
+                    HandEvaluator playerHand = new HandEvaluator(sortedCards);
+                    playerHand.EvaluateHandAtRiver();
+                    Hand = playerHand;
+                    DetermineHandStrength(Table.instance.playerCards[SeatPos][0].cardType, Table.instance.playerCards[SeatPos][1].cardType);
+                    StartCoroutine(SetNextPlayer());
+                }
             }
         }
     }

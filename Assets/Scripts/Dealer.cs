@@ -584,23 +584,19 @@ public class Dealer : MonoBehaviour
             }
             else if (cardCountForPreFlop == Services.PokerRules.cardsPulled.Count)
             {
-                //Debug.Log("got all the right cards");
-                //Debug.Log("cardsPulled = " + Services.PokerRules.cardsPulled.Count);
-                //Debug.Log("thrownCards = " + Services.PokerRules.thrownCards.Count);
                 Table.gameState = GameState.PreFlop;
+                Services.PokerRules.checkedFlop = true;
             }
-            else if (Services.PokerRules.cardsPulled.Count > players.Count * 2 && !Services.Dealer.OutsideVR)
+            else if (Services.PokerRules.cardsPulled.Count > players.Count * 2/* && !Services.Dealer.OutsideVR*/)
             {
-                //Debug.Log("Dealt too many cards");
                 Table.gameState = GameState.Misdeal;
             }
             else
             {
-                //Debug.Log("correctingMistakes because cardCountForPreflop != cardsPulled");
                 Services.PokerRules.CorrectMistakesPreFlop(1f);
                 Table.gameState = GameState.PreFlop;
+                Services.PokerRules.checkedPreFlop = true;
             }
-            //Debug.Log("ending the check");
             checkedPreFlopCardCount = false;
         }
     }

@@ -306,12 +306,19 @@ public class Table {
         List<CardType> EvaluatedHand = new List<CardType>();
         EvaluatedHand = GetCardTypes(seatPos);
         if (EvaluatedHand.Count != 2) Debug.Log("EvaluatedHandCount = " + EvaluatedHand.Count);
-        EvaluatedHand.Add(board[0].cardType);
-        EvaluatedHand.Add(board[1].cardType);
-        EvaluatedHand.Add(board[2].cardType);
-        if (EvaluatedHand.Count != 5) Debug.Log("EvaluatedHandCount = " + EvaluatedHand.Count);
-        Debug.Assert(EvaluatedHand.Count == 5);
-        EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
+        if (board.Count != 3) gameState = GameState.Misdeal;
+        else
+        {
+            EvaluatedHand.Add(board[0].cardType);
+            EvaluatedHand.Add(board[1].cardType);
+            EvaluatedHand.Add(board[2].cardType);
+        }
+        if (EvaluatedHand.Count != 5)
+        {
+            gameState = GameState.Misdeal;
+            EvaluatedHand = null;
+        }
+        else EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
 
         return EvaluatedHand;
     }
@@ -322,13 +329,20 @@ public class Table {
         List<CardType> EvaluatedHand = new List<CardType>();
         EvaluatedHand = GetCardTypes(seatPos);
         if (EvaluatedHand.Count != 2) Debug.Log("EvaluatedHandCount = " + EvaluatedHand.Count);
-        EvaluatedHand.Add(board[0].cardType);
-        EvaluatedHand.Add(board[1].cardType);
-        EvaluatedHand.Add(board[2].cardType);
-        EvaluatedHand.Add(board[3].cardType);
-        if (EvaluatedHand.Count != 6) Debug.Log("EvaluatedHandCount = " + EvaluatedHand.Count);
-        Debug.Assert(EvaluatedHand.Count == 6);
-        EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
+        if (board.Count != 4) gameState = GameState.Misdeal;
+        else
+        {
+            EvaluatedHand.Add(board[0].cardType);
+            EvaluatedHand.Add(board[1].cardType);
+            EvaluatedHand.Add(board[2].cardType);
+            EvaluatedHand.Add(board[3].cardType);
+        }
+        if (EvaluatedHand.Count != 6)
+        {
+            gameState = GameState.Misdeal;
+            EvaluatedHand = null;
+        }
+        else EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
 
         return EvaluatedHand;
     }
@@ -339,14 +353,21 @@ public class Table {
         List<CardType> EvaluatedHand = new List<CardType>();
         EvaluatedHand = GetCardTypes(seatPos);
         if (EvaluatedHand.Count != 2) Debug.Log("EvaluatedHandCount = " + EvaluatedHand.Count);
-        EvaluatedHand.Add(board[0].cardType);
-        EvaluatedHand.Add(board[1].cardType);
-        EvaluatedHand.Add(board[2].cardType);
-        EvaluatedHand.Add(board[3].cardType);
-        EvaluatedHand.Add(board[4].cardType);
-        if (EvaluatedHand.Count != 7) Debug.Log("EvaluatedHandCount = " + EvaluatedHand.Count);
-        Debug.Assert(EvaluatedHand.Count == 7);
-        EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
+        if (board.Count != 5) gameState = GameState.Misdeal;
+        else
+        {
+            EvaluatedHand.Add(board[0].cardType);
+            EvaluatedHand.Add(board[1].cardType);
+            EvaluatedHand.Add(board[2].cardType);
+            EvaluatedHand.Add(board[3].cardType);
+            EvaluatedHand.Add(board[4].cardType);
+        }
+        if (EvaluatedHand.Count != 7)
+        {
+            gameState = GameState.Misdeal;
+            EvaluatedHand = null;
+        }
+        else EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
 
         return EvaluatedHand;
     }

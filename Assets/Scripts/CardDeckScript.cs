@@ -109,6 +109,7 @@ public class CardDeckScript : InteractionSuperClass {
             card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
             Services.PokerRules.cardsPulled.Add(card.cardType);
             card.cardThrownNum = Services.PokerRules.cardsPulled.Count;
+            StartCoroutine(card.CheckIfCardThrownAtWrongTime(card.checkTime, card.cardThrownNum));
         }
         if (Input.GetKey(KeyCode.RightArrow) && cheatTimePassed > cheatKeyDelay)
         {
