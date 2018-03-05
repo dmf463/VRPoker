@@ -70,6 +70,10 @@ public class LogCards : MonoBehaviour
                     {
                         Debug.Log(other.gameObject.name + " hasn't been let go of yet");
                     }
+                    else if (other.GetComponent<Card>().CardIsFaceUp())
+                    {
+                        Table.gameState = GameState.Misdeal;
+                    }
                     else
                     {
                         if (!Services.Dealer.killingCards && !Services.Dealer.cleaningCards && Table.gameState == GameState.NewRound)

@@ -560,6 +560,7 @@ public GameObject FindChipPrefab(int chipValue)
         {
             float distCovered = (Time.time - flying_start_time) * speed;
             float fracJourney = distCovered / flight_journey_distance;
+            //chip has been destroyed
             transform.position = Vector3.Lerp(flying_start_position, dest, fracJourney);
             yield return null;
         }
@@ -569,6 +570,7 @@ public GameObject FindChipPrefab(int chipValue)
     {
         while (lerping)
         {
+            //chip has been destroyed
             if (transform.position == pos)
             {
                 lerping = false;

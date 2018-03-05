@@ -703,6 +703,7 @@ public class PokerRules : MonoBehaviour {
                                     chipsToConsolidate[chipToCheck].chipStack.AddToStackInHand(chip.chipStack.chips[chipsToAdd]);
                                 }
                                 chipsToConsolidate.Remove(chip);
+                                //trying to destroy chips that already are destoryed, null reference
                                 Destroy(chip.gameObject);
                                 break;
                             }

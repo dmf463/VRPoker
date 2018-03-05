@@ -1677,6 +1677,7 @@ public class Dealer : MonoBehaviour
         Services.PokerRules.ConsolidateStack(chipsInPot);
         for (int i = 0; i < chipsInPot.Count; i++)
         {
+            //null reference trying to destroy chips
             chipsInPot[i].gameObject.transform.position = chipPositionInPot[i];
         }
         yield break;
