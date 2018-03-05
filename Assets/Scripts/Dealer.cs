@@ -127,7 +127,7 @@ public class Dealer : MonoBehaviour
         Services.Dealer = this;
         Services.PokerRules = GameObject.Find("PokerRules").GetComponent<PokerRules>();
 		Services.PlayerBehaviour = new PlayerBehaviour();
-		Services.DialogueDataManager.ParseDialogueFile((Services.SoundManager.dialogueFile));
+		Services.DialogueDataManager.ParseConvoDialogueFile((Services.SoundManager.dialogueFile));
         Services.TextManager = GameObject.Find("TableGraphics").GetComponent<TextManager>();
        
     }
