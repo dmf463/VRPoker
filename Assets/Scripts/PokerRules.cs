@@ -57,17 +57,7 @@ public class PokerRules : MonoBehaviour {
         {
             IndicateCardPlacement(cardsPulled.Count);
         }
-        CheckRoundOrder();
         CheckCardPlacement();
-    }
-
-    public void CheckRoundOrder()
-    {
-        if (Services.Dealer.lastGameState != Table.gameState) Debug.Log("moving from " + Services.Dealer.lastGameState + " to " + Table.gameState);
-        if (Services.Dealer.lastGameState == GameState.NewRound && (Table.gameState != GameState.NewRound && Table.gameState != GameState.PreFlop)) Table.gameState = GameState.Misdeal;
-        if (Services.Dealer.lastGameState == GameState.PreFlop && (Table.gameState != GameState.PreFlop && Table.gameState != GameState.Flop)) Table.gameState = GameState.Misdeal;
-        if (Services.Dealer.lastGameState == GameState.Flop && (Table.gameState != GameState.Flop && Table.gameState != GameState.Turn)) Table.gameState = GameState.Misdeal;
-        if (Services.Dealer.lastGameState == GameState.Turn && (Table.gameState != GameState.Turn && Table.gameState != GameState.River)) Table.gameState = GameState.Misdeal;
     }
 
     public void CheckCardPlacement()
