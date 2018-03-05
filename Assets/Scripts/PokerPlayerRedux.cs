@@ -6,8 +6,9 @@ using System.Linq;
 //this is the individual state of each player and controls how the game can flow
 //I've had to add some states here and there as they pop up
 //the most important one is "Playing" because if they aren't marked as playing, then they'll be skipped
-public enum PlayerState { Playing, NotPlaying, Winner, Loser, Eliminated}
-public enum PlayerName { None, Casey, Zombie, Minnie, Nathaniel, Floyd}
+public enum PlayerState {Playing, NotPlaying, Winner, Loser, Eliminated}
+public enum PlayerName {None, Casey, Zombie, Minnie, Nathaniel, Floyd}
+public enum LineCriteria {None, AllIn, Bet, Call, CardHit, Check, Fold, Misdeal, Raise, Tip, Win, Lose, WrongCards, WrongChips}
 
 
 public class PokerPlayerRedux : MonoBehaviour{

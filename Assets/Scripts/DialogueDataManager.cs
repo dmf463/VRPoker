@@ -6,12 +6,15 @@ using UnityEngine.UI;
 
 public class DialogueDataManager
 {
-    
+    private Dictionary<List<PlayerLineCriteria>, List<PlayerLine>> oneLineDict;
+
+
     private Dictionary<List<PlayerName>, List<Conversation>> convoDict;
     //dictionary keys are lists of poker players still in the game, values are lists of conversations for those combinations
     public List<PlayerName> conversationKeys = new List<PlayerName>();
     private List<PlayerName> conversants = new List<PlayerName>();
     private List<PlayerName> potentialConversants = new List<PlayerName>(); //create a list to hold the names of the players we could potentially start a conversation with
+
 
 
 	public void Awake()
@@ -50,8 +53,8 @@ public class DialogueDataManager
 		}
 	}
 
-    #region TextFileParser
-    public void ParseDialogueFile(TextAsset dialogueFile) //parser for dialogue text file
+    #region TextFileParsers
+    public void ParseConvoDialogueFile(TextAsset dialogueFile) //parser for dialogue text file
 	{
         convoDict = new Dictionary<List<PlayerName>, List<Conversation>> (new ListComparer<PlayerName>()); //our dictionary of dialogue
 		string fileFullString = dialogueFile.text; //the raw text of the file
@@ -132,6 +135,97 @@ public class DialogueDataManager
             //Debug.Log(pair.Key[0] + " " + pair.Key[1]);
         }
 	}
+
+    public void ParseOneLinerDialogueFile(TextAsset dialogueFile) //parser for dialogue text file
+    {
+        oneLineDict = new Dictionary<List<PlayerLineCriteria>, List<PlayerLine>>(new ListComparer<PlayerLineCriteria>()); //our dictionary of dialogue
+        string fileFullString = dialogueFile.text; //the raw text of the file
+        string[] fileRows; //array of rows of our spreadsheet
+        string[] rowEntries; //array of entries in our spreadsheet
+        string fileRow; //holder for a file row
+        string[] rowSeparator = new string[] { "\r\n", "\r", "\n" };  //array of row separators, all are on line end
+        char[] entrySeparator = new char[] { '\t' }; //array of entry separators, specifically tab-separated
+
+        List<PlayerLineCriteria> lineCriteriaList = new List<PlayerLineCriteria>();
+        List<PlayerLine> playerLinesList = new List<PlayerLine>();
+
+
+        List<PlayerName> conversantList = new List<PlayerName>(); //list to hold the players who are in the conversation
+
+        int requiredRound = 0;
+
+        fileRows = fileFullString.Split(rowSeparator, System.StringSplitOptions.None); //set filerows by splitting our file using row separator
+
+
+        for (int i = 0; i < fileRows.Length; i++)  //for each row in our array
+        {
+            fileRow = fileRows[i]; //set filerow to equal that row
+            rowEntries = fileRow.Split(entrySeparator); //set entries by splitting the row using our entry separator
+            string ident = rowEntries[0];
+            if (ident != null && ident != "")
+            {
+                
+                if (ident == "Line") //if we are starting a conversation
+                {
+                    //Debug.Log("Convo");
+
+                    int.TryParse(rowEntries[1], out requiredRound);
+
+                    //Debug.Log("required Round" + rowEntries[1]);
+
+                    for (int j = 2; j < rowEntries.Length; j++) //from the third column onward
+                    {
+                        //Debug.Log("Row " + j + " " + rowEntries[j]);
+                        if (rowEntries[j] != "")    //if the row entry isn't blank
+                        {
+                            PlayerName conversant = GetConversantNameFromString(rowEntries[j]); // use the entry to get the name of one of our conversants
+                            conversantList.Add(conversant); //add this name to our list of conversants required for this conversation
+                            //Debug.Log("Added conversant: " + conversant);
+                        }
+                    }
+                }
+
+
+                else if (ident == "End") //if we have reached the end of a conversation
+                {
+                    //Debug.Log(("End"));
+                    List<PlayerLine> tempPlayerLines = new List<PlayerLine>(playerLinesList);
+                    Conversation conversation = new Conversation(tempPlayerLines, requiredRound, false); //create a conversation to contain the player lines and required round
+                    List<PlayerName> tempConversants = new List<PlayerName>(conversantList);
+                    AddDialogueEntry(tempConversants, conversation); //add the conversant list and player lines list to the dialogue dictionary
+                    conversantList.Clear();//clear our previous lists
+                    playerLinesList.Clear();
+                }
+                else if (ident == "Line") //if it's a player line
+                {
+                    //Debug.Log("PlayerLine");
+                    string playerNameText = rowEntries[1]; //gets the string for the player name
+                    string lineText = rowEntries[2]; //gets the text to be spoken, this isn't currently used in the game but will be needed for subtitles
+                    string audioFileText = rowEntries[3]; //the string for the audiofile name
+                                                          //Log(audioFileText);
+                    AudioClip audioFile = Resources.Load("Audio/Voice/Current/" + audioFileText) as AudioClip; //gets the audiofile from resources using the string name 
+                    //Debug.Log(audioFile);
+                    AudioSource audioSource = GetAudioSourceFromString(playerNameText); //get the correct audio source based on the players name
+
+                    PlayerLine line = new PlayerLine(playerNameText, lineText, audioSource, audioFile); //create a player line and assign the next three entries
+                    playerLinesList.Add(line); //add line to list of player lines                          
+                }
+                else
+                {
+                    Debug.Log("Failed on ident " + ident);
+                }
+            }
+        }
+        foreach (KeyValuePair<List<PlayerName>, List<Conversation>> pair in convoDict)
+        {
+            //Debug.Log(pair.Key[0] + " " + pair.Key[1]);
+        }
+    }
+
+
+
+
+
 #endregion
 
     void AddDialogueEntry(List<PlayerName> playerList, Conversation conversationToAdd)
@@ -227,6 +321,43 @@ public class DialogueDataManager
         }
     }
 
+    LineCriteria GetLineCriteriaFromString(string criteriaString)
+    {  //uses the player name strings from the file to find the correct player names in the game
+        string str = criteriaString.ToUpper().Trim(); //turns all letters in string to uppercase and removes spaces on either side
+
+        switch (str)
+        {
+            case "ALLIN":
+                return LineCriteria.AllIn;
+            case "BET":
+                return LineCriteria.Bet;
+            case "CALL":
+                return LineCriteria.Call;
+            case "CARDHIT":
+                return LineCriteria.CardHit;
+            case "CHECK":
+                return LineCriteria.Check;
+            case "FOLD":
+                return LineCriteria.Fold;
+            case "LOSE":
+                return LineCriteria.Lose;
+            case "MISDEAL":
+                return LineCriteria.Misdeal;
+            case "RAISE":
+                return LineCriteria.Raise;
+            case "TIP":
+                return LineCriteria.Tip;
+            case "WIN":
+                return LineCriteria.Win;
+            case "WRONGCARDS":
+                return LineCriteria.WrongCards;
+            case "WRONGCHIPS":
+                return LineCriteria.WrongChips;
+            default:
+                return LineCriteria.None;
+        }
+    }
+
 
 
     public Conversation GetConversationWithNames (List<PlayerName> namesKey) //using the names of our chosen conversants
@@ -299,4 +430,18 @@ public class PlayerLine //class for each player line
         audioSource = _audioSource;
 		audioFile = _audioFile;
 	}
+}
+
+public class PlayerLineCriteria
+{
+    public PlayerName playerName;
+    public List<LineCriteria> lineCriteria;
+
+
+
+    public PlayerLineCriteria (PlayerName _playerName, List<LineCriteria> _lineCriteria)
+    {
+        playerName = _playerName;
+        lineCriteria = _lineCriteria;
+    }
 }
