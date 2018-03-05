@@ -789,7 +789,6 @@ public class Dealer : MonoBehaviour
                 flyingClicked = true;
                 startUpTime = Time.time;
                 GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
-                GameObject cardDeck = GameObject.Find("ShufflingArea");
                 if (cardsOnTable.Length != 0)
                 {
                     foreach (GameObject card in cardsOnTable)

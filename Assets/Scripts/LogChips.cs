@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Valve.VR;
+using Valve.VR.InteractionSystem;
 
 public class LogChips : MonoBehaviour
 {
@@ -90,6 +92,10 @@ public class LogChips : MonoBehaviour
         }
         if(other.gameObject.tag == "Tip" && gameObject.name == "TipCatcher")
         {
+            if (other.gameObject.GetComponentInParent<Hand>() != null)
+            {
+                other.gameObject.GetComponentInParent<Hand>().DetachObject(other.gameObject);
+            }
             ChipStack chipStack;
             int chipValue;
             if (other.GetComponent<Chip>().chipStack != null)

@@ -154,24 +154,11 @@ public class Chip : InteractionSuperClass {
                 {
                     Vector2 handPos = new Vector2(hand.transform.position.x, hand.transform.position.z);
                     Vector2 chipPos = new Vector2(transform.position.x, transform.position.z);
-                    Vector2 otherHandPos = new Vector2(hand.otherHand.transform.position.x, hand.otherHand.transform.position.z);
                     float heightDifference = hand.transform.position.y - transform.position.y;
                     if (Table.gameState == GameState.ShowDown && Services.Dealer.chipsInPot.Contains(this) && !isAtDestination)
                     {
                         if ((hand.transform.position - transform.position).magnitude < .2f && (handPos - chipPos).magnitude < .12f && heightDifference < HEIGHT_THRESHOLD && !isAtDestination)
                         {
-                            //Debug.Log(heightDifference + " is from chipWorth " + chipData.ChipValue);
-                            Vector3 vel = hand.GetTrackedObjectVelocity();
-                            Vector2 vel2D = new Vector2(vel.x, vel.z);
-                            Vector2 touchVect = (chipPos - (handPos));
-                            Vector2 chipDir = touchVect;
-                            float dot = Vector2.Dot(vel2D.normalized, touchVect.normalized);
-                            if (vel2D.magnitude > .2f && dot > .75f) //.6
-                            {
-                                chipDir = vel2D;
-                            }
-
-                            Vector3 dest = hand.transform.TransformPoint(Services.PokerRules.chipPositionWhenPushing[spotIndex]);
                             if (!pushingChip && Services.PokerRules.chipGroup.Count <= 10)
                             {
                                 maxGlow = 1;
@@ -543,9 +530,7 @@ public GameObject FindChipPrefab(int chipValue)
         if (callingPulse)
         {
             Color baseColor = new Vector4(0.8235294f, 0.1574394f, 0.5570934f, 0);
-            float previousEmission = emission;
             emission = PingPong(glowSpeed * (startTime - Time.time), 0, maxGlow);
-            float currentEmission = emission;
             Color finalColor = baseColor * Mathf.LinearToGammaSpace(emission);
             GetComponent<Renderer>().material.SetColor("_EmissionColor", finalColor);
             if (stopPulse)

@@ -421,21 +421,21 @@ public class Card : InteractionSuperClass {
 
     public override void OnDetachedFromHand(Hand hand)
     {
-        CardDeckScript deck;
-        if (!Services.Dealer.killingCards || Services.Dealer.cleaningCards)
-        {
-            deck = GameObject.FindGameObjectWithTag("CardDeck").GetComponent<CardDeckScript>();
-        }
-        else deck = null;
-        if (deck != null && deck.safeToPutCardBack)
-        {
-            deck.cardsInDeck.Add(cardType);
-            deck.MakeDeckLarger();
-            deck.safeToPutCardBack = false;
-            Destroy(gameObject);
-        }
-        else
-        {
+        //CardDeckScript deck;
+        //if (!Services.Dealer.killingCards || Services.Dealer.cleaningCards)
+        //{
+        //    deck = GameObject.FindGameObjectWithTag("CardDeck").GetComponent<CardDeckScript>();
+        //}
+        //else deck = null;
+        //if (deck != null && deck.safeToPutCardBack)
+        //{
+        //    deck.cardsInDeck.Add(cardType);
+        //    deck.MakeDeckLarger();
+        //    deck.safeToPutCardBack = false;
+        //    Destroy(gameObject);
+        //}
+        //else
+        //{
             StartPulse();
             if (!Services.PokerRules.thrownCards.Contains(gameObject) && Table.gameState == GameState.NewRound && !Services.Dealer.isCheating)
             {
@@ -458,7 +458,7 @@ public class Card : InteractionSuperClass {
             Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cards[Random.Range(0, Services.SoundManager.cards.Length)], 0.25f, Random.Range(0.95f, 1.05f), transform.position);
             StartCoroutine(CheckVelocity(.025f));
             base.OnDetachedFromHand(hand);
-        }
+        //}
     }
 
     //basically we want to give some time for the card to actually LEAVE the hand before we check the velocity
@@ -587,10 +587,8 @@ public class Card : InteractionSuperClass {
     public void StraightenOutCards()
     {
         Vector3 endPos = GetCardPos();
-        Quaternion endRot = GetCardRot();
         InitializeLerp(endPos);
         StartCoroutine(LerpCardPos(endPos, 0.25f));
-        //StartCoroutine(LerpCardRot(endRot, 0.25f));
         StartCoroutine(StopLerp(endPos));
     }
 
@@ -658,9 +656,14 @@ public class Card : InteractionSuperClass {
         float badCardsDebug = 0;
         for (int i = Services.PokerRules.thrownCards.Count - 1; i >= 0; i--)
         {
-            if (Services.PokerRules.thrownCards[i].GetComponent<Card>().thrownWrong)
+            //area for bug
+            //had deck in hand and continuously pulled trigger
+            if (Services.PokerRules.thrownCards[i].GetComponent<Card>() != null)
             {
-                badCardsDebug++;
+                if (Services.PokerRules.thrownCards[i].GetComponent<Card>().thrownWrong)
+                {
+                    badCardsDebug++;
+                }
             }
         }
         //Debug.Log("badcards count = " + badCardsDebug);
