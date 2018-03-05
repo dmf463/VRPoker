@@ -10,6 +10,7 @@ public class LogCards : MonoBehaviour
     private GameObject newCardDeck;
     private bool madeNewDeck;
     private int cardCountForTones;
+    private float cardPositionSpeed = 0.1f;
     private List<string> playerNames = new List<string>
     {
         "P0Cards", "P1Cards", "P2Cards", "P3Cards", "P4Cards"
@@ -134,9 +135,9 @@ public class LogCards : MonoBehaviour
                     {
                         Services.PokerRules.cardsPulled.Add(other.GetComponent<Card>().cardType);
                         other.GetComponent<Card>().cardThrownNum = Services.PokerRules.cardsPulled.Count;
-                        Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, .05f, false);
+                        Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, cardPositionSpeed, false);
                     }
-                    else Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, .05f, false);
+                    else Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, cardPositionSpeed, false);
                     other.GetComponent<Card>().StopCheating();
                 }
                 //}
@@ -180,9 +181,9 @@ public class LogCards : MonoBehaviour
                     {
                         Services.PokerRules.cardsPulled.Add(other.GetComponent<Card>().cardType);
                         other.GetComponent<Card>().cardThrownNum = Services.PokerRules.cardsPulled.Count;
-                        Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, .05f, false);
+                        Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, cardPositionSpeed, false);
                     }
-                    else Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, .05f, false);
+                    else Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, cardPositionSpeed, false);
                     other.GetComponent<Card>().StopCheating();
                 }
             }

@@ -17,6 +17,7 @@ public class Dealer : MonoBehaviour
     public Light lighting;
     public List<Vector3> chipPositionInPot;
     public int chipsMoved;
+    public bool readyForCards = false;
 
     public int tipCount;
     public GameObject tipIndicator;
@@ -194,15 +195,12 @@ public class Dealer : MonoBehaviour
         {
             Services.PokerRules.SetCardIndicator();
         }
-        if((int)Table.gameState - (int)lastGameState  > 1 && Table.gameState < GameState.ShowDown) //if we went from like the flop to the river
-        {
-            Table.gameState = GameState.Misdeal;
-        }
         //this resets bools necessary to start new rounds
         //once both of these are true, then the next round will start
         if (playersReady && Table.gameState != lastGameState)
         {
             Debug.Log("starting round");
+            readyForCards = false;
             roundStarted = false;
             playersReady = false;
             Services.PokerRules.TurnOffAllIndicators();
@@ -586,23 +584,19 @@ public class Dealer : MonoBehaviour
             }
             else if (cardCountForPreFlop == Services.PokerRules.cardsPulled.Count)
             {
-                //Debug.Log("got all the right cards");
-                //Debug.Log("cardsPulled = " + Services.PokerRules.cardsPulled.Count);
-                //Debug.Log("thrownCards = " + Services.PokerRules.thrownCards.Count);
                 Table.gameState = GameState.PreFlop;
+                Services.PokerRules.checkedFlop = true;
             }
-            else if (Services.PokerRules.cardsPulled.Count > players.Count * 2 && !Services.Dealer.OutsideVR)
+            else if (Services.PokerRules.cardsPulled.Count > players.Count * 2/* && !Services.Dealer.OutsideVR*/)
             {
-                //Debug.Log("Dealt too many cards");
                 Table.gameState = GameState.Misdeal;
             }
             else
             {
-                //Debug.Log("correctingMistakes because cardCountForPreflop != cardsPulled");
                 Services.PokerRules.CorrectMistakesPreFlop(1f);
                 Table.gameState = GameState.PreFlop;
+                Services.PokerRules.checkedPreFlop = true;
             }
-            //Debug.Log("ending the check");
             checkedPreFlopCardCount = false;
         }
     }
@@ -795,7 +789,6 @@ public class Dealer : MonoBehaviour
                 flyingClicked = true;
                 startUpTime = Time.time;
                 GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");
-                GameObject cardDeck = GameObject.Find("ShufflingArea");
                 if (cardsOnTable.Length != 0)
                 {
                     foreach (GameObject card in cardsOnTable)
@@ -1015,6 +1008,7 @@ public class Dealer : MonoBehaviour
                 playerToAct.playerSpotlight.SetActive(false);
                 playerToAct = null;
                 playersReady = true;
+                readyForCards = true;
             }
         }
     }

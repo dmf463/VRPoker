@@ -18,6 +18,7 @@ public class CardDeckScript : InteractionSuperClass {
     //this is the deck...idk why I have a reference to the deck on the deck..
     //oh...apparently I have it for readability
     GameObject cardDeck;
+    public bool safeToPutCardBack = false;
 
     //this is the offset used when playing 52 Card Pickup, so that all the cards don't spawn in the same place
     //this probably doesn't need to be global
@@ -108,6 +109,7 @@ public class CardDeckScript : InteractionSuperClass {
             card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
             Services.PokerRules.cardsPulled.Add(card.cardType);
             card.cardThrownNum = Services.PokerRules.cardsPulled.Count;
+            StartCoroutine(card.CheckIfCardThrownAtWrongTime(card.checkTime, card.cardThrownNum));
         }
         if (Input.GetKey(KeyCode.RightArrow) && cheatTimePassed > cheatKeyDelay)
         {
@@ -167,48 +169,22 @@ public class CardDeckScript : InteractionSuperClass {
     //but we're just messing with scale in order to achieve the illusion that we're pulling cards and stuff
     void OnCollisionEnter(Collision other)
     {
-        //if (Table.dealerState == DealerState.ShufflingState)
-        //{
-        //if ((Table.gameState == GameState.CleanUp || Table.gameState == GameState.PostHand || Services.Dealer.inTutorial) && Services.Dealer.winnersPaid == Services.Dealer.numberOfWinners)
-        //{
-        //    if (other.gameObject.tag == "PlayingCard")
-        //    {
-        //        Destroy(other.gameObject);
-        //        MakeDeckLarger();
-        //    }
-        //    //this is the problem, because like, whenever we decrement and increment the card deck
-        //    //we permanently change the scale
-        //    //which makes this trigger early sometimes
-        //    //I should do
-        //    //have a variable that knows how many cards are on the table
-        //    //once I've destroyed that many cards
-        //    //refill the deck, and set the decks scale to the original deck scale
-        //    GameObject[] deadCards = GameObject.FindGameObjectsWithTag("PlayingCard");
-        //    if (currentCardDeckScale.y >= newCardDeckScale.y || deadCards.Length == 0)
-        //    {
-        //        currentCardDeckScale.y = newCardDeckScale.y;
-        //        foreach (GameObject card in deadCards)
-        //        {
-        //            Destroy(card);
-        //        }
-        //        RefillCardDeck();
-        //        Table.instance.NewHand();
-        //        Table.dealerState = DealerState.DealingState;
-        //    }
-        //}
+
     }
 
     //so this is how we know whether the hand is touching the deck or not
     public override void OnTriggerEnterX(Collider other)
     {
-        if(other.gameObject.tag == "Hand")
+        if (other.gameObject.tag == "Hand")
         {
-            if(other.gameObject.GetComponent<Hand>() == throwingHand)
+            if (other.gameObject.GetComponent<Hand>() == throwingHand)
             {
                 handTouchingDeck = true;
                 readyForAnotherCard = true;
+                safeToPutCardBack = true;
             }
         }
+
     }
 
     //this is how we know that the hand is no longer touching the deck
@@ -218,6 +194,7 @@ public class CardDeckScript : InteractionSuperClass {
         {
             if(other.GetComponent<Hand>() == throwingHand)
             {
+                safeToPutCardBack = false;
                 handTouchingDeck = false;
                 readyForAnotherCard = false;
             }

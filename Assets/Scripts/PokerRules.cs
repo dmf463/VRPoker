@@ -30,6 +30,11 @@ public class PokerRules : MonoBehaviour {
     public int toneCount;
     public float cardToneVolume;
 
+    public bool checkedPreFlop;
+    public bool checkedFlop;
+    public bool checkedTurn;
+    public bool checkedRiver;
+
     // Use this for initialization
     void Start() {
         boardPos.Add(GameObject.Find("Flop1"));
@@ -62,9 +67,9 @@ public class PokerRules : MonoBehaviour {
         {
             if (Table.gameState == GameState.PreFlop)
             {
-                if (Table.instance.board.Count == 3 && Table.instance.burn.Count == 1 && !checkedForCorrections && thrownCards.Count == 0)
+                if (Table.instance.board.Count == 3 && Table.instance.burn.Count == 1 && Services.Dealer.readyForCards && thrownCards.Count == 0)
                 {
-                    if (CardsAreFacingCorrectDirection())
+                    if (CardsAreFacingCorrectDirection() && !checkedForCorrections )
                     {
                         StartCoroutine(CheckFlopMistakes(1));
                     }
@@ -72,9 +77,9 @@ public class PokerRules : MonoBehaviour {
             }
             else if (Table.gameState == GameState.Flop)
             {
-                if (Table.instance.board.Count == 4 && Table.instance.burn.Count == 2 && !checkedForCorrections && thrownCards.Count == 0)
+                if (Table.instance.board.Count == 4 && Table.instance.burn.Count == 2 && Services.Dealer.readyForCards  && thrownCards.Count == 0)
                 {
-                    if (CardsAreFacingCorrectDirection())
+                    if (CardsAreFacingCorrectDirection() && !checkedForCorrections)
                     {
                         Debug.Log("checking turn");
                         StartCoroutine(CheckTurnMistakes(1));
@@ -83,9 +88,9 @@ public class PokerRules : MonoBehaviour {
             }
             else if (Table.gameState == GameState.Turn)
             {
-                if (Table.instance.board.Count == 5 && Table.instance.burn.Count == 3 && !checkedForCorrections && thrownCards.Count == 0)
+                if (Table.instance.board.Count == 5 && Table.instance.burn.Count == 3 && Services.Dealer.readyForCards && thrownCards.Count == 0)
                 {
-                    if (CardsAreFacingCorrectDirection())
+                    if (CardsAreFacingCorrectDirection() && !checkedForCorrections)
                     {
                         Debug.Log("checking river");
                         StartCoroutine(CheckRiverMistakes(1));
@@ -99,14 +104,15 @@ public class PokerRules : MonoBehaviour {
         {
             if (Table.gameState == GameState.PreFlop)
             {
-                if ((cardsPulled.Count - 1 == flopCards || Table.instance.board.Count == 3) && !checkedForCorrections && thrownCards.Count == 0)
+                if ((cardsPulled.Count - 1 == flopCards || Table.instance.board.Count == 3) && Services.Dealer.readyForCards && !checkedForCorrections && thrownCards.Count == 0)
                 {
+                    Debug.Log("checking flop");
                     StartCoroutine(CheckFlopMistakes(1));
                 }
             }
             else if (Table.gameState == GameState.Flop)
             {
-                if ((cardsPulled.Count - 1 == turnCard || Table.instance.board.Count == 4) && !checkedForCorrections && thrownCards.Count == 0)
+                if ((cardsPulled.Count - 1 == turnCard || Table.instance.board.Count == 4) && Services.Dealer.readyForCards && !checkedForCorrections && thrownCards.Count == 0)
                 {
                     Debug.Log("checking turn");
                     StartCoroutine(CheckTurnMistakes(1));
@@ -114,7 +120,7 @@ public class PokerRules : MonoBehaviour {
             }
             else if (Table.gameState == GameState.Turn)
             {
-                if ((cardsPulled.Count - 1 == riverCard || Table.instance.board.Count == 5) &&  !checkedForCorrections && thrownCards.Count == 0)
+                if ((cardsPulled.Count - 1 == riverCard || Table.instance.board.Count == 5) && Services.Dealer.readyForCards && !checkedForCorrections && thrownCards.Count == 0)
                 {
                     Debug.Log("checking river");
                     StartCoroutine(CheckRiverMistakes(1));
@@ -166,7 +172,7 @@ public class PokerRules : MonoBehaviour {
         //Debug.Log("playersAtTableCount = " + Services.Dealer.PlayerAtTableCount());
         //Debug.Log("in the preflop, checking the flop: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and flopCard = " + flopCards);
         //Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
-        if (cardsPulled.Count - 1 > flopCards && !Services.Dealer.OutsideVR)
+        if (cardsPulled.Count - 1 > flopCards)
         {
             Debug.Log("MISDEAL ON THE FLOP");
             Table.gameState = GameState.Misdeal;
@@ -183,6 +189,7 @@ public class PokerRules : MonoBehaviour {
             {
                 Table.gameState = GameState.Flop;
                 checkedForCorrections = false;
+                checkedFlop = true;
             }
         }
         else if (cardsPulled.Count - 1 == flopCards)
@@ -190,11 +197,13 @@ public class PokerRules : MonoBehaviour {
             CorrectMistakes();
             Table.gameState = GameState.Flop;
             checkedForCorrections = false;
+            checkedFlop = true;
         }
         else
         {
             Table.gameState = GameState.Flop;
             checkedForCorrections = false;
+            checkedFlop = true;
         }
     }
 
@@ -205,7 +214,7 @@ public class PokerRules : MonoBehaviour {
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
         //Debug.Log("in the flop, checking the turn: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and turnCard = " + turnCard);
         //Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
-        if (cardsPulled.Count - 1 > turnCard && !Services.Dealer.OutsideVR)
+        if (cardsPulled.Count - 1 > turnCard)
         {
             Debug.Log("MISDEAL ON THE TURN");
             Table.gameState = GameState.Misdeal;
@@ -222,6 +231,7 @@ public class PokerRules : MonoBehaviour {
             {
                 Table.gameState = GameState.Turn;
                 checkedForCorrections = false;
+                checkedTurn = true;
             }
         }
         else if (cardsPulled.Count - 1 == turnCard)
@@ -229,11 +239,13 @@ public class PokerRules : MonoBehaviour {
             CorrectMistakes();
             Table.gameState = GameState.Turn;
             checkedForCorrections = false;
+            checkedTurn = true;
         }
         else
         {
             Table.gameState = GameState.Turn;
             checkedForCorrections = false;
+            checkedTurn = true;
         }
     }
 
@@ -244,7 +256,7 @@ public class PokerRules : MonoBehaviour {
         SetCardPlacement(Services.Dealer.PlayerAtTableCount());
         //Debug.Log("in the turn, checking the river: boardCound = " + Table.instance._board.Count + " and playerCards + 1 =  " + (playerCards + 1) + " and riverCard = " + riverCard);
         //Debug.Log("also, cardsPulled.count = " + cardsPulled.Count);
-        if (cardsPulled.Count - 1 > riverCard && !Services.Dealer.OutsideVR)
+        if (cardsPulled.Count - 1 > riverCard)
         {
             Debug.Log("MISDEAL ON THE RIVER");
             Table.gameState = GameState.Misdeal;
@@ -261,6 +273,7 @@ public class PokerRules : MonoBehaviour {
             {
                 Table.gameState = GameState.River;
                 checkedForCorrections = false;
+                checkedRiver = true;
             }
         }
         else if (cardsPulled.Count - 1 == riverCard)
@@ -268,11 +281,13 @@ public class PokerRules : MonoBehaviour {
             CorrectMistakes();
             Table.gameState = GameState.River;
             checkedForCorrections = false;
+            checkedRiver = true;
         }
         else
         {
             Table.gameState = GameState.River;
             checkedForCorrections = false;
+            checkedRiver = true;
         }
     }
 
