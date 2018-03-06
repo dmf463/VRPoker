@@ -119,10 +119,6 @@ public class LogCards : MonoBehaviour
                 {
                     Debug.Log(other.gameObject.name + "card is dead");
                 }
-                //else if (!other.GetComponent<Card>().CardIsFaceUp())
-                //{
-                //    //Debug.Log("card is faceDown");
-                //}
                 else
                 {
                     if (other.gameObject.GetComponent<Rigidbody>().isKinematic)
@@ -165,10 +161,6 @@ public class LogCards : MonoBehaviour
                 {
                     // Debug.Log(other.gameObject.name + "card is dead");
                 }
-                //else if (other.GetComponent<Card>().CardIsFaceUp())
-                //{
-                //    //Debug.Log("card is face up");
-                //}
                 else
                 {
                     if (other.gameObject.GetComponent<Rigidbody>().isKinematic)

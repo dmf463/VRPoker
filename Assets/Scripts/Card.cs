@@ -575,7 +575,7 @@ public class Card : InteractionSuperClass {
         {
             float distCovered = (Time.time - flying_start_time) * speed;
             float fracJourney = distCovered / flight_journey_distance;
-            transform.rotation = Quaternion.Lerp(transform.rotation, dest, fracJourney);
+            transform.rotation = Quaternion.Lerp(flying_start_rotation, dest, fracJourney);
             yield return null;
         }
     }
@@ -615,6 +615,7 @@ public class Card : InteractionSuperClass {
     public void StraightenOutCards()
     {
         Vector3 endPos = GetCardPos();
+        Quaternion endRot = GetCardRot();
         InitializeLerp(endPos);
         StartCoroutine(LerpCardPos(endPos, 0.25f));
         StartCoroutine(StopLerp(endPos));

@@ -213,7 +213,10 @@ public class PokerPlayerRedux : MonoBehaviour{
         if (playerAudioSource.isPlaying) playerSpotlight.SetActive(true);
         else playerSpotlight.SetActive(false);
 
-        if (chipCount <= 0) chipCount = 0;
+        if (ChipCount <= 0)
+        {
+            Table.instance.playerChipStacks[SeatPos] = 0;
+        }
     }
 
     //so this is the function that calls all the organization functions, evaluation functions, and handStrength
