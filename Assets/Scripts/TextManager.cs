@@ -34,14 +34,6 @@ public class TextManager : MonoBehaviour {
         tm.Update();
         ActivateMisdealText();
         RunTutorial();
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            alphaTest += .01f;
-            foreach (TextMeshPro t in playerBetText)
-            {
-                t.color = new Vector4(t.color.r, t.color.g, t.color.b, alphaTest);
-            }
-        }
 	}
 
     public void Init()

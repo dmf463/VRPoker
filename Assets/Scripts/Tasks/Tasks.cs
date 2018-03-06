@@ -82,13 +82,10 @@ public abstract class TimedTask : Task
         var now = Time.time;
         var elapsed = now - StartTime;
         var t = Mathf.Clamp01(elapsed / Duration);
+        OnTick(t);
         if (t >= 1)
         {
             OnElapsed();
-        }
-        else
-        {
-            OnTick(t);
         }
     }
 
