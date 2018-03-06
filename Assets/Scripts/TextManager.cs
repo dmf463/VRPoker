@@ -17,18 +17,21 @@ public class TextManager : MonoBehaviour {
     bool tutorialFinished = false;
     public List<TextMeshPro> playerBetText;
     float alphaTest = 0;
+
+    TaskManager tm;
     
 
 	// Use this for initialization
 	void Start () {
         Init();
+        tm = new TaskManager();
         sr = GetComponent<SpriteRenderer>();
         startColor = sr.color; //9A9A9AFF
     }
 	
 	// Update is called once per frame
 	void Update () {
-
+        tm.Update();
         ActivateMisdealText();
         RunTutorial();
         if (Input.GetKeyDown(KeyCode.UpArrow))
@@ -157,35 +160,15 @@ public class TextManager : MonoBehaviour {
 
     public void ShowBetAmount(int seatPos, int bet)
     {
-        playerBetText[seatPos].text = bet.ToString();
-        Debug.Log("alpha = " + playerBetText[seatPos].color.a);
-        StartCoroutine(LerpTextAlpha(Time.time, 3, 0, 1, playerBetText[seatPos]));
-    }
+        TextMeshPro betText = playerBetText[seatPos];
+        betText.text = bet.ToString();
 
-    IEnumerator LerpTextAlpha(float startTime, float speed, float startAlpha, float targetAlpha, TextMeshPro text)
-    {
-        while (!Mathf.Approximately(text.color.a, targetAlpha))
-        {
-            Debug.Log("alpha = " + text.color.a);
-            float timeElapsed = (Time.time - startTime) * speed;
-            float fracCovered = timeElapsed / Mathf.Abs(targetAlpha - startAlpha);
-            text.color = new Vector4(text.color.r, text.color.g, text.color.b, (Mathf.Lerp(startAlpha, targetAlpha, fracCovered)));
-            yield return null;
-        }
-        StartCoroutine(LerpTextDown(Time.time, speed, 1, 0, text));
-        yield break;
-    }
-
-    IEnumerator LerpTextDown(float startTime, float speed, float startAlpha, float targetAlpha, TextMeshPro text)
-    {
-        while (!Mathf.Approximately(text.color.a, targetAlpha))
-        {
-            Debug.Log("alpha = " + text.color.a);
-            float timeElapsed = (Time.time - startTime) * speed;
-            float fracCovered = timeElapsed / Mathf.Abs(targetAlpha - startAlpha);
-            text.color = new Vector4(text.color.r, text.color.g, text.color.b, (Mathf.Lerp(startAlpha, targetAlpha, fracCovered)));
-            yield return null;
-        }
-        yield break;
+        Color fullAlpha = new Color(betText.color.r, betText.color.g, betText.color.b, 1); //declare variables before
+        Color noAlpha = new Color(betText.color.r, betText.color.g, betText.color.b, 0);
+        LerpTextMeshProColor lerpUpTask = new LerpTextMeshProColor(betText, noAlpha, fullAlpha, Easing.FunctionType.QuadEaseOut, 0.5f); //declare tasks
+        LerpTextMeshProColor lerpDownTask = new LerpTextMeshProColor(betText, fullAlpha, noAlpha, Easing.FunctionType.QuadEaseIn, 0.5f);
+        lerpUpTask. //sequence the tasks, so that DO does them in the right order
+            Then(lerpDownTask);
+        tm.Do(lerpUpTask); //DO THEM!
     }
 }

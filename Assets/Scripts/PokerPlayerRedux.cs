@@ -483,6 +483,8 @@ public class PokerPlayerRedux : MonoBehaviour{
         {
             int raiseAmount = amountToRaise;
             int betToRaise = Services.Dealer.LastBet + (raiseAmount - currentBet);
+            int remainder = betToRaise % ChipConfig.RED_CHIP_VALUE;
+            if (remainder > 0) betToRaise = (betToRaise - remainder) + ChipConfig.RED_CHIP_VALUE;
             if (chipCount - betToRaise <= 0)
             {
                 AllIn();
@@ -1223,7 +1225,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public void Bet(int betAmount, bool isTipping)
     {
-        Services.TextManager.ShowBetAmount(SeatPos, betAmount);
+        if(betAmount != 0) Services.TextManager.ShowBetAmount(SeatPos, betAmount);
         if (isTipping) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.tipSFX, 1f);
 		else Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.chips[Random.Range(0,Services.SoundManager.chips.Length)], 0.25f, Random.Range(0.95f,1.05f), transform.position);
         int oldChipStackValue = chipCount;

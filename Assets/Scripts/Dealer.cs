@@ -884,8 +884,8 @@ public class Dealer : MonoBehaviour
                     {
                         //float step = cardMoveSpeed * Time.deltaTime;
                         card.GetComponent<Card>().lerping = false;
-                        float distCovered = (Time.time - card.GetComponent<Card>().flying_start_time) * (cardMoveSpeed * 5);
-                        float fracJourney = distCovered / card.GetComponent<Card>().flight_journey_distance;
+                        float timeElapsed = (Time.time - card.GetComponent<Card>().flying_start_time) * (cardMoveSpeed * 5);
+                        float fracJourney = timeElapsed / card.GetComponent<Card>().flight_journey_distance;
                         card.transform.position = Vector3.Lerp(card.GetComponent<Card>().flying_start_position, cardDeck.transform.position, fracJourney);
                         if (card.transform.position == cardDeck.transform.position)
                         {
