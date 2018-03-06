@@ -28,6 +28,7 @@ public class ChipStack {
     {
             stackValue += chip.ChipValue;
             chips.Add(chip);
+        //trying to change the chip?????
             parentChip.transform.localScale = new Vector3(parentChip.transform.localScale.x,
                                                         parentChip.transform.localScale.y,
                                                         parentChip.transform.localScale.z + incrementStackBy);

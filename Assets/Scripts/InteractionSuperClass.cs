@@ -124,7 +124,10 @@ public class InteractionSuperClass : MonoBehaviour {
     {
         Services.Dealer.handIsOccupied = false;
         handTouchingDeck = false;
-        GetComponent<Rigidbody>().isKinematic = false; //turns on physics
+        if (GetComponent<Rigidbody>() != null)
+        {
+            GetComponent<Rigidbody>().isKinematic = false; //turns on physics
+        }
         hand.HoverUnlock(interactableObject);
 
         //apply forces to it, as if we're throwing it

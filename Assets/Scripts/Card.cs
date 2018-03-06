@@ -119,6 +119,9 @@ public class Card : InteractionSuperClass {
     [HideInInspector]
     public bool isFloating = false;
     bool straighteningCards = false;
+    [HideInInspector]
+    bool checkingIfCheatedCard = false;
+    public bool cheatCard = false;
 
 
     // Use this for initialization
@@ -344,6 +347,14 @@ public class Card : InteractionSuperClass {
         if (other.gameObject.tag == "Table")
         {
             cardOnTable = true;
+            if (!checkingIfCheatedCard)
+            {
+                checkingIfCheatedCard = true;
+                if (cheatCard)
+                {
+                    StartCoroutine(WaitToCheckIfCardInList(1f));
+                }
+            }
         }
     }
 
@@ -410,6 +421,7 @@ public class Card : InteractionSuperClass {
         {
             Services.Dealer.lighting.gameObject.SetActive(false);
             Services.Dealer.isCheating = true;
+            cheatCard = true;
         }
         cardPosHeld = transform.position;
         if (Table.gameState == GameState.NewRound)
@@ -436,28 +448,28 @@ public class Card : InteractionSuperClass {
         //}
         //else
         //{
-            StartPulse();
-            if (!Services.PokerRules.thrownCards.Contains(gameObject) && Table.gameState == GameState.NewRound && !Services.Dealer.isCheating)
-            {
-                Services.PokerRules.thrownCards.Add(gameObject);
-            }
-            if (!Services.PokerRules.cardsPulled.Contains(cardType) && Table.gameState != GameState.Misdeal && !Services.Dealer.isCheating)
-            {
-                Services.PokerRules.cardsPulled.Add(cardType);
-                cardThrownNum = Services.PokerRules.cardsPulled.Count;
-            }
-            if (rb == null)
-            {
-                rb = GetComponent<Rigidbody>();
-            }
-            if (CardIsFaceUp() && !cardWasManuallyFlipped)
-            {
-                //Debug.Log(this.gameObject.name + " card is facing the wrong way");
-                cardThrownWrong = true;
-            }
-            Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cards[Random.Range(0, Services.SoundManager.cards.Length)], 0.25f, Random.Range(0.95f, 1.05f), transform.position);
-            StartCoroutine(CheckVelocity(.025f));
-            base.OnDetachedFromHand(hand);
+        StartPulse();
+        if (!Services.PokerRules.thrownCards.Contains(gameObject) && Table.gameState == GameState.NewRound && !Services.Dealer.isCheating)
+        {
+            Services.PokerRules.thrownCards.Add(gameObject);
+        }
+        if (!Services.PokerRules.cardsPulled.Contains(cardType) && Table.gameState != GameState.Misdeal && !Services.Dealer.isCheating)
+        {
+            Services.PokerRules.cardsPulled.Add(cardType);
+            cardThrownNum = Services.PokerRules.cardsPulled.Count;
+        }
+        if (rb == null)
+        {
+            rb = GetComponent<Rigidbody>();
+        }
+        if (CardIsFaceUp() && !cardWasManuallyFlipped)
+        {
+            //Debug.Log(this.gameObject.name + " card is facing the wrong way");
+            cardThrownWrong = true;
+        }
+        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cards[Random.Range(0, Services.SoundManager.cards.Length)], 0.25f, Random.Range(0.95f, 1.05f), transform.position);
+        StartCoroutine(CheckVelocity(.025f));
+        base.OnDetachedFromHand(hand);
         //}
     }
 
@@ -495,6 +507,22 @@ public class Card : InteractionSuperClass {
         }
     }
 
+    public bool CardIsInList(Card card)
+    {
+        if (Services.PokerRules.cardsLogged.Contains(card)) return true;
+        else if (Services.PokerRules.cardsPulled.Contains(card.cardType)) return true;
+        else if (Services.Dealer.deadCardsList.Contains(card)) return true;
+        else return false;
+    }
+
+    IEnumerator WaitToCheckIfCardInList(float time)
+    {
+        yield return new WaitForSeconds(time);
+        if (!CardIsInList(this) && cardOnTable)
+        {
+            Table.gameState = GameState.Misdeal;
+        }
+    }
 
     public bool CardsAreFlying(GameObject card)
     {
@@ -660,7 +688,7 @@ public class Card : InteractionSuperClass {
             //had deck in hand and continuously pulled trigger
             if (Services.PokerRules.thrownCards[i].GetComponent<Card>() != null)
             {
-                if (Services.PokerRules.thrownCards[i].GetComponent<Card>().thrownWrong)
+                if (Services.PokerRules.thrownCards[i].GetComponent<Card>().thrownWrong || Services.PokerRules.thrownCards[i].GetComponent<Card>().CardIsFaceUp())
                 {
                     badCardsDebug++;
                 }
@@ -676,7 +704,8 @@ public class Card : InteractionSuperClass {
             {
                 if (Services.PokerRules.thrownCards[i].GetComponent<Card>().thrownWrong ||
                     Services.PokerRules.thrownCards[i].GetComponent<Card>().is_flying ||
-                    !Services.PokerRules.CardIsInCorrectLocation(Services.PokerRules.thrownCards[i].GetComponent<Card>(), Services.PokerRules.cardsPulled.Count))
+                    !Services.PokerRules.CardIsInCorrectLocation(Services.PokerRules.thrownCards[i].GetComponent<Card>(), Services.PokerRules.cardsPulled.Count) ||
+                    Services.PokerRules.thrownCards[i].GetComponent<Card>().CardIsFaceUp())
                 {
                     badCards++;
                 }
