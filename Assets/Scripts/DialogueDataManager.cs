@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class DialogueDataManager
 {
-    private Dictionary<List<PlayerLineCriteria>, List<PlayerLine>> oneLineDict;
+    private Dictionary<PlayerLineCriteria, List<PlayerLine>> oneLineDict;
 
 
     private Dictionary<List<PlayerName>, List<Conversation>> convoDict;
@@ -78,11 +78,6 @@ public class DialogueDataManager
             string ident = rowEntries[0];
             if (ident != null && ident != "")
             {
-                //if (rowEntries.Length < 1) //if there are less than three entries, meaning in this case that there is not enough information to form a conversation
-                //{
-                //    continue;
-                //}
-                //else 
                 if (ident == "Convo") //if we are starting a conversation
                 {
                     //Debug.Log("Convo");
@@ -108,7 +103,7 @@ public class DialogueDataManager
                     List<PlayerLine> tempPlayerLines = new List<PlayerLine>(playerLinesList);
                     Conversation conversation = new Conversation(tempPlayerLines, requiredRound, false); //create a conversation to contain the player lines and required round
                     List<PlayerName> tempConversants = new List<PlayerName>(conversantList);
-                    AddDialogueEntry(tempConversants, conversation); //add the conversant list and player lines list to the dialogue dictionary
+                    AddConvoDialogueEntry(tempConversants, conversation); //add the conversant list and player lines list to the dialogue dictionary
                     conversantList.Clear();//clear our previous lists
                     playerLinesList.Clear();
                 }
@@ -126,7 +121,8 @@ public class DialogueDataManager
                     PlayerLine line = new PlayerLine(playerNameText, lineText, audioSource, audioFile); //create a player line and assign the next three entries
                     playerLinesList.Add(line); //add line to list of player lines                          
                 }
-                else {
+                else 
+                {
                     Debug.Log("Failed on ident " + ident);
                 }
             }
@@ -138,7 +134,7 @@ public class DialogueDataManager
 
     public void ParseOneLinerDialogueFile(TextAsset dialogueFile) //parser for dialogue text file
     {
-        oneLineDict = new Dictionary<List<PlayerLineCriteria>, List<PlayerLine>>(new ListComparer<PlayerLineCriteria>()); //our dictionary of dialogue
+        oneLineDict = new Dictionary<PlayerLineCriteria, List<PlayerLine>>(); //(new ListComparer<PlayerLineCriteria>()); //our dictionary of dialogue
         string fileFullString = dialogueFile.text; //the raw text of the file
         string[] fileRows; //array of rows of our spreadsheet
         string[] rowEntries; //array of entries in our spreadsheet
@@ -146,13 +142,9 @@ public class DialogueDataManager
         string[] rowSeparator = new string[] { "\r\n", "\r", "\n" };  //array of row separators, all are on line end
         char[] entrySeparator = new char[] { '\t' }; //array of entry separators, specifically tab-separated
 
-        List<PlayerLineCriteria> lineCriteriaList = new List<PlayerLineCriteria>();
-        List<PlayerLine> playerLinesList = new List<PlayerLine>();
+       
 
-
-        List<PlayerName> conversantList = new List<PlayerName>(); //list to hold the players who are in the conversation
-
-        int requiredRound = 0;
+       
 
         fileRows = fileFullString.Split(rowSeparator, System.StringSplitOptions.None); //set filerows by splitting our file using row separator
 
@@ -164,52 +156,35 @@ public class DialogueDataManager
             string ident = rowEntries[0];
             if (ident != null && ident != "")
             {
-                
-                if (ident == "Line") //if we are starting a conversation
+                if (ident == "Casey" || ident == "Floyd" || ident == "Minnie" || ident == "Nathaniel" || ident == "Zombie") //
                 {
-                    //Debug.Log("Convo");
-
-                    int.TryParse(rowEntries[1], out requiredRound);
-
-                    //Debug.Log("required Round" + rowEntries[1]);
-
-                    for (int j = 2; j < rowEntries.Length; j++) //from the third column onward
+                    List<LineCriteria> lineCriteriaList = new List<LineCriteria>();// list of line criteria that will be added, along with the player name, to make a key reference for the dictionary
+                    for (int j = 3; j < rowEntries.Length; j++) //from the fourth column onward
                     {
-                        //Debug.Log("Row " + j + " " + rowEntries[j]);
                         if (rowEntries[j] != "")    //if the row entry isn't blank
                         {
-                            PlayerName conversant = GetConversantNameFromString(rowEntries[j]); // use the entry to get the name of one of our conversants
-                            conversantList.Add(conversant); //add this name to our list of conversants required for this conversation
+                            
+                            LineCriteria criteria = GetLineCriteriaFromString(rowEntries[j]); //get the appropriate line criteria using the entry's string
+                            lineCriteriaList.Add(criteria); //add the line criteria to our list
                             //Debug.Log("Added conversant: " + conversant);
                         }
                     }
-                }
 
+                    string playerNameText = rowEntries[0]; //gets the string for the player name 
+                    string lineText = rowEntries[1]; //gets the text to be spoken, this isn't currently used in the game but will be needed for subtitles
+                    string audioFileText = rowEntries[2]; //the string for the audiofile name
 
-                else if (ident == "End") //if we have reached the end of a conversation
-                {
-                    //Debug.Log(("End"));
-                    List<PlayerLine> tempPlayerLines = new List<PlayerLine>(playerLinesList);
-                    Conversation conversation = new Conversation(tempPlayerLines, requiredRound, false); //create a conversation to contain the player lines and required round
-                    List<PlayerName> tempConversants = new List<PlayerName>(conversantList);
-                    AddDialogueEntry(tempConversants, conversation); //add the conversant list and player lines list to the dialogue dictionary
-                    conversantList.Clear();//clear our previous lists
-                    playerLinesList.Clear();
-                }
-                else if (ident == "Line") //if it's a player line
-                {
-                    //Debug.Log("PlayerLine");
-                    string playerNameText = rowEntries[1]; //gets the string for the player name
-                    string lineText = rowEntries[2]; //gets the text to be spoken, this isn't currently used in the game but will be needed for subtitles
-                    string audioFileText = rowEntries[3]; //the string for the audiofile name
-                                                          //Log(audioFileText);
+                    PlayerName speaker = GetConversantNameFromString(playerNameText); // use the entry to get the name of the player who is speaking
+
                     AudioClip audioFile = Resources.Load("Audio/Voice/Current/" + audioFileText) as AudioClip; //gets the audiofile from resources using the string name 
                     //Debug.Log(audioFile);
-                    AudioSource audioSource = GetAudioSourceFromString(playerNameText); //get the correct audio source based on the players name
+                    AudioSource audioSource = GetAudioSourceFromString(playerNameText); //get the correct audio source based on the player name
 
-                    PlayerLine line = new PlayerLine(playerNameText, lineText, audioSource, audioFile); //create a player line and assign the next three entries
-                    playerLinesList.Add(line); //add line to list of player lines                          
+                    PlayerLine playerline = new PlayerLine(playerNameText, lineText, audioSource, audioFile); //create a player line using our data
+                    PlayerLineCriteria playerLineCriteria = new PlayerLineCriteria(speaker, lineCriteriaList); //combine the speaker's name and our criteria list intop our dictionary key
+                    AddOneLinerDialogueEntry(playerLineCriteria, playerline);
                 }
+
                 else
                 {
                     Debug.Log("Failed on ident " + ident);
@@ -228,7 +203,7 @@ public class DialogueDataManager
 
 #endregion
 
-    void AddDialogueEntry(List<PlayerName> playerList, Conversation conversationToAdd)
+    void AddConvoDialogueEntry(List<PlayerName> playerList, Conversation conversationToAdd)
 	{ //adds a new key/value entry in our dialogue dictionary
 		if (convoDict.ContainsKey (playerList))
 		{ //if the dictionary already contains the passed in key (list of players)
@@ -243,6 +218,20 @@ public class DialogueDataManager
             //Debug.Log("adding entry number: "  + dialogueDict.Count() + " " + playerList[0] + " " + playerList[1]);
 		}
 	}
+
+    void AddOneLinerDialogueEntry(PlayerLineCriteria playerLineCriteria, PlayerLine lineToAdd)
+    {
+        if (oneLineDict.ContainsKey(playerLineCriteria))
+        {
+            oneLineDict[playerLineCriteria].Add(lineToAdd);
+        }
+        else
+        {
+            List<PlayerLine> lineList = new List<PlayerLine>();
+            lineList.Add(lineToAdd);
+            oneLineDict.Add(playerLineCriteria, lineList); 
+        }
+    }
 
     public Conversation ReadyConversation()
     {

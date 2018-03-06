@@ -5,7 +5,8 @@ using UnityEngine;
 //controls all the sounds
 public class SoundManager : MonoBehaviour
 {
-	public TextAsset dialogueFile; //the text file we draw our dialogue from
+	public TextAsset convoDialogueFile; //the text file we draw our dialogue from
+    public TextAsset oneLinerDialogueFiler;
 
     [Header("Poker Players")]
 	public PokerPlayerRedux casey;// rosa
