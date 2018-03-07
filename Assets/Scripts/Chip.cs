@@ -157,9 +157,9 @@ public class Chip : InteractionSuperClass {
                     Vector2 handPos = new Vector2(hand.transform.position.x, hand.transform.position.z);
                     Vector2 chipPos = new Vector2(transform.position.x, transform.position.z);
                     float heightDifference = hand.transform.position.y - transform.position.y;
-                    if (Table.gameState == GameState.ShowDown && Services.Dealer.chipsInPot.Contains(this))
+                    if (Table.gameState == GameState.ShowDown && Services.Dealer.chipsInPot.Contains(this) && !isAtDestination)
                     {
-                        if ((hand.transform.position - transform.position).magnitude < .2f && (handPos - chipPos).magnitude < .12f && heightDifference < HEIGHT_THRESHOLD && !isAtDestination)
+                        if ((hand.transform.position - transform.position).magnitude < .2f && (handPos - chipPos).magnitude < .12f && heightDifference < HEIGHT_THRESHOLD)
                         {
                             if (!pushingChip && Services.PokerRules.chipGroup.Count <= 10)
                             {
@@ -167,10 +167,10 @@ public class Chip : InteractionSuperClass {
                                 maxGlow = 1;
                                 Services.PokerRules.chipGroup.Add(this);
                                 GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
-                                foreach (GameObject chip in allChips)
-                                {
-                                    Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), chip.GetComponent<Collider>(), true);
-                                }
+                                //foreach (GameObject chip in allChips)
+                                //{
+                                //    Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), chip.GetComponent<Collider>(), true);
+                                //}
                                 handPushingChip = hand;
                                 pushingChip = true;
                                 Services.Dealer.handIsOccupied = true;
@@ -178,23 +178,6 @@ public class Chip : InteractionSuperClass {
                                 Services.PokerRules.chipsBeingPushed += 1;
                                 Services.PokerRules.ConsolidateStack(Services.PokerRules.chipGroup);
                             }
-                        }
-                        else if (isAtDestination)
-                        {
-                            if (Services.PokerRules.chipGroup.Contains(this))
-                            {
-                                Services.PokerRules.chipGroup.Remove(this);
-                            }
-                            GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
-                            foreach (GameObject chip in allChips)
-                            {
-                                Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), chip.GetComponent<Collider>(), false);
-                            }
-                            timesToSplit = 0;
-                            handPushingChip = null;
-                            pushingChip = false;
-                            spotIndex = 0;
-                            stopPulse = true;
                         }
                         else
                         {
@@ -204,10 +187,10 @@ public class Chip : InteractionSuperClass {
                                 Services.PokerRules.chipGroup.Clear();
                                 chipPushStartPos = Vector3.zero;
                                 GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
-                                foreach (GameObject chip in allChips)
-                                {
-                                    Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), chip.GetComponent<Collider>(), false);
-                                }
+                                //foreach (GameObject chip in allChips)
+                                //{
+                                //    Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), chip.GetComponent<Collider>(), false);
+                                //}
                                 timesToSplit = 0;
                                 handPushingChip = null;
                                 pushingChip = false;
@@ -222,16 +205,33 @@ public class Chip : InteractionSuperClass {
                         chipPushStartPos = Vector3.zero;
                         Services.PokerRules.chipGroup.Clear();
                         GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
-                        foreach (GameObject chip in allChips)
-                        {
-                            Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), chip.GetComponent<Collider>(), false);
-                        }
+                        //foreach (GameObject chip in allChips)
+                        //{
+                        //    Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), chip.GetComponent<Collider>(), false);
+                        //}
                         timesToSplit = 0;
                         handPushingChip = null;
                         pushingChip = false;
                         Services.Dealer.handIsOccupied = false;
                         spotIndex = 0;
                         Services.PokerRules.chipsBeingPushed = 0;
+                        stopPulse = true;
+                    }
+                    else if (isAtDestination)
+                    {
+                        if (Services.PokerRules.chipGroup.Contains(this))
+                        {
+                            Services.PokerRules.chipGroup.Remove(this);
+                        }
+                        GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
+                        //foreach (GameObject chip in allChips)
+                        //{
+                        //    Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), chip.GetComponent<Collider>(), false);
+                        //}
+                        timesToSplit = 0;
+                        handPushingChip = null;
+                        pushingChip = false;
+                        spotIndex = 0;
                         stopPulse = true;
                     }
                 }

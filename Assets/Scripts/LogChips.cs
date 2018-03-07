@@ -36,7 +36,7 @@ public class LogChips : MonoBehaviour
         {
             Debug.Log("STARTING TIMER");
             float timeSinceEnter = Time.time - startUpTime;
-            if(timeSinceEnter >= timeLimit)
+            if (timeSinceEnter >= timeLimit)
             {
                 Debug.Log("SHOULD SAY LINE");
                 if (!player.playerAudioSource.isPlaying && !player.playerIsInConversation && !Services.SoundManager.conversationIsPlaying)
@@ -56,33 +56,32 @@ public class LogChips : MonoBehaviour
     {
         if (other.gameObject.tag == "Chip")
         {
-            if(Services.Dealer.playersHaveBeenEvaluated)
+            if (Services.Dealer.playersHaveBeenEvaluated)
             {
                 for (int i = 0; i < playerNames.Count; i++)
                 {
-					if(gameObject.name == playerNames[i] && Services.Dealer.players[i].PlayerState != PlayerState.Winner)
-					{
+                    if (gameObject.name == playerNames[i] && Services.Dealer.players[i].PlayerState != PlayerState.Winner)
+                    {
                         Debug.Log("NOT MY CHIP");
                         player = Services.Dealer.players[i];
                         startUpTime = Time.time;
                         startTimer = true;
-					}
+                    }
                     if (gameObject.name == playerNames[i])
                     {
                         if (Services.Dealer.players[i].PlayerState == PlayerState.Winner)
                         {
-                            if (Services.Dealer.players[i].chipCount != (Services.Dealer.players[i].chipsWon + Services.Dealer.players[i].ChipCountToCheckWhenWinning) && 
+                            if (Services.Dealer.players[i].chipCount != (Services.Dealer.players[i].chipsWon + Services.Dealer.players[i].ChipCountToCheckWhenWinning) &&
                                !Services.Dealer.players[i].gaveTip)
                             {
-                                if (other.GetComponent<Chip>().chipStack != null)
-                                {
-                                    other.GetComponent<Chip>().owner = Services.Dealer.players[i];
-                                    ChipStack chipStack;
-                                    chipStack = other.GetComponent<Chip>().chipStack;
-                                    //Debug.Log("adding chipStack of " + chipStack.stackValue);
-                                    Table.instance.AddChipTo(playerDestinations[i], chipStack.stackValue);
-                                    other.GetComponent<Chip>().isAtDestination = true;
-                                }
+                                //if (other.GetComponent<Chip>().chipStack != null)
+                                //{
+                                Chip chip = other.GetComponent<Chip>();
+                                other.GetComponent<Chip>().isAtDestination = true;
+                                other.GetComponent<Chip>().owner = Services.Dealer.players[i];
+                                Debug.Log("adding chipStack of " + chip.stackValue);
+                                Table.instance.AddChipTo(playerDestinations[i], chip.stackValue);
+                                //}
                             }
                             else Debug.Log("Player already has all their chips");
                         }
@@ -90,23 +89,18 @@ public class LogChips : MonoBehaviour
                 }
             }
         }
-        if(other.gameObject.tag == "Tip" && gameObject.name == "TipCatcher")
+        if (other.gameObject.tag == "Tip" && gameObject.name == "TipCatcher")
         {
             if (other.gameObject.GetComponentInParent<Hand>() != null)
             {
                 other.gameObject.GetComponentInParent<Hand>().DetachObject(other.gameObject);
             }
-            ChipStack chipStack;
-            int chipValue;
-            if (other.GetComponent<Chip>().chipStack != null)
-            {
-                chipStack = other.GetComponent<Chip>().chipStack;
-                chipValue = chipStack.stackValue;
-            }
-            else chipValue = other.GetComponent<Chip>().chipData.ChipValue;
+            //if (other.GetComponent<Chip>().chipStack != null)
+            //{
+            Chip chip = other.GetComponent<Chip>();
             //Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.fallingTip, .7f);
             Services.SoundManager.GetNonPlayerSourceAndPlay(GetComponent<AudioSource>(), Services.SoundManager.fallingTip);
-            Services.Dealer.tipCount += chipValue;
+            Services.Dealer.tipCount += chip.stackValue;
             Destroy(other.gameObject);
         }
     }
@@ -121,7 +115,7 @@ public class LogChips : MonoBehaviour
                 //Debug.Log("chip is leaving");
                 for (int i = 0; i < playerNames.Count; i++)
                 {
-                    if(player != null)
+                    if (player != null)
                     {
                         if (Services.Dealer.players[i].SeatPos == player.SeatPos)
                         {
@@ -129,16 +123,14 @@ public class LogChips : MonoBehaviour
                             Debug.Log("TURNING TIMER OFF");
                         }
                     }
-                    if (gameObject.name == playerNames[i] && Services.Dealer.players[i].PlayerState == PlayerState.Winner)
+                    if (gameObject.name == playerNames[i] && Services.Dealer.players[i].PlayerState == PlayerState.Winner && !other.GetComponent<Chip>().isAtDestination)
                     {
-                        if (other.GetComponent<Chip>().chipStack != null)
-                        {
-                            other.GetComponent<Chip>().isAtDestination = false;
-                            ChipStack chipStack;
-                            chipStack = other.GetComponent<Chip>().chipStack;
-                            Debug.Log("removed chip");
-                            Table.instance.RemoveChipFrom(playerDestinations[i], chipStack.stackValue);
-                        }
+                        //if (other.GetComponent<Chip>().chipStack != null)
+                        //{
+                        Chip chip = other.GetComponent<Chip>();
+                        Debug.Log("removed chip of value " + chip.stackValue);
+                        Table.instance.RemoveChipFrom(playerDestinations[i], chip.stackValue);
+                        //}
                     }
                 }
             }
