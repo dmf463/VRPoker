@@ -34,9 +34,11 @@ public class PokerRules : MonoBehaviour {
     public bool checkedFlop;
     public bool checkedTurn;
     public bool checkedRiver;
+    private TaskManager tm;
 
     // Use this for initialization
     void Start() {
+        tm = new TaskManager();
         boardPos.Add(GameObject.Find("Flop1"));
         boardPos.Add(GameObject.Find("Flop2"));
         boardPos.Add(GameObject.Find("Flop3"));
@@ -48,7 +50,7 @@ public class PokerRules : MonoBehaviour {
 
     void Update()
     {
-
+        tm.Update();
         if (chipGroup.Count > 0)
         {
             PushGroupOfChips();
@@ -589,6 +591,12 @@ public class PokerRules : MonoBehaviour {
         }
     }
 
+    public void FinishCorrections(Destination dest, Card card)
+    {
+        Table.instance.AddCardTo(dest, card);
+        if (dest != Destination.burn) card.readyToFloat = true;
+    }
+
     IEnumerator CorrectionsDone(Vector3 pos, GameObject cardObj, Destination dest, Card card, bool correction)
     {
         while (card.GetComponent<Card>().lerping && Table.gameState != GameState.Misdeal)
@@ -671,24 +679,20 @@ public class PokerRules : MonoBehaviour {
 
     public void PushGroupOfChips()
     {
-        float dst = .7f;
-        Vector3 finalDest = Vector3.zero;
+        Vector3 offset = new Vector3(0.1f, 0, 0);
         if (chipGroup.Count != 0)
             for (int i = 0; i < chipGroup.Count; i++)
             {
                 Rigidbody rb = chipGroup[i].gameObject.GetComponent<Rigidbody>();
                 int chipSpotIndex = chipGroup[i].spotIndex;
-                float handDistance = Mathf.Abs(Vector3.Distance(chipGroup[i].handPushingChip.transform.position, GameObject.Find("TipZone").transform.position));
+                float scalar = 1.1f;
+                Vector3 startPos = chipGroup[i].chipPushStartPos + offset;
+                Vector3 handPos = chipGroup[i].handPushingChip.transform.position;
+                Vector3 linearDest = (handPos - startPos) * scalar;
                 Vector3 dest = chipGroup[i].handPushingChip.GetAttachmentTransform("PushChip").transform.TransformPoint(chipPositionWhenPushing[chipSpotIndex]);
-                if (dst > handDistance)
-                {
-                    finalDest = dest - GameObject.Find("TipZone").transform.position;
-                    finalDest = finalDest.normalized;
-                    finalDest *= (dst - handDistance);
-                }
                 if (rb != null)
                 {
-                    rb.MovePosition(new Vector3(dest.x, chipGroup[i].gameObject.transform.position.y, dest.z) + new Vector3(finalDest.x, 0, 0));
+                    rb.MovePosition(new Vector3(dest.x + linearDest.x, chipGroup[i].gameObject.transform.position.y, dest.z + linearDest.z));
                 }
             }
     }

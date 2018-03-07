@@ -9,16 +9,16 @@ using TMPro;
 // Simple action task
 public class ActionTask : Task {
 
-    public Action Action { get; private set; }
+    public Action _action { get; private set; }
 
     public ActionTask(Action action)
     {
-        Action = action;
+        _action = action;
     }
 
     protected override void Init()
     {
-        Action();
+        _action();
         SetStatus(TaskStatus.Success);
     }
 
@@ -155,12 +155,12 @@ public class SetPos : GOTask
 
 
 // A task to lerp a gameobject's position
-public class Move : TimedGOTask
+public class LerpPos : TimedGOTask
 {
     public Vector3 Start { get; private set; }
     public Vector3 End { get; private set; }
 
-    public Move(GameObject gameObject, Vector3 start, Vector3 end, float duration) : base(gameObject, duration)
+    public LerpPos(GameObject gameObject, Vector3 start, Vector3 end, float duration) : base(gameObject, duration)
     {
         Start = start;
         End = end;
@@ -169,6 +169,23 @@ public class Move : TimedGOTask
     protected override void OnTick(float t)
     {
         gameObject.transform.position = Vector3.Lerp(Start, End, t);
+    }
+}
+
+public class LerpRotation : TimedGOTask
+{
+    private Quaternion Start;
+    private Quaternion End;
+
+    public LerpRotation(GameObject gameObject, Quaternion _start, Quaternion _end, float duration) : base(gameObject, duration)
+    {
+        Start = _start;
+        End = _end;
+    }
+
+    protected override void OnTick(float t)
+    {
+        gameObject.transform.rotation = Quaternion.Lerp(Start, End, t);
     }
 }
 

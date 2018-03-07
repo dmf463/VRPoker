@@ -26,6 +26,8 @@ public class Card : InteractionSuperClass {
     [HideInInspector]
     public bool firstTime = false;
 
+    private TaskManager tm;
+
     public float glowSpeed;
     public float maxGlow;
     [HideInInspector]
@@ -127,6 +129,7 @@ public class Card : InteractionSuperClass {
     // Use this for initialization
     void Start() {
 
+        tm = new TaskManager();
         noiseMagnitude += Random.Range(-0.075f, 0.02f);
         rotationSpeed += Random.Range(0, .2f);
         centerPoint = GameObject.Find("BurnCards").transform.position;
@@ -147,6 +150,7 @@ public class Card : InteractionSuperClass {
     // Update is called once per frame
     void Update() {
 
+        tm.Update();
         if (Table.gameState == GameState.Misdeal) StopCheating();
         if (foldedCards)
         {
