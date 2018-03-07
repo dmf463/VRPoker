@@ -118,8 +118,9 @@ public class SoundManager : MonoBehaviour
         PlayerLine line = Services.DialogueDataManager.ReadyOneLiner(criteria);
         AudioClip audioLine = line.audioFile;
         AudioSource playerSpeaking = line.audioSource;
-        Debug.Log(playerSpeaking.name + ", " + audioLine.name);
-        //GetSourceAndPlay(playerSpeaking, audioLine);
+        Debug.Log(playerSpeaking.name);
+        Debug.Log(audioLine.name);
+        GetSourceAndPlay(playerSpeaking, audioLine);
 
     }
 

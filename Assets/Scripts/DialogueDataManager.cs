@@ -196,16 +196,19 @@ public class DialogueDataManager
                     string playerNameText = rowEntries[0]; //gets the string for the player name 
                     string lineText = rowEntries[1]; //gets the text to be spoken, this isn't currently used in the game but will be needed for subtitles
                     string audioFileText = rowEntries[2]; //the string for the audiofile name
-
+                    //Debug.Log(audioFileText);
                     PlayerName speaker = GetConversantNameFromString(playerNameText); // use the entry to get the name of the player who is speaking
 
                     AudioClip audioFile = Resources.Load("Audio/Voice/Current/" + audioFileText) as AudioClip; //gets the audiofile from resources using the string name 
+
                     //Debug.Log(audioFile);
                     AudioSource audioSource = GetAudioSourceFromString(playerNameText); //get the correct audio source based on the player name
-
+                    //Debug.Log(audioSource.name);
                     PlayerLine playerline = new PlayerLine(playerNameText, lineText, audioSource, audioFile); //create a player line using our data
                     PlayerLineCriteria playerLineCriteria = new PlayerLineCriteria(speaker, lineCriteriaList); //combine the speaker's name and our criteria list intop our dictionary key
+                    //Debug.Log(playerline.playerName + ", " + playerline.mainText + ", " + playerline.audioSource + ", " + playerline.audioFile);
                     AddOneLinerDialogueEntry(playerLineCriteria, playerline);
+
                 }
 
                 else
@@ -275,7 +278,7 @@ public class DialogueDataManager
     {
         potentialConversants.Clear(); //clean slate for lists
         conversants.Clear();
-        Debug.Log("Getting Conversants");
+        //Debug.Log("Getting Conversants");
 
         for (int i = 0; i < Services.Dealer.activePlayers.Count; i++) //populate that list with the names of our active players
         {
@@ -303,7 +306,7 @@ public class DialogueDataManager
 
         foreach (PlayerName name in namesKey)
         {
-            Debug.Log("Player in conversation: " + name);
+            //Debug.Log("Player in conversation: " + name);
         }
         //Debug.Log("num keys in dict: " + dialogueDict.Keys.Count);
         if (convoDict.ContainsKey(namesKey)) // if our dialogue dictionary contains them as a key
@@ -336,7 +339,7 @@ public class DialogueDataManager
 
     public PlayerLine GetLineWithCriteria(PlayerLineCriteria criteriaKey) //using the names of our chosen conversants
     {
-        
+        //Debug.Log("getting line with criteria");
         if (oneLineDict.ContainsKey(criteriaKey)) // if our dialogue dictionary contains them as a key
         {
             List<PlayerLine> possibleLines = oneLineDict[criteriaKey]; //list of conversations that match the key
@@ -344,14 +347,14 @@ public class DialogueDataManager
             if (possibleLines.Count > 0)
             {
                 correctLine = Random.Range(0, possibleLines.Count());
-                Debug.Log("line = " + correctLine);
+               // Debug.Log("line = " + correctLine);
+
             }
             else
             {
                 Debug.Log("Key contained no values");
                 return null;
             }
-
             //Debug.Log(possibleConversations[correctConversation].playerLines[0]);
             //Services.SoundManager.conversationIsPlaying = true;
             return possibleLines[correctLine]; //return the convo, the earliest that has not yet been played
