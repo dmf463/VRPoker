@@ -27,6 +27,33 @@ public class DialogueDataManager
         
     }
 
+    private class CriteriaComparer : IEqualityComparer<PlayerLineCriteria>
+    { //generic for comparing lists
+        public bool Equals(PlayerLineCriteria x, PlayerLineCriteria y)
+        { //bool for comparing list x to list y
+            foreach (LineCriteria lineCriterion in x.lineCriteria)
+            {
+                if (!y.lineCriteria.Contains(lineCriterion)) return false;
+            }
+            foreach (LineCriteria lineCriterion in y.lineCriteria)
+            {
+                if (!x.lineCriteria.Contains(lineCriterion)) return false;
+            }
+            return x.playerName == y.playerName;
+        }
+
+        public int GetHashCode(PlayerLineCriteria obj)
+        {
+            int hashcode = 0;
+            foreach (LineCriteria t in obj.lineCriteria)
+            {
+                hashcode ^= t.GetHashCode();
+            }
+            hashcode ^= obj.playerName.GetHashCode();
+            return hashcode;
+        }
+    }
+
 	private class ListComparer<T> : IEqualityComparer<List<T>>
 	{ //generic for comparing lists
 		public bool Equals(List<T> x, List<T> y)
@@ -134,17 +161,13 @@ public class DialogueDataManager
 
     public void ParseOneLinerDialogueFile(TextAsset dialogueFile) //parser for dialogue text file
     {
-        oneLineDict = new Dictionary<PlayerLineCriteria, List<PlayerLine>>(); //(new ListComparer<PlayerLineCriteria>()); //our dictionary of dialogue
+        oneLineDict = new Dictionary<PlayerLineCriteria, List<PlayerLine>>(new CriteriaComparer()); //(new ListComparer<PlayerLineCriteria>()); //our dictionary of dialogue
         string fileFullString = dialogueFile.text; //the raw text of the file
         string[] fileRows; //array of rows of our spreadsheet
         string[] rowEntries; //array of entries in our spreadsheet
         string fileRow; //holder for a file row
         string[] rowSeparator = new string[] { "\r\n", "\r", "\n" };  //array of row separators, all are on line end
         char[] entrySeparator = new char[] { '\t' }; //array of entry separators, specifically tab-separated
-
-       
-
-       
 
         fileRows = fileFullString.Split(rowSeparator, System.StringSplitOptions.None); //set filerows by splitting our file using row separator
 
@@ -191,9 +214,9 @@ public class DialogueDataManager
                 }
             }
         }
-        foreach (KeyValuePair<List<PlayerName>, List<Conversation>> pair in convoDict)
+        foreach (KeyValuePair<PlayerLineCriteria, List<PlayerLine>> pair in oneLineDict)
         {
-            //Debug.Log(pair.Key[0] + " " + pair.Key[1]);
+           // Debug.Log(pair.Key.playerName +  ", " + pair.Value);
         }
     }
 
@@ -233,6 +256,13 @@ public class DialogueDataManager
         }
     }
 
+    public PlayerLine ReadyOneLiner(PlayerLineCriteria criteriaKey)
+    {
+        PlayerLine lineToPlay = GetLineWithCriteria(criteriaKey);
+
+        return lineToPlay;
+    }
+
     public Conversation ReadyConversation()
     {
         GetConversantNamesFromActivePlayers();
@@ -266,6 +296,75 @@ public class DialogueDataManager
             //Debug.Log("Added " + name + " to list of conversants");
         }
 
+    }
+
+    public Conversation GetConversationWithNames(List<PlayerName> namesKey) //using the names of our chosen conversants
+    {
+
+        foreach (PlayerName name in namesKey)
+        {
+            Debug.Log("Player in conversation: " + name);
+        }
+        //Debug.Log("num keys in dict: " + dialogueDict.Keys.Count);
+        if (convoDict.ContainsKey(namesKey)) // if our dialogue dictionary contains them as a key
+        {
+            List<Conversation> possibleConversations = convoDict[namesKey]; //list of conversations that match the key
+            int correctConversation = -1;  //the conversation we'll want to play, set at first to the last in the list
+            for (int i = 0; i < possibleConversations.Count; i++) //for each conversation in the list
+            {
+                if (!possibleConversations[i].hasBeenPlayed && //if the conversation hasn't yet played
+                   possibleConversations[i].minRequiredRound <= (6 - Services.Dealer.activePlayers.Count)) //and if the conversation comes earlier than our currently chosen conversation
+                {
+                    correctConversation = i; //update the correct conversation to be this new, earlier convo
+                }
+            }
+            if (correctConversation == -1) return null;
+            //Debug.Log(possibleConversations[correctConversation].playerLines[0]);
+            Services.SoundManager.conversationIsPlaying = true;
+            return possibleConversations[correctConversation]; //return the convo, the earliest that has not yet been played
+
+
+        }
+        else //if the dialogue dict does not contain the names as a key
+        {
+            Debug.Log("dictionary does not contain key");
+
+            Services.SoundManager.conversationIsPlaying = false;
+            return null;
+        }
+    }
+
+    public PlayerLine GetLineWithCriteria(PlayerLineCriteria criteriaKey) //using the names of our chosen conversants
+    {
+        
+        if (oneLineDict.ContainsKey(criteriaKey)) // if our dialogue dictionary contains them as a key
+        {
+            List<PlayerLine> possibleLines = oneLineDict[criteriaKey]; //list of conversations that match the key
+            int correctLine = 0;
+            if (possibleLines.Count > 0)
+            {
+                correctLine = Random.Range(0, possibleLines.Count());
+                Debug.Log("line = " + correctLine);
+            }
+            else
+            {
+                Debug.Log("Key contained no values");
+                return null;
+            }
+
+            //Debug.Log(possibleConversations[correctConversation].playerLines[0]);
+            //Services.SoundManager.conversationIsPlaying = true;
+            return possibleLines[correctLine]; //return the convo, the earliest that has not yet been played
+
+
+        }
+        else //if the dialogue dict does not contain the names as a key
+        {
+            Debug.Log("dictionary does not contain key");
+
+            Services.SoundManager.conversationIsPlaying = false;
+            return null;
+        }
     }
 
 	PlayerName GetConversantNameFromString (string nameString)
@@ -346,47 +445,8 @@ public class DialogueDataManager
                 return LineCriteria.None;
         }
     }
-
-
-
-    public Conversation GetConversationWithNames (List<PlayerName> namesKey) //using the names of our chosen conversants
-    {
-
-        foreach (PlayerName name in namesKey)
-        {
-            Debug.Log("Player in conversation: " + name);
-        }
-        //Debug.Log("num keys in dict: " + dialogueDict.Keys.Count);
-        if(convoDict.ContainsKey(namesKey)) // if our dialogue dictionary contains them as a key
-        {
-            List<Conversation> possibleConversations = convoDict[namesKey]; //list of conversations that match the key
-            int correctConversation = -1;  //the conversation we'll want to play, set at first to the last in the list
-            for (int i = 0; i < possibleConversations.Count; i++) //for each conversation in the list
-            {
-                if(!possibleConversations[i].hasBeenPlayed && //if the conversation hasn't yet played
-                   possibleConversations[i].minRequiredRound <= (6-Services.Dealer.activePlayers.Count)) //and if the conversation comes earlier than our currently chosen conversation
-                {
-                    correctConversation = i; //update the correct conversation to be this new, earlier convo
-                }
-            }
-            if (correctConversation == -1) return null;
-            //Debug.Log(possibleConversations[correctConversation].playerLines[0]);
-            Services.SoundManager.conversationIsPlaying = true;
-            return possibleConversations[correctConversation]; //return the convo, the earliest that has not yet been played
-            
-
-        }
-        else //if the dialogue dict does not contain the names as a key
-        {
-            Debug.Log("dictionary does not contain key");
-
-            Services.SoundManager.conversationIsPlaying = false;
-            return null;
-        }
-    }
 }
-
-
+   
 
 public class Conversation //class for each conversation between players
 {

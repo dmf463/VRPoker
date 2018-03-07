@@ -186,6 +186,14 @@ public class Dealer : MonoBehaviour
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            List<LineCriteria> critList = new List<LineCriteria>();
+            critList.Add(LineCriteria.Tip);
+            PlayerLineCriteria plCriteria = new PlayerLineCriteria(PlayerName.Floyd, critList);
+            Services.SoundManager.PlayOneLiner(plCriteria);
+        }
+
         if (Input.GetKeyDown(KeyCode.D))
         {
             AudioClip audioFile = Resources.Load("Audio/Voice/TutorialVO/tutorial0.wav") as AudioClip; //gets the audiofile from resources using the string name 
