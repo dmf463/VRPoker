@@ -560,56 +560,68 @@ public class Card : InteractionSuperClass {
 
     public IEnumerator LerpCardPos(Vector3 dest, float speed)
     {
-        while (lerping)
+        if (this != null)
         {
-            float distCovered = (Time.time - flying_start_time) * speed;
-            float fracJourney = distCovered / flight_journey_distance;
-            transform.position = Vector3.Lerp(flying_start_position, dest, fracJourney);
-            yield return null;
+            while (lerping)
+            {
+                float distCovered = (Time.time - flying_start_time) * speed;
+                float fracJourney = distCovered / flight_journey_distance;
+                transform.position = Vector3.Lerp(flying_start_position, dest, fracJourney);
+                yield return null;
+            }
         }
     }
 
     public IEnumerator LerpCardRot(Quaternion dest, float speed)
     {
-        while (lerping)
+        if (this != null)
         {
-            float distCovered = (Time.time - flying_start_time) * speed;
-            float fracJourney = distCovered / flight_journey_distance;
-            transform.rotation = Quaternion.Lerp(flying_start_rotation, dest, fracJourney);
-            yield return null;
+            while (lerping)
+            {
+                float distCovered = (Time.time - flying_start_time) * speed;
+                float fracJourney = distCovered / flight_journey_distance;
+                transform.rotation = Quaternion.Lerp(flying_start_rotation, dest, fracJourney);
+                yield return null;
+            }
         }
     }
 
     public IEnumerator LerpCardRotOnAdd(Quaternion dest, float speed)
     {
-        while (rotateOnAdd)
+        if (this != null)
         {
-            float distCovered = (Time.time - flying_start_time) * speed;
-            float fracJourney = distCovered / flight_journey_angle;
-            fastTorque = Mathf.Lerp(fastTorque, 0, fracJourney);
-            slowTorque = Mathf.Lerp(slowTorque, 0, fracJourney);
-            transform.rotation = Quaternion.Lerp(transform.rotation, dest, fracJourney);
-            yield return null;
+            while (rotateOnAdd)
+            {
+                float distCovered = (Time.time - flying_start_time) * speed;
+                float fracJourney = distCovered / flight_journey_angle;
+                fastTorque = Mathf.Lerp(fastTorque, 0, fracJourney);
+                slowTorque = Mathf.Lerp(slowTorque, 0, fracJourney);
+                transform.rotation = Quaternion.Lerp(transform.rotation, dest, fracJourney);
+                yield return null;
+            }
         }
     }
 
 
     IEnumerator StopRotating(Quaternion rot)
     {
-        while (rotateOnAdd)
+        if (this != null)
         {
-            float angle = Quaternion.Angle(transform.rotation, rot);
-            if (Mathf.Approximately(angle, 0))
+            while (rotateOnAdd)
             {
-                //Debug.Log("done straightening");
-                rotateOnAdd = false;
-                firstTime = false;
-                fastTorque = 0;
-                slowTorque = 0;
+                float angle = Quaternion.Angle(transform.rotation, rot);
+                if (Mathf.Approximately(angle, 0))
+                {
+                    //Debug.Log("done straightening");
+                    rotateOnAdd = false;
+                    firstTime = false;
+                    fastTorque = 0;
+                    slowTorque = 0;
+                }
+                else yield return null;
             }
-            else yield return null;
+            yield break;
         }
-        yield break;
     }
 
     public void StraightenOutCards()

@@ -151,6 +151,7 @@ public class Dealer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (deckIsDead) Table.gameState = GameState.Misdeal;
         tipIndicator.GetComponent<TextMeshPro>().text = tipCount.ToString();
         WaitingToGrabCardsOn_ThrownDeck();
         WaitingToGrabCardsOn_MisDeal();

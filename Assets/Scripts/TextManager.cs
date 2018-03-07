@@ -16,6 +16,7 @@ public class TextManager : MonoBehaviour {
     public bool inTutorial = false;
     bool tutorialFinished = false;
     public List<TextMeshPro> playerBetText;
+    public List<TextMeshPro> playerChipCounts;
     float alphaTest = 0;
 
     TaskManager tm;
@@ -40,7 +41,13 @@ public class TextManager : MonoBehaviour {
     {
         foreach (TextMeshPro t in playerBetText)
         {
-            t.text = "test";
+            t.text = " ";
+            t.color = new Vector4(t.color.r, t.color.g, t.color.b, 0);
+        }
+
+        foreach(TextMeshPro t in playerChipCounts)
+        {
+            t.text = " ";
             t.color = new Vector4(t.color.r, t.color.g, t.color.b, 0);
         }
     }

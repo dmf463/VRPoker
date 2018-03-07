@@ -98,7 +98,8 @@ public class LogCards : MonoBehaviour
             //if the card is going into TheBoard
             if (this.gameObject.name == "TheBoard" && Services.Dealer.playerToAct == null &&
                  Table.gameState != GameState.PostHand &&
-                 Table.gameState != GameState.NewRound)
+                 Table.gameState != GameState.NewRound &&
+                 Table.gameState != GameState.Misdeal)
             {
                 //same thing as above
                 //if (Table.dealerState == DealerState.DealingState)
@@ -145,7 +146,8 @@ public class LogCards : MonoBehaviour
             }
             else if (this.gameObject.name == "BurnCards" && Services.Dealer.playerToAct == null &&
                  Table.gameState != GameState.PostHand &&
-                 Table.gameState != GameState.NewRound)
+                 Table.gameState != GameState.NewRound &&
+                 Table.gameState != GameState.Misdeal)
             {
                 //if (Table.dealerState == DealerState.DealingState)
                 //{

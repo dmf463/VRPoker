@@ -474,6 +474,7 @@ public class PokerRules : MonoBehaviour {
 
     public void CorrectMistakes()
     {
+        Debug.Log("Correcting mistakes");
         Table.instance.board.Clear();
         Table.instance.burn.Clear();
         for (int i = 0; i < cardsPulled.Count; i++)
@@ -590,7 +591,7 @@ public class PokerRules : MonoBehaviour {
 
     IEnumerator CorrectionsDone(Vector3 pos, GameObject cardObj, Destination dest, Card card, bool correction)
     {
-        while (card.GetComponent<Card>().lerping)
+        while (card.GetComponent<Card>().lerping && Table.gameState != GameState.Misdeal)
         {
             if (card.transform.position == pos)
             {
@@ -670,17 +671,26 @@ public class PokerRules : MonoBehaviour {
 
     public void PushGroupOfChips()
     {
-        if (chipGroup.Count != 0) 
-        for (int i = 0; i < chipGroup.Count; i++)
-        {
-            Rigidbody rb = chipGroup[i].gameObject.GetComponent<Rigidbody>();
-            int chipSpotIndex = chipGroup[i].spotIndex;
-            Vector3 dest = chipGroup[i].handPushingChip.GetAttachmentTransform("PushChip").transform.TransformPoint(chipPositionWhenPushing[chipSpotIndex]);
-            if (rb != null)
+        float dst = .7f;
+        Vector3 finalDest = Vector3.zero;
+        if (chipGroup.Count != 0)
+            for (int i = 0; i < chipGroup.Count; i++)
             {
-                rb.MovePosition(new Vector3(dest.x, chipGroup[i].gameObject.transform.position.y, dest.z));
+                Rigidbody rb = chipGroup[i].gameObject.GetComponent<Rigidbody>();
+                int chipSpotIndex = chipGroup[i].spotIndex;
+                float handDistance = Mathf.Abs(Vector3.Distance(chipGroup[i].handPushingChip.transform.position, GameObject.Find("TipZone").transform.position));
+                Vector3 dest = chipGroup[i].handPushingChip.GetAttachmentTransform("PushChip").transform.TransformPoint(chipPositionWhenPushing[chipSpotIndex]);
+                if (dst > handDistance)
+                {
+                    finalDest = dest - GameObject.Find("TipZone").transform.position;
+                    finalDest = finalDest.normalized;
+                    finalDest *= (dst - handDistance);
+                }
+                if (rb != null)
+                {
+                    rb.MovePosition(new Vector3(dest.x, chipGroup[i].gameObject.transform.position.y, dest.z) + new Vector3(finalDest.x, 0, 0));
+                }
             }
-        }
     }
 
     public void ConsolidateStack(List<Chip> chipsToConsolidate)
