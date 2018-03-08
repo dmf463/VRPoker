@@ -231,6 +231,7 @@ public class CardDeckScript : InteractionSuperClass {
                 Debug.Log("Destroyed Deck");
                 if(Table.gameState != GameState.PostHand)
                 {
+                    Debug.Log("misdeal here");
                     Table.gameState = GameState.Misdeal;
                 }
                 //Table.dealerState = DealerState.ShufflingState;
@@ -489,6 +490,7 @@ public class CardDeckScript : InteractionSuperClass {
         }
         Destroy(cardDeck);
         Services.Dealer.deckIsDead = true;
+        Debug.Log("misdeal here");
         Table.gameState = GameState.Misdeal;
         //Table.dealerState = DealerState.ShufflingState;
     }

@@ -249,7 +249,11 @@ public class PokerPlayerRedux : MonoBehaviour{
             {
                 turnComplete = false;
                 List<CardType> sortedCards = Table.instance.SortPlayerCardsAtFlop(SeatPos);
-                if (sortedCards == null) Table.gameState = GameState.Misdeal;
+                if (sortedCards == null)
+                {
+                    Debug.Log("misdeal here");
+                    Table.gameState = GameState.Misdeal;
+                }
                 else
                 {
                     HandEvaluator playerHand = new HandEvaluator(sortedCards);
@@ -263,7 +267,11 @@ public class PokerPlayerRedux : MonoBehaviour{
             {
                 turnComplete = false;
                 List<CardType> sortedCards = Table.instance.SortPlayerCardsAtTurn(SeatPos);
-                if (sortedCards == null) Table.gameState = GameState.Misdeal;
+                if (sortedCards == null)
+                {
+                    Debug.Log("misdeal here");
+                    Table.gameState = GameState.Misdeal;
+                }
                 else
                 {
                     HandEvaluator playerHand = new HandEvaluator(sortedCards);
@@ -277,7 +285,11 @@ public class PokerPlayerRedux : MonoBehaviour{
             {
                 turnComplete = false;
                 List<CardType> sortedCards = Table.instance.SortPlayerCardsAtRiver(SeatPos);
-                if (sortedCards == null) Table.gameState = GameState.Misdeal;
+                if (sortedCards == null)
+                {
+                    Debug.Log("misdeal here");
+                    Table.gameState = GameState.Misdeal;
+                }
                 else
                 {
                     HandEvaluator playerHand = new HandEvaluator(sortedCards);
@@ -489,7 +501,12 @@ public class PokerPlayerRedux : MonoBehaviour{
         if (chipCount > 0)
         {
             int raiseAmount = amountToRaise;
-            int betToRaise = Services.Dealer.LastBet + (raiseAmount - currentBet);
+            int betToRaise = 0;
+            if (Services.Dealer.LastBet != 0 && Services.Dealer.LastBet != Services.Dealer.BigBlind)
+            {
+                betToRaise = Services.Dealer.LastBet + (raiseAmount - currentBet);
+            }
+            else betToRaise = amountToRaise;
             int remainder = betToRaise % ChipConfig.RED_CHIP_VALUE;
             if (remainder > 0) betToRaise = (betToRaise - remainder) + ChipConfig.RED_CHIP_VALUE;
             if (chipCount - betToRaise <= 0)

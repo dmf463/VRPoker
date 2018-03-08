@@ -306,15 +306,19 @@ public class Table {
         List<CardType> EvaluatedHand = new List<CardType>();
         EvaluatedHand = GetCardTypes(seatPos);
         if (EvaluatedHand.Count != 2) Debug.Log("EvaluatedHandCount = " + EvaluatedHand.Count);
-        if (board.Count != 3) gameState = GameState.Misdeal;
-        else
+        if (board.Count != 3)
         {
-            EvaluatedHand.Add(board[0].cardType);
-            EvaluatedHand.Add(board[1].cardType);
-            EvaluatedHand.Add(board[2].cardType);
+            Debug.Log("boad.count = " + board.Count);
+            foreach (Card card in board) Debug.Log("board contains " + card.cardType.rank + " of " + card.cardType.suit);
+            Debug.Log("misdeal here");
+            gameState = GameState.Misdeal;
         }
+        EvaluatedHand.Add(board[0].cardType);
+        EvaluatedHand.Add(board[1].cardType);
+        EvaluatedHand.Add(board[2].cardType);
         if (EvaluatedHand.Count != 5)
         {
+            Debug.Log("misdeal here with evaluated count of " + EvaluatedHand.Count);
             gameState = GameState.Misdeal;
             EvaluatedHand = null;
         }
@@ -329,16 +333,18 @@ public class Table {
         List<CardType> EvaluatedHand = new List<CardType>();
         EvaluatedHand = GetCardTypes(seatPos);
         if (EvaluatedHand.Count != 2) Debug.Log("EvaluatedHandCount = " + EvaluatedHand.Count);
-        if (board.Count != 4) gameState = GameState.Misdeal;
-        else
+        if (board.Count != 4)
         {
-            EvaluatedHand.Add(board[0].cardType);
-            EvaluatedHand.Add(board[1].cardType);
-            EvaluatedHand.Add(board[2].cardType);
-            EvaluatedHand.Add(board[3].cardType);
+            Debug.Log("misdeal here");
+            gameState = GameState.Misdeal;
         }
+        EvaluatedHand.Add(board[0].cardType);
+        EvaluatedHand.Add(board[1].cardType);
+        EvaluatedHand.Add(board[2].cardType);
+        EvaluatedHand.Add(board[3].cardType);
         if (EvaluatedHand.Count != 6)
         {
+            Debug.Log("misdeal here");
             gameState = GameState.Misdeal;
             EvaluatedHand = null;
         }
@@ -353,17 +359,19 @@ public class Table {
         List<CardType> EvaluatedHand = new List<CardType>();
         EvaluatedHand = GetCardTypes(seatPos);
         if (EvaluatedHand.Count != 2) Debug.Log("EvaluatedHandCount = " + EvaluatedHand.Count);
-        if (board.Count != 5) gameState = GameState.Misdeal;
-        else
+        if (board.Count != 5)
         {
-            EvaluatedHand.Add(board[0].cardType);
-            EvaluatedHand.Add(board[1].cardType);
-            EvaluatedHand.Add(board[2].cardType);
-            EvaluatedHand.Add(board[3].cardType);
-            EvaluatedHand.Add(board[4].cardType);
+            Debug.Log("misdeal here");
+            gameState = GameState.Misdeal;
         }
+        EvaluatedHand.Add(board[0].cardType);
+        EvaluatedHand.Add(board[1].cardType);
+        EvaluatedHand.Add(board[2].cardType);
+        EvaluatedHand.Add(board[3].cardType);
+        EvaluatedHand.Add(board[4].cardType);
         if (EvaluatedHand.Count != 7)
         {
+            Debug.Log("misdeal here");
             gameState = GameState.Misdeal;
             EvaluatedHand = null;
         }

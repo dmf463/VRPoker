@@ -168,20 +168,35 @@ public class PokerRules : MonoBehaviour {
     }
     public void CheckCardCount()
     {
-        if (Table.gameState > GameState.NewRound && Table.gameState < GameState.ShowDown)
+        if (!Services.Dealer.OutsideVR)
         {
-            SetCardPlacement(Services.Dealer.PlayerAtTableCount());
-            if(Table.gameState == GameState.PreFlop)
+            if (Table.gameState > GameState.NewRound && Table.gameState < GameState.ShowDown)
             {
-                if (cardsPulled.Count - 1 > flopCards) Table.gameState = GameState.Misdeal;
-            }
-            else if(Table.gameState == GameState.Flop)
-            {
-                if (cardsPulled.Count - 1 > turnCard) Table.gameState = GameState.Misdeal;
-            }
-            else if(Table.gameState == GameState.Turn || Table.gameState == GameState.River)
-            {
-                if (cardsPulled.Count - 1 > riverCard) Table.gameState = GameState.Misdeal;
+                SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+                if (Table.gameState == GameState.PreFlop)
+                {
+                    if (cardsPulled.Count - 1 > flopCards)
+                    {
+                        Debug.Log("misdeal here");
+                        Table.gameState = GameState.Misdeal;
+                    }
+                }
+                else if (Table.gameState == GameState.Flop)
+                {
+                    if (cardsPulled.Count - 1 > turnCard)
+                    {
+                        Debug.Log("misdeal here");
+                        Table.gameState = GameState.Misdeal;
+                    }
+                }
+                else if (Table.gameState == GameState.Turn || Table.gameState == GameState.River)
+                {
+                    if (cardsPulled.Count - 1 > riverCard)
+                    {
+                        Debug.Log("misdeal here");
+                        Table.gameState = GameState.Misdeal;
+                    }
+                }
             }
         }
     }
@@ -515,7 +530,7 @@ public class PokerRules : MonoBehaviour {
         {
             FixCard(GameObject.Find("BurnCards").transform.position, 
                     GameObject.Find("BurnCards").transform.rotation, 
-                    cardNum, speed, correction);
+                    cardNum, speed, correction, Destination.burn);
         }
         else if (cardNum > burnCard1 && cardNum <= flopCards)
         {
@@ -523,48 +538,48 @@ public class PokerRules : MonoBehaviour {
             {
                 FixCard(boardPos[0].transform.position, 
                         boardPos[0].transform.rotation, 
-                        cardNum, speed, correction);
+                        cardNum, speed, correction, Destination.board);
             }
             else if (cardNum == burnCard1 + 2)
             {
                 FixCard(boardPos[1].transform.position, 
                         boardPos[1].transform.rotation, 
-                        cardNum, speed, correction);
+                        cardNum, speed, correction, Destination.board);
             }
             else if (cardNum == burnCard1 + 3)
             {
                 FixCard(boardPos[2].transform.position, 
                         boardPos[2].transform.rotation, 
-                        cardNum, speed, correction);
+                        cardNum, speed, correction, Destination.board);
             }
         }
         else if (cardNum == burnCard2)
         {
             FixCard(GameObject.Find("BurnCards").transform.position, 
                     GameObject.Find("BurnCards").transform.rotation, 
-                    cardNum, speed, correction);
+                    cardNum, speed, correction, Destination.burn);
         }
         else if (cardNum == turnCard)
         {
             FixCard(boardPos[3].transform.position, 
                     boardPos[3].transform.rotation, 
-                    cardNum, speed, correction);
+                    cardNum, speed, correction, Destination.board);
         }
         else if (cardNum == burnCard3)
         {;
             FixCard(GameObject.Find("BurnCards").transform.position, 
                     GameObject.Find("BurnCards").transform.rotation, 
-                    cardNum, speed, correction);
+                    cardNum, speed, correction, Destination.burn);
         }
         else if (cardNum == riverCard)
         {
             FixCard(boardPos[4].transform.position, 
                     boardPos[4].transform.rotation, 
-                    cardNum, speed, correction);
+                    cardNum, speed, correction, Destination.board);
         }
     }
 
-    public void FixCard(Vector3 pos, Quaternion rot, int cardNum, float speed, bool correction)
+    public void FixCard(Vector3 pos, Quaternion rot, int cardNum, float speed, bool correction, Destination dest)
     {
         Vector3 cardPos = pos;
         Quaternion cardRot = rot;
@@ -573,7 +588,7 @@ public class PokerRules : MonoBehaviour {
         card.InitializeLerp(cardPos);
         StartCoroutine(card.LerpCardPos(cardPos, speed));
         StartCoroutine(card.LerpCardRot(cardRot, speed * 1.5f));
-        StartCoroutine(CorrectionsDone(cardPos, cardRot, cardObj, Destination.board, card, correction));
+        StartCoroutine(CorrectionsDone(cardPos, cardRot, cardObj, dest, card, correction));
     }
 
     IEnumerator CorrectionsDone(Vector3 pos, Quaternion rot, GameObject cardObj, Destination dest, Card card, bool correction)

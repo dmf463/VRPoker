@@ -1434,7 +1434,7 @@ public class PlayerBehaviour {
         if (player.continuationBet != 0) minimumRaise = player.continuationBet;
 
         List<PokerPlayerRedux> rankedPlayers = RankedPlayerHands(player);
-
+        
         if (Table.gameState == GameState.PreFlop)
         {
             if (((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4)) && player.HandStrength > 12f)

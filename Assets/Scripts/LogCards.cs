@@ -67,6 +67,7 @@ public class LogCards : MonoBehaviour
                     }
                     else if (other.GetComponent<Card>().CardIsFaceUp())
                     {
+                        Debug.Log("misdeal here");
                         Table.gameState = GameState.Misdeal;
                     }
                     else
