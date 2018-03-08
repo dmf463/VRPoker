@@ -189,10 +189,13 @@ public class Dealer : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.J))
         {
-            List<LineCriteria> critList = new List<LineCriteria>();
-            critList.Add(LineCriteria.Tip);
-            PlayerLineCriteria plCriteria = new PlayerLineCriteria(PlayerName.Floyd, critList);
-            Services.SoundManager.PlayOneLiner(plCriteria);
+            //List<LineCriteria> critList = new List<LineCriteria>();
+            //critList.Add(LineCriteria.Tip);
+            //PlayerLineCriteria plCriteria = new PlayerLineCriteria(PlayerName.Floyd, critList);
+            //Services.SoundManager.PlayOneLiner(plCriteria);
+
+            PokerPlayerRedux randomPlayer = Services.Dealer.players[UnityEngine.Random.Range(0, Services.Dealer.players.Count)];
+            Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(randomPlayer.playerName, LineCriteria.Call));
         }
 
         if (Input.GetKeyDown(KeyCode.D))
@@ -377,8 +380,8 @@ public class Dealer : MonoBehaviour
                     !players[i].playerIsInConversation &&
                     !Services.SoundManager.conversationIsPlaying)
                 {
-
-                    Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].misdealAudio);
+                    Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(players[i].playerName, LineCriteria.Misdeal));
+                    //Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].misdealAudio);
                 }
             }
             //messageText.text = "You misdealt the hand, click both triggers to restart the round.";
@@ -1214,7 +1217,8 @@ public class Dealer : MonoBehaviour
                        !Services.SoundManager.conversationIsPlaying &&
                        winnerCount < 2)
                     {
-                        Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].tipAudio);
+                        Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(players[i].playerName, LineCriteria.Tip));
+                        //Services.SoundManager.GetSourceAndPlay(players[i].playerAudioSource, players[i].tipAudio);
                     }
                 }
             }

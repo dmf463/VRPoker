@@ -41,7 +41,8 @@ public class LogChips : MonoBehaviour
                 Debug.Log("SHOULD SAY LINE");
                 if (!player.playerAudioSource.isPlaying && !player.playerIsInConversation && !Services.SoundManager.conversationIsPlaying)
                 {
-                    Services.SoundManager.GetSourceAndPlay(player.playerAudioSource, player.wrongChipsAudio);
+                    Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(player.playerName, LineCriteria.WrongChips));
+                    //Services.SoundManager.GetSourceAndPlay(player.playerAudioSource, player.wrongChipsAudio);
                 }
                 startTimer = false;
             }
