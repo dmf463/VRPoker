@@ -16,8 +16,8 @@ public class PlayerHit : MonoBehaviour
                 PokerPlayerRedux player = GetComponentInParent<PokerPlayerRedux>();
                 //Debug.Log("WE HIT SOMETHING");
                 AudioClip hitSound = player.cardHitAudio;
-                Services.SoundManager.GetSourceAndPlay(player.playerAudioSource, hitSound);
-                Debug.Log("misdeal here");
+                Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(player.playerName, LineCriteria.CardHit));
+                //Services.SoundManager.GetSourceAndPlay(player.playerAudioSource, hitSound);
                 Table.gameState = GameState.Misdeal;
             }
         }

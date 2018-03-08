@@ -499,7 +499,9 @@ public class CardDeckScript : InteractionSuperClass {
         if (!randomPlayer.playerAudioSource.isPlaying && !randomPlayer.playerIsInConversation && !Services.SoundManager.conversationIsPlaying)
         {
             Services.Dealer.misdealAudioPlayed = true;
-            Services.SoundManager.GetSourceAndPlay(randomPlayer.playerAudioSource, randomPlayer.fiftyTwoAudio);
+            Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(randomPlayer.playerName, LineCriteria.FiftyTwo));
+
+            //Services.SoundManager.GetSourceAndPlay(randomPlayer.playerAudioSource, randomPlayer.fiftyTwoAudio);
         }
         Destroy(cardDeck);
         Services.Dealer.deckIsDead = true;

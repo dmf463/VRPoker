@@ -8,7 +8,7 @@ using System.Linq;
 //the most important one is "Playing" because if they aren't marked as playing, then they'll be skipped
 public enum PlayerState {Playing, NotPlaying, Winner, Loser, Eliminated}
 public enum PlayerName {None, Casey, Zombie, Minnie, Nathaniel, Floyd}
-public enum LineCriteria {None, AllIn, Bet, Call, CardHit, Check, Fold, Misdeal, Raise, Tip, Win, Lose, WrongCards, WrongChips}
+public enum LineCriteria {None, AllIn, Bet, Call, CardHit, Check, FiftyTwo, Fold, Misdeal, Raise, Tip, Win, Lose, WrongChips}
 
 
 public class PokerPlayerRedux : MonoBehaviour{
@@ -1011,8 +1011,8 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public void ReceiveWinnings()
     {
-        float winnerCount = 0;
-        float winnersPaid = 0;
+        int winnerCount = 0;
+        int winnersPaid = 0;
         List<PokerPlayerRedux> winningPlayers = new List<PokerPlayerRedux>();
         for (int i = 0; i < Services.Dealer.players.Count; i++)
         {
@@ -1041,7 +1041,11 @@ public class PokerPlayerRedux : MonoBehaviour{
                 !playerIsInConversation &&
                 !Services.SoundManager.conversationIsPlaying)
             {
-                Services.SoundManager.GetSourceAndPlay(playerAudioSource, tipAudio);
+
+
+                Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(playerName, LineCriteria.Tip));
+
+                //Services.SoundManager.GetSourceAndPlay(playerAudioSource, tipAudio);
             }
             if(winnersPaid == winnerCount)
             {
@@ -1054,7 +1058,8 @@ public class PokerPlayerRedux : MonoBehaviour{
                 !playerIsInConversation &&
                 !Services.SoundManager.conversationIsPlaying)
             {
-                Services.SoundManager.GetSourceAndPlay(playerAudioSource, wrongChipsAudio);
+                Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(playerName, LineCriteria.WrongChips));
+                //Services.SoundManager.GetSourceAndPlay(playerAudioSource, wrongChipsAudio);
             }
         }
     }
@@ -1588,7 +1593,8 @@ public class PokerPlayerRedux : MonoBehaviour{
             {
                 playerAudioSource.volume = 1f;
             }
-            Services.SoundManager.GetSourceAndPlay(playerAudioSource, checkAudio);
+            //Services.SoundManager.GetSourceAndPlay(playerAudioSource, checkAudio);
+            Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(playerName, LineCriteria.Check));
         }
     }
 
@@ -1622,7 +1628,8 @@ public class PokerPlayerRedux : MonoBehaviour{
                 {
                     playerAudioSource.volume = 1f;
                 }
-                Services.SoundManager.GetSourceAndPlay(playerAudioSource, foldAudio);
+                Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(playerName, LineCriteria.Fold));
+                //Services.SoundManager.GetSourceAndPlay(playerAudioSource, foldAudio);
                 //Debug.Log(gameObject + " said fold.");
             }
 
@@ -1642,7 +1649,8 @@ public class PokerPlayerRedux : MonoBehaviour{
             {
                 playerAudioSource.volume = 1f;
             }
-            Services.SoundManager.GetSourceAndPlay(playerAudioSource, raiseAudio);
+            //Services.SoundManager.GetSourceAndPlay(playerAudioSource, raiseAudio);
+            Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(playerName, LineCriteria.Raise));
         }
     }
 
@@ -1658,7 +1666,8 @@ public class PokerPlayerRedux : MonoBehaviour{
             {
                 playerAudioSource.volume = 1f;
             }
-            Services.SoundManager.GetSourceAndPlay(playerAudioSource, betAudio);
+            Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(playerName, LineCriteria.Bet));
+            //Services.SoundManager.GetSourceAndPlay(playerAudioSource, betAudio);
         }
     }
 
@@ -1674,7 +1683,9 @@ public class PokerPlayerRedux : MonoBehaviour{
             {
                 playerAudioSource.volume = 1f;
             }
-            Services.SoundManager.GetSourceAndPlay(playerAudioSource, callAudio);
+
+            Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(playerName, LineCriteria.Call));
+            //Services.SoundManager.GetSourceAndPlay(playerAudioSource, callAudio);
         }
     }
 
@@ -1690,7 +1701,8 @@ public class PokerPlayerRedux : MonoBehaviour{
             {
                 playerAudioSource.volume = 1f;
             }
-            Services.SoundManager.GetSourceAndPlay(playerAudioSource, allInAudio);
+            //Services.SoundManager.GetSourceAndPlay(playerAudioSource, allInAudio);
+            Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(playerName, LineCriteria.AllIn));
         }
     }
 
@@ -1699,7 +1711,8 @@ public class PokerPlayerRedux : MonoBehaviour{
     {
         if (!playerAudioSource.isPlaying && !playerIsInConversation && !Services.SoundManager.conversationIsPlaying)
         {
-            Services.SoundManager.GetSourceAndPlay(playerAudioSource, winAudio);
+            //Services.SoundManager.GetSourceAndPlay(playerAudioSource, winAudio);
+            Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(playerName, LineCriteria.Win));
         }
     }
 

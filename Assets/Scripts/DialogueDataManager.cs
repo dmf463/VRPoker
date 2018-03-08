@@ -339,6 +339,7 @@ public class DialogueDataManager
 
     public PlayerLine GetLineWithCriteria(PlayerLineCriteria criteriaKey) //using the names of our chosen conversants
     {
+       
         //Debug.Log("getting line with criteria");
         if (oneLineDict.ContainsKey(criteriaKey)) // if our dialogue dictionary contains them as a key
         {
@@ -428,6 +429,8 @@ public class DialogueDataManager
                 return LineCriteria.CardHit;
             case "CHECK":
                 return LineCriteria.Check;
+            case "FIFTYTWO":
+                return LineCriteria.FiftyTwo;
             case "FOLD":
                 return LineCriteria.Fold;
             case "LOSE":
@@ -440,13 +443,27 @@ public class DialogueDataManager
                 return LineCriteria.Tip;
             case "WIN":
                 return LineCriteria.Win;
-            case "WRONGCARDS":
-                return LineCriteria.WrongCards;
             case "WRONGCHIPS":
                 return LineCriteria.WrongChips;
             default:
                 return LineCriteria.None;
         }
+    }
+
+    public static PlayerLineCriteria CreatePlayerLineCriteria(PlayerName playerName, params LineCriteria[] criteriaArray)
+    {
+        List<LineCriteria> lineCriteriaList = new List<LineCriteria>();
+        foreach (LineCriteria criteria in criteriaArray)
+        {
+            Debug.Log("adding criteria: " + criteria);
+            lineCriteriaList.Add(criteria);
+        }
+        PlayerLineCriteria newPlayerLineCriteria = new PlayerLineCriteria(playerName, lineCriteriaList);
+        Debug.Log("adding player: " + newPlayerLineCriteria.playerName);
+
+        foreach (LineCriteria criteria in lineCriteriaList)
+            Debug.Log(criteria);
+        return newPlayerLineCriteria;
     }
 }
    
