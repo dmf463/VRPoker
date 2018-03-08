@@ -74,11 +74,14 @@ public class PokerPlayerRedux : MonoBehaviour{
     [HideInInspector]
     public bool playerLookedAt = false;
 
-    //this is the the last amount of money that the player has bet.
+    //this is the the last amount of money that the player has bet in a round.
     //not to be confused with "lastBet" on Dealer, this keeps track of ONLY what the player's last best was
     //as opposed to LastBest, in dealer, which keeps track of the last bet any player has made. 
     [HideInInspector]
     public int currentBet;
+
+    [HideInInspector]
+    public int continuationBet = 0;
 
     //this is actually super important and is the crux of figuring out whether a player will make the FCR (Fold/Call/Raise) decision. 
     [HideInInspector]
@@ -329,26 +332,27 @@ public class PokerPlayerRedux : MonoBehaviour{
     public int DetermineRaiseAmount(PokerPlayerRedux player)
     {
         int raise = 0;
-        switch (playerName)
-        {
-            case PlayerName.Casey:
-                raise = Services.PlayerBehaviour.CASEY_DetermineRaiseAmount(player);
-                break;
-            case PlayerName.Zombie:
-                raise = Services.PlayerBehaviour.ZOMBIE_DetermineRaiseAmount(player);
-                break;
-            case PlayerName.Minnie:
-                raise = Services.PlayerBehaviour.MINNIE_DetermineRaiseAmount(player);
-                break;
-            case PlayerName.Nathaniel:
-                raise = Services.PlayerBehaviour.NATHANIEL_DetermineRaiseAmount(player);
-                break;
-            case PlayerName.Floyd:
-                raise = Services.PlayerBehaviour.FLOYD_DetermineRaiseAmount(player);
-                break;
-            default:
-                break;
-        }
+        //switch (playerName)
+        //{
+        //    case PlayerName.Casey:
+        //        raise = Services.PlayerBehaviour.CASEY_DetermineRaiseAmount(player);
+        //        break;
+        //    case PlayerName.Zombie:
+        //        raise = Services.PlayerBehaviour.ZOMBIE_DetermineRaiseAmount(player);
+        //        break;
+        //    case PlayerName.Minnie:
+        //        raise = Services.PlayerBehaviour.MINNIE_DetermineRaiseAmount(player);
+        //        break;
+        //    case PlayerName.Nathaniel:
+        //        raise = Services.PlayerBehaviour.NATHANIEL_DetermineRaiseAmount(player);
+        //        break;
+        //    case PlayerName.Floyd:
+        //        raise = Services.PlayerBehaviour.FLOYD_DetermineRaiseAmount(player);
+        //        break;
+        //    default:
+        //        break;
+        //}
+        raise = Services.PlayerBehaviour.DetermineInitialBetSize(player);
         return raise;
     }
 
@@ -510,6 +514,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                     SayRaise();
                 }
                 Bet(betToRaise, false);
+                continuationBet = betToRaise;
                 currentBet = betToRaise + currentBet;
                 Services.Dealer.LastBet = currentBet;
                 //Debug.Log("player " + SeatPos + " raises " + betToRaise);

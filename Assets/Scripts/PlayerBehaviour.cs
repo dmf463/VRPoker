@@ -1426,6 +1426,65 @@ public class PlayerBehaviour {
         else return true; //if my opponent is in the first position they have the best hand
     }
 
+    public int DetermineInitialBetSize(PokerPlayerRedux player)
+    {
+        int raise = 0;
+        int minimumRaise = Services.Dealer.LastBet;
+        if (minimumRaise == 0) minimumRaise = Services.Dealer.LastBet;
+        if (player.continuationBet != 0) minimumRaise = player.continuationBet;
+
+        List<PokerPlayerRedux> rankedPlayers = RankedPlayerHands(player);
+
+        if (Table.gameState == GameState.PreFlop)
+        {
+            if (Table.gameState == GameState.PreFlop)
+            {
+                if (((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4)) && player.HandStrength > 12f)
+                {
+                    raise = player.chipCount;
+                }
+                else
+                {
+                    if (Services.Dealer.LastBet == Services.Dealer.BigBlind)
+                    {
+                        raise = Services.Dealer.BigBlind * (3 + Services.Dealer.GetActivePlayerCount());
+                    }
+                    else raise = Services.Dealer.LastBet * 2;
+                }
+                if (raise > player.chipCount) raise = player.chipCount;
+            }
+            else
+            {
+                if (rankedPlayers[0] = player)
+                {
+                    raise = Table.instance.potChips;
+                }
+                else if (rankedPlayers[rankedPlayers.Count - 1] == player) raise = Table.instance.potChips / 4;
+                else
+                {
+                    raise = minimumRaise;
+                }
+            }
+        }
+        int remainder = raise % ChipConfig.RED_CHIP_VALUE;
+        if (remainder > 0) raise = (raise - remainder) + ChipConfig.RED_CHIP_VALUE;
+        return raise;
+    }
+
+    public List<PokerPlayerRedux> RankedPlayerHands(PokerPlayerRedux me)
+    {
+        List<PokerPlayerRedux> playersToEvaluate = new List<PokerPlayerRedux>();
+        playersToEvaluate.Add(me);
+        for (int i = 0; i < Services.Dealer.PlayerAtTableCount(); i++)
+        {
+            PokerPlayerRedux playerToAdd = Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(i);
+            if (playerToAdd != me) playersToEvaluate.Add(playerToAdd);
+            else break;
+        }
+        List<PokerPlayerRedux> sortedPlayers = new List<PokerPlayerRedux>(playersToEvaluate.OrderByDescending(bestHand => bestHand.HandStrength));
+        return sortedPlayers;
+    }
+
     #region old Raise code
     //if (Table.gameState == GameState.PreFlop)
     //{

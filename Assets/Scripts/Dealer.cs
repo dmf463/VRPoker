@@ -1249,6 +1249,7 @@ public class Dealer : MonoBehaviour
             players[i].waitingToGetPaid = false;
             players[i].playerLookedAt = false;
             players[i].timesRaisedThisRound = 0;
+            players[i].continuationBet = 0;
             players[i].gaveTip = false;
             //players[i].checkedHandStrength = false;
         }
@@ -1315,6 +1316,7 @@ public class Dealer : MonoBehaviour
             players[i].waitingToGetPaid = false;
             players[i].playerLookedAt = false;
             players[i].timesRaisedThisRound = 0;
+            players[i].continuationBet = 0;
             players[i].gaveTip = false;
             //players[i].checkedHandStrength = false;
         }
