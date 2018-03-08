@@ -338,10 +338,15 @@ public class Card : InteractionSuperClass {
         {
             if (Table.gameState != GameState.Misdeal)
             {
+                Debug.Log("misdeal here");
                 Services.PokerRules.CorrectMistakes();
                 cardsDropped++;
             }
-            if (cardsDropped >= 5) Table.gameState = GameState.Misdeal;
+            if (cardsDropped >= 5)
+            {
+                Debug.Log("misdeal here");
+                Table.gameState = GameState.Misdeal;
+            }
         }
 
     }
@@ -430,7 +435,11 @@ public class Card : InteractionSuperClass {
         cardPosHeld = transform.position;
         if (Table.gameState == GameState.NewRound)
         {
-            if (CardIsFaceUp() && !Services.Dealer.isCheating) Table.gameState = GameState.Misdeal;
+            if (CardIsFaceUp() && !Services.Dealer.isCheating)
+            {
+                Debug.Log("misdeal here");
+                Table.gameState = GameState.Misdeal;
+            }
         }
         base.HandAttachedUpdate(attachedHand);
     }
@@ -524,6 +533,7 @@ public class Card : InteractionSuperClass {
         yield return new WaitForSeconds(time);
         if (!CardIsInList(this) && cardOnTable)
         {
+            Debug.Log("misdeal here");
             Table.gameState = GameState.Misdeal;
         }
     }

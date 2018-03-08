@@ -440,7 +440,11 @@ public class Chip : InteractionSuperClass {
             chipStack = new ChipStack(this);
             inAStack = true;
         }
-        if (!chipForBet) Table.gameState = GameState.Misdeal;
+        if (!chipForBet)
+        {
+            Debug.Log("misdeal here");
+            Table.gameState = GameState.Misdeal;
+        }
         base.OnAttachedToHand(attachedHand);
     }
 

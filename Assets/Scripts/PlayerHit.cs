@@ -17,6 +17,7 @@ public class PlayerHit : MonoBehaviour
                 //Debug.Log("WE HIT SOMETHING");
                 AudioClip hitSound = player.cardHitAudio;
                 Services.SoundManager.GetSourceAndPlay(player.playerAudioSource, hitSound);
+                Debug.Log("misdeal here");
                 Table.gameState = GameState.Misdeal;
             }
         }

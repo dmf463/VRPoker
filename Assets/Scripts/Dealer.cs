@@ -151,7 +151,11 @@ public class Dealer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (deckIsDead) Table.gameState = GameState.Misdeal;
+        if (deckIsDead)
+        {
+            Debug.Log("misdeal here");
+            Table.gameState = GameState.Misdeal;
+        }
         tipIndicator.GetComponent<TextMeshPro>().text = tipCount.ToString();
         WaitingToGrabCardsOn_ThrownDeck();
         WaitingToGrabCardsOn_MisDeal();
@@ -488,6 +492,7 @@ public class Dealer : MonoBehaviour
             }
             else if (Services.PokerRules.cardsPulled.Count > players.Count * 2/* && !Services.Dealer.OutsideVR*/)
             {
+                Debug.Log("misdeal here");
                 Table.gameState = GameState.Misdeal;
             }
             else
@@ -548,12 +553,6 @@ public class Dealer : MonoBehaviour
             playerToAct = FindFirstPlayerToAct(1);
             //Debug.Log("player to act = " + playerToAct);
         }
-        //(playerToAct != null) playerToAct.
-        //StartCoroutine(playerAction(playerToAct));
-//        if (!Services.SoundManager.conversationIsPlaying)
-//        {
-//            Services.SoundManager.PlayAsideConversation(UnityEngine.Random.Range(0, 5));
-//        }
     }
 
     public PokerPlayerRedux FindFirstPlayerToAct(int distance)
