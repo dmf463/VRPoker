@@ -1437,33 +1437,30 @@ public class PlayerBehaviour {
 
         if (Table.gameState == GameState.PreFlop)
         {
-            if (Table.gameState == GameState.PreFlop)
+            if (((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4)) && player.HandStrength > 12f)
             {
-                if (((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4)) && player.HandStrength > 12f)
-                {
-                    raise = player.chipCount;
-                }
-                else
-                {
-                    if (Services.Dealer.LastBet == Services.Dealer.BigBlind)
-                    {
-                        raise = Services.Dealer.BigBlind * (3 + Services.Dealer.GetActivePlayerCount());
-                    }
-                    else raise = Services.Dealer.LastBet * 2;
-                }
-                if (raise > player.chipCount) raise = player.chipCount;
+                raise = player.chipCount;
             }
             else
             {
-                if (rankedPlayers[0] = player)
+                if (Services.Dealer.LastBet == Services.Dealer.BigBlind)
                 {
-                    raise = Table.instance.potChips;
+                    raise = Services.Dealer.BigBlind * (3 + rankedPlayers.Count - 1);
                 }
-                else if (rankedPlayers[rankedPlayers.Count - 1] == player) raise = Table.instance.potChips / 4;
-                else
-                {
-                    raise = minimumRaise;
-                }
+                else raise = Services.Dealer.LastBet * 2;
+            }
+            if (raise > player.chipCount) raise = player.chipCount;
+        }
+        else
+        {
+            if (rankedPlayers[0] = player)
+            {
+                raise = Table.instance.potChips;
+            }
+            else if (rankedPlayers[rankedPlayers.Count - 1] == player) raise = Table.instance.potChips / 4;
+            else
+            {
+                raise = minimumRaise;
             }
         }
         int remainder = raise % ChipConfig.RED_CHIP_VALUE;
@@ -1478,7 +1475,7 @@ public class PlayerBehaviour {
         for (int i = 0; i < Services.Dealer.PlayerAtTableCount(); i++)
         {
             PokerPlayerRedux playerToAdd = Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(i);
-            if (playerToAdd != me) playersToEvaluate.Add(playerToAdd);
+            if (playerToAdd != me && playerToAdd.actedThisRound) playersToEvaluate.Add(playerToAdd);
             else break;
         }
         List<PokerPlayerRedux> sortedPlayers = new List<PokerPlayerRedux>(playersToEvaluate.OrderByDescending(bestHand => bestHand.HandStrength));
