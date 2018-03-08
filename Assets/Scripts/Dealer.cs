@@ -768,7 +768,7 @@ public class Dealer : MonoBehaviour
                 {
                     if (first_time)
                     {
-                        Debug.Log("handdistance = " + handDistance);
+                        //Debug.Log("handdistance = " + handDistance);
                         foreach (GameObject card in cardsOnTable)
                         {
                             card.GetComponent<Card>().flying_start_time = Time.time;

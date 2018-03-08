@@ -51,6 +51,7 @@ public class PokerRules : MonoBehaviour {
     void Update()
     {
         tm.Update();
+        CheckCardCount();
         if (chipGroup.Count > 0)
         {
             PushGroupOfChips();
@@ -164,6 +165,25 @@ public class PokerRules : MonoBehaviour {
             }
         }
         return true;
+    }
+    public void CheckCardCount()
+    {
+        if (Table.gameState > GameState.NewRound && Table.gameState < GameState.ShowDown)
+        {
+            SetCardPlacement(Services.Dealer.PlayerAtTableCount());
+            if(Table.gameState == GameState.PreFlop)
+            {
+                if (cardsPulled.Count - 1 > flopCards) Table.gameState = GameState.Misdeal;
+            }
+            else if(Table.gameState == GameState.Flop)
+            {
+                if (cardsPulled.Count - 1 > turnCard) Table.gameState = GameState.Misdeal;
+            }
+            else if(Table.gameState == GameState.Turn || Table.gameState == GameState.River)
+            {
+                if (cardsPulled.Count - 1 > riverCard) Table.gameState = GameState.Misdeal;
+            }
+        }
     }
 
     IEnumerator CheckFlopMistakes(float time)

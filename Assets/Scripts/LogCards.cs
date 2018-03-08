@@ -10,7 +10,7 @@ public class LogCards : MonoBehaviour
     private GameObject newCardDeck;
     private bool madeNewDeck;
     private int cardCountForTones;
-    private float cardPositionSpeed = 0.1f;
+    private float cardPositionSpeed = 0.3f;
     private List<string> playerNames = new List<string>
     {
         "P0Cards", "P1Cards", "P2Cards", "P3Cards", "P4Cards"
@@ -57,11 +57,6 @@ public class LogCards : MonoBehaviour
                     {
                         //Debug.Log(other.gameObject.name + " cannot be added to " + playerNames[i]);
                     }
-                    //and the card has not already been dealt to somewhere else
-                    //else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
-                    //{
-                    //    Debug.Log(other.gameObject.name + " has already been logged by something else");
-                    //}
                     else if (CardIsOccupied(other.GetComponent<Card>()))
                     {
                         Debug.Log("card belongs to someone else");
@@ -101,9 +96,6 @@ public class LogCards : MonoBehaviour
                  Table.gameState != GameState.NewRound &&
                  Table.gameState != GameState.Misdeal)
             {
-                //same thing as above
-                //if (Table.dealerState == DealerState.DealingState)
-                //{
                 if (Table.instance.board.Contains(other.GetComponent<Card>()))
                 {
                     Debug.Log(other.gameObject.name + " is already in the board");
@@ -141,16 +133,12 @@ public class LogCards : MonoBehaviour
                     else Services.PokerRules.PositionBoardAndBurnCards(other.GetComponent<Card>().cardThrownNum, cardPositionSpeed, false);
                     other.GetComponent<Card>().StopCheating();
                 }
-                //}
-
             }
             else if (this.gameObject.name == "BurnCards" && Services.Dealer.playerToAct == null &&
                  Table.gameState != GameState.PostHand &&
                  Table.gameState != GameState.NewRound &&
                  Table.gameState != GameState.Misdeal)
             {
-                //if (Table.dealerState == DealerState.DealingState)
-                //{
                 if (Table.instance.burn.Contains(other.GetComponent<Card>()))
                 {
                     //Debug.Log(other.gameObject.name + " is already in the burn");
@@ -158,6 +146,10 @@ public class LogCards : MonoBehaviour
                 else if (Services.PokerRules.cardsLogged.Contains(other.GetComponent<Card>()))
                 {
                     //Debug.Log(other.gameObject.name + "card is already logged");
+                }
+                else if(Table.instance.burn.Count == 3)
+                {
+                    //Debug.Log("too many cards in the burn");
                 }
                 else if (Services.Dealer.deadCardsList.Contains(other.GetComponent<Card>()))
                 {

@@ -684,10 +684,10 @@ public class Card : InteractionSuperClass {
     public IEnumerator CheckIfCardThrownAtWrongTime(float time, int cardspulled)
     {
         yield return new WaitForSeconds(time);
-        Debug.Log("PLAYER TO ACT = " + Services.Dealer.playerToAct);
+        //Debug.Log("PLAYER TO ACT = " + Services.Dealer.playerToAct);
         if (Services.Dealer.playerToAct != null)
         {
-            Debug.Log("PLAYER TO ACT = " + Services.Dealer.playerToAct);
+            //Debug.Log("PLAYER TO ACT = " + Services.Dealer.playerToAct);
             StartPulse();
             Services.PokerRules.thrownCards.Add(gameObject);
             CleanUpCardInfo(this);

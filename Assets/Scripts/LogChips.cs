@@ -71,17 +71,14 @@ public class LogChips : MonoBehaviour
                     {
                         if (Services.Dealer.players[i].PlayerState == PlayerState.Winner)
                         {
-                            if (Services.Dealer.players[i].chipCount != (Services.Dealer.players[i].chipsWon + Services.Dealer.players[i].ChipCountToCheckWhenWinning) &&
+                            Chip chip = other.GetComponent<Chip>();
+                            if (Services.Dealer.players[i].chipCount + chip.stackValue <= (Services.Dealer.players[i].chipsWon + Services.Dealer.players[i].ChipCountToCheckWhenWinning) &&
                                !Services.Dealer.players[i].gaveTip)
                             {
-                                //if (other.GetComponent<Chip>().chipStack != null)
-                                //{
-                                Chip chip = other.GetComponent<Chip>();
                                 other.GetComponent<Chip>().isAtDestination = true;
                                 other.GetComponent<Chip>().owner = Services.Dealer.players[i];
                                 Debug.Log("adding chipStack of " + chip.stackValue);
                                 Table.instance.AddChipTo(playerDestinations[i], chip.stackValue);
-                                //}
                             }
                             else Debug.Log("Player already has all their chips");
                         }
