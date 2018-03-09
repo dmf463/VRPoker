@@ -1468,18 +1468,68 @@ public class PlayerBehaviour {
         return raise;
     }
 
+    public void NewFoldCallRaiseDecision(PokerPlayerRedux player)
+    {
+        List<PokerPlayerRedux> rankedPlayers = RankedPlayerHands(player);
+        Debug.Log("RANKED PLAYER COUNT = " + rankedPlayers.Count);
+        for (int i = 0; i < rankedPlayers.Count; i++)
+        {
+            Debug.Log(rankedPlayers[i].playerName + " HAS A HS OF " + rankedPlayers[i].HandStrength);
+        }
+        Debug.Assert(rankedPlayers.Count != 0);
+        if (rankedPlayers[0] == player)
+        {
+            player.Raise();
+        }
+        else if (rankedPlayers[rankedPlayers.Count - 1] == player)
+        {
+            if (Services.Dealer.LastBet > 0) player.Fold();
+            else player.Call();
+        }
+        else player.Call();
+
+        player.turnComplete = true;
+        player.actedThisRound = true;
+    }
+
     public List<PokerPlayerRedux> RankedPlayerHands(PokerPlayerRedux me)
     {
         List<PokerPlayerRedux> playersToEvaluate = new List<PokerPlayerRedux>();
         playersToEvaluate.Add(me);
         for (int i = 0; i < Services.Dealer.PlayerAtTableCount(); i++)
         {
-            PokerPlayerRedux playerToAdd = Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(i);
-            if (playerToAdd != me && playerToAdd.actedThisRound) playersToEvaluate.Add(playerToAdd);
-            else break;
+            PokerPlayerRedux playerToAdd = Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(i + 1);
+            if (playerToAdd == Services.Dealer.players[Table.instance.DealerPosition])
+            {
+                foreach (PokerPlayerRedux player in Services.Dealer.players)
+                {
+                    if (player != me && player.PlayerState == PlayerState.Playing) playersToEvaluate.Add(player);
+                }
+                break;
+            }
+            else if (playerToAdd == me && !AllPlayersActedThisRound()) break;
+            else if (AllPlayersActedThisRound())
+            {
+                foreach (PokerPlayerRedux player in Services.Dealer.players)
+                {
+                    if (player != me && player.PlayerState == PlayerState.Playing) playersToEvaluate.Add(player);
+                }
+                break;
+            }
+            else if (playerToAdd.actedThisRound && !playersToEvaluate.Contains(playerToAdd) && playerToAdd.PlayerState == PlayerState.Playing) playersToEvaluate.Add(playerToAdd);
         }
+
         List<PokerPlayerRedux> sortedPlayers = new List<PokerPlayerRedux>(playersToEvaluate.OrderByDescending(bestHand => bestHand.HandStrength));
         return sortedPlayers;
+    }
+
+    public bool AllPlayersActedThisRound()
+    {
+        foreach(PokerPlayerRedux player in Services.Dealer.players)
+        {
+            if (!player.actedThisRound) return false;
+        }
+        return true;
     }
 
     #region old Raise code
