@@ -344,27 +344,27 @@ public class PokerPlayerRedux : MonoBehaviour{
     public int DetermineRaiseAmount(PokerPlayerRedux player)
     {
         int raise = 0;
-        switch (playerName)
-        {
-            case PlayerName.Casey:
-                raise = Services.PlayerBehaviour.CASEY_DetermineRaiseAmount(player);
-                break;
-            case PlayerName.Zombie:
-                raise = Services.PlayerBehaviour.ZOMBIE_DetermineRaiseAmount(player);
-                break;
-            case PlayerName.Minnie:
-                raise = Services.PlayerBehaviour.MINNIE_DetermineRaiseAmount(player);
-                break;
-            case PlayerName.Nathaniel:
-                raise = Services.PlayerBehaviour.NATHANIEL_DetermineRaiseAmount(player);
-                break;
-            case PlayerName.Floyd:
-                raise = Services.PlayerBehaviour.FLOYD_DetermineRaiseAmount(player);
-                break;
-            default:
-                break;
-        }
-        //raise = Services.PlayerBehaviour.DetermineInitialBetSize(player);
+        //switch (playerName)
+        //{
+        //    case PlayerName.Casey:
+        //        raise = Services.PlayerBehaviour.CASEY_DetermineRaiseAmount(player);
+        //        break;
+        //    case PlayerName.Zombie:
+        //        raise = Services.PlayerBehaviour.ZOMBIE_DetermineRaiseAmount(player);
+        //        break;
+        //    case PlayerName.Minnie:
+        //        raise = Services.PlayerBehaviour.MINNIE_DetermineRaiseAmount(player);
+        //        break;
+        //    case PlayerName.Nathaniel:
+        //        raise = Services.PlayerBehaviour.NATHANIEL_DetermineRaiseAmount(player);
+        //        break;
+        //    case PlayerName.Floyd:
+        //        raise = Services.PlayerBehaviour.FLOYD_DetermineRaiseAmount(player);
+        //        break;
+        //    default:
+        //        break;
+        //}
+        raise = Services.PlayerBehaviour.DetermineInitialBetSize(player);
         return raise;
     }
 
@@ -372,27 +372,27 @@ public class PokerPlayerRedux : MonoBehaviour{
     //we should go back to the generic one and make percentage variables that we can adjust in individual players
     public void FoldCallRaiseDecision(float returnRate, PokerPlayerRedux player)
     {
-        switch (playerName)
-        {
-            case PlayerName.Casey:
-                Services.PlayerBehaviour.CASEY_FoldCallRaiseDecision(returnRate, player);
-                break;
-            case PlayerName.Zombie:
-                Services.PlayerBehaviour.ZOMBIE_FoldCallRaiseDecision(returnRate, player);
-                break;
-            case PlayerName.Minnie:
-                Services.PlayerBehaviour.MINNIE_FoldCallRaiseDecision(returnRate, player);
-                break;
-            case PlayerName.Nathaniel:
-                Services.PlayerBehaviour.NATHANIEL_FoldCallRaiseDecision(returnRate, player);
-                break;
-            case PlayerName.Floyd:
-                Services.PlayerBehaviour.FLOYD_FoldCallRaiseDecision(returnRate, player);
-                break;
-            default:
-                break;
-        }
-        //Services.PlayerBehaviour.NewFoldCallRaiseDecision(player);
+        //switch (playerName)
+        //{
+        //    case PlayerName.Casey:
+        //        Services.PlayerBehaviour.CASEY_FoldCallRaiseDecision(returnRate, player);
+        //        break;
+        //    case PlayerName.Zombie:
+        //        Services.PlayerBehaviour.ZOMBIE_FoldCallRaiseDecision(returnRate, player);
+        //        break;
+        //    case PlayerName.Minnie:
+        //        Services.PlayerBehaviour.MINNIE_FoldCallRaiseDecision(returnRate, player);
+        //        break;
+        //    case PlayerName.Nathaniel:
+        //        Services.PlayerBehaviour.NATHANIEL_FoldCallRaiseDecision(returnRate, player);
+        //        break;
+        //    case PlayerName.Floyd:
+        //        Services.PlayerBehaviour.FLOYD_FoldCallRaiseDecision(returnRate, player);
+        //        break;
+        //    default:
+        //        break;
+        //}
+        Services.PlayerBehaviour.NewFoldCallRaiseDecision(player);
     }
 
     public void DetermineAction(float returnRate, PokerPlayerRedux player)
