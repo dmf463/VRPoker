@@ -201,7 +201,7 @@ public class Dealer : MonoBehaviour
             PokerPlayerRedux randomPlayer = Services.Dealer.players[UnityEngine.Random.Range(0, Services.Dealer.players.Count)];
             Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(randomPlayer.playerName, LineCriteria.Call));
         }
-
+       
         if (Input.GetKeyDown(KeyCode.D))
         {
             AudioClip audioFile = Resources.Load("Audio/Voice/TutorialVO/tutorial0.wav") as AudioClip; //gets the audiofile from resources using the string name 

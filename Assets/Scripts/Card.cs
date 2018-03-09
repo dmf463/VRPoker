@@ -26,6 +26,8 @@ public class Card : InteractionSuperClass {
     [HideInInspector]
     public bool firstTime = false;
 
+    public bool burningCard = false;
+
     private TaskManager tm;
 
     public float glowSpeed;
@@ -561,6 +563,7 @@ public class Card : InteractionSuperClass {
         flying_start_position = transform.position;
         flying_start_rotation = transform.rotation;
         lerping = true;
+        burningCard = true;
     }
 
     public void InitializeLerpForTorqueFlair(Quaternion dest)
@@ -571,6 +574,8 @@ public class Card : InteractionSuperClass {
         flying_start_rotation = transform.rotation;
         rotateOnAdd = true;
     }
+
+
 
     public IEnumerator LerpCardPos(Vector3 dest, float speed)
     {

@@ -151,9 +151,9 @@ public class PokerPlayerRedux : MonoBehaviour{
 	public AudioClip winAudio;
 	public AudioClip wrongCardAudio;
 	public AudioClip wrongChipsAudio;
-	//public AudioClip loseAudio;
+    //public AudioClip loseAudio;
 
-
+    private TaskManager tm;
 
 
 
@@ -179,6 +179,7 @@ public class PokerPlayerRedux : MonoBehaviour{
     //so we set the game to CleanUp and run the function used to award players their winnings
     void Start()
     {
+        tm = new TaskManager();
         playerDestinations = new List<Destination>
         {
             Destination.player0, Destination.player1, Destination.player2, Destination.player3, Destination.player4
@@ -213,6 +214,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     void Update()
     {
+        tm.Update();
         if (playerAudioSource.isPlaying) playerSpotlight.SetActive(true);
         else playerSpotlight.SetActive(false);
 
@@ -423,9 +425,12 @@ public class PokerPlayerRedux : MonoBehaviour{
         foreach (Card card in Table.instance.playerCards[SeatPos])
         {
             //card.transform.position = Table.instance.playerFoldZones[SeatPos].transform.position;
-            card.InitializeLerp(GameObject.Find("BurnCards").transform.position);
-            StartCoroutine(card.LerpCardPos(GameObject.Find("BurnCards").transform.position, 3));
-            StartCoroutine(card.StopFoldLerp(GameObject.Find("BurnCards").transform.position));
+            //card.InitializeLerp(GameObject.Find("BurnCards").transform.position);
+            //StartCoroutine(card.LerpCardPos(GameObject.Find("BurnCards").transform.position, 3));
+            //StartCoroutine(card.StopFoldLerp(GameObject.Find("BurnCards").transform.position));
+
+            LerpBurnProgress burnCard = new LerpBurnProgress(card.gameObject.GetComponent<Renderer>(), 1f, 0f, Easing.FunctionType.QuadEaseOut, 1f);
+            tm.Do(burnCard);
             card.cardMarkedForDestruction = false;
             Services.Dealer.deadCardsList.Add(card);
         }
@@ -451,7 +456,6 @@ public class PokerPlayerRedux : MonoBehaviour{
                     //Services.Dealer.WaitForWinnersToGetPaid();
                     Services.Dealer.players[i].PushInCards();
                     Services.Dealer.StartCoroutine(Services.Dealer.WaitForWinnersToGetPaid());
-
                 }
             }
         }

@@ -230,3 +230,26 @@ public class LerpTextMeshProColor : TimedTask
     }
 }
 
+public class LerpBurnProgress : TimedTask
+{
+    private Renderer Renderer;
+    private float Start;
+    private float End;
+    private Easing.FunctionType EasingType;
+
+    public LerpBurnProgress(Renderer _renderer, float _start, float _end, Easing.FunctionType _easingType, float duration) : base(duration)
+    {
+        Renderer = _renderer;
+        Start = _start;
+        End = _end;
+        EasingType = _easingType;
+    }
+
+    protected override void OnTick(float t)
+    {
+            Easing.Function easingFunction = Easing.GetFunctionWithTypeEnum(EasingType);
+        float _emission = Mathf.Lerp(Start, End, easingFunction(t));
+        Renderer.material.SetFloat("_Progress", _emission);
+    }
+}
+

@@ -34,11 +34,6 @@ public class SoundManager : MonoBehaviour
 
 
     public int roundsFinished;
-    public bool havePickedUpDeck;
-    public bool havePickedUpDeckForFirstTime;
-
-    //public int numberOfShuffles;
-    //public bool haveShuffledOnce;
 
 	
     public void PlayOneLiner(PlayerLineCriteria criteria)
