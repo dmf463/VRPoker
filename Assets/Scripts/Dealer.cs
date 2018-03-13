@@ -939,6 +939,7 @@ public class Dealer : MonoBehaviour
         {
 			players[i].SeatPos = i;
 			players[i].PlayerState = PlayerState.Playing;
+            players[i].lastAction = PlayerAction.None;
 			activePlayers.Add(players[i]);
 			//Debug.Log ("Adding " + players[i] + " to active players!");
             List<int> startingStack  = players[i].SetChipStacks(chipCount);
@@ -1253,7 +1254,9 @@ public class Dealer : MonoBehaviour
             players[i].playerLookedAt = false;
             players[i].timesRaisedThisRound = 0;
             players[i].continuationBet = 0;
+            players[i].percievedHandStrength = 0;
             players[i].gaveTip = false;
+            players[i].lastAction = PlayerAction.None;
             //players[i].checkedHandStrength = false;
         }
         Services.PokerRules.cardsPulled.Clear();
@@ -1320,7 +1323,9 @@ public class Dealer : MonoBehaviour
             players[i].playerLookedAt = false;
             players[i].timesRaisedThisRound = 0;
             players[i].continuationBet = 0;
+            players[i].percievedHandStrength = 0;
             players[i].gaveTip = false;
+            players[i].lastAction = PlayerAction.None;
             //players[i].checkedHandStrength = false;
         }
         GameObject[] cardsOnTable = GameObject.FindGameObjectsWithTag("PlayingCard");

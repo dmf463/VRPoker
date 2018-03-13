@@ -95,7 +95,8 @@ public class LogCards : MonoBehaviour
             if (this.gameObject.name == "TheBoard" && Services.Dealer.playerToAct == null &&
                  Table.gameState != GameState.PostHand &&
                  Table.gameState != GameState.NewRound &&
-                 Table.gameState != GameState.Misdeal)
+                 Table.gameState != GameState.Misdeal &&
+                 !Services.Dealer.OutsideVR)
             {
                 if (Table.instance.board.Contains(other.GetComponent<Card>()))
                 {

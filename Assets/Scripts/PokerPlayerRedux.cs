@@ -8,13 +8,15 @@ using System.Linq;
 //the most important one is "Playing" because if they aren't marked as playing, then they'll be skipped
 public enum PlayerState {Playing, NotPlaying, Winner, Loser, Eliminated}
 public enum PlayerName {None, Casey, Zombie, Minnie, Nathaniel, Floyd}
+public enum PlayerAction { Fold, Call, Raise, None}
 public enum LineCriteria {None, AllIn, Bet, Call, CardHit, Check, FiftyTwo, Fold, Misdeal, Raise, Tip, Win, Lose, WrongChips}
 
 
 public class PokerPlayerRedux : MonoBehaviour{
 
     public PlayerName playerName;
-
+    public PlayerAction lastAction;
+    public float percievedHandStrength = 0;
     public GameObject playerSpotlight;
     public GameObject playerCardIndicator;
     private List<GameObject> parentChips;
@@ -394,7 +396,7 @@ public class PokerPlayerRedux : MonoBehaviour{
         //    default:
         //        break;
         //}
-        Services.PlayerBehaviour.NewFoldCallRaiseDecision(player);
+        Services.PlayerBehaviour.NewFoldCallRaiseDecision(player, returnRate);
     }
 
     public void DetermineAction(float returnRate, PokerPlayerRedux player)
@@ -422,6 +424,7 @@ public class PokerPlayerRedux : MonoBehaviour{
     }
     public void Fold()
     {
+        lastAction = PlayerAction.Fold;
         SayFold();
         foreach (Card card in Table.instance.playerCards[SeatPos])
         {
@@ -463,6 +466,7 @@ public class PokerPlayerRedux : MonoBehaviour{
     }
     public void Call()
     {
+        lastAction = PlayerAction.Call;
         if (chipCount > 0)
         {
             //Debug.Log("currentBet = " + currentBet);
@@ -488,6 +492,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public void Raise()
     {
+        lastAction = PlayerAction.Raise;
         Services.Dealer.raisesInRound++;
         int aggressors = 0;
         timesRaisedThisRound++;
@@ -507,11 +512,8 @@ public class PokerPlayerRedux : MonoBehaviour{
         {
             int raiseAmount = amountToRaise;
             int betToRaise = 0;
-            if (Services.Dealer.LastBet != 0 && Services.Dealer.LastBet != Services.Dealer.BigBlind)
-            {
-                betToRaise = Services.Dealer.LastBet + (raiseAmount - currentBet);
-            }
-            else betToRaise = amountToRaise;
+            int lastBet = Services.Dealer.LastBet;
+            betToRaise = lastBet + (raiseAmount - currentBet);
             int remainder = betToRaise % ChipConfig.RED_CHIP_VALUE;
             if (remainder > 0) betToRaise = (betToRaise - remainder) + ChipConfig.RED_CHIP_VALUE;
             if (chipCount - betToRaise <= 0)
