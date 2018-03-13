@@ -247,9 +247,30 @@ public class LerpBurnProgress : TimedTask
 
     protected override void OnTick(float t)
     {
-            Easing.Function easingFunction = Easing.GetFunctionWithTypeEnum(EasingType);
+        Easing.Function easingFunction = Easing.GetFunctionWithTypeEnum(EasingType);
         float _emission = Mathf.Lerp(Start, End, easingFunction(t));
         Renderer.material.SetFloat("_Progress", _emission);
+    }
+}
+
+public class PostBlinds : Task
+{
+    private PokerPlayerRedux Player;
+    private int BetAmount;
+    private bool isTip;
+
+    public PostBlinds(PokerPlayerRedux _player, int _betAmount, bool _isTip)
+    {
+        Player = _player;
+        BetAmount = _betAmount;
+        isTip = _isTip;
+    }
+
+    protected override void Init()
+    {
+        Player.Bet(BetAmount, isTip);
+        Player.currentBet = BetAmount;
+        SetStatus(TaskStatus.Success);
     }
 }
 

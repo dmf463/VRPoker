@@ -117,11 +117,14 @@ public class Dealer : MonoBehaviour
     [HideInInspector]
 	public bool misdealAudioPlayed =false;
 
+    private TaskManager tm;
+
     void Awake()
     {
         //just the message board stuff
 
         //this is where we intialize all our services stuff
+        tm = new TaskManager();
         Services.PrefabDB = Resources.Load<PrefabDB>("Prefabs/PrefabDB");
         Services.SoundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
         Services.DialogueDataManager = new DialogueDataManager();
@@ -151,6 +154,7 @@ public class Dealer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        tm.Update();
         if (deckIsDead)
         {
             Debug.Log("misdeal here");
@@ -956,15 +960,21 @@ public class Dealer : MonoBehaviour
     public IEnumerator WaitToPostBlinds(float time)
     {
         yield return new WaitForSeconds(time);
-        PostBlinds();
+        SetBlinds();
     }
-    public void PostBlinds()
+    public void SetBlinds()
     {
         //Debug.Log("posting blinds");
-        players[SeatsAwayFromDealerAmongstLivePlayers(1)].Bet(SmallBlind, false);
-        players[SeatsAwayFromDealerAmongstLivePlayers(1)].currentBet = SmallBlind;
-        players[SeatsAwayFromDealerAmongstLivePlayers(2)].Bet(BigBlind, false);
-        players[SeatsAwayFromDealerAmongstLivePlayers(2)].currentBet = BigBlind;
+        PostBlinds player1Bets = new PostBlinds(players[SeatsAwayFromDealerAmongstLivePlayers(1)], SmallBlind, false);
+        PostBlinds player2Bets = new PostBlinds(players[SeatsAwayFromDealerAmongstLivePlayers(2)], BigBlind, false);
+        float randomTime = UnityEngine.Random.Range(.05f, .5f);
+        Wait waitForNextPlayer = new Wait(randomTime);
+
+        player1Bets.
+            Then(waitForNextPlayer).
+            Then(player2Bets);
+        tm.Do(player1Bets);
+
         LastBet = BigBlind;
     }
 

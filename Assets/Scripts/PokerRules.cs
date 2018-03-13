@@ -587,7 +587,7 @@ public class PokerRules : MonoBehaviour {
         Card card = cardObj.GetComponent<Card>();
         card.InitializeLerp(cardPos);
         StartCoroutine(card.LerpCardPos(cardPos, speed));
-        StartCoroutine(card.LerpCardRot(cardRot, speed * 1.5f));
+        StartCoroutine(card.LerpCardRot(cardRot, speed * 1.1f));
         StartCoroutine(CorrectionsDone(cardPos, cardRot, cardObj, dest, card, correction));
     }
 
