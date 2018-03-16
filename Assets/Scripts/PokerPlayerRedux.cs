@@ -432,7 +432,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             //card.InitializeLerp(GameObject.Find("BurnCards").transform.position);
             //StartCoroutine(card.LerpCardPos(GameObject.Find("BurnCards").transform.position, 3));
             //StartCoroutine(card.StopFoldLerp(GameObject.Find("BurnCards").transform.position));
-
+            card.transform.GetChild(0).gameObject.SetActive(true);
             LerpBurnProgress burnCard = new LerpBurnProgress(card.gameObject.GetComponent<Renderer>(), 1f, 0f, Easing.FunctionType.QuadEaseOut, 5f);
             tm.Do(burnCard);
             card.cardMarkedForDestruction = false;
