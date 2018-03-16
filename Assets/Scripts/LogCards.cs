@@ -10,7 +10,7 @@ public class LogCards : MonoBehaviour
     private GameObject newCardDeck;
     private bool madeNewDeck;
     private int cardCountForTones;
-    private float cardPositionSpeed = 0.3f;
+    private float cardPositionSpeed = 0.1f;
     private List<string> playerNames = new List<string>
     {
         "P0Cards", "P1Cards", "P2Cards", "P3Cards", "P4Cards"
@@ -95,7 +95,8 @@ public class LogCards : MonoBehaviour
             if (this.gameObject.name == "TheBoard" && Services.Dealer.playerToAct == null &&
                  Table.gameState != GameState.PostHand &&
                  Table.gameState != GameState.NewRound &&
-                 Table.gameState != GameState.Misdeal)
+                 Table.gameState != GameState.Misdeal &&
+                 !Services.Dealer.OutsideVR)
             {
                 if (Table.instance.board.Contains(other.GetComponent<Card>()))
                 {

@@ -1430,7 +1430,7 @@ public class PlayerBehaviour {
     {
         int raise = 0;
         int minimumRaise = Services.Dealer.LastBet;
-        if (minimumRaise == 0) minimumRaise = Services.Dealer.LastBet;
+        if (minimumRaise == 0) minimumRaise = Services.Dealer.BigBlind;
         if (player.continuationBet != 0) minimumRaise = player.continuationBet;
 
         List<PokerPlayerRedux> rankedPlayers = RankedPlayerHands(player);
@@ -1445,6 +1445,8 @@ public class PlayerBehaviour {
             {
                 if (Services.Dealer.LastBet == Services.Dealer.BigBlind)
                 {
+                    Debug.Log("rankedPlayers.count = " + rankedPlayers.Count);
+                    Debug.Log("3 + rankedPlayers.Count - 1 = " + (3 + (rankedPlayers.Count - 1)));
                     raise = Services.Dealer.BigBlind * (3 + rankedPlayers.Count - 1);
                 }
                 else raise = Services.Dealer.LastBet * 2;
@@ -1468,59 +1470,134 @@ public class PlayerBehaviour {
         return raise;
     }
 
-    public void NewFoldCallRaiseDecision(PokerPlayerRedux player)
+    public void NewFoldCallRaiseDecision(PokerPlayerRedux player, float returnRate)
     {
-        List<PokerPlayerRedux> rankedPlayers = RankedPlayerHands(player);
-        Debug.Log("RANKED PLAYER COUNT = " + rankedPlayers.Count);
-        for (int i = 0; i < rankedPlayers.Count; i++)
+        if (Table.gameState == GameState.PreFlop)
         {
-            Debug.Log(rankedPlayers[i].playerName + " HAS A HS OF " + rankedPlayers[i].HandStrength);
+            List<PokerPlayerRedux> rankedPlayers = RankedPlayerHands(player);
+            Debug.Assert(rankedPlayers.Count != 0);
+            if (rankedPlayers[0] == player)
+            {
+                if (rankedPlayers.Count >= Services.Dealer.GetActivePlayerCount() / 2) player.Raise();
+                else PreFlopFoldCallRaise(player);
+            }
+            else if (rankedPlayers[rankedPlayers.Count - 1] == player)
+            {
+                if (rankedPlayers.Count >= Services.Dealer.GetActivePlayerCount() / 2)
+                {
+                    if (Services.Dealer.LastBet > 0) player.Fold();
+                    else player.Call();
+                }
+                else PreFlopFoldCallRaise(player);
+            }
+            else
+            {
+                if (rankedPlayers.Count >= Services.Dealer.GetActivePlayerCount() / 2)
+                {
+                    player.Call();
+                }
+                else PreFlopFoldCallRaise(player);
+            }
         }
-        Debug.Assert(rankedPlayers.Count != 0);
-        if (rankedPlayers[0] == player)
+        else
         {
-            player.Raise();
-        }
-        else if (rankedPlayers[rankedPlayers.Count - 1] == player)
-        {
-            if (Services.Dealer.LastBet > 0) player.Fold();
-            else player.Call();
-        }
-        else player.Call();
+            List<PokerPlayerRedux> rankedPlayers = RankedPlayerHands(player);
+            Debug.Log("RANKED PLAYER COUNT = " + rankedPlayers.Count);
 
+            for (int i = 0; i < rankedPlayers.Count; i++)
+            {
+                Debug.Log(rankedPlayers[i].playerName + " HAS A HS OF " + rankedPlayers[i].HandStrength);
+            }
+            Debug.Assert(rankedPlayers.Count != 0);
+            if (rankedPlayers[0] == player)
+            {
+                if (rankedPlayers.Count >= Services.Dealer.GetActivePlayerCount() / 2) player.Raise();
+                else PreFlopFoldCallRaise(player);
+            }
+            else if (rankedPlayers[rankedPlayers.Count - 1] == player)
+            {
+                if (rankedPlayers.Count >= Services.Dealer.GetActivePlayerCount() / 2)
+                {
+                    if (Services.Dealer.LastBet > 0) player.Fold();
+                    else player.Call();
+                }
+                else PreFlopFoldCallRaise(player);
+            }
+            else
+            {
+                if (rankedPlayers.Count >= Services.Dealer.GetActivePlayerCount() / 2)
+                {
+                    if (player.amountToRaise >= player.chipCount)
+                    {
+                        if (Services.Dealer.LastBet > 0) player.Fold();
+                        else player.Call();
+                    }
+                    else player.Call();
+                }
+                else PreFlopFoldCallRaise(player);
+            }
+        }
         player.turnComplete = true;
         player.actedThisRound = true;
+    }
+
+    public void PreFlopFoldCallRaise(PokerPlayerRedux player)
+    {
+        if (((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4)) && player.HandStrength > 12)
+        {
+            player.AllIn();
+        }
+        else if (player.HandStrength > 12 && player.timesRaisedThisRound == 0) player.Raise();
+        else if (player.HandStrength < 5)
+        {
+            if ((Services.Dealer.LastBet - player.currentBet == 0) ||
+                ((Services.Dealer.LastBet - player.currentBet == Services.Dealer.SmallBlind) &&
+                   Services.Dealer.GetActivePlayerCount() == 2) &&
+                   ((player.chipCount - Services.Dealer.LastBet) > (Services.Dealer.BigBlind * 4))) player.Call();
+            else player.Fold();
+        }
+        else
+        {
+            if (Services.Dealer.raisesInRound > 1 && player.HandStrength < 8) player.Fold();
+            else player.Call();
+        }
     }
 
     public List<PokerPlayerRedux> RankedPlayerHands(PokerPlayerRedux me)
     {
         List<PokerPlayerRedux> playersToEvaluate = new List<PokerPlayerRedux>();
         playersToEvaluate.Add(me);
+        int playersWhoChecked = 0;
         for (int i = 0; i < Services.Dealer.PlayerAtTableCount(); i++)
         {
-            PokerPlayerRedux playerToAdd = Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(i + 1);
-            if (playerToAdd == Services.Dealer.players[Table.instance.DealerPosition])
+            if (Services.Dealer.players[i].lastAction != PlayerAction.None && Services.Dealer.players[i] != me)
             {
-                foreach (PokerPlayerRedux player in Services.Dealer.players)
-                {
-                    if (player != me && player.PlayerState == PlayerState.Playing) playersToEvaluate.Add(player);
-                }
-                break;
+                Services.Dealer.players[i].percievedHandStrength = Services.Dealer.players[i].HandStrength + (AdjustHandStrength(Services.Dealer.players[i]));
+                playersToEvaluate.Add(Services.Dealer.players[i]);
             }
-            else if (playerToAdd == me && !AllPlayersActedThisRound()) break;
-            else if (AllPlayersActedThisRound())
+            else if(Services.Dealer.players[i] != me && Services.Dealer.players[i].currentBet == 0 && Services.Dealer.players[i].lastAction == PlayerAction.Call)
             {
-                foreach (PokerPlayerRedux player in Services.Dealer.players)
-                {
-                    if (player != me && player.PlayerState == PlayerState.Playing) playersToEvaluate.Add(player);
-                }
-                break;
+                playersWhoChecked++;
             }
-            else if (playerToAdd.actedThisRound && !playersToEvaluate.Contains(playerToAdd) && playerToAdd.PlayerState == PlayerState.Playing) playersToEvaluate.Add(playerToAdd);
         }
-
-        List<PokerPlayerRedux> sortedPlayers = new List<PokerPlayerRedux>(playersToEvaluate.OrderByDescending(bestHand => bestHand.HandStrength));
+        me.percievedHandStrength = me.HandStrength;
+        if (playersWhoChecked == NumPlayersBet() && (playersToEvaluate.Count >= Services.Dealer.GetActivePlayerCount()))
+        {
+            me.percievedHandStrength += 0.10f;
+        }
+        List<PokerPlayerRedux> sortedPlayers = new List<PokerPlayerRedux>(playersToEvaluate.OrderByDescending(bestHand => bestHand.percievedHandStrength));
         return sortedPlayers;
+    }
+
+    public float AdjustHandStrength(PokerPlayerRedux opponent)
+    {
+        float goodHand = 0.25f;
+        float mediocreHand = 0f;
+        float badHand = -0.25f;
+
+        if (opponent.lastAction == PlayerAction.Raise) return goodHand;
+        else if (opponent.lastAction == PlayerAction.Call && opponent.currentBet == 0) return badHand;
+        else return mediocreHand;
     }
 
     public bool AllPlayersActedThisRound()
@@ -1530,6 +1607,16 @@ public class PlayerBehaviour {
             if (!player.actedThisRound) return false;
         }
         return true;
+    }
+
+    public int NumPlayersBet()
+    {
+        int num = 0;
+        foreach (PokerPlayerRedux player in Services.Dealer.players)
+        {
+            if (player.lastAction == PlayerAction.Call || player.lastAction == PlayerAction.Raise) num++;
+        }
+        return num;
     }
 
     #region old Raise code
