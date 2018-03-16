@@ -28,6 +28,12 @@ public class Card : InteractionSuperClass {
 
     public bool burningCard = false;
 
+    public int randomTexture;
+    private Texture2D myTexture;
+   
+
+    private Renderer myRenderer;
+
     private TaskManager tm;
 
     public float glowSpeed;
@@ -141,6 +147,14 @@ public class Card : InteractionSuperClass {
         elapsedTimeForCardFlip = 0;
         floatDistance += Random.Range(0.001f, 0.005f);
         floatSpeed += Random.Range(1, 50);
+
+
+        myRenderer = GetComponent<Renderer>();
+        randomTexture = Random.Range(1, 12);
+        myTexture = (Texture2D)Resources.Load("Textures/noise" + randomTexture);
+        myRenderer.material.SetTexture("_DissolveTex", myTexture);
+
+
 
         if (Services.Dealer.OutsideVR)
         {
