@@ -376,27 +376,27 @@ public class PokerPlayerRedux : MonoBehaviour{
     //we should go back to the generic one and make percentage variables that we can adjust in individual players
     public void FoldCallRaiseDecision(float returnRate, PokerPlayerRedux player)
     {
-        switch (playerName)
-        {
-            case PlayerName.Casey:
-                Services.PlayerBehaviour.CASEY_FoldCallRaiseDecision(returnRate, player);
-                break;
-            case PlayerName.Zombie:
-                Services.PlayerBehaviour.ZOMBIE_FoldCallRaiseDecision(returnRate, player);
-                break;
-            case PlayerName.Minnie:
-                Services.PlayerBehaviour.MINNIE_FoldCallRaiseDecision(returnRate, player);
-                break;
-            case PlayerName.Nathaniel:
-                Services.PlayerBehaviour.NATHANIEL_FoldCallRaiseDecision(returnRate, player);
-                break;
-            case PlayerName.Floyd:
-                Services.PlayerBehaviour.FLOYD_FoldCallRaiseDecision(returnRate, player);
-                break;
-            default:
-                break;
-        }
-        //Services.PlayerBehaviour.NewFoldCallRaiseDecision(player, returnRate);
+        //switch (playerName)
+        //{
+        //    case PlayerName.Casey:
+        //        Services.PlayerBehaviour.CASEY_FoldCallRaiseDecision(returnRate, player);
+        //        break;
+        //    case PlayerName.Zombie:
+        //        Services.PlayerBehaviour.ZOMBIE_FoldCallRaiseDecision(returnRate, player);
+        //        break;
+        //    case PlayerName.Minnie:
+        //        Services.PlayerBehaviour.MINNIE_FoldCallRaiseDecision(returnRate, player);
+        //        break;
+        //    case PlayerName.Nathaniel:
+        //        Services.PlayerBehaviour.NATHANIEL_FoldCallRaiseDecision(returnRate, player);
+        //        break;
+        //    case PlayerName.Floyd:
+        //        Services.PlayerBehaviour.FLOYD_FoldCallRaiseDecision(returnRate, player);
+        //        break;
+        //    default:
+        //        break;
+        //}
+        Services.PlayerBehaviour.NewFoldCallRaiseDecision(player, returnRate);
     }
 
     public void DetermineAction(float returnRate, PokerPlayerRedux player)
@@ -954,7 +954,8 @@ public class PokerPlayerRedux : MonoBehaviour{
 		}
         float tempHandStrength = numberOfWins / 1000f;
         Debug.Log(playerName + " has a raw HandStrength of " + tempHandStrength + " and a numberOfWins of " + numberOfWins);
-        HandStrength = Mathf.Pow(tempHandStrength, (float)Services.Dealer.GetActivePlayerCount());
+        //HandStrength = Mathf.Pow(tempHandStrength, (float)Services.Dealer.GetActivePlayerCount());
+        HandStrength = tempHandStrength;
         Debug.Log(playerName + " has an adjusted HS of " + HandStrength);
 		rateOfReturn = FindRateOfReturn();
 		FoldCallRaiseDecision(rateOfReturn, this);

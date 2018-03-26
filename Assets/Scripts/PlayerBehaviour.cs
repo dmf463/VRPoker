@@ -972,7 +972,7 @@ public class PlayerBehaviour {
                     if (OpponentHandIsBetter(player, opponent))
                     {
                         float randomNum = Random.Range(0, 100);
-                        if (randomNum > player.playerInsightPercent) player.Fold(); //if opponent hand is better, get out
+                        if (randomNum < player.playerInsightPercent) player.Fold(); //if opponent hand is better, get out
                         else player.DetermineAction(returnRate, player);
                     }
                     else //if it's NOT better, than percent chance to call or raise
@@ -1512,30 +1512,30 @@ public class PlayerBehaviour {
             if (rankedPlayers[0] == player)
             {
                 if (rankedPlayers.Count >= Services.Dealer.GetActivePlayerCount() / 2) player.Raise();
-                else PreFlopFoldCallRaise(player);
+                else player.DetermineAction(returnRate, player);
             }
-            else if (rankedPlayers[rankedPlayers.Count - 1] == player)
+            else /*if (rankedPlayers[rankedPlayers.Count - 1] == player)*/
             {
                 if (rankedPlayers.Count >= Services.Dealer.GetActivePlayerCount() / 2)
                 {
                     if (Services.Dealer.LastBet > 0) player.Fold();
                     else player.Call();
                 }
-                else PreFlopFoldCallRaise(player);
+                else player.DetermineAction(returnRate, player);
             }
-            else
-            {
-                if (rankedPlayers.Count >= Services.Dealer.GetActivePlayerCount() / 2)
-                {
-                    if (player.amountToRaise >= player.chipCount)
-                    {
-                        if (Services.Dealer.LastBet > 0) player.Fold();
-                        else player.Call();
-                    }
-                    else player.Call();
-                }
-                else PreFlopFoldCallRaise(player);
-            }
+            //else
+            //{
+            //    if (rankedPlayers.Count >= Services.Dealer.GetActivePlayerCount() / 2)
+            //    {
+            //        if (player.amountToRaise >= player.chipCount)
+            //        {
+            //            if (Services.Dealer.LastBet > 0) player.Fold();
+            //            else player.Call();
+            //        }
+            //        else player.Call();
+            //    }
+            //    else player.DetermineAction(returnRate, player);
+            //}
         }
         player.turnComplete = true;
         player.actedThisRound = true;
@@ -1581,9 +1581,9 @@ public class PlayerBehaviour {
             }
         }
         me.percievedHandStrength = me.HandStrength;
-        if (playersWhoChecked == NumPlayersBet() && (playersToEvaluate.Count >= Services.Dealer.GetActivePlayerCount()))
+        if (playersWhoChecked == NumPlayersBet())
         {
-            me.percievedHandStrength += 0.10f;
+            me.percievedHandStrength += 0.3f;
         }
         List<PokerPlayerRedux> sortedPlayers = new List<PokerPlayerRedux>(playersToEvaluate.OrderByDescending(bestHand => bestHand.percievedHandStrength));
         return sortedPlayers;
@@ -1591,13 +1591,14 @@ public class PlayerBehaviour {
 
     public float AdjustHandStrength(PokerPlayerRedux opponent)
     {
-        float goodHand = 0.25f;
-        float mediocreHand = 0f;
-        float badHand = -0.25f;
+        //float goodHand = 0.25f;
+        //float mediocreHand = 0f;
+        //float badHand = -0.25f;
 
-        if (opponent.lastAction == PlayerAction.Raise) return goodHand;
-        else if (opponent.lastAction == PlayerAction.Call && opponent.currentBet == 0) return badHand;
-        else return mediocreHand;
+        //if (opponent.lastAction == PlayerAction.Raise) return goodHand;
+        //else if (opponent.lastAction == PlayerAction.Call && opponent.currentBet == 0) return badHand;
+        //else return mediocreHand;
+        return Random.Range(-0.25f, 0.25f);
     }
 
     public bool AllPlayersActedThisRound()
