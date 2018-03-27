@@ -570,6 +570,8 @@ public GameObject FindChipPrefab(int chipValue)
             float distCovered = (Time.time - flying_start_time) * speed;
             float fracJourney = distCovered / flight_journey_distance;
             //chip has been destroyed
+            //FIX ASAP
+            // DO IT NOW GOHAN
             transform.position = Vector3.Lerp(flying_start_position, dest, fracJourney);
             yield return null;
         }
