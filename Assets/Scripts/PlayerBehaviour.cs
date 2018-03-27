@@ -1514,7 +1514,7 @@ public class PlayerBehaviour {
                 if (rankedPlayers.Count >= Services.Dealer.GetActivePlayerCount() / 2) player.Raise();
                 else player.DetermineAction(returnRate, player);
             }
-            else /*if (rankedPlayers[rankedPlayers.Count - 1] == player)*/
+            else if (rankedPlayers[rankedPlayers.Count - 1] == player)
             {
                 if (rankedPlayers.Count >= Services.Dealer.GetActivePlayerCount() / 2)
                 {
@@ -1523,19 +1523,19 @@ public class PlayerBehaviour {
                 }
                 else player.DetermineAction(returnRate, player);
             }
-            //else
-            //{
-            //    if (rankedPlayers.Count >= Services.Dealer.GetActivePlayerCount() / 2)
-            //    {
-            //        if (player.amountToRaise >= player.chipCount)
-            //        {
-            //            if (Services.Dealer.LastBet > 0) player.Fold();
-            //            else player.Call();
-            //        }
-            //        else player.Call();
-            //    }
-            //    else player.DetermineAction(returnRate, player);
-            //}
+            else
+            {
+                if (rankedPlayers.Count >= Services.Dealer.GetActivePlayerCount() / 2)
+                {
+                    if (player.amountToRaise >= player.chipCount)
+                    {
+                        if (Services.Dealer.LastBet > 0) player.Fold();
+                        else player.Call();
+                    }
+                    else player.Call();
+                }
+                else player.DetermineAction(returnRate, player);
+            }
         }
         player.turnComplete = true;
         player.actedThisRound = true;
@@ -1567,7 +1567,6 @@ public class PlayerBehaviour {
     {
         List<PokerPlayerRedux> playersToEvaluate = new List<PokerPlayerRedux>();
         playersToEvaluate.Add(me);
-        int playersWhoChecked = 0;
         for (int i = 0; i < Services.Dealer.PlayerAtTableCount(); i++)
         {
             if (Services.Dealer.players[i].lastAction != PlayerAction.None && Services.Dealer.players[i] != me)
@@ -1575,30 +1574,21 @@ public class PlayerBehaviour {
                 Services.Dealer.players[i].percievedHandStrength = Services.Dealer.players[i].HandStrength + (AdjustHandStrength(Services.Dealer.players[i]));
                 playersToEvaluate.Add(Services.Dealer.players[i]);
             }
-            else if(Services.Dealer.players[i] != me && Services.Dealer.players[i].currentBet == 0 && Services.Dealer.players[i].lastAction == PlayerAction.Call)
-            {
-                playersWhoChecked++;
-            }
         }
         me.percievedHandStrength = me.HandStrength;
-        if (playersWhoChecked == NumPlayersBet())
-        {
-            me.percievedHandStrength += 0.3f;
-        }
         List<PokerPlayerRedux> sortedPlayers = new List<PokerPlayerRedux>(playersToEvaluate.OrderByDescending(bestHand => bestHand.percievedHandStrength));
         return sortedPlayers;
     }
 
     public float AdjustHandStrength(PokerPlayerRedux opponent)
     {
-        //float goodHand = 0.25f;
-        //float mediocreHand = 0f;
-        //float badHand = -0.25f;
-
-        //if (opponent.lastAction == PlayerAction.Raise) return goodHand;
-        //else if (opponent.lastAction == PlayerAction.Call && opponent.currentBet == 0) return badHand;
-        //else return mediocreHand;
-        return Random.Range(-0.25f, 0.25f);
+        float betMod = 0.25f;
+        float otherBetMod = 0;
+        float exponent = .25f;
+        float mod = Random.Range(-0.2f, 0.2f);
+        mod += 0.1f * (Services.Dealer.GetActivePlayerCount() - Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(opponent.SeatPos));
+        mod += betMod * Mathf.Pow(opponent.currentBet, exponent) + otherBetMod;
+        return mod;
     }
 
     public bool AllPlayersActedThisRound()
