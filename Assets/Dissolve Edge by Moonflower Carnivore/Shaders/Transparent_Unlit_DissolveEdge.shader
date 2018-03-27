@@ -2,6 +2,10 @@
 {
 	Properties
 	{
+		_EmissionMap("Emission Map", 2D) = "black" {}
+	    _EmissionColor("Emission Color", Color) = (0,0,0)
+
+
 		[Enum(Off,0,Front,1,Back,2)] _CullMode ("Culling Mode", int) = 0
 		[Enum(Off,0,On,1)] _ZWrite("ZWrite", int) = 0
 		_Progress("Progress",Range(0,1)) = 0
@@ -23,6 +27,7 @@
 
 		Pass
 		{
+
 			Blend SrcAlpha OneMinusSrcAlpha //Alpha Blend
 			Cull[_CullMode] Lighting Off ZWrite[_ZWrite]
 
@@ -75,6 +80,8 @@
 				return o;
 			}
 			
+
+
 			fixed4 frag (v2f i) : SV_Target
 			{
 					fixed4 col = tex2D(_DissolveTex, i.uv3);

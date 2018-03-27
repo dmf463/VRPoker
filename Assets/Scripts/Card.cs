@@ -10,6 +10,9 @@ using SpriteGlow;
 //2) all the physics of the card
 public class Card : InteractionSuperClass {
 
+    public Shader dissolve;
+    public Shader normal;
+
     private float testingDot;
     [HideInInspector]
     public float flying_start_time, flight_journey_distance, flight_journey_angle;
@@ -154,8 +157,6 @@ public class Card : InteractionSuperClass {
         myTexture = (Texture2D)Resources.Load("Textures/noise" + randomTexture);
         myRenderer.material.SetTexture("_DissolveTex", myTexture);
 
-
-
         if (Services.Dealer.OutsideVR)
         {
             throwingHand = GameObject.Find("TestHand1").GetComponent<Hand>();
@@ -167,6 +168,7 @@ public class Card : InteractionSuperClass {
     void Update() {
 
         tm.Update();
+        myRenderer.material.SetColor("_EmissionColor", Color.black);
         if (Table.gameState == GameState.Misdeal) StopCheating();
         if (foldedCards)
         {
