@@ -117,10 +117,10 @@ public class PlayerBehaviour {
                     break;
                 }
             }
-            if (Table.gameState == GameState.River && Services.Dealer.LastBet == 0) //if you're on the river and no one has bet, take a stab at it.
+            if (Table.gameState >= GameState.Turn && Services.Dealer.LastBet == 0) //if you're on the river and no one has bet, take a stab at it.
             {
                 float randomNum = Random.Range(0, 100);
-                if (randomNum > 50) player.Raise();
+                if (randomNum > 40) player.Raise();
                 else player.Call();
             }
             else if(Services.Dealer.GetActivePlayerCount() == 2 && Services.Dealer.raisesInRound >= 1 && Table.instance.potChips > Services.Dealer.BigBlind * 4)

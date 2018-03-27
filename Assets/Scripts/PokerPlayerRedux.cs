@@ -434,7 +434,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             //StartCoroutine(card.StopFoldLerp(GameObject.Find("BurnCards").transform.position));
             card.GetComponent<Renderer>().material.shader = card.dissolve;
             card.transform.GetChild(0).gameObject.SetActive(true);
-            LerpBurnProgress burnCard = new LerpBurnProgress(card.gameObject.GetComponent<Renderer>(), 1f, 0f, Easing.FunctionType.QuadEaseOut, 5f);
+            LerpBurnProgress burnCard = new LerpBurnProgress(card.gameObject.GetComponent<Renderer>(), 1f, 0f, Easing.FunctionType.QuadEaseOut, 2.5f);
             tm.Do(burnCard);
             card.cardMarkedForDestruction = false;
             Services.Dealer.deadCardsList.Add(card);
@@ -475,6 +475,8 @@ public class PokerPlayerRedux : MonoBehaviour{
             if (chipCount - betToCall <= 0)
             {
                 AllIn();
+                currentBet = chipCount;
+                Services.Dealer.LastBet = currentBet;
                 //Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
             }
             else

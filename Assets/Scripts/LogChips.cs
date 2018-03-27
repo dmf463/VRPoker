@@ -67,15 +67,15 @@ public class LogChips : MonoBehaviour
                         if (Services.Dealer.players[i].PlayerState == PlayerState.Winner)
                         {
                             Chip chip = other.GetComponent<Chip>();
-                            if (Services.Dealer.players[i].chipCount + chip.stackValue <= (Services.Dealer.players[i].chipsWon + Services.Dealer.players[i].ChipCountToCheckWhenWinning) &&
-                               !Services.Dealer.players[i].gaveTip)
-                            {
+                            //if (Services.Dealer.players[i].chipCount + chip.stackValue <= (Services.Dealer.players[i].chipsWon + Services.Dealer.players[i].ChipCountToCheckWhenWinning) &&
+                            //   !Services.Dealer.players[i].gaveTip)
+                            //{
                                 other.GetComponent<Chip>().isAtDestination = true;
                                 other.GetComponent<Chip>().owner = Services.Dealer.players[i];
                                 Debug.Log("adding chipStack of " + chip.stackValue);
                                 Table.instance.AddChipTo(playerDestinations[i], chip.stackValue);
-                            }
-                            else Debug.Log("Player already has all their chips");
+                            //}
+                            //else Debug.Log("Player already has all their chips");
                         }
                     }
                 }
@@ -115,7 +115,7 @@ public class LogChips : MonoBehaviour
                             Debug.Log("TURNING TIMER OFF");
                         }
                     }
-                    if (gameObject.name == playerNames[i] && Services.Dealer.players[i].PlayerState == PlayerState.Winner && !other.GetComponent<Chip>().isAtDestination)
+                    if (gameObject.name == playerNames[i] && Services.Dealer.players[i].PlayerState == PlayerState.Winner && !Services.Dealer.chipsInPot.Contains(other.GetComponent<Chip>()))
                     {
                         //if (other.GetComponent<Chip>().chipStack != null)
                         //{

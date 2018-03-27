@@ -1184,7 +1184,7 @@ public class Dealer : MonoBehaviour
                 ///
                 ///
                 //
-                if (player.chipCount == winnerChipStack && player.HasBeenPaid == false)
+                if (player.chipCount >= winnerChipStack && player.HasBeenPaid == false)
                 {
                     winnersPaid++;
                     player.HasBeenPaid = true;
