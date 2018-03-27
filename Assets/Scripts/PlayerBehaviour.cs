@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using BehaviorTree;
+using System;
 
 public class PlayerBehaviour {
+
+    private Tree<PokerPlayerRedux> tree;
 
     /*
      * MINNIE PLAYER BEHAVIOUR
@@ -119,7 +123,7 @@ public class PlayerBehaviour {
             }
             if (Table.gameState >= GameState.Turn && Services.Dealer.LastBet == 0) //if you're on the river and no one has bet, take a stab at it.
             {
-                float randomNum = Random.Range(0, 100);
+                float randomNum = UnityEngine.Random.Range(0, 100);
                 if (randomNum > 40) player.Raise();
                 else player.Call();
             }
@@ -137,13 +141,13 @@ public class PlayerBehaviour {
                 {
                     if (OpponentHandIsBetter(player, opponent))
                     {
-                        float randomNum = Random.Range(0, 100);
+                        float randomNum = UnityEngine.Random.Range(0, 100);
                         if (randomNum > player.playerInsightPercent) player.Fold(); //if opponent hand is better, get out
                         else player.DetermineAction(returnRate, player); 
                     }
                     else //if it's NOT better, than percent chance to call or raise
                     {
-                        float newRandomNum = Random.Range(0, 100);
+                        float newRandomNum = UnityEngine.Random.Range(0, 100);
                         if (newRandomNum > 50) player.Call();
                         else player.Raise();
                     }
@@ -170,7 +174,7 @@ public class PlayerBehaviour {
             else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength > .85f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength > .85f) player.AllIn(); //more than 85% go all in
             else if (Services.Dealer.raisesInRound >= 2 && player.Hand.HandValues.PokerHand >= PokerHand.OnePair && player.HandStrength < .6f) //if there are more than two raises and you have a decent hand, call or fold.
             {
-                float randomNum = Random.Range(0, 100);
+                float randomNum = UnityEngine.Random.Range(0, 100);
                 if (randomNum > 70) player.Call();
                 else player.Fold();
             }
@@ -186,7 +190,7 @@ public class PlayerBehaviour {
         {
             //Debug.Log("lowReturnRate");
             //95% chance fold, 5% bluff (raise)
-            float randomNumber = Random.Range(0, 100);
+            float randomNumber = UnityEngine.Random.Range(0, 100);
             if (randomNumber < player.foldChanceLow)
             {
                 //if there's not bet, don't fold, just call for free.
@@ -209,7 +213,7 @@ public class PlayerBehaviour {
         {
             //Debug.Log("decentReturnRate");
             //80% chance fold, 5% call, 15% bluff(raise)
-            float randomNumber = Random.Range(0, 100);
+            float randomNumber = UnityEngine.Random.Range(0, 100);
             if (randomNumber < player.foldChanceDecent)
             {
                 if (Services.Dealer.LastBet > 0) player.Fold();
@@ -231,7 +235,7 @@ public class PlayerBehaviour {
         {
             //Debug.Log("highReturnRate");
             //60% chance call, 40% raise
-            float randomNumber = Random.Range(0, 100);
+            float randomNumber = UnityEngine.Random.Range(0, 100);
             if (randomNumber < player.foldChanceHigh)
             {
                 if (Services.Dealer.LastBet > 0) player.Fold();
@@ -253,7 +257,7 @@ public class PlayerBehaviour {
         {
             //Debug.Log("superHighReturnRate");
             //70% chance raise, 30% call
-            float randomNumber = Random.Range(0, 100);
+            float randomNumber = UnityEngine.Random.Range(0, 100);
             if (randomNumber < player.foldChanceVeryHigh)
             {
                 if (Services.Dealer.LastBet > 0) player.Fold();
@@ -335,8 +339,8 @@ public class PlayerBehaviour {
             if (player.HandStrength > .5) modifier += 1; //if you have a decent hand
             else modifier -= 1; //if you have a "meh" hand
 
-            if (player.chipCount >= Services.Dealer.startingChipCount) modifier += Random.Range(2, 5);
-            else if (player.chipCount < Services.Dealer.startingChipCount) modifier -= Random.Range(2, 5);
+            if (player.chipCount >= Services.Dealer.startingChipCount) modifier += UnityEngine.Random.Range(2, 5);
+            else if (player.chipCount < Services.Dealer.startingChipCount) modifier -= UnityEngine.Random.Range(2, 5);
 
             modifier -= Services.Dealer.raisesInRound; //cut down on how much you're betting based on betting history
             if (modifier <= 0) modifier = 1; //if it's less than zero, make it 1
@@ -372,7 +376,7 @@ public class PlayerBehaviour {
                        Services.Dealer.GetActivePlayerCount() == 2) &&
                        ((player.chipCount - Services.Dealer.LastBet) > (Services.Dealer.BigBlind * 4))) //if the call is zero, or you're small blind and there are only 2 players
                 {
-                    float randomNum = Random.Range(0, 100);
+                    float randomNum = UnityEngine.Random.Range(0, 100);
                     if (player.chipCount >= Services.Dealer.startingChipCount && randomNum > 90) player.Raise(); //bluff it
                     else player.Call(); //else just call
                 }
@@ -380,7 +384,7 @@ public class PlayerBehaviour {
             }
             else
             {
-                float randomNum = Random.Range(0, 100);
+                float randomNum = UnityEngine.Random.Range(0, 100);
                 if (player.chipCount >= Services.Dealer.startingChipCount && randomNum > 40) player.Raise(); //bluff it
                 else player.Call(); //else just call
             }
@@ -401,7 +405,7 @@ public class PlayerBehaviour {
             if (Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(player.SeatPos) == 1 && Services.Dealer.raisesInRound == 0) player.Call(); //don't do anything under the gun
             else if (Table.gameState == GameState.River && Services.Dealer.LastBet == 0) //if you're on the river and no one has bet, take a stab at it.
             {
-                float randomNum = Random.Range(0, 100);
+                float randomNum = UnityEngine.Random.Range(0, 100);
                 if (randomNum > 20) player.Raise();
                 else player.Call();
             }
@@ -419,13 +423,13 @@ public class PlayerBehaviour {
                 {
                     if (OpponentHandIsBetter(player, opponent))
                     {
-                        float randomNum = Random.Range(0, 100);
+                        float randomNum = UnityEngine.Random.Range(0, 100);
                         if (randomNum > player.playerInsightPercent) player.Fold(); //if opponent hand is better, get out
                         else player.DetermineAction(returnRate, player);
                     }
                     else //if it's NOT better, than percent chance to call or raise
                     {
-                        float newRandomNum = Random.Range(0, 100);
+                        float newRandomNum = UnityEngine.Random.Range(0, 100);
                         if (newRandomNum > 70) player.Call();
                         else player.Raise();
                     }
@@ -456,7 +460,7 @@ public class PlayerBehaviour {
             else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength > .85f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength > .85f) player.AllIn(); //more than 85% go all in
             else if (Services.Dealer.raisesInRound >= 2 && player.Hand.HandValues.PokerHand >= PokerHand.OnePair && player.HandStrength < .6f) //if there are more than two raises and you have a decent hand, call or fold.
             {
-                float randomNum = Random.Range(0, 100);
+                float randomNum = UnityEngine.Random.Range(0, 100);
                 if (randomNum > 60) player.Call();
                 else player.Fold();
             }
@@ -471,7 +475,7 @@ public class PlayerBehaviour {
         if (returnRate < player.lowReturnRate)
         {
             //95% chance fold, 5% bluff (raise)
-            float randomNumber = Random.Range(0, 100);
+            float randomNumber = UnityEngine.Random.Range(0, 100);
             if (randomNumber < player.foldChanceLow)
             {
                 //if there's not bet, don't fold, just call for free.
@@ -498,7 +502,7 @@ public class PlayerBehaviour {
         {
             //Debug.Log("decentReturnRate");
             //80% chance fold, 10% call, 10% bluff(raise)
-            float randomNumber = Random.Range(0, 100);
+            float randomNumber = UnityEngine.Random.Range(0, 100);
             if (randomNumber < player.foldChanceDecent)
             {
                 if (Services.Dealer.LastBet > 0) player.Fold();
@@ -529,7 +533,7 @@ public class PlayerBehaviour {
         {
             //Debug.Log("highReturnRate");
             //50% chance call, 50% raise
-            float randomNumber = Random.Range(0, 100);
+            float randomNumber = UnityEngine.Random.Range(0, 100);
             if (randomNumber < player.foldChanceHigh)
             {
                 if (Services.Dealer.LastBet > 0) player.Fold();
@@ -551,7 +555,7 @@ public class PlayerBehaviour {
         {
             //Debug.Log("superHighReturnRate");
             //80% chance raise, 20% call
-            float randomNumber = Random.Range(0, 100);
+            float randomNumber = UnityEngine.Random.Range(0, 100);
             if (randomNumber < player.foldChanceVeryHigh)
             {
                 if (Services.Dealer.LastBet > 0) player.Fold();
@@ -685,7 +689,7 @@ public class PlayerBehaviour {
             }
             if (Table.gameState == GameState.River && Services.Dealer.LastBet == 0) //if you're on the river and no one has bet, take a stab at it.
             {
-                float randomNum = Random.Range(0, 100);
+                float randomNum = UnityEngine.Random.Range(0, 100);
                 if (randomNum > 90) player.Raise();
                 else player.Call();
             }
@@ -703,13 +707,13 @@ public class PlayerBehaviour {
                 {
                     if (OpponentHandIsBetter(player, opponent))
                     {
-                        float randomNum = Random.Range(0, 100);
+                        float randomNum = UnityEngine.Random.Range(0, 100);
                         if (randomNum > player.playerInsightPercent) player.Fold(); //if opponent hand is better, get out
                         else player.DetermineAction(returnRate, player);
                     }
                     else //if it's NOT better, than percent chance to call or raise
                     {
-                        float newRandomNum = Random.Range(0, 100);
+                        float newRandomNum = UnityEngine.Random.Range(0, 100);
                         if (newRandomNum > 30) player.Call();
                         else player.Raise();
                     }
@@ -736,7 +740,7 @@ public class PlayerBehaviour {
             else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength > .85f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength > .85f) player.AllIn(); //more than 85% go all in
             else if (Services.Dealer.raisesInRound >= 2 && player.Hand.HandValues.PokerHand >= PokerHand.OnePair && player.HandStrength < .7f) //if there are more than two raises and you have a decent hand, call or fold.
             {
-                float randomNum = Random.Range(0, 100);
+                float randomNum = UnityEngine.Random.Range(0, 100);
                 if (randomNum > 40) player.Call();
                 else player.Fold();
             }
@@ -752,7 +756,7 @@ public class PlayerBehaviour {
         {
             //Debug.Log("lowReturnRate");
             //95% chance fold, 5% bluff (raise)
-            float randomNumber = Random.Range(0, 100);
+            float randomNumber = UnityEngine.Random.Range(0, 100);
             if (randomNumber < player.foldChanceLow)
             {
                 //if there's not bet, don't fold, just call for free.
@@ -775,7 +779,7 @@ public class PlayerBehaviour {
         {
             //Debug.Log("decentReturnRate");
             //80% chance fold, 5% call, 15% bluff(raise)
-            float randomNumber = Random.Range(0, 100);
+            float randomNumber = UnityEngine.Random.Range(0, 100);
             if (randomNumber < player.foldChanceDecent)
             {
                 if (Services.Dealer.LastBet > 0) player.Fold();
@@ -797,7 +801,7 @@ public class PlayerBehaviour {
         {
             //Debug.Log("highReturnRate");
             //60% chance call, 40% raise
-            float randomNumber = Random.Range(0, 100);
+            float randomNumber = UnityEngine.Random.Range(0, 100);
             if (randomNumber < player.foldChanceHigh)
             {
                 if (Services.Dealer.LastBet > 0) player.Fold();
@@ -819,7 +823,7 @@ public class PlayerBehaviour {
         {
             //Debug.Log("superHighReturnRate");
             //70% chance raise, 30% call
-            float randomNumber = Random.Range(0, 100);
+            float randomNumber = UnityEngine.Random.Range(0, 100);
             if (randomNumber < player.foldChanceVeryHigh)
             {
                 if (Services.Dealer.LastBet > 0) player.Fold();
@@ -918,12 +922,12 @@ public class PlayerBehaviour {
         //Debug.Log("Player " + SeatPos + " has a HS " + HandStrength);
         else if (Table.gameState == GameState.PreFlop)
         {
-            if (((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * Random.Range(3, 8))) && player.HandStrength > Random.Range(10, 13))
+            if (((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * UnityEngine.Random.Range(3, 8))) && player.HandStrength > UnityEngine.Random.Range(10, 13))
             {
                 player.AllIn();
             }
-            else if (player.HandStrength > Random.Range(10, 12) && player.timesRaisedThisRound == 0) player.Raise();
-            else if (player.HandStrength < Random.Range(5, 10))
+            else if (player.HandStrength > UnityEngine.Random.Range(10, 12) && player.timesRaisedThisRound == 0) player.Raise();
+            else if (player.HandStrength < UnityEngine.Random.Range(5, 10))
             {
                 if ((Services.Dealer.LastBet - player.currentBet == 0) ||
                     ((Services.Dealer.LastBet - player.currentBet == Services.Dealer.SmallBlind) &&
@@ -953,7 +957,7 @@ public class PlayerBehaviour {
             }
             if (Table.gameState == GameState.River && Services.Dealer.LastBet == 0) //if you're on the river and no one has bet, take a stab at it.
             {
-                float randomNum = Random.Range(0, 100);
+                float randomNum = UnityEngine.Random.Range(0, 100);
                 if (randomNum > 50) player.Raise();
                 else player.Call();
             }
@@ -971,14 +975,14 @@ public class PlayerBehaviour {
                 {
                     if (OpponentHandIsBetter(player, opponent))
                     {
-                        float randomNum = Random.Range(0, 100);
+                        float randomNum = UnityEngine.Random.Range(0, 100);
                         if (randomNum < player.playerInsightPercent) player.Fold(); //if opponent hand is better, get out
                         else player.DetermineAction(returnRate, player);
                     }
                     else //if it's NOT better, than percent chance to call or raise
                     {
-                        float newRandomNum = Random.Range(0, 100);
-                        if (newRandomNum > Random.Range(0, 100)) player.Call();
+                        float newRandomNum = UnityEngine.Random.Range(0, 100);
+                        if (newRandomNum > UnityEngine.Random.Range(0, 100)) player.Call();
                         else player.Raise();
                     }
                 }
@@ -993,18 +997,18 @@ public class PlayerBehaviour {
                 if (aggressor.timesRaisedThisRound > 2 && player.timesRaisedThisRound > 1 && player.HandStrength > .85f) player.AllIn(); //if you're in a raise war, and you have a great hand just go all in
                 else if (aggressor.PlayerState == PlayerState.Playing && aggressor.timesRaisedThisRound > 0 && aggressor.currentBet > Table.instance.potChips / aggressor.timesRaisedThisRound) //if an aggressor has bet a huuge chunk of the pot
                 {
-                    if (player.Hand.HandValues.PokerHand < PokerHand.OnePair && player.HandStrength < Random.Range(0.4f, 0.6f)) player.Fold(); //if you have a bad hand, fold
+                    if (player.Hand.HandValues.PokerHand < PokerHand.OnePair && player.HandStrength < UnityEngine.Random.Range(0.4f, 0.6f)) player.Fold(); //if you have a bad hand, fold
                     else player.Call(); //else just call
                 }
                 else player.DetermineAction(returnRate, player);
             }
-            else if ((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && player.HandStrength < Random.Range(0.4f, 0.6f)) player.Fold(); //if betting would take the majority of your stack and you have a bad hand fold.
-            else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength < .75f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength < Random.Range(0.65f, 0.85f)) player.Fold(); //if you would bet 1/4 of your stack, and only a 75% chance of winning, fold
-            else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength < .85f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength < Random.Range(0.5f, 0.9f)) player.Call(); //75% - 85% chance of winning, call
+            else if ((player.chipCount - Services.Dealer.LastBet) < (Services.Dealer.BigBlind * 4) && player.HandStrength < UnityEngine.Random.Range(0.4f, 0.6f)) player.Fold(); //if betting would take the majority of your stack and you have a bad hand fold.
+            else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength < .75f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength < UnityEngine.Random.Range(0.65f, 0.85f)) player.Fold(); //if you would bet 1/4 of your stack, and only a 75% chance of winning, fold
+            else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength < .85f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength < UnityEngine.Random.Range(0.5f, 0.9f)) player.Call(); //75% - 85% chance of winning, call
             else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength > .85f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength > .85f) player.AllIn(); //more than 85% go all in
             else if (Services.Dealer.raisesInRound >= 2 && player.Hand.HandValues.PokerHand >= PokerHand.OnePair && player.HandStrength < .6f) //if there are more than two raises and you have a decent hand, call or fold.
             {
-                float randomNum = Random.Range(0, 100);
+                float randomNum = UnityEngine.Random.Range(0, 100);
                 if (randomNum > 50) player.Call();
                 else player.Fold();
             }
@@ -1020,7 +1024,7 @@ public class PlayerBehaviour {
         {
             //Debug.Log("lowReturnRate");
             //95% chance fold, 5% bluff (raise)
-            float randomNumber = Random.Range(0, 100);
+            float randomNumber = UnityEngine.Random.Range(0, 100);
             if (randomNumber < player.foldChanceLow)
             {
                 //if there's not bet, don't fold, just call for free.
@@ -1043,7 +1047,7 @@ public class PlayerBehaviour {
         {
             //Debug.Log("decentReturnRate");
             //80% chance fold, 5% call, 15% bluff(raise)
-            float randomNumber = Random.Range(0, 100);
+            float randomNumber = UnityEngine.Random.Range(0, 100);
             if (randomNumber < player.foldChanceDecent)
             {
                 if (Services.Dealer.LastBet > 0) player.Fold();
@@ -1065,7 +1069,7 @@ public class PlayerBehaviour {
         {
             //Debug.Log("highReturnRate");
             //60% chance call, 40% raise
-            float randomNumber = Random.Range(0, 100);
+            float randomNumber = UnityEngine.Random.Range(0, 100);
             if (randomNumber < player.foldChanceHigh)
             {
                 if (Services.Dealer.LastBet > 0) player.Fold();
@@ -1087,7 +1091,7 @@ public class PlayerBehaviour {
         {
             //Debug.Log("superHighReturnRate");
             //70% chance raise, 30% call
-            float randomNumber = Random.Range(0, 100);
+            float randomNumber = UnityEngine.Random.Range(0, 100);
             if (randomNumber < player.foldChanceVeryHigh)
             {
                 if (Services.Dealer.LastBet > 0) player.Fold();
@@ -1221,7 +1225,7 @@ public class PlayerBehaviour {
             }
             if (Table.gameState == GameState.River && Services.Dealer.LastBet == 0) //if you're on the river and no one has bet, take a stab at it.
             {
-                float randomNum = Random.Range(0, 100);
+                float randomNum = UnityEngine.Random.Range(0, 100);
                 if (randomNum > 80) player.Raise();
                 else player.Call();
             }
@@ -1239,13 +1243,13 @@ public class PlayerBehaviour {
                 {
                     if (OpponentHandIsBetter(player, opponent))
                     {
-                        float randomNum = Random.Range(0, 100);
+                        float randomNum = UnityEngine.Random.Range(0, 100);
                         if (randomNum > player.playerInsightPercent) player.Fold(); //if opponent hand is better, get out
                         else player.DetermineAction(returnRate, player);
                     }
                     else //if it's NOT better, than percent chance to call or raise
                     {
-                        float newRandomNum = Random.Range(0, 100);
+                        float newRandomNum = UnityEngine.Random.Range(0, 100);
                         if (newRandomNum > 50) player.Call();
                         else player.Raise();
                     }
@@ -1272,7 +1276,7 @@ public class PlayerBehaviour {
             else if (player.amountToRaise > player.chipCount / 4 && player.HandStrength > .85f || Services.Dealer.LastBet > player.chipCount / 4 && player.HandStrength > .85f) player.AllIn(); //more than 85% go all in
             else if (Services.Dealer.raisesInRound >= 2 && player.Hand.HandValues.PokerHand >= PokerHand.OnePair && player.HandStrength < .6f) //if there are more than two raises and you have a decent hand, call or fold.
             {
-                float randomNum = Random.Range(0, 100);
+                float randomNum = UnityEngine.Random.Range(0, 100);
                 if (randomNum > 90) player.Call();
                 else player.Fold();
             }
@@ -1288,7 +1292,7 @@ public class PlayerBehaviour {
         {
             //Debug.Log("lowReturnRate");
             //95% chance fold, 5% bluff (raise)
-            float randomNumber = Random.Range(0, 100);
+            float randomNumber = UnityEngine.Random.Range(0, 100);
             if (randomNumber < player.foldChanceLow)
             {
                 //if there's not bet, don't fold, just call for free.
@@ -1311,7 +1315,7 @@ public class PlayerBehaviour {
         {
             //Debug.Log("decentReturnRate");
             //80% chance fold, 5% call, 15% bluff(raise)
-            float randomNumber = Random.Range(0, 100);
+            float randomNumber = UnityEngine.Random.Range(0, 100);
             if (randomNumber < player.foldChanceDecent)
             {
                 if (Services.Dealer.LastBet > 0) player.Fold();
@@ -1333,7 +1337,7 @@ public class PlayerBehaviour {
         {
             //Debug.Log("highReturnRate");
             //60% chance call, 40% raise
-            float randomNumber = Random.Range(0, 100);
+            float randomNumber = UnityEngine.Random.Range(0, 100);
             if (randomNumber < player.foldChanceHigh)
             {
                 if (Services.Dealer.LastBet > 0) player.Fold();
@@ -1355,7 +1359,7 @@ public class PlayerBehaviour {
         {
             //Debug.Log("superHighReturnRate");
             //70% chance raise, 30% call
-            float randomNumber = Random.Range(0, 100);
+            float randomNumber = UnityEngine.Random.Range(0, 100);
             if (randomNumber < player.foldChanceVeryHigh)
             {
                 if (Services.Dealer.LastBet > 0) player.Fold();
@@ -1585,7 +1589,7 @@ public class PlayerBehaviour {
         float betMod = 0.25f;
         float otherBetMod = 0;
         float exponent = .25f;
-        float mod = Random.Range(-0.2f, 0.2f);
+        float mod = UnityEngine.Random.Range(-0.2f, 0.2f);
         mod += 0.1f * (Services.Dealer.GetActivePlayerCount() - Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(opponent.SeatPos));
         mod += betMod * Mathf.Pow(opponent.currentBet, exponent) + otherBetMod;
         return mod;
@@ -1610,6 +1614,101 @@ public class PlayerBehaviour {
         return num;
     }
 
+    public void UseBehaviorTree(PokerPlayerRedux player)
+    {
+        tree = new Tree<PokerPlayerRedux>(new Selector<PokerPlayerRedux>(
+            //RAISE
+            new Sequence<PokerPlayerRedux>(
+                new HasEnoughMoney(),
+                new HasAGoodHand(),
+                new BetIsZero(),
+                new Raise()
+            ),
+            //CALL
+            new Sequence<PokerPlayerRedux>(
+                new HasEnoughMoney(),
+                new HasAGoodHand(),
+                new Not<PokerPlayerRedux>(new BetIsZero()),
+                new Call()
+            ),
+            //FOLD
+            new Selector<PokerPlayerRedux>(
+                new Sequence<PokerPlayerRedux>(
+                    new BetIsZero(),
+                    new Call()
+                    ),
+                new Sequence<PokerPlayerRedux>(
+                    new Not<PokerPlayerRedux>(new BetIsZero()),
+                    new Fold()
+                )
+            ),
+            new Fold()
+            ));
+        tree.Update(player);
+    }
+
+    ///////////NODES///////////////
+
+    /////////CONDITIONS///////////
+    private class HasEnoughMoney : Node<PokerPlayerRedux>
+    {
+        public override bool Update(PokerPlayerRedux player)
+        {
+            return player.chipCount > (4 * Services.Dealer.BigBlind);
+        }
+    }
+
+    private class HasAGoodHand : Node<PokerPlayerRedux>
+    {
+        public override bool Update(PokerPlayerRedux player)
+        {
+            Debug.Log(player.playerName + " has a HS of " + player.HandStrength);
+            return player.HandStrength > .5f;
+        }
+    }
+
+    private class BetIsZero : Node<PokerPlayerRedux>
+    {
+        public override bool Update(PokerPlayerRedux player)
+        {
+            return Services.Dealer.LastBet == 0;
+        }
+    }
+
+    //////////ACTIONS//////////
+    private class Fold : Node<PokerPlayerRedux>
+    {
+        public override bool Update(PokerPlayerRedux player)
+        {
+            player.Fold();
+            player.turnComplete = true;
+            player.actedThisRound = true;
+            return true;
+        }
+    }
+
+    private class Call : Node<PokerPlayerRedux>
+    {
+        public override bool Update(PokerPlayerRedux player)
+        {
+            player.Call();
+            player.turnComplete = true;
+            player.actedThisRound = true;
+            return true;
+        }
+    }
+
+    private class Raise : Node<PokerPlayerRedux>
+    {
+        public override bool Update(PokerPlayerRedux player)
+        {
+            player.Raise();
+            player.turnComplete = true;
+            player.actedThisRound = true;
+            return true;
+        }
+    }
+
     #region old Raise code
     //if (Table.gameState == GameState.PreFlop)
     //{
@@ -1617,7 +1716,7 @@ public class PlayerBehaviour {
     //    if (HandStrength > .8)
     //    {
     //        //95% chance to raise big, 5% to go all in
-    //        float randomNum = Random.Range(0, 100);
+    //        float randomNum = UnityEngine.Random.Range(0, 100);
     //        if (randomNum < 95)
     //        {
     //            if (Services.Dealer.LastBet == Services.Dealer.BigBlind)
@@ -1631,7 +1730,7 @@ public class PlayerBehaviour {
     //    else if (HandStrength > .5)
     //    {
     //        //98% chance to raise big, 2% to go all in 
-    //        float randomNum = Random.Range(0, 100);
+    //        float randomNum = UnityEngine.Random.Range(0, 100);
     //        if (randomNum < 98)
     //        {
     //            if (Services.Dealer.LastBet == Services.Dealer.BigBlind)
@@ -1645,7 +1744,7 @@ public class PlayerBehaviour {
     //    else if (HandStrength > .3)
     //    {
     //        //70% chance to raise big 30% chance to min raise 
-    //        float randomNum = Random.Range(0, 100);
+    //        float randomNum = UnityEngine.Random.Range(0, 100);
     //        if (randomNum < 70)
     //        {
     //            if (Services.Dealer.LastBet == Services.Dealer.BigBlind)
@@ -1664,7 +1763,7 @@ public class PlayerBehaviour {
     //    if (HandStrength > .8)
     //    {
     //        //95% chance to raise pot, 5% to go all in
-    //        float randomNum = Random.Range(0, 100);
+    //        float randomNum = UnityEngine.Random.Range(0, 100);
     //        if (randomNum < 95)
     //        {
     //            raise = Table.instance.potChips;
@@ -1674,7 +1773,7 @@ public class PlayerBehaviour {
     //    else if (HandStrength > .5)
     //    {
     //        //50% to raise pot, 35% to half pot, 10% 2x lastBet (or 3x big blind), 5% all in
-    //        float randomNum = Random.Range(0, 100);
+    //        float randomNum = UnityEngine.Random.Range(0, 100);
     //        if (randomNum < 50)
     //        {
     //            raise = Table.instance.potChips;
@@ -1701,7 +1800,7 @@ public class PlayerBehaviour {
     //    else if (HandStrength > .3)
     //    {
     //        //70% raise half pot, 30% 2x lastbest (or 3x big blind)
-    //        float randomNum = Random.Range(0, 100);
+    //        float randomNum = UnityEngine.Random.Range(0, 100);
     //        if (randomNum < 70)
     //        {
     //            int remainder = (Table.instance.potChips / 2) % ChipConfig.RED_CHIP_VALUE;
