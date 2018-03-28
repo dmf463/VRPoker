@@ -1646,7 +1646,16 @@ public class PlayerBehaviour {
                     new HasAGreathand(),
                     new Condition<PokerPlayerRedux>(context => Services.Dealer.GetActivePlayerCount() <= 3),
                     new BeforeRiver(),
-                    new Call()
+                    new Selector<PokerPlayerRedux>(
+                        new Sequence<PokerPlayerRedux>(
+                            new BetIsZero(),
+                            new Raise()
+                            ),
+                        new Sequence<PokerPlayerRedux>(
+                            new Not<PokerPlayerRedux>(new BetIsZero()),
+                            new Call()
+                            )
+                        )
                     ),
                 //POSITION PLAY
                 new Sequence<PokerPlayerRedux>(
@@ -1674,7 +1683,6 @@ public class PlayerBehaviour {
                 new Sequence<PokerPlayerRedux>(
                     new HasEnoughMoney(),
                     new HasAGreathand(),
-                    new BetIsZero(),
                     new Raise()
                 ),
                 //FOLD
@@ -1755,6 +1763,7 @@ public class PlayerBehaviour {
             if (Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(Services.Dealer.GetActivePlayerCount() - 1) == player || 
                 Services.Dealer.players[Table.instance.DealerPosition] == player)
             {
+                Debug.Log(player.playerName + " is in position");
                 inPosition = true;
             }
             else inPosition = false;
