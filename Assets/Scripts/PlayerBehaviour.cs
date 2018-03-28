@@ -1552,7 +1552,7 @@ public class PlayerBehaviour {
             player.AllIn();
         }
         else if (player.HandStrength > 12 && player.timesRaisedThisRound == 0) player.Raise();
-        else if (player.HandStrength < 5)
+        else if (player.HandStrength < 4)
         {
             if ((Services.Dealer.LastBet - player.currentBet == 0) ||
                 ((Services.Dealer.LastBet - player.currentBet == Services.Dealer.SmallBlind) &&
@@ -1726,7 +1726,7 @@ public class PlayerBehaviour {
             List<PokerPlayerRedux> rankedPlayers = Services.PlayerBehaviour.RankedPlayerHands(player);
             if (rankedPlayers.Count >= Services.Dealer.GetActivePlayerCount() / 2)
             {
-                return player != rankedPlayers[0] && player.HandStrength > .5f;
+                return player != rankedPlayers[0] && player.HandStrength > .4f;
             }
             Debug.Log(player.playerName + " has a HS of " + player.HandStrength);
             return player.HandStrength > .5f;
