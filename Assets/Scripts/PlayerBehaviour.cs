@@ -1565,6 +1565,8 @@ public class PlayerBehaviour {
             if (Services.Dealer.raisesInRound > 1 && player.HandStrength < 8) player.Fold();
             else player.Call();
         }
+        player.turnComplete = true;
+        player.actedThisRound = true;
     }
 
     public List<PokerPlayerRedux> RankedPlayerHands(PokerPlayerRedux me)
@@ -1616,35 +1618,80 @@ public class PlayerBehaviour {
 
     public void UseBehaviorTree(PokerPlayerRedux player)
     {
-        tree = new Tree<PokerPlayerRedux>(new Selector<PokerPlayerRedux>(
-            //RAISE
-            new Sequence<PokerPlayerRedux>(
-                new HasEnoughMoney(),
-                new HasAGoodHand(),
-                new BetIsZero(),
-                new Raise()
-            ),
-            //CALL
-            new Sequence<PokerPlayerRedux>(
-                new HasEnoughMoney(),
-                new HasAGoodHand(),
-                new Not<PokerPlayerRedux>(new BetIsZero()),
-                new Call()
-            ),
-            //FOLD
-            new Selector<PokerPlayerRedux>(
+        if (Table.gameState == GameState.PreFlop)
+        {
+            PreFlopFoldCallRaise(player);
+        }
+        else
+        {
+            tree = new Tree<PokerPlayerRedux>(new Selector<PokerPlayerRedux>(
+                //BLUFF
                 new Sequence<PokerPlayerRedux>(
+                    new HasABadHand(),
+                    new HasEnoughMoney(),
                     new BetIsZero(),
+                    new IsInPosition(),
+                    new Raise()
+                    ),
+                //CONTINUATION
+                new Sequence<PokerPlayerRedux>(
+                    new BetPreFlop(),
+                    new Condition<PokerPlayerRedux>(context => player.Hand.HandValues.PokerHand <= PokerHand.OnePair),
+                    new BetIsZero(),
+                    new HasEnoughMoney(),
+                    new Raise()
+                    ),
+                //SLOW PLAY
+                new Sequence<PokerPlayerRedux>(
+                    new HasAGreathand(),
+                    new Condition<PokerPlayerRedux>(context => Services.Dealer.GetActivePlayerCount() <= 3),
+                    new BeforeRiver(),
                     new Call()
                     ),
+                //POSITION PLAY
                 new Sequence<PokerPlayerRedux>(
+                    new IsInPosition(),
+                    new Selector<PokerPlayerRedux>(
+                        new Sequence<PokerPlayerRedux>(
+                            new BetIsZero(),
+                            new Raise()
+                        ),
+                        new Sequence<PokerPlayerRedux>(
+                            new Not<PokerPlayerRedux>(new BetIsZero()),
+                            new HasAGoodHand(),
+                            new Call()
+                        )
+                    )
+                ),
+                //CALL
+                new Sequence<PokerPlayerRedux>(
+                    new HasEnoughMoney(),
+                    new HasAGoodHand(),
                     new Not<PokerPlayerRedux>(new BetIsZero()),
-                    new Fold()
-                )
-            ),
-            new Fold()
-            ));
-        tree.Update(player);
+                    new Call()
+                ),
+                //RAISE
+                new Sequence<PokerPlayerRedux>(
+                    new HasEnoughMoney(),
+                    new HasAGreathand(),
+                    new BetIsZero(),
+                    new Raise()
+                ),
+                //FOLD
+                new Selector<PokerPlayerRedux>(
+                    new Sequence<PokerPlayerRedux>(
+                        new BetIsZero(),
+                        new Call()
+                        ),
+                    new Sequence<PokerPlayerRedux>(
+                        new Not<PokerPlayerRedux>(new BetIsZero()),
+                        new Fold()
+                    )
+                ),
+                new Fold()
+                ));
+            tree.Update(player);
+        }
     }
 
     ///////////NODES///////////////
@@ -1658,12 +1705,68 @@ public class PlayerBehaviour {
         }
     }
 
+    private class HasABadHand : Node<PokerPlayerRedux>
+    {
+        public override bool Update(PokerPlayerRedux player)
+        {
+            List<PokerPlayerRedux> rankedPlayers = Services.PlayerBehaviour.RankedPlayerHands(player);
+            if(rankedPlayers.Count >= Services.Dealer.GetActivePlayerCount() / 2)
+            {
+                return player != rankedPlayers[0];
+            }
+            Debug.Log(player.playerName + " has a HS of " + player.HandStrength);
+            return player.HandStrength < .2f;
+        }
+    }
+
     private class HasAGoodHand : Node<PokerPlayerRedux>
     {
         public override bool Update(PokerPlayerRedux player)
         {
+            List<PokerPlayerRedux> rankedPlayers = Services.PlayerBehaviour.RankedPlayerHands(player);
+            if (rankedPlayers.Count >= Services.Dealer.GetActivePlayerCount() / 2)
+            {
+                return player != rankedPlayers[0] && player.HandStrength > .5f;
+            }
             Debug.Log(player.playerName + " has a HS of " + player.HandStrength);
             return player.HandStrength > .5f;
+        }
+    }
+
+    private class HasAGreathand : Node<PokerPlayerRedux>
+    {
+        public override bool Update(PokerPlayerRedux player)
+        {
+            List<PokerPlayerRedux> rankedPlayers = Services.PlayerBehaviour.RankedPlayerHands(player);
+            if (rankedPlayers.Count >= Services.Dealer.GetActivePlayerCount() / 2)
+            {
+                return player == rankedPlayers[0];
+            }
+            Debug.Log(player.playerName + " has a HS of " + player.HandStrength);
+            return player.HandStrength > .75f;
+        }
+    }
+
+    private class IsInPosition : Node<PokerPlayerRedux>
+    {
+        public override bool Update(PokerPlayerRedux player)
+        {
+            bool inPosition;
+            if (Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(Services.Dealer.GetActivePlayerCount() - 1) == player || 
+                Services.Dealer.players[Table.instance.DealerPosition] == player)
+            {
+                inPosition = true;
+            }
+            else inPosition = false;
+            return inPosition;
+        }
+    }
+
+    private class BeforeRiver : Node<PokerPlayerRedux>
+    {
+        public override bool Update(PokerPlayerRedux player)
+        {
+            return Table.gameState < GameState.River;
         }
     }
 
@@ -1672,6 +1775,14 @@ public class PlayerBehaviour {
         public override bool Update(PokerPlayerRedux player)
         {
             return Services.Dealer.LastBet == 0;
+        }
+    }
+
+    private class BetPreFlop : Node<PokerPlayerRedux>
+    {
+        public override bool Update(PokerPlayerRedux player)
+        {
+            return Table.gameState == GameState.Flop && player.lastAction == PlayerAction.Raise;
         }
     }
 
