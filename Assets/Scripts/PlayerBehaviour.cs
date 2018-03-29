@@ -23,7 +23,7 @@ public class PlayerBehaviour {
         if (minimumRaise == 0) minimumRaise = Services.Dealer.BigBlind;
         if (Table.gameState >= GameState.Turn) minimumRaise = Table.instance.potChips / 4;
         int remainder = minimumRaise % ChipConfig.RED_CHIP_VALUE;
-        if(remainder > 0)
+        if (remainder > 0)
         {
             minimumRaise = (minimumRaise - remainder) + ChipConfig.RED_CHIP_VALUE;
         }
@@ -127,12 +127,12 @@ public class PlayerBehaviour {
                 if (randomNum > 40) player.Raise();
                 else player.Call();
             }
-            else if(Services.Dealer.GetActivePlayerCount() == 2 && Services.Dealer.raisesInRound >= 1 && Table.instance.potChips > Services.Dealer.BigBlind * 4)
+            else if (Services.Dealer.GetActivePlayerCount() == 2 && Services.Dealer.raisesInRound >= 1 && Table.instance.potChips > Services.Dealer.BigBlind * 4)
             {
                 PokerPlayerRedux opponent = null;
                 for (int i = 0; i < Services.Dealer.players.Count; i++)
                 {
-                    if(Services.Dealer.players[i].playerName != player.playerName && Services.Dealer.players[i].PlayerState == PlayerState.Playing)
+                    if (Services.Dealer.players[i].playerName != player.playerName && Services.Dealer.players[i].PlayerState == PlayerState.Playing)
                     {
                         opponent = Services.Dealer.players[i];
                     }
@@ -143,7 +143,7 @@ public class PlayerBehaviour {
                     {
                         float randomNum = UnityEngine.Random.Range(0, 100);
                         if (randomNum > player.playerInsightPercent) player.Fold(); //if opponent hand is better, get out
-                        else player.DetermineAction(returnRate, player); 
+                        else player.DetermineAction(returnRate, player);
                     }
                     else //if it's NOT better, than percent chance to call or raise
                     {
@@ -440,7 +440,7 @@ public class PlayerBehaviour {
                     Services.Dealer.raisesInRound >= 1 &&
                     player.Hand.HandValues.PokerHand <= PokerHand.OnePair &&
                     player.Hand.HandValues.Total < (int)player.Hand.Cards[5].rank * 2) player.Fold();
-            else if(Table.instance.DealerPosition == player.SeatPos && Services.Dealer.raisesInRound == 0)
+            else if (Table.instance.DealerPosition == player.SeatPos && Services.Dealer.raisesInRound == 0)
             {
                 if (Services.Dealer.LastBet == 0 || Services.Dealer.LastBet == Services.Dealer.BigBlind) player.Raise();
             }
@@ -1625,6 +1625,14 @@ public class PlayerBehaviour {
         else
         {
             tree = new Tree<PokerPlayerRedux>(new Selector<PokerPlayerRedux>(
+                //AGGRESSIVE PLAY
+                new Sequence<PokerPlayerRedux>(
+                    new IsAgressive(),
+                    new Condition<PokerPlayerRedux>(context => UnityEngine.Random.Range(0, 100) > 30),
+                    new HasEnoughMoney(),
+                    new BetIsZero(),
+                    new Raise()
+                    ),
                 //BLUFF
                 new Sequence<PokerPlayerRedux>(
                     new HasABadHand(),
@@ -1792,6 +1800,46 @@ public class PlayerBehaviour {
         public override bool Update(PokerPlayerRedux player)
         {
             return Table.gameState == GameState.Flop && player.lastAction == PlayerAction.Raise;
+        }
+    }
+
+    private class IsAgressive : Node<PokerPlayerRedux>
+    {
+        public override bool Update(PokerPlayerRedux player)
+        {
+            return player.personality == PlayerPersonality.Aggressive;
+        }
+    }
+
+    private class IsDefensive : Node<PokerPlayerRedux>
+    {
+        public override bool Update(PokerPlayerRedux player)
+        {
+            return player.personality == PlayerPersonality.Defensive;
+        }
+    }
+
+    private class IsLoose : Node<PokerPlayerRedux>
+    {
+        public override bool Update(PokerPlayerRedux player)
+        {
+            return player.personality == PlayerPersonality.Loose;
+        }
+    }
+
+    private class IsTight : Node<PokerPlayerRedux>
+    {
+        public override bool Update(PokerPlayerRedux player)
+        {
+            return player.personality == PlayerPersonality.Tight;
+        }
+    }
+
+    private class IsCrazy : Node<PokerPlayerRedux>
+    {
+        public override bool Update(PokerPlayerRedux player)
+        {
+            return player.personality == PlayerPersonality.Crazy;
         }
     }
 

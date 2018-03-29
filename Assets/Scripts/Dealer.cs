@@ -1172,7 +1172,6 @@ public class Dealer : MonoBehaviour
         }
         while (playerHasBeenEliminated)
         {
-            Debug.Log("waiting to save player");
             yield return null;
         }
         Table.gameState = GameState.PostHand;

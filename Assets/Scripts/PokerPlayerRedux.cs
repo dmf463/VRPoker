@@ -9,6 +9,7 @@ using System.Linq;
 public enum PlayerState {Playing, NotPlaying, Winner, Loser, Eliminated}
 public enum PlayerName {None, Casey, Zombie, Minnie, Nathaniel, Floyd}
 public enum PlayerAction { Fold, Call, Raise, None}
+public enum PlayerPersonality { Aggressive, Defensive, Loose, Tight, Crazy}
 public enum LineCriteria {None, AllIn, Bet, Call, CardHit, Check, FiftyTwo, Fold, Misdeal, Raise, Tip, Win, Lose, WrongChips}
 
 
@@ -16,6 +17,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public PlayerName playerName;
     public PlayerAction lastAction;
+    public PlayerPersonality personality;
     public float percievedHandStrength = 0;
     public GameObject playerSpotlight;
     public GameObject playerCardIndicator;
@@ -191,18 +193,23 @@ public class PokerPlayerRedux : MonoBehaviour{
         {
             case "Casey":
                 playerName = PlayerName.Casey;
+                personality = PlayerPersonality.Tight;
                 break;
             case "Zombie":
                 playerName = PlayerName.Zombie;
+                personality = PlayerPersonality.Crazy;
                 break;
             case "Minnie":
                 playerName = PlayerName.Minnie;
+                personality = PlayerPersonality.Defensive;
                 break;
             case "Nathaniel":
                 playerName = PlayerName.Nathaniel;
+                personality = PlayerPersonality.Loose;
                 break;
             case "Floyd":
                 playerName = PlayerName.Floyd;
+                personality = PlayerPersonality.Aggressive;
                 break;
             default:
                 break;
