@@ -156,6 +156,7 @@ public class PokerPlayerRedux : MonoBehaviour{
     //public AudioClip loseAudio;
 
     private TaskManager tm;
+    private bool MakeThemAllIn = false;
 
 
     //this is here so that I can run for-loops and access the functions from Table that use the playerDest enum
@@ -215,6 +216,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.H)) MakeThemAllIn = true;
         tm.Update();
         if (playerAudioSource.isPlaying) playerSpotlight.SetActive(true);
         else playerSpotlight.SetActive(false);
@@ -396,7 +398,14 @@ public class PokerPlayerRedux : MonoBehaviour{
         //        break;
         //}
         //Services.PlayerBehaviour.NewFoldCallRaiseDecision(player, returnRate);
-        Services.PlayerBehaviour.UseBehaviorTree(player);
+        if (MakeThemAllIn == true)
+        {
+            amountToRaise = chipCount;
+            Raise();
+            turnComplete = true;
+            actedThisRound = true;
+        }
+        else Services.PlayerBehaviour.UseBehaviorTree(player);
     }
 
     public void DetermineAction(float returnRate, PokerPlayerRedux player)

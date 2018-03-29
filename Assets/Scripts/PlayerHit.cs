@@ -14,11 +14,17 @@ public class PlayerHit : MonoBehaviour
             if ((other.gameObject.tag == "PlayingCard" && !deckScript.deckWasThrown) || other.gameObject.tag == "Chip" || other.gameObject.tag == "Hand")
             {
                 PokerPlayerRedux player = GetComponentInParent<PokerPlayerRedux>();
-                //Debug.Log("WE HIT SOMETHING");
-                AudioClip hitSound = player.cardHitAudio;
-                //Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(player.playerName, LineCriteria.CardHit));
-                //Services.SoundManager.GetSourceAndPlay(player.playerAudioSource, hitSound);
-                Table.gameState = GameState.Misdeal;
+                if (other.gameObject.tag == "Hand" && player.chipCount == 0 && player.PlayerState == PlayerState.Loser && Services.Dealer.playerHasBeenEliminated)
+                {
+                    Table.instance.AddChipTo(Table.instance.playerDestinations[player.SeatPos], Services.Dealer.tipCount);
+                    Services.Dealer.playerHasBeenEliminated = false;
+                    Services.Dealer.tipCount = 0;
+                }
+                else
+                {
+                    AudioClip hitSound = player.cardHitAudio;
+                    Table.gameState = GameState.Misdeal;
+                }
             }
         }
     }

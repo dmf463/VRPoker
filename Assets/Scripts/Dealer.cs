@@ -72,10 +72,12 @@ public class Dealer : MonoBehaviour
     //we need these in order to know which hand is which
     public Hand hand1;
     public Hand hand2;
+
     public int numberOfWinners;
     private int potAmountToGiveWinner;
     private bool winnersHaveBeenPaid;
     public bool playersHaveBeenEvaluated;
+    public bool playerHasBeenEliminated;
 
     [HideInInspector]
     public bool readyToAwardPlayers = false;
@@ -233,7 +235,11 @@ public class Dealer : MonoBehaviour
             {
                 roundStarted = true;
                 if (!OnlyAllInPlayersLeft()) StartRound();
-                else playersReady = true;
+                else
+                {
+                    playersReady = true;
+                    readyForCards = true;
+                }
             }
             //else Debug.Log("Round is already registered as having started");
         }
@@ -245,7 +251,11 @@ public class Dealer : MonoBehaviour
             {
                 roundStarted = true;
                 if (!OnlyAllInPlayersLeft()) StartRound();
-                else playersReady = true;
+                else
+                {
+                    playersReady = true;
+                    readyForCards = true;
+                }
             }
         }
 
@@ -257,15 +267,20 @@ public class Dealer : MonoBehaviour
                 Debug.Log("turn Debug should only go once");
                 roundStarted = true;
                 if (!OnlyAllInPlayersLeft()) StartRound();
-                else playersReady = true;
+                else
+                {
+                    playersReady = true;
+                    readyForCards = true;
+                }
             }
         }
-        
+
         //starts the river
         //we put a coroutine here to make it so that you couldn't trigger the showdown accidentally
         //when the three seconds end, readyForShowdown sets to true and the player can trigger it
         if (Table.gameState == GameState.River)
         {
+            Debug.Log("we in the river");
             if (!roundStarted)
             {
                 if (OnlyAllInPlayersLeft() && !finalHandEvaluation)
@@ -295,19 +310,19 @@ public class Dealer : MonoBehaviour
             {
                 if (players[i].playerIsAllIn == true) allInPlayerCount++;
             }
-            if (GetActivePlayerCount() == allInPlayerCount) Table.gameState = GameState.ShowDown;
-            else if (GetActivePlayerCount() - allInPlayerCount == 1 && playersReady) Table.gameState = GameState.ShowDown;
-            if(readyForShowdown == true)
+            if (GetActivePlayerCount() == allInPlayerCount)
             {
-                //if (!OutsideVR)
-                //{
-                    StartCoroutine(ReadyForShowDown(1));
-                    //if (hand1.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true && hand2.controller.GetPress(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) == true)
-                    //{
-                    //    Table.gameState = GameState.ShowDown;
-                    //}
-                //}
-                //else if (Input.GetKeyDown(KeyCode.DownArrow)) Table.gameState = GameState.ShowDown;
+                Debug.Log("Only ALL IN left");
+                Table.gameState = GameState.ShowDown;
+            }
+            else if (GetActivePlayerCount() - allInPlayerCount == 1 && playersReady)
+            {
+                Debug.Log("all in and one player left");
+                Table.gameState = GameState.ShowDown;
+            }
+            if (readyForShowdown == true)
+            {
+                StartCoroutine(ReadyForShowDown(1));
             }
         }
 
@@ -1147,8 +1162,27 @@ public class Dealer : MonoBehaviour
                 players[i].Tip();
             }
         }
+        for (int i = 0; i < players.Count; i++)
+        {
+            if(players[i].chipCount == 0 && players[i].PlayerState == PlayerState.Loser)
+            {
+                playerHasBeenEliminated = true;
+                StartCoroutine(WaitToSave(10f));
+            }
+        }
+        while (playerHasBeenEliminated)
+        {
+            Debug.Log("waiting to save player");
+            yield return null;
+        }
         Table.gameState = GameState.PostHand;
         yield break;
+    }
+
+    IEnumerator WaitToSave(float time)
+    {
+        yield return new WaitForSeconds(time);
+        playerHasBeenEliminated = false;
     }
 
     //this is out current method for calling the reaction audio for winners
