@@ -115,6 +115,7 @@ public class Dealer : MonoBehaviour
     private float gameLength;
 
     public PokerGameData startingGameState;
+    public bool consolidatingChips = false;
 
     [HideInInspector]
 	public bool misdealAudioPlayed =false;
@@ -920,6 +921,7 @@ public class Dealer : MonoBehaviour
                 Services.SoundManager.roundsFinished++; //increment int for tutorial vo based on when players are done betting
                 for (int i = chipsInPot.Count - 1; i >= 0; i--)
                 {
+                    consolidatingChips = true;
                     chipsInPot[i].GetComponent<Chip>().InitializeLerp(chipPositionInPot[i]);
                     StartCoroutine(chipsInPot[i].GetComponent<Chip>().LerpChipPos(chipPositionInPot[i], 1));
                     StartCoroutine(chipsInPot[i].GetComponent<Chip>().StopLerp(chipPositionInPot[i]));
@@ -1632,6 +1634,7 @@ public class Dealer : MonoBehaviour
             //null reference trying to destroy chips
             chipsInPot[i].gameObject.transform.position = chipPositionInPot[i];
         }
+        consolidatingChips = false;
         yield break;
     }
 

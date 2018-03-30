@@ -157,7 +157,7 @@ public class Chip : InteractionSuperClass {
                     Vector2 handPos = new Vector2(hand.transform.position.x, hand.transform.position.z);
                     Vector2 chipPos = new Vector2(transform.position.x, transform.position.z);
                     float heightDifference = hand.transform.position.y - transform.position.y;
-                    if (Table.gameState == GameState.ShowDown && Services.Dealer.chipsInPot.Contains(this) && !isAtDestination)
+                    if (Table.gameState == GameState.ShowDown && Services.Dealer.chipsInPot.Contains(this) && !isAtDestination && !Services.Dealer.consolidatingChips)
                     {
                         if ((hand.transform.position - transform.position).magnitude < .2f && (handPos - chipPos).magnitude < .12f && heightDifference < HEIGHT_THRESHOLD)
                         {
@@ -456,7 +456,7 @@ public class Chip : InteractionSuperClass {
         {
             if (chipStack.chips.Count != 0)
             {
-                float chipSpawnOffset = 0.07f;
+                float chipSpawnOffset = 0.05f;
                 for (int i = 0; i < chipStack.chips.Count; i++)
                 {
                     GameObject newChip = Instantiate(FindChipPrefab(chipStack.chips[i].ChipValue),

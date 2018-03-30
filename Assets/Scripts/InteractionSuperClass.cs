@@ -131,8 +131,11 @@ public class InteractionSuperClass : MonoBehaviour {
         hand.HoverUnlock(interactableObject);
 
         //apply forces to it, as if we're throwing it
-        GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity() * FORCE_MULTIPLIER, ForceMode.Impulse);
-        GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);
+        if (GetComponent<Rigidbody>() != null)
+        {
+            GetComponent<Rigidbody>().AddForce(hand.GetTrackedObjectVelocity() * FORCE_MULTIPLIER, ForceMode.Impulse);
+            GetComponent<Rigidbody>().AddTorque(hand.GetTrackedObjectAngularVelocity(), ForceMode.Impulse);
+        }
     }
 
     //this checks the position of the finger when pressed, allowing us to know whether it was pressed left, right, up, or down
