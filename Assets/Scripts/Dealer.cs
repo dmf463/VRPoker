@@ -958,14 +958,18 @@ public class Dealer : MonoBehaviour
     {
         for (int i = 0; i < players.Count; i++)
         {
-			players[i].SeatPos = i;
-			players[i].PlayerState = PlayerState.Playing;
+            players[i].SeatPos = i;
+            players[i].PlayerState = PlayerState.Playing;
             players[i].lastAction = PlayerAction.None;
-			activePlayers.Add(players[i]);
-			//Debug.Log ("Adding " + players[i] + " to active players!");
-            List<int> startingStack  = players[i].SetChipStacks(chipCount);
+            activePlayers.Add(players[i]);
+            //Debug.Log ("Adding " + players[i] + " to active players!");
+            List<int> startingStack = players[i].SetChipStacks(chipCount);
             Table.instance.AddChipTo(playerDestinations[i], chipCount);
             players[i].CreateAndOrganizeChipStacks(startingStack);
+            players[i].playersLostAgainst = new List<int>(5)
+            {
+                 0, 0, 0, 0, 0
+            };
         }
 
         Table.instance.DealerPosition = 0;
@@ -1161,7 +1165,16 @@ public class Dealer : MonoBehaviour
         {
             if(players[i].PlayerState == PlayerState.Winner)
             {
+                players[i].lossCount = 0;
                 players[i].Tip();
+            }
+            else if(players[i].PlayerState == PlayerState.Loser)
+            {
+                players[i].lossCount++;
+                for (int winners = 0; winners < winningPlayers.Count; winners++)
+                {
+                    players[i].playersLostAgainst[winningPlayers[winners].SeatPos]++;
+                }
             }
         }
         for (int i = 0; i < players.Count; i++)

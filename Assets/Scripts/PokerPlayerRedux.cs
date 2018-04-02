@@ -9,7 +9,6 @@ using System.Linq;
 public enum PlayerState {Playing, NotPlaying, Winner, Loser, Eliminated}
 public enum PlayerName {None, Casey, Zombie, Minnie, Nathaniel, Floyd}
 public enum PlayerAction { Fold, Call, Raise, None}
-public enum PlayerPersonality { Aggressive, Defensive, Loose, Tight, Crazy}
 public enum LineCriteria {None, AllIn, Bet, Call, CardHit, Check, FiftyTwo, Fold, Misdeal, Raise, Tip, Win, Lose, WrongChips}
 
 
@@ -17,7 +16,6 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public PlayerName playerName;
     public PlayerAction lastAction;
-    public PlayerPersonality personality;
     public float percievedHandStrength = 0;
     public GameObject playerSpotlight;
     public GameObject playerCardIndicator;
@@ -27,9 +25,13 @@ public class PokerPlayerRedux : MonoBehaviour{
     public bool isAggressor = false;
     public int timesRaisedThisRound = 0;
     public bool gaveTip = false;
-	//what position they are at the table, this is set in Dealer and is massively important
-	//this is the current means by which we differentiate between which instance of PokerPlayerRedux we're currently working with
-	public int SeatPos { get; set; }
+    [HideInInspector]
+    public List<int> playersLostAgainst;
+    [HideInInspector]
+    public int lossCount;
+    //what position they are at the table, this is set in Dealer and is massively important
+    //this is the current means by which we differentiate between which instance of PokerPlayerRedux we're currently working with
+    public int SeatPos { get; set; }
 
     //this lets me keep track of the players chip count, but only when I call ChipCount, so it may be less reliable than it can be
     public int chipCount { get { return ChipCount; } set { chipCount = value; } }
@@ -193,23 +195,18 @@ public class PokerPlayerRedux : MonoBehaviour{
         {
             case "Casey":
                 playerName = PlayerName.Casey;
-                personality = PlayerPersonality.Tight;
                 break;
             case "Zombie":
                 playerName = PlayerName.Zombie;
-                personality = PlayerPersonality.Crazy;
                 break;
             case "Minnie":
                 playerName = PlayerName.Minnie;
-                personality = PlayerPersonality.Defensive;
                 break;
             case "Nathaniel":
                 playerName = PlayerName.Nathaniel;
-                personality = PlayerPersonality.Loose;
                 break;
             case "Floyd":
                 playerName = PlayerName.Floyd;
-                personality = PlayerPersonality.Aggressive;
                 break;
             default:
                 break;
@@ -384,27 +381,6 @@ public class PokerPlayerRedux : MonoBehaviour{
     //we should go back to the generic one and make percentage variables that we can adjust in individual players
     public void FoldCallRaiseDecision(float returnRate, PokerPlayerRedux player)
     {
-        //switch (playerName)
-        //{
-        //    case PlayerName.Casey:
-        //        Services.PlayerBehaviour.CASEY_FoldCallRaiseDecision(returnRate, player);
-        //        break;
-        //    case PlayerName.Zombie:
-        //        Services.PlayerBehaviour.ZOMBIE_FoldCallRaiseDecision(returnRate, player);
-        //        break;
-        //    case PlayerName.Minnie:
-        //        Services.PlayerBehaviour.MINNIE_FoldCallRaiseDecision(returnRate, player);
-        //        break;
-        //    case PlayerName.Nathaniel:
-        //        Services.PlayerBehaviour.NATHANIEL_FoldCallRaiseDecision(returnRate, player);
-        //        break;
-        //    case PlayerName.Floyd:
-        //        Services.PlayerBehaviour.FLOYD_FoldCallRaiseDecision(returnRate, player);
-        //        break;
-        //    default:
-        //        break;
-        //}
-        //Services.PlayerBehaviour.NewFoldCallRaiseDecision(player, returnRate);
         if (MakeThemAllIn == true)
         {
             amountToRaise = chipCount;
@@ -414,34 +390,52 @@ public class PokerPlayerRedux : MonoBehaviour{
         }
         else if (Table.gameState == GameState.PreFlop)
         {
-            Services.PlayerBehaviour.PreFlopBehaviourTree(player);
+            switch (playerName)
+            {
+                case PlayerName.Casey:
+                    Services.PlayerBehaviour.Casey_Preflop_FCR(player);
+                    break;
+                case PlayerName.Zombie:
+                    Services.PlayerBehaviour.Zombie_Preflop_FCR(player);
+                    break;
+                case PlayerName.Minnie:
+                    Services.PlayerBehaviour.Minnie_Preflop_FCR(player);
+                    break;
+                case PlayerName.Nathaniel:
+                    Services.PlayerBehaviour.Nathaniel_Preflop_FCR(player);
+                    break;
+                case PlayerName.Floyd:
+                    Services.PlayerBehaviour.Floyd_Preflop_FCR(player);
+                    break;
+                default:
+                    break;
+            }
         }
-        else Services.PlayerBehaviour.UseBehaviorTree(player);
+        else
+        {
+            switch (playerName)
+            {
+                case PlayerName.Casey:
+                    Services.PlayerBehaviour.Casey_FCR(player);
+                    break;
+                case PlayerName.Zombie:
+                    Services.PlayerBehaviour.Zombie_FCR(player);
+                    break;
+                case PlayerName.Minnie:
+                    Services.PlayerBehaviour.Minnie_FCR(player);
+                    break;
+                case PlayerName.Nathaniel:
+                    Services.PlayerBehaviour.Nathaniel_FCR(player);
+                    break;
+                case PlayerName.Floyd:
+                    Services.PlayerBehaviour.Floyd_FCR(player);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
-    //public void DetermineAction(float returnRate, PokerPlayerRedux player)
-    //{
-    //    switch (playerName)
-    //    {
-    //        case PlayerName.Casey:
-    //            Services.PlayerBehaviour.CASEY_DetermineAction(returnRate, player);
-    //            break;
-    //        case PlayerName.Zombie:
-    //            Services.PlayerBehaviour.ZOMBIE_DetermineAction(returnRate, player);
-    //            break;
-    //        case PlayerName.Minnie:
-    //            Services.PlayerBehaviour.MINNIE_DetermineAction(returnRate, player);
-    //            break;
-    //        case PlayerName.Nathaniel:
-    //            Services.PlayerBehaviour.NATHANIEL_DetermineAction(returnRate, player);
-    //            break;
-    //        case PlayerName.Floyd:
-    //            Services.PlayerBehaviour.FLOYD_DetermineAction(returnRate, player);
-    //            break;
-    //        default:
-    //            break;
-    //    }
-    //}
     public void Fold()
     {
         lastAction = PlayerAction.Fold;
