@@ -1280,9 +1280,9 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public void Bet(int betAmount, bool isTipping)
     {
-        if(betAmount != 0) Services.TextManager.ShowBetAmount(SeatPos, betAmount);
+        if (betAmount != 0) Services.TextManager.ShowBetAmount(SeatPos, betAmount);
         if (isTipping) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.tipSFX, 1f);
-		else Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.chips[Random.Range(0,Services.SoundManager.chips.Length)], 0.25f, Random.Range(0.95f,1.05f), transform.position);
+        else Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.chips[Random.Range(0, Services.SoundManager.chips.Length)], 0.25f, Random.Range(0.95f, 1.05f), transform.position);
         int oldChipStackValue = chipCount;
         List<GameObject> playerBetZones = new List<GameObject>
         {
@@ -1327,50 +1327,69 @@ public class PokerPlayerRedux : MonoBehaviour{
 
         if (valueRemaining > 0)
         {
+            Debug.Log("value Remaining > 0");
             List<int> chipChange = SetChipStacks(valueRemaining);
             for (int i = 0; i < chipChange.Count; i++)
             {
                 for (int chipChangeIndex = 0; chipChangeIndex < chipChange[chipChangeIndex]; chipChangeIndex++)
                 {
-                    if(chipChange[chipChangeIndex] != 0) colorChipCount[i]++;
+                    if (chipChange[chipChangeIndex] != 0) colorChipCount[i]++;
                 }
             }
             Table.instance.RemoveChipFrom(playerDestinations[SeatPos], valueRemaining);
         }
-
-        //if there are less than 2 chips, don't even bother putting them in a stack. because why even?
-        if ((colorChipCount[0] + colorChipCount[1] + colorChipCount[2] + colorChipCount[3]) < 0)
+        GameObject parentChip = null;
+        float incrementStackBy = 0;
+        Vector3 offSet = Vector3.zero;
+        Vector3 containerOffset = Vector3.up * .08f;
+        GameObject chipContainer;
+        if (!isTipping)
         {
-            for (int colorListIndex = 0; colorListIndex < colorChipCount.Count; colorListIndex++)
+            chipContainer = GameObject.Instantiate(new GameObject(), playerBetZones[SeatPos].transform.position + containerOffset, playerBetZones[SeatPos].transform.rotation);
+        }
+        else
+        {
+            chipContainer = GameObject.Instantiate(new GameObject(), playerBetZones[SeatPos].transform.position + containerOffset, playerBetZones[SeatPos].transform.rotation);
+        }
+        if (!isTipping) chipContainer.tag = "TipContainer";
+        else chipContainer.tag = "Container";
+        chipContainer.name = "Container";
+        chipContainer.transform.rotation = Quaternion.Euler(0, chipContainer.transform.rotation.eulerAngles.y + 90, 0);
+        Vector3 lastStackPos = Vector3.zero;
+        Vector3 firstStackPos = Vector3.zero;
+        int chipCountMax = 30;
+        for (int colorListIndex = 0; colorListIndex < colorChipCount.Count; colorListIndex++) //this runs 4 times, one for each color
+        {
+            GameObject chipToMake = null;
+            switch (colorListIndex)
             {
-                GameObject chipToMake = null;
-                switch (colorListIndex)
+                case 0:
+                    chipToMake = FindChipPrefab(ChipConfig.BLACK_CHIP_VALUE);
+                    chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.BLACK_CHIP_VALUE);
+                    break;
+                case 1:
+                    chipToMake = FindChipPrefab(ChipConfig.WHITE_CHIP_VALUE);
+                    chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.WHITE_CHIP_VALUE);
+                    break;
+                case 2:
+                    chipToMake = FindChipPrefab(ChipConfig.BLUE_CHIP_VALUE);
+                    chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.BLUE_CHIP_VALUE);
+                    break;
+                case 3:
+                    chipToMake = FindChipPrefab(ChipConfig.RED_CHIP_VALUE);
+                    chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.RED_CHIP_VALUE);
+                    break;
+                default:
+                    break;
+            }
+            if (colorChipCount.Count != 0) //if there is a number
+            {
+                int chipStackCount = 0;
+                for (int chipIndex = 0; chipIndex < colorChipCount[colorListIndex]; chipIndex++)
                 {
-                    case 0:
-                        chipToMake = FindChipPrefab(ChipConfig.BLACK_CHIP_VALUE);
-                        chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.BLACK_CHIP_VALUE);
-                        break;
-                    case 1:
-                        chipToMake = FindChipPrefab(ChipConfig.WHITE_CHIP_VALUE);
-                        chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.WHITE_CHIP_VALUE);
-                        break;
-                    case 2:
-                        chipToMake = FindChipPrefab(ChipConfig.BLUE_CHIP_VALUE);
-                        chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.BLUE_CHIP_VALUE);
-                        break;
-                    case 3:
-                        chipToMake = FindChipPrefab(ChipConfig.RED_CHIP_VALUE);
-                        chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.RED_CHIP_VALUE);
-                        break;
-                    default:
-                        break;
-                }
-                if (colorChipCount[colorListIndex] > 0)
-                {
-
-                    for (int colorCount = 0; colorCount < colorChipCount[colorListIndex]; colorCount++)
+                    if (chipIndex == 0)
                     {
-                        Vector3 offSet = new Vector3(Random.Range(0, .5f), .5f, Random.Range(0, .5f));
+                        chipStackCount++;
                         GameObject newChip;
                         if (!isTipping)
                         {
@@ -1380,163 +1399,87 @@ public class PokerPlayerRedux : MonoBehaviour{
                         {
                             newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
                             newChip.GetComponent<MeshRenderer>().material = Services.PokerRules.tipMaterial;
+                            newChip.gameObject.tag = "Tip";
                             Chip _chip = newChip.GetComponent<Chip>();
                             newChip.GetComponent<Rigidbody>().velocity = _chip.BallisticVel(_chip.myTarget, _chip.flyTime);
                         }
                         newChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
-                        if(!isTipping) Services.Dealer.chipsInPot.Add(newChip.GetComponent<Chip>());
-                        if(!isTipping) Table.instance.potChips += newChip.GetComponent<Chip>().chipData.ChipValue;
+                        betChips.Add(newChip);
                         Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChip.GetComponent<Chip>().chipData.ChipValue);
-                    }
-                }
-            }
-        }
-
-        else //if there are more than 5 chips to bet, STACK THOSE MOTHERFUCKERS.
-        {
-            GameObject parentChip = null;
-            float incrementStackBy = 0;
-            Vector3 offSet = Vector3.zero;
-            Vector3 containerOffset = Vector3.up * .08f;
-            GameObject chipContainer;
-            if (!isTipping)
-            {
-                chipContainer = GameObject.Instantiate(new GameObject(), playerBetZones[SeatPos].transform.position + containerOffset, playerBetZones[SeatPos].transform.rotation);
-            }
-            else
-            {
-                chipContainer = GameObject.Instantiate(new GameObject(), playerBetZones[SeatPos].transform.position + containerOffset, playerBetZones[SeatPos].transform.rotation);
-            }
-            if(!isTipping) chipContainer.tag = "TipContainer";
-            else chipContainer.tag = "Container";
-            chipContainer.name = "Container";
-            chipContainer.transform.rotation = Quaternion.Euler(0, chipContainer.transform.rotation.eulerAngles.y + 90, 0);
-            Vector3 lastStackPos = Vector3.zero;
-            Vector3 firstStackPos = Vector3.zero;
-            int chipCountMax = 30;
-            for (int colorListIndex = 0; colorListIndex < colorChipCount.Count; colorListIndex++) //this runs 4 times, one for each color
-            {
-                GameObject chipToMake = null;
-                switch (colorListIndex)
-                {
-                    case 0:
-                        chipToMake = FindChipPrefab(ChipConfig.BLACK_CHIP_VALUE);
-                        chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.BLACK_CHIP_VALUE);
-                        break;
-                    case 1:
-                        chipToMake = FindChipPrefab(ChipConfig.WHITE_CHIP_VALUE);
-                        chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.WHITE_CHIP_VALUE);
-                        break;
-                    case 2:
-                        chipToMake = FindChipPrefab(ChipConfig.BLUE_CHIP_VALUE);
-                        chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.BLUE_CHIP_VALUE);
-                        break;
-                    case 3:
-                        chipToMake = FindChipPrefab(ChipConfig.RED_CHIP_VALUE);
-                        chipToMake.GetComponent<Chip>().chipData = new ChipData(ChipConfig.RED_CHIP_VALUE);
-                        break;
-                    default:
-                        break;
-                }
-                if (colorChipCount.Count != 0) //if there is a number
-                {
-                    int chipStackCount = 0;
-                    for (int chipIndex = 0; chipIndex < colorChipCount[colorListIndex]; chipIndex++)
-                    {
-                        if (chipIndex == 0)
+                        if (!isTipping) Table.instance.potChips += newChip.GetComponent<Chip>().chipData.ChipValue;
+                        parentChip = newChip;
+                        if (!isTipping) Services.Dealer.chipsInPot.Add(newChip.GetComponent<Chip>());
+                        parentChip.transform.parent = chipContainer.transform;
+                        parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
+                        parentChip.GetComponent<Chip>().chipStack = new ChipStack(parentChip.GetComponent<Chip>());
+                        if (parentChip.GetComponent<Rigidbody>() == null)
                         {
-                            chipStackCount++;
-                            GameObject newChip;
-                            if (!isTipping)
-                            {
-                                newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
-                            }
-                            else
-                            {
-                                newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
-                                newChip.GetComponent<MeshRenderer>().material = Services.PokerRules.tipMaterial;
-                                newChip.gameObject.tag = "Tip";
-                                Chip _chip = newChip.GetComponent<Chip>();
-                                newChip.GetComponent<Rigidbody>().velocity = _chip.BallisticVel(_chip.myTarget, _chip.flyTime);
-                            }
-                            newChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
-                            betChips.Add(newChip);
-                            Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChip.GetComponent<Chip>().chipData.ChipValue);
-                            if (!isTipping) Table.instance.potChips += newChip.GetComponent<Chip>().chipData.ChipValue;
-                            parentChip = newChip;
-                            if (!isTipping) Services.Dealer.chipsInPot.Add(newChip.GetComponent<Chip>());
-                            parentChip.transform.parent = chipContainer.transform;
-                            parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
-                            parentChip.GetComponent<Chip>().chipStack = new ChipStack(parentChip.GetComponent<Chip>());
-                            if (parentChip.GetComponent<Rigidbody>() == null)
-                            {
-                                parentChip.AddComponent<Rigidbody>();
-                            }
-                            incrementStackBy = parentChip.transform.localScale.z;
-                            parentChip.transform.localPosition = offSet;
-                            offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.x + .01f, 0, 0);
-                            if (firstStackPos == Vector3.zero)
-                            {
-                                firstStackPos = parentChip.transform.position;
-                            }
-                            lastStackPos = parentChip.transform.position;
+                            parentChip.AddComponent<Rigidbody>();
                         }
-                        else if (chipStackCount >= chipCountMax)
+                        incrementStackBy = parentChip.transform.localScale.z;
+                        parentChip.transform.localPosition = offSet;
+                        offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.x + .01f, 0, 0);
+                        if (firstStackPos == Vector3.zero)
                         {
-                            chipStackCount = 1;
-                            GameObject newChip;
-                            if (!isTipping)
-                            {
-                                newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
-                            }
-                            else
-                            {
-                                newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
-                                newChip.GetComponent<MeshRenderer>().material = Services.PokerRules.tipMaterial;
-                                newChip.gameObject.tag = "Tip";
-                                Chip _chip = newChip.GetComponent<Chip>();
-                                newChip.GetComponent<Rigidbody>().velocity = _chip.BallisticVel(_chip.myTarget, _chip.flyTime);
-                            }
-                            newChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
-                            betChips.Add(newChip);
-                            Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChip.GetComponent<Chip>().chipData.ChipValue);
-                            if(!isTipping) Table.instance.potChips += newChip.GetComponent<Chip>().chipData.ChipValue;
-                            parentChip = newChip;
-                            if(!isTipping) Services.Dealer.chipsInPot.Add(newChip.GetComponent<Chip>());
-                            parentChip.transform.parent = chipContainer.transform;
-                            parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
-                            parentChip.GetComponent<Chip>().chipStack = new ChipStack(parentChip.GetComponent<Chip>());
-                            if (parentChip.GetComponent<Rigidbody>() == null)
-                            {
-                                parentChip.AddComponent<Rigidbody>();
-                            }
-                            incrementStackBy = parentChip.transform.localScale.z;
-                            parentChip.transform.localPosition = offSet;
-                            offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.x + .01f, 0, 0);
-                            if (firstStackPos == Vector3.zero)
-                            {
-                                firstStackPos = parentChip.transform.position;
-                            }
-                            lastStackPos = parentChip.transform.position;
+                            firstStackPos = parentChip.transform.position;
+                        }
+                        lastStackPos = parentChip.transform.position;
+                    }
+                    else if (chipStackCount >= chipCountMax)
+                    {
+                        chipStackCount = 1;
+                        GameObject newChip;
+                        if (!isTipping)
+                        {
+                            newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
                         }
                         else
                         {
-                            chipStackCount++;
-                            ChipData newChipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
-                            Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChipData.ChipValue);
-                            if(!isTipping) Table.instance.potChips += newChipData.ChipValue;
-                            parentChip.GetComponent<Chip>().chipStack.chips.Add(newChipData);
-                            parentChip.GetComponent<Chip>().chipStack.stackValue += newChipData.ChipValue;
-                            parentChip.transform.localScale = new Vector3(parentChip.transform.localScale.x,
-                                                                          parentChip.transform.localScale.y,
-                                                                          parentChip.transform.localScale.z + incrementStackBy);
+                            newChip = GameObject.Instantiate(chipToMake, playerBetZones[SeatPos].transform.position + offSet, Quaternion.Euler(-90, 0, 0));
+                            newChip.GetComponent<MeshRenderer>().material = Services.PokerRules.tipMaterial;
+                            newChip.gameObject.tag = "Tip";
+                            Chip _chip = newChip.GetComponent<Chip>();
+                            newChip.GetComponent<Rigidbody>().velocity = _chip.BallisticVel(_chip.myTarget, _chip.flyTime);
                         }
+                        newChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
+                        betChips.Add(newChip);
+                        Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChip.GetComponent<Chip>().chipData.ChipValue);
+                        if (!isTipping) Table.instance.potChips += newChip.GetComponent<Chip>().chipData.ChipValue;
+                        parentChip = newChip;
+                        if (!isTipping) Services.Dealer.chipsInPot.Add(newChip.GetComponent<Chip>());
+                        parentChip.transform.parent = chipContainer.transform;
+                        parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);
+                        parentChip.GetComponent<Chip>().chipStack = new ChipStack(parentChip.GetComponent<Chip>());
+                        if (parentChip.GetComponent<Rigidbody>() == null)
+                        {
+                            parentChip.AddComponent<Rigidbody>();
+                        }
+                        incrementStackBy = parentChip.transform.localScale.z;
+                        parentChip.transform.localPosition = offSet;
+                        offSet += new Vector3(parentChip.GetComponent<Collider>().bounds.size.x + .01f, 0, 0);
+                        if (firstStackPos == Vector3.zero)
+                        {
+                            firstStackPos = parentChip.transform.position;
+                        }
+                        lastStackPos = parentChip.transform.position;
+                    }
+                    else
+                    {
+                        chipStackCount++;
+                        ChipData newChipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
+                        Table.instance.RemoveChipFrom(playerDestinations[SeatPos], newChipData.ChipValue);
+                        if (!isTipping) Table.instance.potChips += newChipData.ChipValue;
+                        parentChip.GetComponent<Chip>().chipStack.chips.Add(newChipData);
+                        parentChip.GetComponent<Chip>().chipStack.stackValue += newChipData.ChipValue;
+                        parentChip.transform.localScale = new Vector3(parentChip.transform.localScale.x,
+                                                                      parentChip.transform.localScale.y,
+                                                                      parentChip.transform.localScale.z + incrementStackBy);
                     }
                 }
             }
-            Vector3 trueOffset = firstStackPos - lastStackPos;
-            chipContainer.transform.position += trueOffset / 2;
         }
+        Vector3 trueOffset = firstStackPos - lastStackPos;
+        chipContainer.transform.position += trueOffset / 2;
 
         List<int> newChipStack = SetChipStacks(ChipCount);
         CreateAndOrganizeChipStacks(newChipStack);
@@ -1549,7 +1492,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             }
             //else Debug.Log("container has " + container.transform.childCount + " children");
         }
-        foreach(GameObject chip in betChips)
+        foreach (GameObject chip in betChips)
         {
             chip.GetComponent<Chip>().chipForBet = true;
         }
@@ -1564,15 +1507,19 @@ public class PokerPlayerRedux : MonoBehaviour{
         {
             case ChipConfig.BLACK_CHIP_VALUE:
                 chipMax = (int)((float)(chipCount * 0.45f) / (float)ChipConfig.BLACK_CHIP_VALUE);
+                Debug.Log(chipMax);
                 break;
             case ChipConfig.WHITE_CHIP_VALUE:
                 chipMax = (int)((float)(chipCount * 0.35f) / (float)ChipConfig.WHITE_CHIP_VALUE);
+                Debug.Log(chipMax);
                 break;
             case ChipConfig.BLUE_CHIP_VALUE:
                 chipMax = (int)((float)(chipCount) * 0.15f / (float)ChipConfig.BLUE_CHIP_VALUE);
+                Debug.Log(chipMax);
                 break;
             case ChipConfig.RED_CHIP_VALUE:
-                chipMax = (int)((float)(chipCount) * 0.05f / (float)ChipConfig.RED_CHIP_VALUE);
+                chipMax = (int)((float)(chipCount) / (float)ChipConfig.RED_CHIP_VALUE); //took out multiplying the chipCount by .05f
+                Debug.Log(chipMax);
                 break;
             default:
                 break;
