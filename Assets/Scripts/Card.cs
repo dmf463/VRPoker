@@ -382,6 +382,14 @@ public class Card : InteractionSuperClass {
                     StartCoroutine(WaitToCheckIfCardInList(1f));
                 }
             }
+            else
+            {
+                StartCoroutine(WaitToCheckIfCardInList(1f));
+            }
+        }
+        else if(other.gameObject.tag == "Floor")
+        {
+            StartCoroutine(SlowDownTorque());
         }
     }
 
@@ -535,7 +543,24 @@ public class Card : InteractionSuperClass {
         {
             Debug.Log("misdeal here");
             Table.gameState = GameState.Misdeal;
+            StartCoroutine(SlowDownTorque());
         }
+        else if(!CardIsInList(this)) StartCoroutine(SlowDownTorque()); 
+    }
+
+    IEnumerator SlowDownTorque()
+    {
+        while(slowTorque != 0 || fastTorque != 0)
+        {
+            slowTorque -= 0.05f;
+            fastTorque -= 0.05f;
+            if (slowTorque <= 0) slowTorque = 0;
+            if (fastTorque <= 0) fastTorque = 0;
+            yield return null;
+        }
+        startingSlowTorque = false;
+        startingFastTorque = false;
+        yield break;
     }
 
     public bool CardsAreFlying(GameObject card)
