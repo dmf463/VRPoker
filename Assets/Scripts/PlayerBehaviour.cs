@@ -1184,10 +1184,11 @@ public class PlayerBehaviour {
         }
     }
 
+    ///////////////////////////////
     ///////////NODES///////////////
+    ///////////////////////////////
 
     /////////CONDITIONS///////////
-
     private class IsOnALoseStreak : Node<PokerPlayerRedux>
     {
         public override bool Update(PokerPlayerRedux player)
@@ -1259,6 +1260,7 @@ public class PlayerBehaviour {
             return Services.Dealer.LastBet - player.currentBet == Services.Dealer.SmallBlind;
         }
     }
+
     private class HasEnoughMoney : Node<PokerPlayerRedux>
     {
         public override bool Update(PokerPlayerRedux player)
