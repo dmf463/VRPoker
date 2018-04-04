@@ -1528,19 +1528,15 @@ public class PokerPlayerRedux : MonoBehaviour{
         {
             case ChipConfig.BLACK_CHIP_VALUE:
                 chipMax = (int)((float)(chipCount * 0.45f) / (float)ChipConfig.BLACK_CHIP_VALUE);
-                Debug.Log(chipMax);
                 break;
             case ChipConfig.WHITE_CHIP_VALUE:
                 chipMax = (int)((float)(chipCount * 0.35f) / (float)ChipConfig.WHITE_CHIP_VALUE);
-                Debug.Log(chipMax);
                 break;
             case ChipConfig.BLUE_CHIP_VALUE:
                 chipMax = (int)((float)(chipCount) * 0.15f / (float)ChipConfig.BLUE_CHIP_VALUE);
-                Debug.Log(chipMax);
                 break;
             case ChipConfig.RED_CHIP_VALUE:
                 chipMax = (int)((float)(chipCount) / (float)ChipConfig.RED_CHIP_VALUE); //took out multiplying the chipCount by .05f
-                Debug.Log(chipMax);
                 break;
             default:
                 break;

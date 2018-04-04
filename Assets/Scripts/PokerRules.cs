@@ -91,13 +91,8 @@ public class PokerRules : MonoBehaviour {
             }
             else if (Table.gameState == GameState.Turn)
             {
-                Debug.Log("boardcount = " + Table.instance.board.Count);
-                Debug.Log("burn count = " + Table.instance.burn.Count);
-                Debug.Log("reacdy for cards = " + Services.Dealer.readyForCards);
-                Debug.Log("thrown cards count = " + thrownCards.Count);
                 if (Table.instance.board.Count == 5 && Table.instance.burn.Count == 3 && Services.Dealer.readyForCards && thrownCards.Count == 0)
                 {
-                    Debug.Log("getting ready to check river");
                     if (CardsAreFacingCorrectDirection() && !checkedForCorrections)
                     {
                         Debug.Log("checking river");

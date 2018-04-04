@@ -272,7 +272,6 @@ public class Dealer : MonoBehaviour
         {
             if (!roundStarted)
             {
-                Debug.Log("turn Debug should only go once");
                 roundStarted = true;
                 if (!OnlyAllInPlayersLeft()) StartRound();
                 else
@@ -288,7 +287,6 @@ public class Dealer : MonoBehaviour
         //when the three seconds end, readyForShowdown sets to true and the player can trigger it
         if (Table.gameState == GameState.River)
         {
-            Debug.Log("we in the river");
             if (!roundStarted)
             {
                 if (OnlyAllInPlayersLeft() && !finalHandEvaluation)
@@ -922,16 +920,20 @@ public class Dealer : MonoBehaviour
                         }
                     }
                 }
-                Debug.Log(Table.gameState + " Finished");
-
                 Services.SoundManager.roundsFinished++; //increment int for tutorial vo based on when players are done betting
-                for (int i = chipsInPot.Count - 1; i >= 0; i--)
+                if (LastBet != 0)
                 {
-                    consolidatingChips = true;
-                    chipsInPot[i].GetComponent<Chip>().InitializeLerp(chipPositionInPot[i]);
-                    StartCoroutine(chipsInPot[i].GetComponent<Chip>().LerpChipPos(chipPositionInPot[i], 1));
-                    StartCoroutine(chipsInPot[i].GetComponent<Chip>().StopLerp(chipPositionInPot[i]));
-                    StartCoroutine(ConsolidateChipsAfterTheyMoveToPot());
+                    List<Vector3> positions = new List<Vector3>();
+                    List<Vector3> endPosition = new List<Vector3>();
+                    for (int i = chipsInPot.Count - 1; i >= 0; i--)
+                    {
+                        positions.Add(chipsInPot[i].transform.position);
+                        endPosition.Add(chipPositionInPot[i]);
+                    }
+                    LerpBetChips lerpChips = new LerpBetChips(chipsInPot, positions, endPosition, .5f);
+                    ConsolidateChips consolidate = new ConsolidateChips(chipsInPot);
+                    lerpChips.Then(consolidate);
+                    tm.Do(lerpChips);
                 }
                 playerToAct.playerSpotlight.SetActive(false);
                 playerToAct = null;
