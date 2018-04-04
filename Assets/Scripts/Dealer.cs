@@ -14,6 +14,7 @@ using TMPro;
 //PokerPlayerRedux handles all the functions and info that a poker player would need to play
 public class Dealer : MonoBehaviour
 {
+    List<List<PokerPlayerRedux>> PlayerRank;
 
     public Light lighting;
     public List<Vector3> chipPositionInPot;
@@ -1038,7 +1039,7 @@ public class Dealer : MonoBehaviour
 
         sortedPlayers[0].PlayerState = PlayerState.Winner;
 
-        List<List<PokerPlayerRedux>> PlayerRank = new List<List<PokerPlayerRedux>>();
+        PlayerRank = new List<List<PokerPlayerRedux>>();
 
         for (int i = 0; i < sortedPlayers.Count; i++)
         {
@@ -1113,10 +1114,98 @@ public class Dealer : MonoBehaviour
             if (remainder > 0)
             {
                 winningPlayers[i].chipsWon = (potAmountToGiveWinner - remainder) + ChipConfig.RED_CHIP_VALUE;
+                if (winningPlayers[i].chipsWon > winningPlayers[i].maxWinnings && winningPlayers[i].maxWinnings != 0)
+                {
+                    int playersInPot = 0;
+                    foreach (PokerPlayerRedux player in players)
+                    {
+                        if (player.PlayerState == PlayerState.Winner || player.PlayerState == PlayerState.Loser)
+                        {
+                            playersInPot++;
+                        }
+                    }
+                    winningPlayers[i].chipsWon = winningPlayers[i].maxWinnings * playersInPot;
+                }
             }
-            else winningPlayers[i].chipsWon = potAmountToGiveWinner;
+            else
+            {
+                winningPlayers[i].chipsWon = potAmountToGiveWinner;
+                if (winningPlayers[i].chipsWon > winningPlayers[i].maxWinnings && winningPlayers[i].maxWinnings != 0)
+                {
+                    int playersInPot = 0;
+                    foreach (PokerPlayerRedux player in players)
+                    {
+                        if (player.PlayerState == PlayerState.Winner || player.PlayerState == PlayerState.Loser)
+                        {
+                            playersInPot++;
+                        }
+                    }
+                    winningPlayers[i].chipsWon = winningPlayers[i].maxWinnings * playersInPot;
+                }
+            }
             potRemaining -= winningPlayers[i].chipsWon;
-            Debug.Log("chipCountToCheckWhenWinning = " + winningPlayers[i].ChipCountToCheckWhenWinning + " and potAmountToGiveWinner = " + potAmountToGiveWinner);
+        }
+        if(potRemaining != 0)
+        {
+            for (int rank = 0; rank < PlayerRank.Count; rank++)
+            {
+                for (int player = 0; player < PlayerRank[rank].Count; player++)
+                {
+                    if(PlayerRank[rank][player].PlayerState == PlayerState.Loser)
+                    {
+                        PokerPlayerRedux anotherWinner = PlayerRank[rank][player];
+                        anotherWinner.PlayerState = PlayerState.Winner;
+                        winningPlayers.Add(anotherWinner);
+                        anotherWinner.ChipCountToCheckWhenWinning = anotherWinner.chipCount;
+                        anotherWinner.chipsWon = potRemaining;
+                        if (anotherWinner.chipsWon > anotherWinner.maxWinnings && anotherWinner.maxWinnings != 0)
+                        {
+                            int playersInPot = 0;
+                            foreach (PokerPlayerRedux p in players)
+                            {
+                                if (p.PlayerState == PlayerState.Winner || p.PlayerState == PlayerState.Loser)
+                                {
+                                    playersInPot++;
+                                }
+                            }
+                            anotherWinner.chipsWon = anotherWinner.maxWinnings * playersInPot;
+                        }
+                        potRemaining -= anotherWinner.chipsWon;
+                        break;
+                    }
+                }
+            }
+        }
+        if (potRemaining != 0)
+        {
+            for (int rank = 0; rank < PlayerRank.Count; rank++)
+            {
+                for (int player = 0; player < PlayerRank[rank].Count; player++)
+                {
+                    if (PlayerRank[rank][player].PlayerState == PlayerState.Loser)
+                    {
+                        PokerPlayerRedux anotherWinner = PlayerRank[rank][player];
+                        anotherWinner.PlayerState = PlayerState.Winner;
+                        winningPlayers.Add(anotherWinner);
+                        anotherWinner.ChipCountToCheckWhenWinning = anotherWinner.chipCount;
+                        anotherWinner.chipsWon = potRemaining;
+                        if (anotherWinner.chipsWon > anotherWinner.maxWinnings && anotherWinner.maxWinnings != 0)
+                        {
+                            int playersInPot = 0;
+                            foreach (PokerPlayerRedux p in players)
+                            {
+                                if (p.PlayerState == PlayerState.Winner || p.PlayerState == PlayerState.Loser)
+                                {
+                                    playersInPot++;
+                                }
+                            }
+                            anotherWinner.chipsWon = anotherWinner.maxWinnings * playersInPot;
+                        }
+                        potRemaining -= anotherWinner.chipsWon;
+                        break;
+                    }
+                }
+            }
         }
         if (winningPlayers.Count >= 2)
         {
