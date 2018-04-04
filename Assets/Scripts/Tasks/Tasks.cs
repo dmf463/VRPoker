@@ -270,6 +270,12 @@ public class PostBlinds : Task
     {
         Player.Bet(BetAmount, isTip);
         Player.currentBet = BetAmount;
+        if (Player.chipCount == 0)
+        {
+            Player.playerIsAllIn = true;
+            Player.maxWinnings = Player.currentBet;
+        }
+
         SetStatus(TaskStatus.Success);
     }
 }

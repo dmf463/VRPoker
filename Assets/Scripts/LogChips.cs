@@ -60,6 +60,7 @@ public class LogChips : MonoBehaviour
                         Debug.Log("NOT MY CHIP");
                         player = Services.Dealer.players[i];
                         startUpTime = Time.time;
+                        Services.Dealer.tipMultiplier = 0;
                         startTimer = true;
                     }
                     if (gameObject.name == playerNames[i])

@@ -14,6 +14,7 @@ using TMPro;
 //PokerPlayerRedux handles all the functions and info that a poker player would need to play
 public class Dealer : MonoBehaviour
 {
+
     public Light lighting;
     public List<Vector3> chipPositionInPot;
     public int chipsMoved;
@@ -21,6 +22,9 @@ public class Dealer : MonoBehaviour
 
     public int tipCount;
     public GameObject tipIndicator;
+    public float tipMultiplier;
+    public GameObject multiplerObj;
+
     public int startingChipCount;
     public float cardMoveSpeed = 1;
     public bool killingCards = false;
@@ -143,6 +147,7 @@ public class Dealer : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        tipMultiplier = 1;
         chipPositionInPot = CreateChipPositions(GameObject.Find("TipZone").transform.position, 0.075f, 0.06f, 5, 50, GameObject.Find("TipZone").transform.position.y);
         tipCount = 0;
         playerDestinations = Table.instance.playerDestinations;
@@ -164,6 +169,7 @@ public class Dealer : MonoBehaviour
             Table.gameState = GameState.Misdeal;
         }
         tipIndicator.GetComponent<TextMeshPro>().text = tipCount.ToString();
+        multiplerObj.GetComponent<TextMeshPro>().text = tipMultiplier.ToString();
         WaitingToGrabCardsOn_ThrownDeck();
         WaitingToGrabCardsOn_MisDeal();
         //RunTutorial();
@@ -417,8 +423,7 @@ public class Dealer : MonoBehaviour
             {
                 if (deckIsDead) killingCards = true;
                 else cleaningCards = true;
-                //Debug.Log("killingCards = " + killingCards);
-                //Debug.Log("cleaningCards = " + cleaningCards);
+                tipMultiplier = 0;
             }
         }
     }
@@ -1161,6 +1166,7 @@ public class Dealer : MonoBehaviour
             GivePlayersWinnings();
             yield return null;
         }
+        tipMultiplier += 1f;
         for (int i = 0; i < players.Count; i++)
         {
             if(players[i].PlayerState == PlayerState.Winner)

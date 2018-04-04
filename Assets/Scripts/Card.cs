@@ -818,6 +818,7 @@ public class Card : InteractionSuperClass {
             //Debug.Log("cardsPulled = " + Services.PokerRules.cardsPulled.Count);
             if (Services.PokerRules.thrownCards.Contains(gameObject))
             {
+                Services.Dealer.tipMultiplier = 0;
                 is_flying = true;
                 float distCovered = (Time.time - flying_start_time) * (Services.Dealer.cardMoveSpeed * 5);
                 float fracJourney = distCovered / flight_journey_distance;

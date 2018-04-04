@@ -29,6 +29,7 @@ public class PokerPlayerRedux : MonoBehaviour{
     public List<int> playersLostAgainst;
     [HideInInspector]
     public int lossCount;
+    public int maxWinnings;
     //what position they are at the table, this is set in Dealer and is massively important
     //this is the current means by which we differentiate between which instance of PokerPlayerRedux we're currently working with
     public int SeatPos { get; set; }
@@ -509,59 +510,72 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public void Raise()
     {
-        lastAction = PlayerAction.Raise;
-        Services.Dealer.raisesInRound++;
-        int aggressors = 0;
-        timesRaisedThisRound++;
-        if (!isAggressor)
+        if (Services.Dealer.GetActivePlayerCount() == 2)
         {
             for (int i = 0; i < Services.Dealer.players.Count; i++)
             {
-                if (Services.Dealer.players[i].isAggressor)
+                if (Services.Dealer.players[i] != this && Services.Dealer.players[i].playerIsAllIn)
                 {
-                    aggressors++;
+                    Call();
                 }
-                if (aggressors == 0) isAggressor = true;
             }
         }
-
-        if (chipCount > 0)
+        else
         {
-            int raiseAmount = amountToRaise;
-            int betToRaise = 0;
-            int lastBet = Services.Dealer.LastBet;
-            betToRaise = lastBet + (raiseAmount - currentBet);
-            int remainder = betToRaise % ChipConfig.RED_CHIP_VALUE;
-            if (remainder > 0) betToRaise = (betToRaise - remainder) + ChipConfig.RED_CHIP_VALUE;
-            if (chipCount - betToRaise <= 0)
+            lastAction = PlayerAction.Raise;
+            Services.Dealer.raisesInRound++;
+            int aggressors = 0;
+            timesRaisedThisRound++;
+            if (!isAggressor)
             {
-                AllIn();
-                //Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
-                currentBet = betToRaise + currentBet;
-                Services.Dealer.LastBet = currentBet;
-                Debug.Log("player " + SeatPos + " raises " + betToRaise);
-                //Debug.Log("Player " + SeatPos + " raised!");
-                //Debug.Log("and the pot is now at " + Table.instance.potChips);
-                //Debug.Log("and player " + SeatPos + " is now at " + chipCount);
-            }
-            else
-            {
-                if (Services.Dealer.LastBet == 0)
+                for (int i = 0; i < Services.Dealer.players.Count; i++)
                 {
-                    SayBet();
+                    if (Services.Dealer.players[i].isAggressor)
+                    {
+                        aggressors++;
+                    }
+                    if (aggressors == 0) isAggressor = true;
+                }
+            }
+
+            if (chipCount > 0)
+            {
+                int raiseAmount = amountToRaise;
+                int betToRaise = 0;
+                int lastBet = Services.Dealer.LastBet;
+                betToRaise = lastBet + (raiseAmount - currentBet);
+                int remainder = betToRaise % ChipConfig.RED_CHIP_VALUE;
+                if (remainder > 0) betToRaise = (betToRaise - remainder) + ChipConfig.RED_CHIP_VALUE;
+                if (chipCount - betToRaise <= 0)
+                {
+                    AllIn();
+                    //Debug.Log("Player " + SeatPos + " didn't have enough chips and went all in for " + chipCount);
+                    currentBet = betToRaise + currentBet;
+                    Services.Dealer.LastBet = currentBet;
+                    Debug.Log("player " + SeatPos + " raises " + betToRaise);
+                    //Debug.Log("Player " + SeatPos + " raised!");
+                    //Debug.Log("and the pot is now at " + Table.instance.potChips);
+                    //Debug.Log("and player " + SeatPos + " is now at " + chipCount);
                 }
                 else
                 {
-                    SayRaise();
+                    if (Services.Dealer.LastBet == 0)
+                    {
+                        SayBet();
+                    }
+                    else
+                    {
+                        SayRaise();
+                    }
+                    Bet(betToRaise, false);
+                    continuationBet = betToRaise;
+                    currentBet = betToRaise + currentBet;
+                    Services.Dealer.LastBet = currentBet;
+                    //Debug.Log("player " + SeatPos + " raises " + betToRaise);
+                    //Debug.Log("Player " + SeatPos + " raised!");
+                    //Debug.Log("and the pot is now at " + Table.instance.potChips);
+                    //Debug.Log("and player " + SeatPos + " is now at " + chipCount);
                 }
-                Bet(betToRaise, false);
-                continuationBet = betToRaise;
-                currentBet = betToRaise + currentBet;
-                Services.Dealer.LastBet = currentBet;
-                //Debug.Log("player " + SeatPos + " raises " + betToRaise);
-                //Debug.Log("Player " + SeatPos + " raised!");
-                //Debug.Log("and the pot is now at " + Table.instance.potChips);
-                //Debug.Log("and player " + SeatPos + " is now at " + chipCount);
             }
         }
     }
@@ -574,6 +588,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             card.cardMarkedForDestruction = false;
         }
         chipCountBeforeAllIn = chipCount;
+        maxWinnings = chipCount;
         playerIsAllIn = true;
         //Debug.Log("getting ready to go all in");
         Bet(chipCount, false);
@@ -1023,7 +1038,7 @@ public class PokerPlayerRedux : MonoBehaviour{
         if (!gaveTip)
         {
             gaveTip = true;
-            int tipAmount = (int)(chipsWon * .10f);
+            int tipAmount = (int)DetermineTipAmount();
             int remainder = tipAmount % ChipConfig.RED_CHIP_VALUE;
             if (remainder > 0)
             {
@@ -1032,6 +1047,12 @@ public class PokerPlayerRedux : MonoBehaviour{
             Bet(tipAmount, true);
             Debug.Log(playerName + " tipped $" + tipAmount);
         }
+    }
+
+    public float DetermineTipAmount()
+    {
+        float tip = ChipConfig.RED_CHIP_VALUE * Services.Dealer.tipMultiplier;
+        return tip;
     }
 
     public void ReceiveWinnings()
