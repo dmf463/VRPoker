@@ -10,7 +10,7 @@ public class LogCards : MonoBehaviour
     private GameObject newCardDeck;
     private bool madeNewDeck;
     private int cardCountForTones;
-    private float cardPositionSpeed = 0.1f;
+    private float cardPositionSpeed = 0.3f;
     private List<string> playerNames = new List<string>
     {
         "P0Cards", "P1Cards", "P2Cards", "P3Cards", "P4Cards"

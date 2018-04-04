@@ -592,7 +592,9 @@ public class PokerRules : MonoBehaviour {
         Card card = cardObj.GetComponent<Card>();
         card.InitializeLerp(cardPos);
         StartCoroutine(card.LerpCardPos(cardPos, speed));
-        StartCoroutine(card.LerpCardRot(cardRot, speed * 1.1f));
+        //StartCoroutine(card.LerpCardRot(cardRot, speed));
+        LerpRotation lerpRot = new LerpRotation(cardObj, cardObj.transform.rotation, cardRot, .5f);
+        tm.Do(lerpRot);
         StartCoroutine(CorrectionsDone(cardPos, cardRot, cardObj, dest, card, correction));
     }
 
@@ -775,7 +777,7 @@ public class PokerRules : MonoBehaviour {
                     if (Table.instance.playerCards[player.SeatPos].Count == (cardPos + 1))
                     {
                         int tonesToSkip = (Services.Dealer.players.Count - Services.Dealer.PlayerAtTableCount()) * 2;
-                        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[toneCount + tonesToSkip], cardToneVolume);
+                        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[(toneCount + tonesToSkip) % Services.Dealer.GetActivePlayerCount()], cardToneVolume);
                         toneCount++;
                     }
                     else

@@ -465,6 +465,11 @@ public class PlayerBehaviour {
             new Condition<PokerPlayerRedux>(p => player.HandStrength > 8),
             new Call()
             ),
+        //CALL ON BIG BLIND EVEN IF LOW STACK IF NO ONE RAISED
+        new Sequence<PokerPlayerRedux>(
+            new IsBigBlind(),
+            new Call()
+            ),
         new Fold()
         ));
 
@@ -584,6 +589,7 @@ public class PlayerBehaviour {
                new LostManyHandsToOpponent(),
                new Not<PokerPlayerRedux>(new HasAGreatHand_PreFlop()),
                new Not<PokerPlayerRedux>(new IsSmallBlind()),
+               new Not<PokerPlayerRedux>(new IsBigBlind()),
                new Fold()
                ),
            //PROTECT YOUR STACK
@@ -629,6 +635,11 @@ public class PlayerBehaviour {
                new Condition<PokerPlayerRedux>(p => player.HandStrength > 8),
                new Call()
                ),
+          //CALL ON BIG BLIND EVEN IF LOW STACK IF NO ONE RAISED
+          new Sequence<PokerPlayerRedux>(
+              new IsBigBlind(),
+              new Call()
+              ),
            new Fold()
            ));
         preflop_FCR_Tree.Update(player);
@@ -640,6 +651,7 @@ public class PlayerBehaviour {
                 new Sequence<PokerPlayerRedux>(
                     new LostManyHandsToOpponent(),
                     new Not<PokerPlayerRedux>(new HasAGreathand()),
+                    new Not<PokerPlayerRedux>(new BetIsZero()),
                     new Fold()
                     ),
                 //CALL
@@ -712,6 +724,11 @@ public class PlayerBehaviour {
           new Sequence<PokerPlayerRedux>(
               new SomeoneHasRaised(),
               new Condition<PokerPlayerRedux>(p => player.HandStrength > 8),
+              new Call()
+              ),
+          //CALL ON BIG BLIND EVEN IF LOW STACK IF NO ONE RAISED
+          new Sequence<PokerPlayerRedux>(
+              new IsBigBlind(),
               new Call()
               ),
           new Fold()
@@ -844,6 +861,11 @@ public class PlayerBehaviour {
           new Sequence<PokerPlayerRedux>(
               new SomeoneHasRaised(),
               new Condition<PokerPlayerRedux>(p => player.HandStrength > 8),
+              new Call()
+              ),
+          //CALL ON BIG BLIND EVEN IF LOW STACK IF NO ONE RAISED
+          new Sequence<PokerPlayerRedux>(
+              new IsBigBlind(),
               new Call()
               ),
           new Fold()
@@ -999,6 +1021,11 @@ public class PlayerBehaviour {
               new Condition<PokerPlayerRedux>(p => player.HandStrength > 8),
               new Call()
               ),
+          //CALL ON BIG BLIND EVEN IF LOW STACK IF NO ONE RAISED
+          new Sequence<PokerPlayerRedux>(
+              new IsBigBlind(),
+              new Call()
+              ),
           new Fold()
           ));
         preflop_FCR_Tree.Update(player);
@@ -1096,92 +1123,6 @@ public class PlayerBehaviour {
                new Fold()
                ));
         FCR_Tree.Update(player);
-    }
-
-    public void UseBehaviorTree(PokerPlayerRedux player)
-    {
-        if (Table.gameState == GameState.PreFlop)
-        {
-            PreFlopFoldCallRaise(player);
-        }
-        else
-        {
-            FCR_Tree = new Tree<PokerPlayerRedux>(new Selector<PokerPlayerRedux>(
-                //BLUFF
-                new Sequence<PokerPlayerRedux>(
-                    new HasABadHand(),
-                    new HasEnoughMoney(),
-                    new BetIsZero(),
-                    new IsInPosition(),
-                    new Raise()
-                    ),
-                //CONTINUATION
-                new Sequence<PokerPlayerRedux>(
-                    new BetPreFlop(),
-                    new Condition<PokerPlayerRedux>(context => player.Hand.HandValues.PokerHand <= PokerHand.OnePair),
-                    new BetIsZero(),
-                    new HasEnoughMoney(),
-                    new Raise()
-                    ),
-                //SLOW PLAY
-                new Sequence<PokerPlayerRedux>(
-                    new HasAGreathand(),
-                    new Condition<PokerPlayerRedux>(context => Services.Dealer.GetActivePlayerCount() <= 3),
-                    new BeforeRiver(),
-                    new Selector<PokerPlayerRedux>(
-                        new Sequence<PokerPlayerRedux>(
-                            new BetIsZero(),
-                            new Raise()
-                            ),
-                        new Sequence<PokerPlayerRedux>(
-                            new Not<PokerPlayerRedux>(new BetIsZero()),
-                            new Call()
-                            )
-                        )
-                    ),
-                //POSITION PLAY
-                new Sequence<PokerPlayerRedux>(
-                    new IsInPosition(),
-                    new Selector<PokerPlayerRedux>(
-                        new Sequence<PokerPlayerRedux>(
-                            new BetIsZero(),
-                            new Raise()
-                        ),
-                        new Sequence<PokerPlayerRedux>(
-                            new Not<PokerPlayerRedux>(new BetIsZero()),
-                            new HasAGoodHand(),
-                            new Call()
-                        )
-                    )
-                ),
-                //CALL
-                new Sequence<PokerPlayerRedux>(
-                    new HasEnoughMoney(),
-                    new HasAGoodHand(),
-                    new Not<PokerPlayerRedux>(new BetIsZero()),
-                    new Call()
-                ),
-                //RAISE
-                new Sequence<PokerPlayerRedux>(
-                    new HasEnoughMoney(),
-                    new HasAGreathand(),
-                    new Raise()
-                ),
-                //FOLD
-                new Selector<PokerPlayerRedux>(
-                    new Sequence<PokerPlayerRedux>(
-                        new BetIsZero(),
-                        new Call()
-                        ),
-                    new Sequence<PokerPlayerRedux>(
-                        new Not<PokerPlayerRedux>(new BetIsZero()),
-                        new Fold()
-                    )
-                ),
-                new Fold()
-                ));
-            FCR_Tree.Update(player);
-        }
     }
 
     ///////////////////////////////
