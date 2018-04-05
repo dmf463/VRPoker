@@ -91,13 +91,8 @@ public class PokerRules : MonoBehaviour {
             }
             else if (Table.gameState == GameState.Turn)
             {
-                Debug.Log("boardcount = " + Table.instance.board.Count);
-                Debug.Log("burn count = " + Table.instance.burn.Count);
-                Debug.Log("reacdy for cards = " + Services.Dealer.readyForCards);
-                Debug.Log("thrown cards count = " + thrownCards.Count);
                 if (Table.instance.board.Count == 5 && Table.instance.burn.Count == 3 && Services.Dealer.readyForCards && thrownCards.Count == 0)
                 {
-                    Debug.Log("getting ready to check river");
                     if (CardsAreFacingCorrectDirection() && !checkedForCorrections)
                     {
                         Debug.Log("checking river");
@@ -592,7 +587,9 @@ public class PokerRules : MonoBehaviour {
         Card card = cardObj.GetComponent<Card>();
         card.InitializeLerp(cardPos);
         StartCoroutine(card.LerpCardPos(cardPos, speed));
-        StartCoroutine(card.LerpCardRot(cardRot, speed * 1.1f));
+        //StartCoroutine(card.LerpCardRot(cardRot, speed));
+        LerpRotation lerpRot = new LerpRotation(cardObj, cardObj.transform.rotation, cardRot, .5f);
+        tm.Do(lerpRot);
         StartCoroutine(CorrectionsDone(cardPos, cardRot, cardObj, dest, card, correction));
     }
 
@@ -775,7 +772,7 @@ public class PokerRules : MonoBehaviour {
                     if (Table.instance.playerCards[player.SeatPos].Count == (cardPos + 1))
                     {
                         int tonesToSkip = (Services.Dealer.players.Count - Services.Dealer.PlayerAtTableCount()) * 2;
-                        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[toneCount + tonesToSkip], cardToneVolume);
+                        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[(toneCount + tonesToSkip) % Services.Dealer.GetActivePlayerCount()], cardToneVolume);
                         toneCount++;
                     }
                     else

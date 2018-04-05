@@ -270,7 +270,57 @@ public class PostBlinds : Task
     {
         Player.Bet(BetAmount, isTip);
         Player.currentBet = BetAmount;
+        if (Player.chipCount == 0)
+        {
+            Player.playerIsAllIn = true;
+            Player.maxWinnings = Player.currentBet;
+        }
+
         SetStatus(TaskStatus.Success);
     }
+}
+
+public class LerpBetChips : TimedTask
+{
+    private System.Collections.Generic.List<Chip> Chips;
+    private System.Collections.Generic.List<Vector3> Starts;
+    private System.Collections.Generic.List<Vector3> Ends;
+
+    public LerpBetChips(System.Collections.Generic.List<Chip> _chips, System.Collections.Generic.List<Vector3> _starts, System.Collections.Generic.List<Vector3> _ends, float duration) : base(duration)
+    {
+        Chips = _chips;
+        Starts = _starts;
+        Ends = _ends;
+    }
+
+    protected override void OnTick(float t)
+    {
+        for (int i = 0; i < Chips.Count; i++)
+        {
+            Chips[i].transform.position = Vector3.Lerp(Starts[i], Ends[i], t);
+        }
+    }
+}
+
+public class ConsolidateChips : Task
+{
+    private System.Collections.Generic.List<Chip> Chips;
+
+    public ConsolidateChips(System.Collections.Generic.List<Chip> _chips)
+    {
+        Chips = _chips;
+    }
+
+    protected override void Init()
+    {
+        Services.PokerRules.ConsolidateStack(Chips);
+        for (int i = 0; i < Chips.Count; i++)
+        {
+            Chips[i].gameObject.transform.position = Services.Dealer.chipPositionInPot[i];
+        }
+        Services.Dealer.consolidatingChips = false;
+        SetStatus(TaskStatus.Success);
+    }
+
 }
 

@@ -382,6 +382,14 @@ public class Card : InteractionSuperClass {
                     StartCoroutine(WaitToCheckIfCardInList(1f));
                 }
             }
+            else
+            {
+                StartCoroutine(WaitToCheckIfCardInList(1f));
+            }
+        }
+        else if(other.gameObject.tag == "Floor")
+        {
+            StartCoroutine(SlowDownTorque());
         }
     }
 
@@ -426,8 +434,6 @@ public class Card : InteractionSuperClass {
 
     public override void OnAttachedToHand(Hand attachedHand)
     {
-        //if(Table.dealerState == DealerState.DealingState)
-        //{
         if (!cardFacingUp)
         {
             transform.rotation = throwingHand.GetAttachmentTransform("CardFaceDown").transform.rotation;
@@ -464,21 +470,6 @@ public class Card : InteractionSuperClass {
 
     public override void OnDetachedFromHand(Hand hand)
     {
-        //CardDeckScript deck;
-        //if (!Services.Dealer.killingCards || Services.Dealer.cleaningCards)
-        //{
-        //    deck = GameObject.FindGameObjectWithTag("CardDeck").GetComponent<CardDeckScript>();
-        //}
-        //else deck = null;
-        //if (deck != null && deck.safeToPutCardBack)
-        //{
-        //    deck.cardsInDeck.Add(cardType);
-        //    deck.MakeDeckLarger();
-        //    deck.safeToPutCardBack = false;
-        //    Destroy(gameObject);
-        //}
-        //else
-        //{
         StartPulse();
         if (!Services.PokerRules.thrownCards.Contains(gameObject) && Table.gameState == GameState.NewRound && !Services.Dealer.isCheating)
         {
@@ -501,7 +492,6 @@ public class Card : InteractionSuperClass {
         Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cards[Random.Range(0, Services.SoundManager.cards.Length)], 0.25f, Random.Range(0.95f, 1.05f), transform.position);
         StartCoroutine(CheckVelocity(.025f));
         base.OnDetachedFromHand(hand);
-        //}
     }
 
     //basically we want to give some time for the card to actually LEAVE the hand before we check the velocity
@@ -553,7 +543,24 @@ public class Card : InteractionSuperClass {
         {
             Debug.Log("misdeal here");
             Table.gameState = GameState.Misdeal;
+            StartCoroutine(SlowDownTorque());
         }
+        else if(!CardIsInList(this)) StartCoroutine(SlowDownTorque()); 
+    }
+
+    IEnumerator SlowDownTorque()
+    {
+        while(slowTorque != 0 || fastTorque != 0)
+        {
+            slowTorque -= 0.05f;
+            fastTorque -= 0.05f;
+            if (slowTorque <= 0) slowTorque = 0;
+            if (fastTorque <= 0) fastTorque = 0;
+            yield return null;
+        }
+        startingSlowTorque = false;
+        startingFastTorque = false;
+        yield break;
     }
 
     public bool CardsAreFlying(GameObject card)
@@ -811,6 +818,7 @@ public class Card : InteractionSuperClass {
             //Debug.Log("cardsPulled = " + Services.PokerRules.cardsPulled.Count);
             if (Services.PokerRules.thrownCards.Contains(gameObject))
             {
+                Services.Dealer.tipMultiplier = 0;
                 is_flying = true;
                 float distCovered = (Time.time - flying_start_time) * (Services.Dealer.cardMoveSpeed * 5);
                 float fracJourney = distCovered / flight_journey_distance;
@@ -947,18 +955,6 @@ public class Card : InteractionSuperClass {
 
     public bool LookingAtCard()
     {
-        //if(testingDot == 0)
-        //{
-        //    testingDot = Vector3.Dot(transform.forward, Camera.main.transform.forward);
-        //}
-        //else
-        //{
-        //    if(testingDot < Vector3.Dot(transform.forward, Camera.main.transform.forward))
-        //    {
-        //        testingDot = Vector3.Dot(transform.forward, Camera.main.transform.forward);
-        //    }
-        //}
-        //Debug.Log("highest testingDot = " + testingDot);
         return Vector3.Dot(transform.forward, Camera.main.transform.forward) > 0.5f;
     }
 

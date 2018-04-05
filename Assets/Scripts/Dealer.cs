@@ -14,6 +14,8 @@ using TMPro;
 //PokerPlayerRedux handles all the functions and info that a poker player would need to play
 public class Dealer : MonoBehaviour
 {
+    List<List<PokerPlayerRedux>> PlayerRank;
+
     public Light lighting;
     public List<Vector3> chipPositionInPot;
     public int chipsMoved;
@@ -21,6 +23,9 @@ public class Dealer : MonoBehaviour
 
     public int tipCount;
     public GameObject tipIndicator;
+    public float tipMultiplier;
+    public GameObject multiplerObj;
+
     public int startingChipCount;
     public float cardMoveSpeed = 1;
     public bool killingCards = false;
@@ -115,6 +120,7 @@ public class Dealer : MonoBehaviour
     private float gameLength;
 
     public PokerGameData startingGameState;
+    public bool consolidatingChips = false;
 
     [HideInInspector]
 	public bool misdealAudioPlayed =false;
@@ -142,6 +148,7 @@ public class Dealer : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        tipMultiplier = 1;
         chipPositionInPot = CreateChipPositions(GameObject.Find("TipZone").transform.position, 0.075f, 0.06f, 5, 50, GameObject.Find("TipZone").transform.position.y);
         tipCount = 0;
         playerDestinations = Table.instance.playerDestinations;
@@ -163,6 +170,7 @@ public class Dealer : MonoBehaviour
             Table.gameState = GameState.Misdeal;
         }
         tipIndicator.GetComponent<TextMeshPro>().text = tipCount.ToString();
+        multiplerObj.GetComponent<TextMeshPro>().text = tipMultiplier.ToString();
         WaitingToGrabCardsOn_ThrownDeck();
         WaitingToGrabCardsOn_MisDeal();
         //RunTutorial();
@@ -264,7 +272,6 @@ public class Dealer : MonoBehaviour
         {
             if (!roundStarted)
             {
-                Debug.Log("turn Debug should only go once");
                 roundStarted = true;
                 if (!OnlyAllInPlayersLeft()) StartRound();
                 else
@@ -280,7 +287,6 @@ public class Dealer : MonoBehaviour
         //when the three seconds end, readyForShowdown sets to true and the player can trigger it
         if (Table.gameState == GameState.River)
         {
-            Debug.Log("we in the river");
             if (!roundStarted)
             {
                 if (OnlyAllInPlayersLeft() && !finalHandEvaluation)
@@ -416,8 +422,7 @@ public class Dealer : MonoBehaviour
             {
                 if (deckIsDead) killingCards = true;
                 else cleaningCards = true;
-                //Debug.Log("killingCards = " + killingCards);
-                //Debug.Log("cleaningCards = " + cleaningCards);
+                tipMultiplier = 0;
             }
         }
     }
@@ -915,15 +920,20 @@ public class Dealer : MonoBehaviour
                         }
                     }
                 }
-                Debug.Log(Table.gameState + " Finished");
-
                 Services.SoundManager.roundsFinished++; //increment int for tutorial vo based on when players are done betting
-                for (int i = chipsInPot.Count - 1; i >= 0; i--)
+                if (LastBet != 0)
                 {
-                    chipsInPot[i].GetComponent<Chip>().InitializeLerp(chipPositionInPot[i]);
-                    StartCoroutine(chipsInPot[i].GetComponent<Chip>().LerpChipPos(chipPositionInPot[i], 1));
-                    StartCoroutine(chipsInPot[i].GetComponent<Chip>().StopLerp(chipPositionInPot[i]));
-                    StartCoroutine(ConsolidateChipsAfterTheyMoveToPot());
+                    List<Vector3> positions = new List<Vector3>();
+                    List<Vector3> endPosition = new List<Vector3>();
+                    for (int i = chipsInPot.Count - 1; i >= 0; i--)
+                    {
+                        positions.Add(chipsInPot[i].transform.position);
+                        endPosition.Add(chipPositionInPot[i]);
+                    }
+                    LerpBetChips lerpChips = new LerpBetChips(chipsInPot, positions, endPosition, .5f);
+                    ConsolidateChips consolidate = new ConsolidateChips(chipsInPot);
+                    lerpChips.Then(consolidate);
+                    tm.Do(lerpChips);
                 }
                 playerToAct.playerSpotlight.SetActive(false);
                 playerToAct = null;
@@ -956,14 +966,18 @@ public class Dealer : MonoBehaviour
     {
         for (int i = 0; i < players.Count; i++)
         {
-			players[i].SeatPos = i;
-			players[i].PlayerState = PlayerState.Playing;
+            players[i].SeatPos = i;
+            players[i].PlayerState = PlayerState.Playing;
             players[i].lastAction = PlayerAction.None;
-			activePlayers.Add(players[i]);
-			//Debug.Log ("Adding " + players[i] + " to active players!");
-            List<int> startingStack  = players[i].SetChipStacks(chipCount);
+            activePlayers.Add(players[i]);
+            //Debug.Log ("Adding " + players[i] + " to active players!");
+            List<int> startingStack = players[i].SetChipStacks(chipCount);
             Table.instance.AddChipTo(playerDestinations[i], chipCount);
             players[i].CreateAndOrganizeChipStacks(startingStack);
+            players[i].playersLostAgainst = new List<int>(5)
+            {
+                 0, 0, 0, 0, 0
+            };
         }
 
         Table.instance.DealerPosition = 0;
@@ -1027,7 +1041,7 @@ public class Dealer : MonoBehaviour
 
         sortedPlayers[0].PlayerState = PlayerState.Winner;
 
-        List<List<PokerPlayerRedux>> PlayerRank = new List<List<PokerPlayerRedux>>();
+        PlayerRank = new List<List<PokerPlayerRedux>>();
 
         for (int i = 0; i < sortedPlayers.Count; i++)
         {
@@ -1102,10 +1116,98 @@ public class Dealer : MonoBehaviour
             if (remainder > 0)
             {
                 winningPlayers[i].chipsWon = (potAmountToGiveWinner - remainder) + ChipConfig.RED_CHIP_VALUE;
+                if (winningPlayers[i].chipsWon > winningPlayers[i].maxWinnings && winningPlayers[i].maxWinnings != 0)
+                {
+                    int playersInPot = 0;
+                    foreach (PokerPlayerRedux player in players)
+                    {
+                        if (player.PlayerState == PlayerState.Winner || player.PlayerState == PlayerState.Loser)
+                        {
+                            playersInPot++;
+                        }
+                    }
+                    winningPlayers[i].chipsWon = winningPlayers[i].maxWinnings * playersInPot;
+                }
             }
-            else winningPlayers[i].chipsWon = potAmountToGiveWinner;
+            else
+            {
+                winningPlayers[i].chipsWon = potAmountToGiveWinner;
+                if (winningPlayers[i].chipsWon > winningPlayers[i].maxWinnings && winningPlayers[i].maxWinnings != 0)
+                {
+                    int playersInPot = 0;
+                    foreach (PokerPlayerRedux player in players)
+                    {
+                        if (player.PlayerState == PlayerState.Winner || player.PlayerState == PlayerState.Loser)
+                        {
+                            playersInPot++;
+                        }
+                    }
+                    winningPlayers[i].chipsWon = winningPlayers[i].maxWinnings * playersInPot;
+                }
+            }
             potRemaining -= winningPlayers[i].chipsWon;
-            Debug.Log("chipCountToCheckWhenWinning = " + winningPlayers[i].ChipCountToCheckWhenWinning + " and potAmountToGiveWinner = " + potAmountToGiveWinner);
+        }
+        if(potRemaining != 0)
+        {
+            for (int rank = 0; rank < PlayerRank.Count; rank++)
+            {
+                for (int player = 0; player < PlayerRank[rank].Count; player++)
+                {
+                    if(PlayerRank[rank][player].PlayerState == PlayerState.Loser)
+                    {
+                        PokerPlayerRedux anotherWinner = PlayerRank[rank][player];
+                        anotherWinner.PlayerState = PlayerState.Winner;
+                        winningPlayers.Add(anotherWinner);
+                        anotherWinner.ChipCountToCheckWhenWinning = anotherWinner.chipCount;
+                        anotherWinner.chipsWon = potRemaining;
+                        if (anotherWinner.chipsWon > anotherWinner.maxWinnings && anotherWinner.maxWinnings != 0)
+                        {
+                            int playersInPot = 0;
+                            foreach (PokerPlayerRedux p in players)
+                            {
+                                if (p.PlayerState == PlayerState.Winner || p.PlayerState == PlayerState.Loser)
+                                {
+                                    playersInPot++;
+                                }
+                            }
+                            anotherWinner.chipsWon = anotherWinner.maxWinnings * playersInPot;
+                        }
+                        potRemaining -= anotherWinner.chipsWon;
+                        break;
+                    }
+                }
+            }
+        }
+        if (potRemaining != 0)
+        {
+            for (int rank = 0; rank < PlayerRank.Count; rank++)
+            {
+                for (int player = 0; player < PlayerRank[rank].Count; player++)
+                {
+                    if (PlayerRank[rank][player].PlayerState == PlayerState.Loser)
+                    {
+                        PokerPlayerRedux anotherWinner = PlayerRank[rank][player];
+                        anotherWinner.PlayerState = PlayerState.Winner;
+                        winningPlayers.Add(anotherWinner);
+                        anotherWinner.ChipCountToCheckWhenWinning = anotherWinner.chipCount;
+                        anotherWinner.chipsWon = potRemaining;
+                        if (anotherWinner.chipsWon > anotherWinner.maxWinnings && anotherWinner.maxWinnings != 0)
+                        {
+                            int playersInPot = 0;
+                            foreach (PokerPlayerRedux p in players)
+                            {
+                                if (p.PlayerState == PlayerState.Winner || p.PlayerState == PlayerState.Loser)
+                                {
+                                    playersInPot++;
+                                }
+                            }
+                            anotherWinner.chipsWon = anotherWinner.maxWinnings * playersInPot;
+                        }
+                        potRemaining -= anotherWinner.chipsWon;
+                        break;
+                    }
+                }
+            }
         }
         if (winningPlayers.Count >= 2)
         {
@@ -1155,11 +1257,21 @@ public class Dealer : MonoBehaviour
             GivePlayersWinnings();
             yield return null;
         }
+        tipMultiplier += 1f;
         for (int i = 0; i < players.Count; i++)
         {
             if(players[i].PlayerState == PlayerState.Winner)
             {
+                players[i].lossCount = 0;
                 players[i].Tip();
+            }
+            else if(players[i].PlayerState == PlayerState.Loser)
+            {
+                players[i].lossCount++;
+                for (int winners = 0; winners < winningPlayers.Count; winners++)
+                {
+                    players[i].playersLostAgainst[winningPlayers[winners].SeatPos]++;
+                }
             }
         }
         for (int i = 0; i < players.Count; i++)
@@ -1632,6 +1744,7 @@ public class Dealer : MonoBehaviour
             //null reference trying to destroy chips
             chipsInPot[i].gameObject.transform.position = chipPositionInPot[i];
         }
+        consolidatingChips = false;
         yield break;
     }
 
