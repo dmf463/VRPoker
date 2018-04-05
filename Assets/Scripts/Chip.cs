@@ -167,10 +167,6 @@ public class Chip : InteractionSuperClass {
                                 maxGlow = 1;
                                 Services.PokerRules.chipGroup.Add(this);
                                 GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
-                                //foreach (GameObject chip in allChips)
-                                //{
-                                //    Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), chip.GetComponent<Collider>(), true);
-                                //}
                                 handPushingChip = hand;
                                 pushingChip = true;
                                 Services.Dealer.handIsOccupied = true;
