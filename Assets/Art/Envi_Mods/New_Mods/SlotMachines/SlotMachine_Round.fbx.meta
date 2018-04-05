@@ -1,0 +1,181 @@
+fileFormatVersion: 2
+guid: 0b135668eba28425da7abe7061ffec1d
+timeCreated: 1522909252
+licenseType: Free
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: pSphere10
+    100002: pSphere11
+    100004: pSphere12
+    100006: pSphere13
+    100008: pSphere14
+    100010: pSphere15
+    100012: pSphere16
+    100014: pSphere17
+    100016: pSphere18
+    100018: pSphere19
+    100020: pSphere20
+    100022: pSphere30
+    100024: pSphere7
+    100026: pSphere8
+    100028: pSphere9
+    100030: //RootNode
+    100032: transform24
+    100034: transform25
+    100036: transform26
+    100038: transform27
+    100040: transform28
+    100042: transform29
+    100044: transform30
+    100046: transform31
+    100048: transform32
+    100050: transform33
+    100052: transform34
+    100054: transform35
+    100056: transform36
+    100058: transform37
+    400000: pSphere10
+    400002: pSphere11
+    400004: pSphere12
+    400006: pSphere13
+    400008: pSphere14
+    400010: pSphere15
+    400012: pSphere16
+    400014: pSphere17
+    400016: pSphere18
+    400018: pSphere19
+    400020: pSphere20
+    400022: pSphere30
+    400024: pSphere7
+    400026: pSphere8
+    400028: pSphere9
+    400030: //RootNode
+    400032: transform24
+    400034: transform25
+    400036: transform26
+    400038: transform27
+    400040: transform28
+    400042: transform29
+    400044: transform30
+    400046: transform31
+    400048: transform32
+    400050: transform33
+    400052: transform34
+    400054: transform35
+    400056: transform36
+    400058: transform37
+    2100000: lambert1
+    2100002: lambert2
+    2100004: lambert3
+    2100006: lambert4
+    2100008: lambert5
+    2300000: pSphere30
+    3300000: pSphere30
+    4300000: pSphere30
+    9500000: //RootNode
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lambert1
+    second: {fileID: 2100000, guid: 8a77d8f2c26dd49f3b28f26b79ad4e72, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lambert2
+    second: {fileID: 2100000, guid: 2ddc8bcc7e2ea4cca9ff37d2d1b74f80, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lambert3
+    second: {fileID: 2100000, guid: 8a77d8f2c26dd49f3b28f26b79ad4e72, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lambert4
+    second: {fileID: 2100000, guid: 6a6c1f09b91a4407a9613719789e8e7a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lambert5
+    second: {fileID: 2100000, guid: 8a77d8f2c26dd49f3b28f26b79ad4e72, type: 2}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

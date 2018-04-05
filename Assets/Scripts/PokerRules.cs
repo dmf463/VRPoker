@@ -723,31 +723,31 @@ public class PokerRules : MonoBehaviour {
                 }
                 else if (chip.chipStack == null)
                 {
-                    for (int chipToCheck = 0; chipToCheck < chipGroup.Count; chipToCheck++)
+                    for (int chipToCheck = 0; chipToCheck < chipsToConsolidate.Count; chipToCheck++)
                     {
                         if (chipToCheck != i)
                         {
-                            if (chipGroup[chipToCheck].chipStack != null)
+                            if (chipsToConsolidate[chipToCheck].chipStack != null)
                             {
-                                if (chipGroup[chipToCheck].chipData.ChipValue == chip.chipData.ChipValue && chipGroup[chipToCheck].chipStack.chips.Count < 10)
+                                if (chipsToConsolidate[chipToCheck].chipData.ChipValue == chip.chipData.ChipValue && chipsToConsolidate[chipToCheck].chipStack.chips.Count < 10)
                                 {
-                                    chipGroup[chipToCheck].chipStack.AddToStackInHand(chip.chipData);
-                                    chipGroup.Remove(chip);
+                                    chipsToConsolidate[chipToCheck].chipStack.AddToStackInHand(chip.chipData);
+                                    chipsToConsolidate.Remove(chip);
                                     Destroy(chip.gameObject);
                                     break;
                                 }
                             }
                             else
                             {
-                                chipGroup[chipToCheck].chipStack = new ChipStack(chipGroup[chipToCheck]);
+                                chipsToConsolidate[chipToCheck].chipStack = new ChipStack(chipsToConsolidate[chipToCheck]);
                             }
                         }
                     }
                 }
             }
-            for (int i = 0; i < chipGroup.Count; i++)
+            for (int i = 0; i < chipsToConsolidate.Count; i++)
             {
-                chipGroup[i].spotIndex = i;
+                chipsToConsolidate[i].spotIndex = i;
             }
         }
     }
