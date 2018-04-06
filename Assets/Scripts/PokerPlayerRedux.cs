@@ -439,6 +439,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public void Fold()
     {
+        Debug.Log("ENTERED FOLD FUNCTION");
         lastAction = PlayerAction.Fold;
         SayFold();
         foreach (Card card in Table.instance.playerCards[SeatPos])
@@ -482,6 +483,7 @@ public class PokerPlayerRedux : MonoBehaviour{
     }
     public void Call()
     {
+        Debug.Log("ENTERED CALL FUNCTION");
         lastAction = PlayerAction.Call;
         if (chipCount > 0)
         {
@@ -497,8 +499,14 @@ public class PokerPlayerRedux : MonoBehaviour{
             else
             {
                 //Debug.Log("betToCall = " + betToCall);
-                if (betToCall == 0) SayCheck();
-                else SayCall();
+                if (betToCall == 0)
+                {
+                    SayCheck();
+                }
+                else
+                {
+                    SayCall();
+                }
                 Bet(betToCall, false);
                 currentBet = betToCall + currentBet;
                 Services.Dealer.LastBet = currentBet;
@@ -510,18 +518,20 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public void Raise()
     {
-        if (Services.Dealer.GetActivePlayerCount() == 2)
-        {
-            for (int i = 0; i < Services.Dealer.players.Count; i++)
-            {
-                if (Services.Dealer.players[i] != this && Services.Dealer.players[i].playerIsAllIn)
-                {
-                    Call();
-                }
-            }
-        }
-        else
-        {
+        //Debug.Log("ENTERED RAISE FUNCTION");
+        //if (Services.Dealer.GetActivePlayerCount() == 2)
+        //{
+        //    for (int i = 0; i < Services.Dealer.players.Count; i++)
+        //    {
+        //        if (Services.Dealer.players[i] != this && Services.Dealer.players[i].playerIsAllIn)
+        //        {
+        //            Debug.Log("calling with all in player!");
+        //            Call();
+        //        }
+        //    }
+        //}
+        //else
+        //{
             lastAction = PlayerAction.Raise;
             Services.Dealer.raisesInRound++;
             int aggressors = 0;
@@ -561,27 +571,30 @@ public class PokerPlayerRedux : MonoBehaviour{
                 {
                     if (Services.Dealer.LastBet == 0)
                     {
+                        Debug.Log("Saying Bet");
                         SayBet();
                     }
                     else
                     {
+                        Debug.Log("Saying Raise");
                         SayRaise();
                     }
                     Bet(betToRaise, false);
                     continuationBet = betToRaise;
                     currentBet = betToRaise + currentBet;
                     Services.Dealer.LastBet = currentBet;
-                    //Debug.Log("player " + SeatPos + " raises " + betToRaise);
-                    //Debug.Log("Player " + SeatPos + " raised!");
-                    //Debug.Log("and the pot is now at " + Table.instance.potChips);
-                    //Debug.Log("and player " + SeatPos + " is now at " + chipCount);
+                    Debug.Log("player " + SeatPos + " raises " + betToRaise);
+                    Debug.Log("Player " + SeatPos + " raised!");
+                    Debug.Log("and the pot is now at " + Table.instance.potChips);
+                    Debug.Log("and player " + SeatPos + " is now at " + chipCount);
                 }
-            }
+            //}
         }
     }
 
     public void AllIn()
     {
+        Debug.Log("ENTERED ALL IN FUNCTION");
         SayAllIn();
         foreach (Card card in Table.instance.playerCards[SeatPos])
         {
@@ -1582,6 +1595,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             {
                 playerAudioSource.volume = 1f;
             }
+            Debug.Log(playerName + " is saying checkl");
             //Services.SoundManager.GetSourceAndPlay(playerAudioSource, checkAudio);
             Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(playerName, LineCriteria.Check));
         }
@@ -1591,22 +1605,17 @@ public class PokerPlayerRedux : MonoBehaviour{
     {
         if (!playerAudioSource.isPlaying && !playerIsInConversation)
         {
-            //Services.SoundManager.GetSourceAndPlay(playerAudioSource, foldAudio);
-           // float chanceOfConvo = Random.Range(0, 100);
-            //if (chanceOfConvo < 25f)
-            //{
-                if (!Services.SoundManager.conversationIsPlaying)
+            if (!Services.SoundManager.conversationIsPlaying)
+            {
+            Debug.Log(playerName + " folded and is starting a conversation!");
+
+                for (int i = 0; i < 100; i++)
                 {
-                    //Services.SoundManager.PlayAsideConversation(UnityEngine.Random.Range(0, 5));
-                    //Services.SoundManager.PlayAsideConversation(this);
-                    for (int i = 0; i < 100; i++)
-                    {
-                        Services.SoundManager.PlayConversation();
-                        //Debug.Log(gameObject + " started a conversation.");
-                    }
-                    
+                    Services.SoundManager.PlayConversation();
                 }
-            //}
+                
+            }
+           
             else
             {
                 if (Services.SoundManager.conversationIsPlaying)
@@ -1617,9 +1626,8 @@ public class PokerPlayerRedux : MonoBehaviour{
                 {
                     playerAudioSource.volume = 1f;
                 }
+                Debug.Log(playerName + " is saying fold");
                 Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(playerName, LineCriteria.Fold));
-                //Services.SoundManager.GetSourceAndPlay(playerAudioSource, foldAudio);
-                //Debug.Log(gameObject + " said fold.");
             }
 
         }
@@ -1638,6 +1646,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             {
                 playerAudioSource.volume = 1f;
             }
+            Debug.Log(playerName + " is saying raise");
             //Services.SoundManager.GetSourceAndPlay(playerAudioSource, raiseAudio);
             Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(playerName, LineCriteria.Raise));
         }
@@ -1655,6 +1664,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             {
                 playerAudioSource.volume = 1f;
             }
+            Debug.Log(playerName + " is saying bet");
             Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(playerName, LineCriteria.Bet));
             //Services.SoundManager.GetSourceAndPlay(playerAudioSource, betAudio);
         }
@@ -1672,7 +1682,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             {
                 playerAudioSource.volume = 1f;
             }
-
+            Debug.Log(playerName + " is saying call");
             Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(playerName, LineCriteria.Call));
             //Services.SoundManager.GetSourceAndPlay(playerAudioSource, callAudio);
         }
@@ -1691,6 +1701,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                 playerAudioSource.volume = 1f;
             }
             //Services.SoundManager.GetSourceAndPlay(playerAudioSource, allInAudio);
+            Debug.Log(playerName + " is saying all in");
             Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(playerName, LineCriteria.AllIn));
         }
     }
