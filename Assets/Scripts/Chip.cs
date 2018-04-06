@@ -340,6 +340,7 @@ public class Chip : InteractionSuperClass {
                 Destroy(incomingStack.gameObject);
                 incomingStack = null;
             }
+            //NEW BUG
             else if(isTouchingStack && incomingStack.gameObject.tag == "Tip")
             {
                 foreach (ChipData chip in incomingStack.chipStack.chips)

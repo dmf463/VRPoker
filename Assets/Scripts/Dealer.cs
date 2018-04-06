@@ -683,7 +683,7 @@ public class Dealer : MonoBehaviour
                     first_time = false;
                 }
                 foreach (GameObject card in cardsOnTable)
-                {
+                {   //BUG HERE
                     StartCoroutine(card.GetComponent<Card>().LerpCardPos(cardDeck.transform.position + modPos, cardMoveSpeed));
                     if (card.transform.position == cardDeck.transform.position + modPos)
                     {
@@ -927,6 +927,7 @@ public class Dealer : MonoBehaviour
                     List<Vector3> endPosition = new List<Vector3>();
                     for (int i = chipsInPot.Count - 1; i >= 0; i--)
                     {
+                        //BUG HERE
                         positions.Add(chipsInPot[i].transform.position);
                         endPosition.Add(chipPositionInPot[i]);
                     }
