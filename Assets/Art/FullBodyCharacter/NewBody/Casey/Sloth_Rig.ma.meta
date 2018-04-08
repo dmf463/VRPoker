@@ -1,0 +1,184 @@
+fileFormatVersion: 2
+guid: 8fe13ebffce2d4690a377d1b609883dc
+timeCreated: 1523180536
+licenseType: Free
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: Head
+    100002: ikHandle1
+    100004: ikHandle3
+    100006: ikHandle4
+    100008: ikHandle5
+    100010: joint1
+    100012: joint1 1
+    100014: joint13
+    100016: joint2
+    100018: joint2 1
+    100020: joint3
+    100022: joint3 1
+    100024: joint4
+    100026: joint4 1
+    100028: joint5
+    100030: joint6
+    100032: joint6 1
+    100034: Left_Ankle
+    100036: Left_hand_nurbsCircle5
+    100038: Left_Heel
+    100040: Left_Knee
+    100042: Left_Leg
+    100044: Left_leg_nurbsCircle4
+    100046: Left_Toe
+    100048: Neck_01
+    100050: Neck_02
+    100052: Neck_nurbsCircle7
+    100054: Pelvis_Bottom
+    100056: Pelvis_top
+    100058: Right_Ankle
+    100060: Right_hand_nurbsCircle6
+    100062: Right_Heel
+    100064: Right_Knee
+    100066: Right_Leg
+    100068: Right_leg_nurbsCircle3
+    100070: Right_Toe
+    100072: Sloth
+    100074: //RootNode
+    100076: Spine_01
+    100078: Spine_02
+    100080: Spine_03
+    100082: transform98
+    100084: Waist_nurbsCircle1
+    100086: WholeBody
+    400000: Head
+    400002: ikHandle1
+    400004: ikHandle3
+    400006: ikHandle4
+    400008: ikHandle5
+    400010: joint1
+    400012: joint1 1
+    400014: joint13
+    400016: joint2
+    400018: joint2 1
+    400020: joint3
+    400022: joint3 1
+    400024: joint4
+    400026: joint4 1
+    400028: joint5
+    400030: joint6
+    400032: joint6 1
+    400034: Left_Ankle
+    400036: Left_hand_nurbsCircle5
+    400038: Left_Heel
+    400040: Left_Knee
+    400042: Left_Leg
+    400044: Left_leg_nurbsCircle4
+    400046: Left_Toe
+    400048: Neck_01
+    400050: Neck_02
+    400052: Neck_nurbsCircle7
+    400054: Pelvis_Bottom
+    400056: Pelvis_top
+    400058: Right_Ankle
+    400060: Right_hand_nurbsCircle6
+    400062: Right_Heel
+    400064: Right_Knee
+    400066: Right_Leg
+    400068: Right_leg_nurbsCircle3
+    400070: Right_Toe
+    400072: Sloth
+    400074: //RootNode
+    400076: Spine_01
+    400078: Spine_02
+    400080: Spine_03
+    400082: transform98
+    400084: Waist_nurbsCircle1
+    400086: WholeBody
+    2100000: lambert1
+    2100002: lambert20
+    2100004: tshirt1
+    2100006: lambert21
+    2100008: tshirt
+    2100010: over_all
+    4300000: Sloth
+    9500000: //RootNode
+    13700000: Sloth
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
