@@ -304,6 +304,19 @@ public class Dealer : MonoBehaviour
                         }
                     }
                 }
+                else
+                {
+                    for (int i = 0; i < players.Count; i++)
+                    {
+                        if(players[i].playerIsAllIn || players[i].chipCount == 0)
+                        {
+                            List<CardType> sortedCards = Table.instance.SortPlayerCardsAtRiver(players[i].SeatPos);
+                            HandEvaluator playerHand = new HandEvaluator(sortedCards);
+                            playerHand.EvaluateHandAtRiver();
+                            players[i].Hand = playerHand;
+                        }
+                    }
+                }
                 //Debug.Log("River Debug should only go once");
                 roundStarted = true;
                 if (!OnlyAllInPlayersLeft()) StartRound();

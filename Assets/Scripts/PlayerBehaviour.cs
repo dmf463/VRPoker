@@ -1341,6 +1341,7 @@ public class PlayerBehaviour {
     {
         public override bool Update(PokerPlayerRedux player)
         {
+            Debug.Log(player.playerName + " is folding");
             player.Fold();
             player.turnComplete = true;
             player.actedThisRound = true;
@@ -1352,6 +1353,7 @@ public class PlayerBehaviour {
     {
         public override bool Update(PokerPlayerRedux player)
         {
+            Debug.Log(player.playerName + " is calling");
             player.Call();
             player.turnComplete = true;
             player.actedThisRound = true;
@@ -1363,6 +1365,7 @@ public class PlayerBehaviour {
     {
         public override bool Update(PokerPlayerRedux player)
         {
+            Debug.Log(player.playerName + " is raising");
             player.Raise();
             player.turnComplete = true;
             player.actedThisRound = true;
@@ -1374,6 +1377,7 @@ public class PlayerBehaviour {
     {
         public override bool Update(PokerPlayerRedux player)
         {
+            Debug.Log(player.playerName + " is going all in");
             player.AllIn();
             player.turnComplete = true;
             player.actedThisRound = true;
