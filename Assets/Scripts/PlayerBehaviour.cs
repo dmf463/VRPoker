@@ -1036,17 +1036,17 @@ public class PlayerBehaviour {
                //WILDCARD BITCHES//
                //WILDCARD RAISE
                new Sequence<PokerPlayerRedux>(
-                   new Condition<PokerPlayerRedux>(context => UnityEngine.Random.Range(0, 100) < 25),
+                   new Condition<PokerPlayerRedux>(context => UnityEngine.Random.Range(0, 100) < 15),
                    new Raise()
                    ),
                //WILDCARD CALL
                new Sequence<PokerPlayerRedux>(
-                   new Condition<PokerPlayerRedux>(context => UnityEngine.Random.Range(0, 100) < 25),
+                   new Condition<PokerPlayerRedux>(context => UnityEngine.Random.Range(0, 100) < 15),
                    new Call()
                    ),
                //WILDCARD FOLD
                new Sequence<PokerPlayerRedux>(
-                   new Condition<PokerPlayerRedux>(context => UnityEngine.Random.Range(0, 100) < 25),
+                   new Condition<PokerPlayerRedux>(context => UnityEngine.Random.Range(0, 100) < 15),
                    new Fold()
                    ),
                //BLUFF
