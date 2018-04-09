@@ -754,7 +754,6 @@ public class PokerRules : MonoBehaviour {
 
     public void PlayTone()
     {
-        if (toneCount < 0 || toneCount > Services.SoundManager.cardTones.Length - 1) toneCount = 0;
         if (Table.gameState == GameState.NewRound)
         {
             SetCardPlacement(Services.Dealer.PlayerAtTableCount());
@@ -772,7 +771,8 @@ public class PokerRules : MonoBehaviour {
                     if (Table.instance.playerCards[player.SeatPos].Count == (cardPos + 1))
                     {
                         int tonesToSkip = (Services.Dealer.players.Count - Services.Dealer.PlayerAtTableCount()) * 2;
-                        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[(toneCount + tonesToSkip) % Services.Dealer.GetActivePlayerCount()], cardToneVolume);
+                        if (toneCount < 0 || toneCount > Services.SoundManager.cardTones.Length - 1) toneCount = 0;
+                        Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.cardTones[(toneCount + tonesToSkip)], cardToneVolume);
                         toneCount++;
                     }
                     else

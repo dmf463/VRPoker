@@ -16,6 +16,10 @@ public class Dealer : MonoBehaviour
 {
     List<List<PokerPlayerRedux>> PlayerRank;
 
+    private DateTime oldTime;
+    private DateTime newTime;
+    private int minutes;
+
     public Light lighting;
     public List<Vector3> chipPositionInPot;
     public int chipsMoved;
@@ -117,8 +121,6 @@ public class Dealer : MonoBehaviour
 
     public int raisesInRound;
 
-    private float gameLength;
-
     public PokerGameData startingGameState;
     public bool consolidatingChips = false;
 
@@ -148,6 +150,8 @@ public class Dealer : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        oldTime = System.DateTime.Now;
+        minutes = 0;
         tipMultiplier = 1;
         chipPositionInPot = CreateChipPositions(GameObject.Find("TipZone").transform.position, 0.075f, 0.06f, 5, 50, GameObject.Find("TipZone").transform.position.y);
         tipCount = 0;
@@ -163,6 +167,8 @@ public class Dealer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        newTime = System.DateTime.Now;
+        minutes = newTime.Minute - oldTime.Minute;
         tm.Update();
         if (deckIsDead)
         {
@@ -442,63 +448,62 @@ public class Dealer : MonoBehaviour
 
     void IncreaseBlinds()
     {
-        gameLength += Time.deltaTime;
-		if (gameLength >= 3600) //60 minutes
+		if (minutes >= 60) //60 minutes
+		{
+			SmallBlind = 1200;
+			BigBlind = SmallBlind * 2;
+		}
+		else if (minutes >= 55) //55 minutes
+		{
+			SmallBlind = 1000;
+			BigBlind = SmallBlind * 2;
+		}
+		else if (minutes >= 50) //50 minutes
+		{
+			SmallBlind = 900;
+			BigBlind = SmallBlind * 2;
+		}
+		else if (minutes >= 45) //45 minutes
+		{
+			SmallBlind = 800;
+			BigBlind = SmallBlind * 2;
+		}
+		else if (minutes >= 40) //40 minutes
+		{
+			SmallBlind = 700;
+			BigBlind = SmallBlind * 2;
+		}
+		else if (minutes >= 35) //35 minutes
 		{
 			SmallBlind = 600;
 			BigBlind = SmallBlind * 2;
 		}
-		else if (gameLength >= 3300) //55 minutes
+		else if (minutes >= 30) //30 minutes
 		{
 			SmallBlind = 500;
 			BigBlind = SmallBlind * 2;
 		}
-		else if (gameLength >= 3000) //50 minutes
+		else if (minutes >= 25) //25 minutes
 		{
 			SmallBlind = 400;
 			BigBlind = SmallBlind * 2;
 		}
-		else if (gameLength >= 2700) //50 minutes
-		{
-			SmallBlind = 400;
-			BigBlind = SmallBlind * 2;
-		}
-		else if (gameLength >= 2400) //45 minutes
+		else if (minutes >= 20) //20 minutes
 		{
 			SmallBlind = 300;
 			BigBlind = SmallBlind * 2;
 		}
-		else if (gameLength >= 2100) //40 minutes
+		else if (minutes >= 15) //15 minutes
 		{
 			SmallBlind = 200;
 			BigBlind = SmallBlind * 2;
 		}
-		else if (gameLength >= 1800) //30 minutes
-		{
-			SmallBlind = 175;
-			BigBlind = SmallBlind * 2;
-		}
-		else if (gameLength >= 1500) //25 minutes
-		{
-			SmallBlind = 150;
-			BigBlind = SmallBlind * 2;
-		}
-		else if (gameLength >= 1200) //20 minutes
-		{
-			SmallBlind = 125;
-			BigBlind = SmallBlind * 2;
-		}
-		else if (gameLength >= 900) //15 minutes
+		else if (minutes >= 10) //10 minutes
 		{
 			SmallBlind = 100;
 			BigBlind = SmallBlind * 2;
 		}
-		else if (gameLength >= 600) //10 minutes
-		{
-			SmallBlind = 75;
-			BigBlind = SmallBlind * 2;
-		}
-        else if(gameLength >= 300) //5 minutes
+        else if(minutes >= 5) //5 minutes
         {
             SmallBlind = 50;
             BigBlind = SmallBlind * 2;
@@ -912,7 +917,7 @@ public class Dealer : MonoBehaviour
                     //Debug.Log("nextPlayer.chipCount = " + nextPlayer.chipCount);
                     //Debug.Log("nextPlayer.PlayerState = " + nextPlayer.PlayerState);
                 }
-                if ((!nextPlayer.actedThisRound || nextPlayer.currentBet < LastBet) && nextPlayer.PlayerState == PlayerState.Playing && nextPlayer.chipCount != 0)
+                if ((!nextPlayer.actedThisRound || nextPlayer.currentBet < LastBet) && nextPlayer.PlayerState == PlayerState.Playing && nextPlayer.chipCount != 0 && !OnlyAllInPlayersLeft())
                 {
                     roundFinished = false;
                     previousPlayerToAct = playerToAct;
@@ -945,8 +950,8 @@ public class Dealer : MonoBehaviour
                         endPosition.Add(chipPositionInPot[i]);
                     }
                     LerpBetChips lerpChips = new LerpBetChips(chipsInPot, positions, endPosition, .5f);
-                    ConsolidateChips consolidate = new ConsolidateChips(chipsInPot);
-                    lerpChips.Then(consolidate);
+                    //ConsolidateChips consolidate = new ConsolidateChips(chipsInPot);
+                    //lerpChips.Then(consolidate);
                     tm.Do(lerpChips);
                 }
                 playerToAct.playerSpotlight.SetActive(false);
@@ -1130,7 +1135,7 @@ public class Dealer : MonoBehaviour
             if (remainder > 0)
             {
                 winningPlayers[i].chipsWon = (potAmountToGiveWinner - remainder) + ChipConfig.RED_CHIP_VALUE;
-                if (winningPlayers[i].chipsWon > winningPlayers[i].maxWinnings && winningPlayers[i].maxWinnings != 0)
+                if (winningPlayers[i].chipsWon > winningPlayers[i].maxWinnings && winningPlayers[i].maxWinnings != 0 && winningPlayers[i].playerIsAllIn)
                 {
                     int playersInPot = 0;
                     foreach (PokerPlayerRedux player in players)
@@ -1146,7 +1151,7 @@ public class Dealer : MonoBehaviour
             else
             {
                 winningPlayers[i].chipsWon = potAmountToGiveWinner;
-                if (winningPlayers[i].chipsWon > winningPlayers[i].maxWinnings && winningPlayers[i].maxWinnings != 0)
+                if (winningPlayers[i].chipsWon > winningPlayers[i].maxWinnings && winningPlayers[i].maxWinnings != 0 && winningPlayers[i].playerIsAllIn)
                 {
                     int playersInPot = 0;
                     foreach (PokerPlayerRedux player in players)
@@ -1424,6 +1429,7 @@ public class Dealer : MonoBehaviour
             players[i].timesRaisedThisRound = 0;
             players[i].continuationBet = 0;
             players[i].percievedHandStrength = 0;
+            players[i].moneyCommitted = 0;
             players[i].gaveTip = false;
             players[i].lastAction = PlayerAction.None;
             //players[i].checkedHandStrength = false;
@@ -1431,6 +1437,7 @@ public class Dealer : MonoBehaviour
         Services.PokerRules.cardsPulled.Clear();
         Services.PokerRules.cardsLogged.Clear();
         Services.PokerRules.thrownCards.Clear();
+        Services.Dealer.PlayerRank.Clear();
         cardsTouchingTable.Clear();
         Table.gameState = GameState.NewRound;
         playersHaveBeenEvaluated = false;
@@ -1493,6 +1500,7 @@ public class Dealer : MonoBehaviour
             players[i].timesRaisedThisRound = 0;
             players[i].continuationBet = 0;
             players[i].percievedHandStrength = 0;
+            players[i].moneyCommitted = 0;
             players[i].gaveTip = false;
             players[i].lastAction = PlayerAction.None;
             //players[i].checkedHandStrength = false;
