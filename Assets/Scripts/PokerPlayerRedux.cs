@@ -445,10 +445,6 @@ public class PokerPlayerRedux : MonoBehaviour{
         SayFold();
         foreach (Card card in Table.instance.playerCards[SeatPos])
         {
-            //card.transform.position = Table.instance.playerFoldZones[SeatPos].transform.position;
-            //card.InitializeLerp(GameObject.Find("BurnCards").transform.position);
-            //StartCoroutine(card.LerpCardPos(GameObject.Find("BurnCards").transform.position, 3));
-            //StartCoroutine(card.StopFoldLerp(GameObject.Find("BurnCards").transform.position));
             card.GetComponent<Renderer>().material.shader = card.dissolve;
             card.transform.GetChild(0).gameObject.SetActive(true);
             LerpBurnProgress burnCard = new LerpBurnProgress(card.gameObject.GetComponent<Renderer>(), 1f, 0f, Easing.FunctionType.QuadEaseOut, 2f);
@@ -520,20 +516,6 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public void Raise()
     {
-        //Debug.Log("ENTERED RAISE FUNCTION");
-        //if (Services.Dealer.GetActivePlayerCount() == 2)
-        //{
-        //    for (int i = 0; i < Services.Dealer.players.Count; i++)
-        //    {
-        //        if (Services.Dealer.players[i] != this && Services.Dealer.players[i].playerIsAllIn)
-        //        {
-        //            Debug.Log("calling with all in player!");
-        //            Call();
-        //        }
-        //    }
-        //}
-        //else
-        //{
         lastAction = PlayerAction.Raise;
         Services.Dealer.raisesInRound++;
         int aggressors = 0;
@@ -591,7 +573,6 @@ public class PokerPlayerRedux : MonoBehaviour{
                 Debug.Log("and the pot is now at " + Table.instance.potChips);
                 Debug.Log("and player " + SeatPos + " is now at " + chipCount);
             }
-            //}
         }
     }
 
@@ -608,8 +589,21 @@ public class PokerPlayerRedux : MonoBehaviour{
         playerIsAllIn = true;
         //Debug.Log("getting ready to go all in");
         Bet(chipCount, false);
-        //similar to fold, when we go all in, we want to see if we're the last person to go all in
-        //if so, then we want to flip the cards
+        //Debug.Log("Player " + SeatPos + " folded!");
+        if (Services.Dealer.GetActivePlayerCount() == 2)
+        {
+            for (int i = 0; i < Services.Dealer.players.Count; i++)
+            {
+                if (Services.Dealer.players[i].PlayerState == PlayerState.Playing && Services.Dealer.players[i] != this)
+                {
+                    if(Services.Dealer.players[i].currentBet > chipCountBeforeAllIn)
+                    {
+                        Table.instance.AddChipTo(playerDestinations[i], (Services.Dealer.players[i].currentBet - chipCountBeforeAllIn));
+                        Table.instance.potChips -= ((Services.Dealer.players[i].currentBet - chipCountBeforeAllIn));
+                    }
+                }
+            }
+        }
         Services.Dealer.CheckAllInPlayers();
     }
 

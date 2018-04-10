@@ -302,11 +302,7 @@ public class Dealer : MonoBehaviour
                     {
                         if (player.PlayerState == PlayerState.Playing)
                         {
-                            //player.EvaluateHand();
-                            List<CardType> sortedCards = Table.instance.SortPlayerCardsAtRiver(player.SeatPos);
-                            HandEvaluator playerHand = new HandEvaluator(sortedCards);
-                            playerHand.EvaluateHandAtRiver();
-                            player.Hand = playerHand;
+                            player.Hand = SetHand(player);
                         }
                     }
                 }
@@ -614,7 +610,6 @@ public class Dealer : MonoBehaviour
                 {
                     player = nextPlayer;
                     break;
-
                 }
             }
         }
@@ -932,6 +927,13 @@ public class Dealer : MonoBehaviour
                 {
                     for (int i = 0; i < players.Count; i++)
                     {
+                        if(players[i].chipCount == 0 && players[i].PlayerState == PlayerState.Playing)
+                        {
+                            if(players[i].Hand == null)
+                            {
+                                players[i].Hand = SetHand(players[i]);
+                            }
+                        }
                         if (players[i].Hand != null)
                         {
                             players[i].PushInCards();
@@ -960,6 +962,39 @@ public class Dealer : MonoBehaviour
                 readyForCards = true;
             }
         }
+    }
+
+    public HandEvaluator SetHand(PokerPlayerRedux player)
+    {
+        if (Table.gameState == GameState.NewRound || Table.gameState == GameState.PreFlop)
+        {
+            List<CardType> sortedCards = Table.instance.SortPlayerCardsPreFlop(player.SeatPos);
+            HandEvaluator playerHand = new HandEvaluator(sortedCards);
+            playerHand.EvaluateHandAtPreFlop();
+            return playerHand;
+        }
+        else if (Table.gameState == GameState.Flop)
+        {
+            List<CardType> sortedCards = Table.instance.SortPlayerCardsAtFlop(player.SeatPos);
+            HandEvaluator playerHand = new HandEvaluator(sortedCards);
+            playerHand.EvaluateHandAtFlop();
+            return playerHand;
+        }
+        else if (Table.gameState == GameState.Turn)
+        {
+            List<CardType> sortedCards = Table.instance.SortPlayerCardsAtTurn(player.SeatPos);
+            HandEvaluator playerHand = new HandEvaluator(sortedCards);
+            playerHand.EvaluateHandAtTurn();
+            return playerHand;
+        }
+        else if (Table.gameState == GameState.River)
+        {
+            List<CardType> sortedCards = Table.instance.SortPlayerCardsAtRiver(player.SeatPos);
+            HandEvaluator playerHand = new HandEvaluator(sortedCards);
+            playerHand.EvaluateHandAtRiver();
+            return playerHand;
+        }
+        return null;
     }
 
     public bool CheckIfOnlyPlayerNotAllIn()

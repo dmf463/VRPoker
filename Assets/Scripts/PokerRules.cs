@@ -487,21 +487,18 @@ public class PokerRules : MonoBehaviour {
                 else cardPos = 0;
                 int playerIndex = Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(i + 1);
                 PokerPlayerRedux player = Services.Dealer.players[playerIndex];
-                //Debug.Log("player we're trying to check is + " + player);
+                Debug.Log("player we're trying to check is + " + player);
                 if (player.PlayerState == PlayerState.Playing)
                 {
                     GameObject card = null;
                     Vector3 modPos = new Vector3(0, .025f, 0);
-                    if (!player.playerIsAllIn)
-                    {
-                        card = GetCardObject(i);
-                        if (card.GetComponent<Card>().CardIsFaceUp()) card.GetComponent<Card>().RotateCard();
-                        card.GetComponent<Card>().InitializeLerp(player.cardPos[cardPos].transform.position);
-                        StartCoroutine(card.GetComponent<Card>().LerpCardPos(player.cardPos[cardPos].transform.position, speed));
-                        StartCoroutine(card.GetComponent<Card>().LerpCardRot(card.GetComponent<Card>().GetCardRot(), speed * 2));
-                        StartCoroutine(CorrectionsDone(player.cardPos[cardPos].transform.position, player.cardPos[cardPos].transform.rotation,
-                                                       card, playerDestinations[playerIndex], card.GetComponent<Card>(), true));
-                    }
+                    card = GetCardObject(i);
+                    if (card.GetComponent<Card>().CardIsFaceUp()) card.GetComponent<Card>().RotateCard();
+                    card.GetComponent<Card>().InitializeLerp(player.cardPos[cardPos].transform.position);
+                    StartCoroutine(card.GetComponent<Card>().LerpCardPos(player.cardPos[cardPos].transform.position, speed));
+                    StartCoroutine(card.GetComponent<Card>().LerpCardRot(card.GetComponent<Card>().GetCardRot(), speed * 2));
+                    StartCoroutine(CorrectionsDone(player.cardPos[cardPos].transform.position, player.cardPos[cardPos].transform.rotation,
+                                                   card, playerDestinations[playerIndex], card.GetComponent<Card>(), true));
                     //Debug.Log("player we're trying to check is + " + player);
                     //Debug.Log("firstPlayer = " + Services.Dealer.players[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count]);
                     //Debug.Log("cardCount after replacing" + Table.instance.playerCards[Services.Dealer.SeatsAwayFromDealer(i + 1) % playerDestinations.Count].Count);
@@ -595,12 +592,12 @@ public class PokerRules : MonoBehaviour {
 
     IEnumerator CorrectionsDone(Vector3 pos, Quaternion rot, GameObject cardObj, Destination dest, Card card, bool correction)
     {
+        if (correction) Table.instance.AddCardTo(dest, card);
         while (card.GetComponent<Card>().lerping && Table.gameState != GameState.Misdeal)
         {
             if (card.transform.position == pos)
             {
                 card.GetComponent<Card>().lerping = false;
-                if(correction) Table.instance.AddCardTo(dest, card);
                 card.readyToFloat = true;
                 Debug.Log("MADE IT");
             }

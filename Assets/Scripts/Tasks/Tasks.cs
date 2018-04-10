@@ -275,7 +275,6 @@ public class PostBlinds : Task
             Player.playerIsAllIn = true;
             Player.moneyCommitted += BetAmount;
         }
-
         SetStatus(TaskStatus.Success);
     }
 }
