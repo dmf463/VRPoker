@@ -451,7 +451,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             //StartCoroutine(card.StopFoldLerp(GameObject.Find("BurnCards").transform.position));
             card.GetComponent<Renderer>().material.shader = card.dissolve;
             card.transform.GetChild(0).gameObject.SetActive(true);
-            LerpBurnProgress burnCard = new LerpBurnProgress(card.gameObject.GetComponent<Renderer>(), 1f, 0f, Easing.FunctionType.QuadEaseOut, 2.5f);
+            LerpBurnProgress burnCard = new LerpBurnProgress(card.gameObject.GetComponent<Renderer>(), 1f, 0f, Easing.FunctionType.QuadEaseOut, 2f);
             tm.Do(burnCard);
             card.cardMarkedForDestruction = false;
             Services.Dealer.deadCardsList.Add(card);
@@ -510,7 +510,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                 }
                 Bet(betToCall, false);
                 currentBet = betToCall + currentBet;
-                moneyCommitted += currentBet;
+                moneyCommitted += betToCall;
                 Services.Dealer.LastBet = currentBet;
                 //Debug.Log("Player " + SeatPos + " called " + betToCall);
                 //Debug.Log("and the pot is now at " + Table.instance.potChips);
@@ -584,7 +584,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                 Bet(betToRaise, false);
                 continuationBet = betToRaise;
                 currentBet = betToRaise + currentBet;
-                moneyCommitted += currentBet;
+                moneyCommitted += betToRaise;
                 Services.Dealer.LastBet = currentBet;
                 Debug.Log("player " + SeatPos + " raises " + betToRaise);
                 Debug.Log("Player " + SeatPos + " raised!");
@@ -604,7 +604,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             card.cardMarkedForDestruction = false;
         }
         chipCountBeforeAllIn = chipCount;
-        maxWinnings = chipCount + moneyCommitted;
+        maxWinnings += chipCount;
         playerIsAllIn = true;
         //Debug.Log("getting ready to go all in");
         Bet(chipCount, false);

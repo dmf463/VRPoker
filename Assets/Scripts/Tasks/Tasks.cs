@@ -296,25 +296,26 @@ public class LerpBetChips : TimedTask
     protected override void Init()
     {
         Services.Dealer.consolidatingChips = true;
+        base.Init();
     }
 
     protected override void OnTick(float t)
     {
         for (int i = 0; i < Chips.Count; i++)
         {
-            Chips[i].transform.position = Vector3.Lerp(Starts[i], Ends[i], t);
+            Chips[i].gameObject.transform.position = Vector3.Lerp(Starts[i], Ends[i], t);
         }
     }
 
-    protected override void OnSuccess()
-    {
-        Services.PokerRules.ConsolidateStack(Chips);
-        for (int i = 0; i < Services.Dealer.chipsInPot.Count; i++)
-        {
-            Services.Dealer.chipsInPot[i].gameObject.transform.position = Services.Dealer.chipPositionInPot[i];
-        }
-        Services.Dealer.consolidatingChips = false;
-    }
+    //protected override void OnSuccess()
+    //{
+    //    Services.PokerRules.ConsolidateStack(Chips);
+    //    for (int i = 0; i < Services.Dealer.chipsInPot.Count; i++)
+    //    {
+    //        Services.Dealer.chipsInPot[i].gameObject.transform.position = Services.Dealer.chipPositionInPot[i];
+    //    }
+    //    Services.Dealer.consolidatingChips = false;
+    //}
 }
 
 public class ConsolidateChips : Task
