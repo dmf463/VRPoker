@@ -50,6 +50,7 @@ public class SoundManager : MonoBehaviour
 
     public void PlayConversation()
     {
+        Debug.Log("calling for conversation");
         if (!conversationIsPlaying)
         {
             conversationIsPlaying = true;

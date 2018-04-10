@@ -254,7 +254,8 @@ public class DialogueDataManager
             potentialConversants.Add(Services.Dealer.activePlayers[i].playerName);
         }
 
-        int conversantCount = Random.Range(2, Services.Dealer.activePlayers.Count); //choose a random number (min two) of active players as conversants
+        int conversantCount = 2;
+        //int conversantCount = Random.Range(2, Services.Dealer.activePlayers.Count); //choose a random number (min two) of active players as conversants
 
         for (int i = 0; i < conversantCount; i++)
         {
@@ -264,7 +265,7 @@ public class DialogueDataManager
         }
         foreach (PlayerName name in conversants) 
         {
-            //Debug.Log("Added " + name + " to list of conversants");
+            Debug.Log("Added " + name + " to list of conversants");
         }
     }
 

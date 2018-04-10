@@ -1612,7 +1612,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             {
             Debug.Log(playerName + " folded and is starting a conversation!");
 
-                for (int i = 0; i < 100; i++)
+                for (int i = 0; i < 50; i++)
                 {
                     Services.SoundManager.PlayConversation();
                 }
