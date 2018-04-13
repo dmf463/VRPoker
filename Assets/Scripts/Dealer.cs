@@ -1028,10 +1028,13 @@ public class Dealer : MonoBehaviour
             List<int> startingStack = players[i].SetChipStacks(chipCount);
             Table.instance.AddChipTo(playerDestinations[i], chipCount);
             players[i].CreateAndOrganizeChipStacks(startingStack);
-            players[i].playersLostAgainst = new List<int>(5)
+            if (players.Count == 5)
             {
-                 0, 0, 0, 0, 0
-            };
+                players[i].playersLostAgainst = new List<int>(5)
+                {
+                     0, 0, 0, 0, 0
+                };
+            }
         }
 
         Table.instance.DealerPosition = 0;
