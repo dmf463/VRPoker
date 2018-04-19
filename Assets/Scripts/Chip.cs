@@ -318,6 +318,7 @@ public class Chip : InteractionSuperClass {
                 {
                     chipStack.AddToStackInHand(incomingChip.chipData);
                     Destroy(incomingChip.gameObject);
+                    //Services.ChipManager.chipsToDestroy.Add(incomingChip);
                     incomingChip = null;
                     isTouchingChip = false;
                 }
@@ -325,6 +326,7 @@ public class Chip : InteractionSuperClass {
                 {
                     chipStack.AddToStackInHand(incomingChip.chipData);
                     Destroy(incomingChip.gameObject);
+                    //Services.ChipManager.chipsToDestroy.Add(incomingChip);
                     incomingChip = null;
                     isTouchingChip = false;
                 }
@@ -338,6 +340,7 @@ public class Chip : InteractionSuperClass {
                     isTouchingStack = false;
                 }
                 Destroy(incomingStack.gameObject);
+                //Services.ChipManager.chipsToDestroy.Add(incomingStack);
                 incomingStack = null;
             }
             //NEW BUG
@@ -349,6 +352,7 @@ public class Chip : InteractionSuperClass {
                     isTouchingStack = false;
                 }
                 Destroy(incomingStack.gameObject);
+                //Services.ChipManager.chipsToDestroy.Add(incomingStack);
                 incomingStack = null;
             }
         }
@@ -474,6 +478,7 @@ public class Chip : InteractionSuperClass {
                     transform.Rotate(randomRot * Time.deltaTime);
                 }
                 Destroy(gameObject);
+                //Services.ChipManager.chipsToDestroy.Add(this);
             }
         }
     }

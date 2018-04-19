@@ -94,7 +94,8 @@ public class LogChips : MonoBehaviour
             //Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.fallingTip, .7f);
             Services.SoundManager.GetNonPlayerSourceAndPlay(GetComponent<AudioSource>(), Services.SoundManager.fallingTip);
             Services.Dealer.tipCount += chip.stackValue;
-            Destroy(other.gameObject);
+            //Destroy(other.gameObject);
+            Services.ChipManager.chipsToDestroy.Add(other.gameObject);
         }
     }
 

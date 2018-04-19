@@ -1175,7 +1175,8 @@ public class PokerPlayerRedux : MonoBehaviour{
         {
             foreach (GameObject chip in parentChips)
             {
-                Destroy(chip);
+                //Destroy(chip);
+                Services.ChipManager.chipsToDestroy.Add(chip);
             }
             parentChips.Clear();
         }
