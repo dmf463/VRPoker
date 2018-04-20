@@ -1212,6 +1212,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                         //}
                         //Debug.Log("ChipToMake = " + chipToMake);
 						parentChip = Instantiate(chipToMake, chipContainer.transform.position, Quaternion.identity) as GameObject;
+                        parentChip.GetComponent<Chip>().owner = this;
                         parentChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
                         parentChips.Add(parentChip);
 						parentChip.transform.parent = chipContainer.transform;
@@ -1245,6 +1246,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                         //parentChip = organizedChips[chipStacks][chipIndex];
                         parentChip = Instantiate(chipToMake, chipContainer.transform.position, Quaternion.identity) as GameObject;
                         parentChip.GetComponent<Chip>().chipData = new ChipData(chipToMake.GetComponent<Chip>().chipData.ChipValue);
+                        parentChip.GetComponent<Chip>().owner = this;
                         parentChips.Add(parentChip);
                         parentChip.transform.parent = chipContainer.transform;
                         parentChip.transform.rotation = Quaternion.Euler(-90, 0, 0);

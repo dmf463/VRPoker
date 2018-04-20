@@ -396,7 +396,6 @@ public class Chip : InteractionSuperClass {
                     hand.AttachObject(chipToGrab);
                     hand.HoverLock(interactableObject);
                 }
-
             }
         }
     }
@@ -443,6 +442,8 @@ public class Chip : InteractionSuperClass {
         }
         if (!chipForBet)
         {
+            //DAN PUT THE GRABBING CHIPS LINE HERE.
+            //YOU CAN ACCESS THE OWNER, BY USING THE "OWNER" VARIABLE ON THIS SCRIPT
             Debug.Log("misdeal here");
             Table.gameState = GameState.Misdeal;
         }
@@ -458,6 +459,7 @@ public class Chip : InteractionSuperClass {
             if (chipStack.chips.Count != 0)
             {
                 float chipSpawnOffset = 0.05f;
+                //DAN PUT THE THROWING CHIPS HERE!!!
                 for (int i = 0; i < chipStack.chips.Count; i++)
                 {
                     GameObject newChip = Instantiate(FindChipPrefab(chipStack.chips[i].ChipValue),
