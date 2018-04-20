@@ -116,31 +116,6 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public bool waitingToGetPaid = false;
 
-	//the individual player variables for the Fold, Call, Raise decision based on Return Rate
-	public float lowReturnRate;
-	public float decentReturnRate;
-	public float highReturnRate;
-
-    [Header("Player Behavior")]
-    [Header("PlayerInsightPercent")]
-    public float playerInsightPercent;
-    [Header("Low RR (<)")]
-    public float foldChanceLow;// = 95f;
-    public float callChanceLow;// = 5f;
-    public float raiseChanceLow;// = 0f;
-    [Header("Decent RR (<)")]
-    public float foldChanceDecent;// = 80f;
-    public float callChanceDecent;// = 5f;
-    public float raiseChanceDecent;// = 0f;
-    [Header("High RR (<)")]
-    public float foldChanceHigh;// = 0f;
-    public float callChanceHigh;// = 60f;
-    public float raiseChanceHigh;// = 40f;
-    [Header("Very High RR (>=)")]
-    public float foldChanceVeryHigh;// = 0f;
-    public float callChanceVeryHigh;// = 30f;
-    public float raiseChanceVeryHigh;// = 70f;
-
 
 	[Header("Voice Lines")]
 	public AudioSource playerAudioSource;
@@ -215,9 +190,6 @@ public class PokerPlayerRedux : MonoBehaviour{
         }
 
         parentChips = new List<GameObject>();
-        lowReturnRate = 0.8f;
-        decentReturnRate = 1f;
-        highReturnRate = 1.3f;
     }
 
     void Update()
@@ -472,7 +444,6 @@ public class PokerPlayerRedux : MonoBehaviour{
                     Services.Dealer.playersReady = true;
                     Services.Dealer.playersHaveBeenEvaluated = true;
                     //Services.Dealer.WaitForWinnersToGetPaid();
-                    Services.Dealer.players[i].PushInCards();
                     Services.Dealer.StartCoroutine(Services.Dealer.WaitForWinnersToGetPaid());
                 }
             }

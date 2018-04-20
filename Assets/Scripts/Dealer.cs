@@ -313,10 +313,13 @@ public class Dealer : MonoBehaviour
                     {
                         if(players[i].playerIsAllIn || players[i].chipCount == 0)
                         {
-                            List<CardType> sortedCards = Table.instance.SortPlayerCardsAtRiver(players[i].SeatPos);
-                            HandEvaluator playerHand = new HandEvaluator(sortedCards);
-                            playerHand.EvaluateHandAtRiver();
-                            players[i].Hand = playerHand;
+                            if (players[i].PlayerState == PlayerState.Playing)
+                            {
+                                List<CardType> sortedCards = Table.instance.SortPlayerCardsAtRiver(players[i].SeatPos);
+                                HandEvaluator playerHand = new HandEvaluator(sortedCards);
+                                playerHand.EvaluateHandAtRiver();
+                                players[i].Hand = playerHand;
+                            }
                         }
                     }
                 }
@@ -371,7 +374,7 @@ public class Dealer : MonoBehaviour
                 {
                     if (players[i].Hand != null)
                     {
-                        if(!players[i].flippedCards) players[i].PushInCards();
+                        if(!players[i].flippedCards && !everyoneFolded) players[i].PushInCards();
                         Debug.Log("player" + players[i].SeatPos + 
                                   "is the " + players[i].PlayerState + 
                                   " with (a) " + players[i].Hand.HandValues.PokerHand + 
@@ -880,7 +883,7 @@ public class Dealer : MonoBehaviour
         {
             for (int i = 0; i < Services.Dealer.players.Count; i++)
             {
-                if (players[i].playerIsAllIn == true)
+                if (players[i].playerIsAllIn == true && !everyoneFolded)
                 {
                     players[i].PushInCards();
                 }
@@ -920,6 +923,7 @@ public class Dealer : MonoBehaviour
                     previousPlayerToAct = playerToAct;
                     playerToAct = nextPlayer;
                     Debug.Log("nextPlayer to act is player " + playerToAct);
+                    if(OutsideVR) playerToAct.EvaluateHand();
                     break;
                 }
             }
@@ -936,7 +940,7 @@ public class Dealer : MonoBehaviour
                                 players[i].Hand = SetHand(players[i]);
                             }
                         }
-                        if (players[i].Hand != null)
+                        if (players[i].Hand != null && !everyoneFolded)
                         {
                             players[i].PushInCards();
                         }
@@ -954,8 +958,11 @@ public class Dealer : MonoBehaviour
                         endPosition.Add(chipPositionInPot[i]);
                     }
                     LerpBetChips lerpChips = new LerpBetChips(chipsInPot, positions, endPosition, .5f);
-                    ConsolidateChips consolidate = new ConsolidateChips(chipsInPot);
-                    lerpChips.Then(consolidate);
+                    if (!everyoneFolded)
+                    {
+                        ConsolidateChips consolidate = new ConsolidateChips(chipsInPot);
+                        lerpChips.Then(consolidate);
+                    }
                     tm.Do(lerpChips);
                 }
                 playerToAct.playerSpotlight.SetActive(false);
@@ -1578,11 +1585,11 @@ public class Dealer : MonoBehaviour
             if (players[i].PlayerState == PlayerState.Playing)
             {
                 List<int> newStacks = players[i].SetChipStacks(players[i].chipCount);
-                GameObject[] chipsToDestroy = GameObject.FindGameObjectsWithTag("Chip");
-                foreach (GameObject chip in chipsToDestroy)
-                {
-                    Services.ChipManager.chipsToDestroy.Add(chip);
-                }
+                //GameObject[] chipsToDestroy = GameObject.FindGameObjectsWithTag("Chip");
+                //foreach (GameObject chip in chipsToDestroy)
+                //{
+                //    Services.ChipManager.chipsToDestroy.Add(chip);
+                //}
                 players[i].CreateAndOrganizeChipStacks(newStacks);
             }
         }

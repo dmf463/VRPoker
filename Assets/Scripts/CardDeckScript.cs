@@ -169,7 +169,10 @@ public class CardDeckScript : InteractionSuperClass {
     //but we're just messing with scale in order to achieve the illusion that we're pulling cards and stuff
     void OnCollisionEnter(Collision other)
     {
-
+        if(other.gameObject.tag == "Floor")
+        {
+            transform.position = GameObject.Find("ShufflingArea").transform.position;
+        }
     }
 
     //so this is how we know whether the hand is touching the deck or not
