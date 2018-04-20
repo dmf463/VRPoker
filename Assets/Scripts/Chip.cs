@@ -142,7 +142,7 @@ public class Chip : InteractionSuperClass {
 
     void FixedUpdate()
     {
-        PushChips();
+        //PushChips();
 	}
 
     void PushChips()
