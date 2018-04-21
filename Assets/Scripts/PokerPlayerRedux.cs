@@ -14,6 +14,7 @@ public enum LineCriteria {None, AllIn, Bet, Call, CardHit, Check, FiftyTwo, Fold
 
 public class PokerPlayerRedux : MonoBehaviour{
 
+    public GameObject turnIndicator;
     public PlayerName playerName;
     public PlayerAction lastAction;
     public float percievedHandStrength = 0;
@@ -203,6 +204,12 @@ public class PokerPlayerRedux : MonoBehaviour{
         {
             Table.instance.playerChipStacks[SeatPos] = 0;
         }
+
+        if (Services.Dealer.playerToAct == this)
+        {
+            turnIndicator.SetActive(true);
+        }
+        else turnIndicator.SetActive(false);
     }
 
     //so this is the function that calls all the organization functions, evaluation functions, and handStrength
