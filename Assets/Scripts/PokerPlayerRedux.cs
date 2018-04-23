@@ -20,7 +20,7 @@ public class PokerPlayerRedux : MonoBehaviour{
     public float percievedHandStrength = 0;
     public GameObject playerSpotlight;
     public GameObject playerCardIndicator;
-    private List<GameObject> parentChips;
+    public List<GameObject> parentChips;
     public GameObject[] cardPos;
     public int cardsReplaced = 0;
     public bool isAggressor = false;
@@ -1036,19 +1036,6 @@ public class PokerPlayerRedux : MonoBehaviour{
         float tip = ChipConfig.RED_CHIP_VALUE * Services.Dealer.tipMultiplier;
         return tip;
     }
-
-    //this is LIKE create and organize chipStacks, except is used only during intialization
-    public List<int> SetChipStacks(int chipAmount)
-    {
-        return Services.ChipManager.SetChipStacks(chipAmount);
-    }
-
-
-    public void CreateAndOrganizeChipStacks(List<int> chipsToOrganize)
-	{
-        Services.ChipManager.CreateAndOrganizeChipStacks(chipsToOrganize, parentChips, SeatPos);
-	}
-
 
     public void Bet(int betAmount, bool isTipping)
     {
