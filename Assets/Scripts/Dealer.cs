@@ -195,6 +195,8 @@ public class Dealer : MonoBehaviour
             timeBetweenIdle = 0;
             oldTimeForIdle = System.DateTime.Now;
             //DAN PUT THE IDLE LINES HERE
+            PokerPlayerRedux randomPlayer = Services.Dealer.players[UnityEngine.Random.Range(0, Services.Dealer.players.Count)];
+            Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(randomPlayer.playerName, LineCriteria.IdleTime));
         }
         tm.Update();
         if (deckIsDead)
@@ -1297,6 +1299,7 @@ public class Dealer : MonoBehaviour
             if(players[i].chipCount == 0 && players[i].PlayerState == PlayerState.Loser)
             {
                 //DAN PUT THE "BUY ME BACK IN LINE HERE"
+                Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(players[i].playerName, LineCriteria.BuyInAsk));
                 playerHasBeenEliminated = true;
                 StartCoroutine(WaitToSave(10f));
             }

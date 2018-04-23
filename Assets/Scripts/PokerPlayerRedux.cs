@@ -9,7 +9,7 @@ using System.Linq;
 public enum PlayerState {Playing, NotPlaying, Winner, Loser, Eliminated}
 public enum PlayerName {None, Casey, Zombie, Minnie, Nathaniel, Floyd}
 public enum PlayerAction { Fold, Call, Raise, None}
-public enum LineCriteria {None, AllIn, Bet, Call, CardHit, Check, FiftyTwo, Fold, Misdeal, Raise, Tip, Win, Lose, WrongChips}
+public enum LineCriteria {None, AllIn, Bet, BuyIn, BuyInAsk, Call, CardHit, Check, ChipsMoved, FiftyTwo, Fold, IdleTime, Lose, Misdeal, Raise, ThrowsChips, Tip, TouchedByHand, Win, WrongChips}
 
 
 public class PokerPlayerRedux : MonoBehaviour{
@@ -1173,7 +1173,7 @@ public class PokerPlayerRedux : MonoBehaviour{
         if (!playerAudioSource.isPlaying && !playerIsInConversation && !Services.SoundManager.conversationIsPlaying)
         {
             //Services.SoundManager.GetSourceAndPlay(playerAudioSource, winAudio);
-            Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(playerName, LineCriteria.Win));
+            //Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(playerName, LineCriteria.Win));
         }
     }
 }

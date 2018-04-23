@@ -376,24 +376,36 @@ public class DialogueDataManager
                 return LineCriteria.AllIn;
             case "BET":
                 return LineCriteria.Bet;
+            case "BUYIN":
+                return LineCriteria.BuyIn;
+            case "BUYINASK":
+                return LineCriteria.BuyInAsk;
             case "CALL":
                 return LineCriteria.Call;
             case "CARDHIT":
                 return LineCriteria.CardHit;
             case "CHECK":
                 return LineCriteria.Check;
+            case "CHIPSMOVED":
+                return LineCriteria.ChipsMoved;
             case "FIFTYTWO":
                 return LineCriteria.FiftyTwo;
             case "FOLD":
                 return LineCriteria.Fold;
+            case "IDLETIME":
+                return LineCriteria.IdleTime;
             case "LOSE":
                 return LineCriteria.Lose;
             case "MISDEAL":
                 return LineCriteria.Misdeal;
             case "RAISE":
                 return LineCriteria.Raise;
+            case "THROWCHIPS":
+                return LineCriteria.ThrowsChips;
             case "TIP":
                 return LineCriteria.Tip;
+            case "TOUCHEDBYHAND":
+                return LineCriteria.TouchedByHand;
             case "WIN":
                 return LineCriteria.Win;
             case "WRONGCHIPS":

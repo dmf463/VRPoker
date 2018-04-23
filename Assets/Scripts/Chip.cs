@@ -419,6 +419,7 @@ public class Chip : InteractionSuperClass {
         {
             //DAN PUT THE GRABBING CHIPS LINE HERE.
             //YOU CAN ACCESS THE OWNER, BY USING THE "OWNER" VARIABLE ON THIS SCRIPT
+            Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(owner.playerName, LineCriteria.ChipsMoved));
             Debug.Log("misdeal here");
             Table.gameState = GameState.Misdeal;
         }
@@ -435,6 +436,7 @@ public class Chip : InteractionSuperClass {
             {
                 float chipSpawnOffset = 0.05f;
                 //DAN PUT THE THROWING CHIPS HERE!!!
+                Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(owner.playerName, LineCriteria.ThrowsChips));
                 for (int i = 0; i < chipStack.chips.Count; i++)
                 {
                     GameObject newChip = Instantiate(FindChipPrefab(chipStack.chips[i].ChipValue),
