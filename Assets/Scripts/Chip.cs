@@ -161,18 +161,18 @@ public class Chip : InteractionSuperClass {
                     {
                         if ((hand.transform.position - transform.position).magnitude < .2f && (handPos - chipPos).magnitude < .12f && heightDifference < HEIGHT_THRESHOLD)
                         {
-                            if (!pushingChip && Services.PokerRules.chipGroup.Count <= 10)
+                            if (!pushingChip && Services.ChipManager.chipGroup.Count <= 10)
                             {
                                 if (chipPushStartPos == Vector3.zero) chipPushStartPos = transform.position;
                                 maxGlow = 1;
-                                Services.PokerRules.chipGroup.Add(this);
+                                Services.ChipManager.chipGroup.Add(this);
                                 GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
                                 handPushingChip = hand;
                                 pushingChip = true;
                                 Services.Dealer.handIsOccupied = true;
-                                spotIndex = Services.PokerRules.chipsBeingPushed;
-                                Services.PokerRules.chipsBeingPushed += 1;
-                                Services.PokerRules.ConsolidateStack(Services.PokerRules.chipGroup);
+                                spotIndex = Services.ChipManager.chipsBeingPushed;
+                                Services.ChipManager.chipsBeingPushed += 1;
+                                Services.ChipManager.ConsolidateStack(Services.ChipManager.chipGroup);
                             }
                         }
                         else
@@ -180,7 +180,7 @@ public class Chip : InteractionSuperClass {
                             if (pushingChip && (handPushingChip.transform.position.y - transform.position.y) > HEIGHT_THRESHOLD)
                             {
                                 maxGlow = 2;
-                                Services.PokerRules.chipGroup.Clear();
+                                Services.ChipManager.chipGroup.Clear();
                                 chipPushStartPos = Vector3.zero;
                                 GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
                                 //foreach (GameObject chip in allChips)
@@ -192,14 +192,14 @@ public class Chip : InteractionSuperClass {
                                 pushingChip = false;
                                 Services.Dealer.handIsOccupied = false;
                                 spotIndex = 0;
-                                Services.PokerRules.chipsBeingPushed = 0;
+                                Services.ChipManager.chipsBeingPushed = 0;
                             }
                         }
                     }
                     else if (Table.gameState == GameState.PostHand)
                     {
                         chipPushStartPos = Vector3.zero;
-                        Services.PokerRules.chipGroup.Clear();
+                        Services.ChipManager.chipGroup.Clear();
                         GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
                         //foreach (GameObject chip in allChips)
                         //{
@@ -210,14 +210,14 @@ public class Chip : InteractionSuperClass {
                         pushingChip = false;
                         Services.Dealer.handIsOccupied = false;
                         spotIndex = 0;
-                        Services.PokerRules.chipsBeingPushed = 0;
+                        Services.ChipManager.chipsBeingPushed = 0;
                         stopPulse = true;
                     }
                     else if (isAtDestination)
                     {
-                        if (Services.PokerRules.chipGroup.Contains(this))
+                        if (Services.ChipManager.chipGroup.Contains(this))
                         {
-                            Services.PokerRules.chipGroup.Remove(this);
+                            Services.ChipManager.chipGroup.Remove(this);
                         }
                         GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
                         //foreach (GameObject chip in allChips)

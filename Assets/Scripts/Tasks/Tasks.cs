@@ -328,10 +328,10 @@ public class ConsolidateChips : Task
 
     protected override void Init()
     {
-        Services.PokerRules.ConsolidateStack(Chips);
+        Services.ChipManager.ConsolidateStack(Chips);
         for (int i = 0; i < Services.Dealer.chipsInPot.Count; i++)
         {
-            Chips[i].gameObject.transform.position = Services.Dealer.chipPositionInPot[i];
+            Chips[i].gameObject.transform.position = Services.ChipManager.chipPositionInPot[i];
         }
         Services.Dealer.consolidatingChips = false;
         SetStatus(TaskStatus.Success);

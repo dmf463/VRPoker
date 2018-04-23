@@ -25,7 +25,7 @@ public class Dealer : MonoBehaviour
     private int seconds;
 
     public Light lighting;
-    public List<Vector3> chipPositionInPot;
+
     public int chipsMoved;
     public bool readyForCards = false;
 
@@ -140,6 +140,8 @@ public class Dealer : MonoBehaviour
 
         //this is where we intialize all our services stuff
         tm = new TaskManager();
+        Services.ChipManager = new ChipManager();
+        Services.ChipManager.ChipInit();
         Services.PrefabDB = Resources.Load<PrefabDB>("Prefabs/PrefabDB");
         Services.SoundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
         Services.DialogueDataManager = new DialogueDataManager();
@@ -149,7 +151,6 @@ public class Dealer : MonoBehaviour
 		Services.DialogueDataManager.ParseConvoDialogueFile((Services.SoundManager.convoDialogueFile));
         Services.DialogueDataManager.ParseOneLinerDialogueFile((Services.SoundManager.oneLinerDialogueFiler));
         Services.TextManager = GameObject.Find("TableGraphics").GetComponent<TextManager>();
-        Services.ChipManager = new ChipManager();
        
     }
 
@@ -160,7 +161,6 @@ public class Dealer : MonoBehaviour
         oldTimeForIdle = System.DateTime.Now;
         minutes = 0;
         tipMultiplier = 1;
-        chipPositionInPot = Services.ChipManager.CreateChipPositions(GameObject.Find("TipZone").transform.position, 0.075f, 0.06f, 5, 50, GameObject.Find("TipZone").transform.position.y);
         tipCount = 0;
         playerDestinations = Table.instance.playerDestinations;
         InitializePlayers(startingChipCount);
@@ -972,7 +972,7 @@ public class Dealer : MonoBehaviour
                     {
                         //BUG HERE
                         positions.Add(chipsInPot[i].transform.position);
-                        endPosition.Add(chipPositionInPot[i]);
+                        endPosition.Add(Services.ChipManager.chipPositionInPot[i]);
                     }
                     LerpBetChips lerpChips = new LerpBetChips(chipsInPot, positions, endPosition, .5f);
                     if (!everyoneFolded)

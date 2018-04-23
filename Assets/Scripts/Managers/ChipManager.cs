@@ -4,6 +4,22 @@ using UnityEngine;
 
 public class ChipManager {
 
+    public List<Vector3> chipPositionWhenPushing = new List<Vector3>();
+    public int chipsBeingPushed;
+    public List<Chip> chipGroup= new List<Chip>();
+    public List<Vector3> chipPositionInPot;
+
+    public void ChipInit()
+    {
+        chipPositionInPot = Services.ChipManager.CreateChipPositionsForPot(GameObject.Find("TipZone").transform.position, 0.075f, 0.06f, 5, 50, GameObject.Find("TipZone").transform.position.y);
+        //chipPositionWhenPushing = CreateChipPositionsForPushing(Services.ChipManager.chipPositionWhenPushing[0], 0.06f, 0.075f, 5, 25);
+    }
+
+    public void ChipUpdate()
+    {
+        //PushGroupOfChips();
+    }
+
     public List<GameObject> chipsToDestroy = new List<GameObject>();
 
     public void DestroyChips()
@@ -15,6 +31,25 @@ public class ChipManager {
                 GameObject.Destroy(chip);
             }
         }
+    }
+    public void PushGroupOfChips()
+    {
+        Vector3 offset = new Vector3(0.1f, 0, 0);
+        if (chipGroup.Count != 0)
+            for (int i = 0; i < chipGroup.Count; i++)
+            {
+                Rigidbody rb = chipGroup[i].gameObject.GetComponent<Rigidbody>();
+                int chipSpotIndex = chipGroup[i].spotIndex;
+                float scalar = 1.1f;
+                Vector3 startPos = chipGroup[i].chipPushStartPos + offset;
+                Vector3 handPos = chipGroup[i].handPushingChip.transform.position;
+                Vector3 linearDest = (handPos - startPos)/* * scalar*/;
+                Vector3 dest = chipGroup[i].handPushingChip.GetAttachmentTransform("PushChip").transform.TransformPoint(chipPositionWhenPushing[chipSpotIndex]);
+                if (rb != null)
+                {
+                    rb.MovePosition(new Vector3(dest.x + linearDest.x, chipGroup[i].gameObject.transform.position.y, dest.z + linearDest.z));
+                }
+            }
     }
 
     public List<int> SetChipStacks(int chipAmount)
@@ -588,7 +623,92 @@ public class ChipManager {
         chipContainer.transform.position += trueOffset / 2;
     }
 
-    public List<Vector3> CreateChipPositions(Vector3 startPosition, float xIncrement, float zIncrement, int maxRowSize, int maxColumnSize, float yPos)
+    public void ConsolidateStack(List<Chip> chipsToConsolidate)
+    {
+        if (chipsToConsolidate.Count > 1)
+        {
+            for (int i = 0; i < chipsToConsolidate.Count; i++)
+            {
+                Chip chip = chipsToConsolidate[i];
+                if (chip.chipStack != null && chip.chipStack.chips.Count < 10)
+                {
+                    for (int chipToCheck = 0; chipToCheck < chipsToConsolidate.Count; chipToCheck++)
+                    {
+                        if (chipToCheck != i)
+                        {
+                            if (chipsToConsolidate[chipToCheck].chipStack != null && chipsToConsolidate[chipToCheck].chipData.ChipValue == chip.chipData.ChipValue)
+                            {
+                                for (int chipsToAdd = 0; chipsToAdd < chip.chipStack.chips.Count; chipsToAdd++)
+                                {
+                                    chipsToConsolidate[chipToCheck].chipStack.AddToStackInHand(chip.chipStack.chips[chipsToAdd]);
+                                }
+                                chipsToConsolidate.Remove(chip);
+                                Debug.Log("BUG HERE SOMETIMES");
+                                //trying to destroy chips that already are destoryed, null reference
+                                if (chip != null)
+                                {
+                                    //Destroy(chip.gameObject);
+                                    Services.ChipManager.chipsToDestroy.Add(chip.gameObject);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                else if (chip.chipStack == null)
+                {
+                    for (int chipToCheck = 0; chipToCheck < chipsToConsolidate.Count; chipToCheck++)
+                    {
+                        if (chipToCheck != i)
+                        {
+                            if (chipsToConsolidate[chipToCheck].chipStack != null)
+                            {
+                                if (chipsToConsolidate[chipToCheck].chipData.ChipValue == chip.chipData.ChipValue && chipsToConsolidate[chipToCheck].chipStack.chips.Count < 10)
+                                {
+                                    chipsToConsolidate[chipToCheck].chipStack.AddToStackInHand(chip.chipData);
+                                    chipsToConsolidate.Remove(chip);
+                                    //Destroy(chip.gameObject);
+                                    Services.ChipManager.chipsToDestroy.Add(chip.gameObject);
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                chipsToConsolidate[chipToCheck].chipStack = new ChipStack(chipsToConsolidate[chipToCheck]);
+                            }
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < chipsToConsolidate.Count; i++)
+            {
+                chipsToConsolidate[i].spotIndex = i;
+            }
+        }
+    }
+
+    public List<Vector3> CreateChipPositionsForPushing(Vector3 startPosition, float xIncremenet, float zIncrement, int maxRowSize, int maxColumnSize)
+    {
+        List<Vector3> listOfPositions = new List<Vector3>();
+        float xOffset;
+        float zOffset;
+        for (int i = 0; i < maxColumnSize; i++)
+        {
+            if (i % 2 == 0)
+            {
+                xOffset = (((i % maxRowSize) / 2) + 0.5f) * -xIncremenet;
+            }
+            else xOffset = (((i % maxRowSize) / 2) + 0.5f) * xIncremenet;
+
+            zOffset = (i / maxRowSize) * zIncrement;
+
+            listOfPositions.Add(new Vector3(startPosition.x + xOffset, 0, startPosition.z + zOffset));
+        }
+
+        return listOfPositions;
+    }
+
+    public List<Vector3> CreateChipPositionsForPot(Vector3 startPosition, float xIncrement, float zIncrement, int maxRowSize, int maxColumnSize, float yPos)
     {
         List<Vector3> listOfPositions = new List<Vector3>();
         float xOffset;

@@ -7,9 +7,6 @@ using Valve.VR.InteractionSystem;
 public class PokerRules : MonoBehaviour {
 
     public Material tipMaterial;
-    public List<Vector3> chipPositionWhenPushing;
-    public int chipsBeingPushed;
-    public List<Chip> chipGroup;
     public List<GameObject> thrownCards = new List<GameObject>();
     //this keeps track of ALL the cards that have been dealt in a given hand
     //this way we won't use the same card twice for multiple things
@@ -45,16 +42,15 @@ public class PokerRules : MonoBehaviour {
         boardPos.Add(GameObject.Find("Flop4"));
         boardPos.Add(GameObject.Find("Flop5"));
         playerDestinations = Table.instance.playerDestinations;
-        chipPositionWhenPushing = CreateChipPositions(chipPositionWhenPushing[0], 0.06f, 0.075f, 5, 25);
     }
 
     void Update()
     {
         tm.Update();
         CheckCardCount();
-        if (chipGroup.Count > 0)
+        if (Services.ChipManager.chipGroup.Count > 0)
         {
-            PushGroupOfChips();
+            Services.ChipManager.PushGroupOfChips();
         }
         if (cardsPulled.Count <= Services.Dealer.PlayerAtTableCount() * 2 && thrownCards.Count == 0)
         {
@@ -647,111 +643,6 @@ public class PokerRules : MonoBehaviour {
         playingCard.GetComponent<Card>().cardMarkedForDestruction = true;
         cardsLogged.Add(playingCard.GetComponent<Card>());
         return playingCard.GetComponent<Card>();
-    }
-
-    private List<Vector3> CreateChipPositions(Vector3 startPosition, float xIncremenet, float zIncrement, int maxRowSize, int maxColumnSize)
-    {
-        List<Vector3> listOfPositions = new List<Vector3>();
-        float xOffset;
-        float zOffset;
-        for (int i = 0; i < maxColumnSize; i++)
-        {
-            if (i % 2 == 0)
-            {
-                xOffset = (((i % maxRowSize) / 2) + 0.5f) * -xIncremenet;
-            }
-            else xOffset = (((i % maxRowSize) / 2) + 0.5f) * xIncremenet;
-
-            zOffset = (i / maxRowSize) * zIncrement;
-
-            listOfPositions.Add(new Vector3(startPosition.x + xOffset, 0, startPosition.z + zOffset));
-        }
-
-        return listOfPositions;
-    }
-
-    public void PushGroupOfChips()
-    {
-        Vector3 offset = new Vector3(0.1f, 0, 0);
-        if (chipGroup.Count != 0)
-            for (int i = 0; i < chipGroup.Count; i++)
-            {
-                Rigidbody rb = chipGroup[i].gameObject.GetComponent<Rigidbody>();
-                int chipSpotIndex = chipGroup[i].spotIndex;
-                float scalar = 1.1f;
-                Vector3 startPos = chipGroup[i].chipPushStartPos + offset;
-                Vector3 handPos = chipGroup[i].handPushingChip.transform.position;
-                Vector3 linearDest = (handPos - startPos)/* * scalar*/;
-                Vector3 dest = chipGroup[i].handPushingChip.GetAttachmentTransform("PushChip").transform.TransformPoint(chipPositionWhenPushing[chipSpotIndex]);
-                if (rb != null)
-                {
-                    rb.MovePosition(new Vector3(dest.x + linearDest.x, chipGroup[i].gameObject.transform.position.y, dest.z + linearDest.z));
-                }
-            }
-    }
-
-    public void ConsolidateStack(List<Chip> chipsToConsolidate)
-    {
-        if (chipsToConsolidate.Count > 1)
-        {
-            for (int i = 0; i < chipsToConsolidate.Count; i++)
-            {
-                Chip chip = chipsToConsolidate[i];
-                if (chip.chipStack != null && chip.chipStack.chips.Count < 10)
-                {
-                    for (int chipToCheck = 0; chipToCheck < chipsToConsolidate.Count; chipToCheck++)
-                    {
-                        if (chipToCheck != i)
-                        {
-                            if (chipsToConsolidate[chipToCheck].chipStack != null && chipsToConsolidate[chipToCheck].chipData.ChipValue == chip.chipData.ChipValue)
-                            {
-                                for (int chipsToAdd = 0; chipsToAdd < chip.chipStack.chips.Count; chipsToAdd++)
-                                {
-                                    chipsToConsolidate[chipToCheck].chipStack.AddToStackInHand(chip.chipStack.chips[chipsToAdd]);
-                                }
-                                chipsToConsolidate.Remove(chip);
-                                Debug.Log("BUG HERE SOMETIMES");
-                                //trying to destroy chips that already are destoryed, null reference
-                                if (chip != null)
-                                {
-                                    //Destroy(chip.gameObject);
-                                    Services.ChipManager.chipsToDestroy.Add(chip.gameObject);
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-                else if (chip.chipStack == null)
-                {
-                    for (int chipToCheck = 0; chipToCheck < chipsToConsolidate.Count; chipToCheck++)
-                    {
-                        if (chipToCheck != i)
-                        {
-                            if (chipsToConsolidate[chipToCheck].chipStack != null)
-                            {
-                                if (chipsToConsolidate[chipToCheck].chipData.ChipValue == chip.chipData.ChipValue && chipsToConsolidate[chipToCheck].chipStack.chips.Count < 10)
-                                {
-                                    chipsToConsolidate[chipToCheck].chipStack.AddToStackInHand(chip.chipData);
-                                    chipsToConsolidate.Remove(chip);
-                                    //Destroy(chip.gameObject);
-                                    Services.ChipManager.chipsToDestroy.Add(chip.gameObject);
-                                    break;
-                                }
-                            }
-                            else
-                            {
-                                chipsToConsolidate[chipToCheck].chipStack = new ChipStack(chipsToConsolidate[chipToCheck]);
-                            }
-                        }
-                    }
-                }
-            }
-            for (int i = 0; i < chipsToConsolidate.Count; i++)
-            {
-                chipsToConsolidate[i].spotIndex = i;
-            }
-        }
     }
 
     public void PlayTone()
