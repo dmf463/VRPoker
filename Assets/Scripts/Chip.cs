@@ -68,7 +68,7 @@ public class Chip : InteractionSuperClass {
     //the velocity threshold by which chip stacks come apart
     const float MAGNITUDE_THRESHOLD = 2;
 
-    const float HEIGHT_THRESHOLD = .15f;
+    const float HEIGHT_THRESHOLD = .05f;
 
     //the max amount of chips that can go in a chipstack
     const float MAX_CHIPSTACK = 25;
@@ -95,10 +95,12 @@ public class Chip : InteractionSuperClass {
     private int timesToSplit;
 
     Rigidbody rb;
+    GameObject stickHead;
 
     // Use this for initialization
     void Start () {
         rb = GetComponent<Rigidbody>();
+        stickHead = GameObject.FindGameObjectWithTag("StickHead");
         //set the proper bools
         //and assign the chip its value
         canBeGrabbed = true;
@@ -142,100 +144,73 @@ public class Chip : InteractionSuperClass {
 
     void FixedUpdate()
     {
-        //PushChips();
+        PushChips();
 	}
 
     void PushChips()
     {
-        if (!Services.Dealer.OutsideVR)
+        Vector2 stickPos = new Vector2(stickHead.transform.position.x, stickHead.transform.position.z);
+        Vector2 chipPos = new Vector2(transform.position.x, transform.position.z);
+        float heightDifference = stickHead.transform.position.y - transform.position.y;
+        if (Table.gameState == GameState.ShowDown && Services.Dealer.chipsInPot.Contains(this) /*&& !isAtDestination*//* && !Services.Dealer.consolidatingChips*/)
         {
-            for (int i = 0; i < 2; i++)
+            if ((stickHead.transform.position - transform.position).magnitude < .2f && (stickPos - chipPos).magnitude < .12f/* && heightDifference < HEIGHT_THRESHOLD*/)
             {
-                Hand hand = i == 0 ? throwingHand : deckHand;
-                if (hand != null)
+                if (!pushingChip && Services.ChipManager.chipGroup.Count <= 10)
                 {
-                    Vector2 handPos = new Vector2(hand.transform.position.x, hand.transform.position.z);
-                    Vector2 chipPos = new Vector2(transform.position.x, transform.position.z);
-                    float heightDifference = hand.transform.position.y - transform.position.y;
-                    if (Table.gameState == GameState.ShowDown && Services.Dealer.chipsInPot.Contains(this) && !isAtDestination && !Services.Dealer.consolidatingChips)
-                    {
-                        if ((hand.transform.position - transform.position).magnitude < .2f && (handPos - chipPos).magnitude < .12f && heightDifference < HEIGHT_THRESHOLD)
-                        {
-                            if (!pushingChip && Services.ChipManager.chipGroup.Count <= 10)
-                            {
-                                if (chipPushStartPos == Vector3.zero) chipPushStartPos = transform.position;
-                                maxGlow = 1;
-                                Services.ChipManager.chipGroup.Add(this);
-                                GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
-                                handPushingChip = hand;
-                                pushingChip = true;
-                                Services.Dealer.handIsOccupied = true;
-                                spotIndex = Services.ChipManager.chipsBeingPushed;
-                                Services.ChipManager.chipsBeingPushed += 1;
-                                Services.ChipManager.ConsolidateStack(Services.ChipManager.chipGroup);
-                            }
-                        }
-                        else
-                        {
-                            if (pushingChip && (handPushingChip.transform.position.y - transform.position.y) > HEIGHT_THRESHOLD)
-                            {
-                                maxGlow = 2;
-                                Services.ChipManager.chipGroup.Clear();
-                                chipPushStartPos = Vector3.zero;
-                                GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
-                                //foreach (GameObject chip in allChips)
-                                //{
-                                //    Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), chip.GetComponent<Collider>(), false);
-                                //}
-                                timesToSplit = 0;
-                                handPushingChip = null;
-                                pushingChip = false;
-                                Services.Dealer.handIsOccupied = false;
-                                spotIndex = 0;
-                                Services.ChipManager.chipsBeingPushed = 0;
-                            }
-                        }
-                    }
-                    else if (Table.gameState == GameState.PostHand)
-                    {
-                        chipPushStartPos = Vector3.zero;
-                        Services.ChipManager.chipGroup.Clear();
-                        GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
-                        //foreach (GameObject chip in allChips)
-                        //{
-                        //    Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), chip.GetComponent<Collider>(), false);
-                        //}
-                        timesToSplit = 0;
-                        handPushingChip = null;
-                        pushingChip = false;
-                        Services.Dealer.handIsOccupied = false;
-                        spotIndex = 0;
-                        Services.ChipManager.chipsBeingPushed = 0;
-                        stopPulse = true;
-                    }
-                    else if (isAtDestination)
-                    {
-                        if (Services.ChipManager.chipGroup.Contains(this))
-                        {
-                            Services.ChipManager.chipGroup.Remove(this);
-                        }
-                        GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
-                        //foreach (GameObject chip in allChips)
-                        //{
-                        //    Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), chip.GetComponent<Collider>(), false);
-                        //}
-                        timesToSplit = 0;
-                        handPushingChip = null;
-                        pushingChip = false;
-                        spotIndex = 0;
-                        stopPulse = true;
-                    }
+                    if (chipPushStartPos == Vector3.zero) chipPushStartPos = transform.position;
+                    maxGlow = 1;
+                    Services.ChipManager.chipGroup.Add(this);
+                    pushingChip = true;
+                    Services.Dealer.handIsOccupied = true;
+                    spotIndex = Services.ChipManager.chipsBeingPushed;
+                    Services.ChipManager.chipsBeingPushed += 1;
+                    Services.ChipManager.ConsolidateStack(Services.ChipManager.chipGroup);
+                }
+            }
+            else
+            {
+                if (pushingChip && (stickHead.transform.position.y - transform.position.y) > HEIGHT_THRESHOLD)
+                {
+                    maxGlow = 2;
+                    Services.ChipManager.chipGroup.Clear();
+                    chipPushStartPos = Vector3.zero;
+                    timesToSplit = 0;
+                    pushingChip = false;
+                    Services.Dealer.handIsOccupied = false;
+                    spotIndex = 0;
+                    Services.ChipManager.chipsBeingPushed = 0;
                 }
             }
         }
+        else if (Table.gameState == GameState.PostHand)
+        {
+            chipPushStartPos = Vector3.zero;
+            Services.ChipManager.chipGroup.Clear();
+            timesToSplit = 0;
+            handPushingChip = null;
+            pushingChip = false;
+            Services.Dealer.handIsOccupied = false;
+            spotIndex = 0;
+            Services.ChipManager.chipsBeingPushed = 0;
+            stopPulse = true;
+        }
+        //else if (isAtDestination)
+        //{
+        //    Debug.Log("at destination");
+        //    if (Services.ChipManager.chipGroup.Contains(this))
+        //    {
+        //        Services.ChipManager.chipGroup.Remove(this);
+        //    }
+        //    timesToSplit = 0;
+        //    handPushingChip = null;
+        //    pushingChip = false;
+        //    spotIndex = 0;
+        //    stopPulse = true;
+        //}
     }
 
-    public void InitializeLerp(GameObject obj ,Vector3 pos)
+    public void InitializeLerp(GameObject obj, Vector3 pos)
     {
         Debug.Log("SETTING UP LERP");
         flying_start_time = Time.time;

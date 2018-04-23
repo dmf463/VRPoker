@@ -12,12 +12,11 @@ public class ChipManager {
     public void ChipInit()
     {
         chipPositionInPot = Services.ChipManager.CreateChipPositionsForPot(GameObject.Find("TipZone").transform.position, 0.075f, 0.06f, 5, 50, GameObject.Find("TipZone").transform.position.y);
-        //chipPositionWhenPushing = CreateChipPositionsForPushing(Services.ChipManager.chipPositionWhenPushing[0], 0.06f, 0.075f, 5, 25);
     }
 
     public void ChipUpdate()
     {
-        //PushGroupOfChips();
+        PushGroupOfChips();
     }
 
     public List<GameObject> chipsToDestroy = new List<GameObject>();
@@ -34,22 +33,26 @@ public class ChipManager {
     }
     public void PushGroupOfChips()
     {
+        //chipPositionWhenPushing = CreateChipPositionsForPushing(chipGroup[0].transform.position, 0.06f, 0.075f, 5, 25);
         Vector3 offset = new Vector3(0.1f, 0, 0);
         if (chipGroup.Count != 0)
+        {
             for (int i = 0; i < chipGroup.Count; i++)
             {
                 Rigidbody rb = chipGroup[i].gameObject.GetComponent<Rigidbody>();
                 int chipSpotIndex = chipGroup[i].spotIndex;
                 float scalar = 1.1f;
                 Vector3 startPos = chipGroup[i].chipPushStartPos + offset;
-                Vector3 handPos = chipGroup[i].handPushingChip.transform.position;
-                Vector3 linearDest = (handPos - startPos)/* * scalar*/;
-                Vector3 dest = chipGroup[i].handPushingChip.GetAttachmentTransform("PushChip").transform.TransformPoint(chipPositionWhenPushing[chipSpotIndex]);
+                Vector3 stickPos = GameObject.FindGameObjectWithTag("StickHead").transform.position;
+                Vector3 linearDest = (stickPos - startPos) * scalar;
+                Vector3 dest = GameObject.FindGameObjectWithTag("StickHead").transform.position;
                 if (rb != null)
                 {
+                    Debug.Log("should be moving chips");
                     rb.MovePosition(new Vector3(dest.x + linearDest.x, chipGroup[i].gameObject.transform.position.y, dest.z + linearDest.z));
                 }
             }
+        }
     }
 
     public List<int> SetChipStacks(int chipAmount)

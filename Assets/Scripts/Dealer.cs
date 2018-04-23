@@ -133,12 +133,12 @@ public class Dealer : MonoBehaviour
 
     private TaskManager tm;
     public int timeBetweenIdle;
+    
 
     void Awake()
     {
-        //just the message board stuff
-
         //this is where we intialize all our services stuff
+        AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
         tm = new TaskManager();
         Services.ChipManager = new ChipManager();
         Services.ChipManager.ChipInit();
@@ -152,6 +152,14 @@ public class Dealer : MonoBehaviour
         Services.DialogueDataManager.ParseOneLinerDialogueFile((Services.SoundManager.oneLinerDialogueFiler));
         Services.TextManager = GameObject.Find("TableGraphics").GetComponent<TextManager>();
        
+    }
+
+    void OnAudioConfigurationChanged(bool deviceWasChanged)
+    {
+        Debug.Log("Device was changed");
+        //AudioConfiguration config = AudioSettings.GetConfiguration();
+        //config.dspBufferSize = 64;
+        //AudioSettings.Reset(config);
     }
 
     // Use this for initialization
@@ -174,6 +182,7 @@ public class Dealer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Services.ChipManager.ChipUpdate();
         newTime = System.DateTime.Now;
         newTimeForIdle = System.DateTime.Now;
         minutes = newTime.Minute - oldTime.Minute;

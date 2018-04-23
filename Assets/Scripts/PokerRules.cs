@@ -48,10 +48,6 @@ public class PokerRules : MonoBehaviour {
     {
         tm.Update();
         CheckCardCount();
-        if (Services.ChipManager.chipGroup.Count > 0)
-        {
-            Services.ChipManager.PushGroupOfChips();
-        }
         if (cardsPulled.Count <= Services.Dealer.PlayerAtTableCount() * 2 && thrownCards.Count == 0)
         {
             IndicateCardPlacement(cardsPulled.Count);
