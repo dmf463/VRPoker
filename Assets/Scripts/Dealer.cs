@@ -1228,7 +1228,7 @@ public class Dealer : MonoBehaviour
             for (int i = 0; i < winningPlayers.Count; i++)
             {
                 List<int> splitPot = Services.ChipManager.PrepChipsForSplit(winningPlayers[i].chipsWon);
-                Services.ChipManager.SplitPot(splitPot, winningPlayers[i].SeatPos, chipsInPot);
+                //Services.ChipManager.SplitPot(splitPot, winningPlayers[i].SeatPos, chipsInPot);
             }
         }
         Debug.Log("number of Winners is " + numberOfWinners);
