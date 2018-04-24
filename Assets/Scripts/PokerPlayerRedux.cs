@@ -139,6 +139,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     private TaskManager tm;
     private bool MakeThemAllIn = false;
+    private bool playedSound;
 
 
     //this is here so that I can run for-loops and access the functions from Table that use the playerDest enum
@@ -207,9 +208,18 @@ public class PokerPlayerRedux : MonoBehaviour{
 
         if (Services.Dealer.playerToAct == this)
         {
+            if (!playedSound)
+            {
+                playedSound = true;
+                Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.clockTick, .4f);
+            }
             turnIndicator.SetActive(true);
         }
-        else turnIndicator.SetActive(false);
+        else
+        {
+            playedSound = false;
+            turnIndicator.SetActive(false);
+        }
     }
 
     //so this is the function that calls all the organization functions, evaluation functions, and handStrength

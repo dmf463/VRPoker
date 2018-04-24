@@ -152,9 +152,9 @@ public class Chip : InteractionSuperClass {
         Vector2 stickPos = new Vector2(stickHead.transform.position.x, stickHead.transform.position.z);
         Vector2 chipPos = new Vector2(transform.position.x, transform.position.z);
         float heightDifference = stickHead.transform.position.y - transform.position.y;
-        if (Table.gameState == GameState.ShowDown && Services.Dealer.chipsInPot.Contains(this) /*&& !isAtDestination*//* && !Services.Dealer.consolidatingChips*/)
+        if (Table.gameState == GameState.ShowDown && Services.Dealer.chipsInPot.Contains(this))
         {
-            if ((stickHead.transform.position - transform.position).magnitude < .2f && (stickPos - chipPos).magnitude < .12f/* && heightDifference < HEIGHT_THRESHOLD*/)
+            if ((stickHead.transform.position - transform.position).magnitude < .2f && (stickPos - chipPos).magnitude < .12f)
             {
                 if (!pushingChip && Services.ChipManager.chipGroup.Count <= 10)
                 {
@@ -195,51 +195,6 @@ public class Chip : InteractionSuperClass {
             Services.ChipManager.chipsBeingPushed = 0;
             stopPulse = true;
         }
-        //else if (isAtDestination)
-        //{
-        //    Debug.Log("at destination");
-        //    if (Services.ChipManager.chipGroup.Contains(this))
-        //    {
-        //        Services.ChipManager.chipGroup.Remove(this);
-        //    }
-        //    timesToSplit = 0;
-        //    handPushingChip = null;
-        //    pushingChip = false;
-        //    spotIndex = 0;
-        //    stopPulse = true;
-        //}
-    }
-
-    public void InitializeLerp(GameObject obj, Vector3 pos)
-    {
-        Debug.Log("SETTING UP LERP");
-        flying_start_time = Time.time;
-        flight_journey_distance = Vector3.Distance(obj.transform.position, pos);
-        flying_start_position = obj.transform.position;
-        LerpTowards(obj, pos);
-    }
-    public void LerpTowards(GameObject obj, Vector3 pos)
-    {
-        Debug.Log("STARTING LERP");
-        StartCoroutine(ActiveLerping(obj, pos));
-    }
-
-    IEnumerator ActiveLerping(GameObject obj, Vector3 pos)
-    {
-        while (isLerping)
-        {
-            Debug.Log("LERPING");
-            float distCovered = (Time.time - flying_start_time) * 1;
-            float fracJourney = distCovered / flight_journey_distance;
-            obj.transform.position = Vector3.Lerp(flying_start_position, pos, fracJourney);
-            if(obj.transform.position == pos)
-            {
-                isLerping = false;
-            }
-            yield return null;
-        }
-        Debug.Log("LERP DONE");
-        yield break;
     }
    
     void OnCollisionEnter(Collision other)

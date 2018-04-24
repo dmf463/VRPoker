@@ -31,6 +31,8 @@ public class SoundManager : MonoBehaviour
     public AudioClip[] cardTones;
     public AudioClip tipSFX;
     public AudioClip fallingTip;
+    public AudioClip clockTick;
+    public AudioClip clockDing;
 
 
     public int roundsFinished;
