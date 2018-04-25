@@ -188,13 +188,9 @@ public class Dealer : MonoBehaviour
         minutes = newTime.Minute - oldTime.Minute;
         seconds = Mathf.Abs(newTimeForIdle.Second - oldTimeForIdle.Second);
         timeBetweenIdle = seconds;
-        if(timeBetweenIdle >= 15)
+        if(timeBetweenIdle >= 15 && !OutsideVR)
         {
-            Debug.Log("timeBetweenIdle = " + timeBetweenIdle);
-            Debug.Log("15 Seconds Passed");
-            timeBetweenIdle = 0;
-            oldTimeForIdle = System.DateTime.Now;
-            //DAN PUT THE IDLE LINES HERE
+            ResetIdleTime();
             PokerPlayerRedux randomPlayer = Services.Dealer.players[UnityEngine.Random.Range(0, Services.Dealer.players.Count)];
             Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(randomPlayer.playerName, LineCriteria.IdleTime));
         }
@@ -420,6 +416,12 @@ public class Dealer : MonoBehaviour
         Services.ChipManager.DestroyChips();
     }
 
+    public void ResetIdleTime()
+    {
+        timeBetweenIdle = 0;
+        oldTimeForIdle = System.DateTime.Now;
+    }
+
     IEnumerator WaitToResetBool(float time, AudioData clip)
     {
         yield return new WaitForSeconds(time);
@@ -434,6 +436,11 @@ public class Dealer : MonoBehaviour
 
     public void CheckGameState()
     {
+        if(hand1.GetStandardInteractionButtonDown() || hand2.GetStandardInteractionButtonDown())
+        {
+            ResetIdleTime();
+        }
+
         if (Table.gameState == GameState.NewRound)
         {
             if (Services.PokerRules.cardsPulled.Count == PlayerAtTableCount() * 2 && !checkedPreFlopCardCount && Services.PokerRules.thrownCards.Count == 0)
