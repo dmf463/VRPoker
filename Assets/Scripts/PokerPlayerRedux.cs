@@ -213,12 +213,12 @@ public class PokerPlayerRedux : MonoBehaviour{
                 playedSound = true;
                 Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.clockTick, .4f);
             }
-            turnIndicator.SetActive(true);
+            if(turnIndicator != null) turnIndicator.SetActive(true);
         }
         else
         {
             playedSound = false;
-            turnIndicator.SetActive(false);
+            if(turnIndicator != null) turnIndicator.SetActive(false);
         }
     }
 
