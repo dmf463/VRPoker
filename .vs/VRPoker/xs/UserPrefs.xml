@@ -1,19 +1,20 @@
 ﻿<Properties StartupConfiguration="{F4284AB1-F546-7C9C-03A4-24AC5B8CF51B}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Dealer.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Dialogue/oneliners 4-25 new.txt">
     <Files>
       <File FileName="Assets/Scripts/Dealer.cs" Line="1568" Column="1" />
       <File FileName="Assets/Scripts/CardDeckScript.cs" Line="486" Column="113" />
       <File FileName="Assets/Scripts/PokerPlayerRedux.cs" Line="16" Column="5" />
-      <File FileName="Assets/Scripts/Managers/DialogueDataManager.cs" Line="403" Column="31" />
+      <File FileName="Assets/Scripts/Managers/DialogueDataManager.cs" Line="191" Column="1" />
       <File FileName="Assets/Scripts/Card.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/Tasks/Tasks.cs" Line="235" Column="31" />
       <File FileName="Assets/Dissolve Edge by Moonflower Carnivore/readme_DissolveEdge.txt" Line="4" Column="16" />
       <File FileName="Assets/Dissolve Edge by Moonflower Carnivore/Shaders/Transparent_Unlit_DissolveEdge.shader" Line="1" Column="1" />
       <File FileName="Assets/Scripts/PlayerBehaviour.cs" Line="402" Column="25" />
-      <File FileName="Assets/Dialogue/Temp Dialogue - no minnie.txt" Line="1" Column="1" />
+      <File FileName="Assets/Dialogue/Temp Dialogue - no minnie.txt" Line="89" Column="5" />
       <File FileName="Assets/Scripts/LogChips.cs" Line="38" Column="43" />
       <File FileName="Assets/Scripts/PlayerHit.cs" Line="19" Column="79" />
       <File FileName="Assets/Scripts/Chip.cs" Line="439" Column="6" />
+      <File FileName="Assets/Dialogue/oneliners 4-25 new.txt" Line="102" Column="6" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
