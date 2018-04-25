@@ -398,6 +398,7 @@ public class Dealer : MonoBehaviour
             }
             if (!readyToAwardPlayers)
             {
+                Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.clockDing, .05f);
                 for (int i = 0; i < players.Count; i++)
                 {
                     if (players[i].Hand != null)
