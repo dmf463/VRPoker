@@ -206,7 +206,7 @@ public class PokerPlayerRedux : MonoBehaviour{
             Table.instance.playerChipStacks[SeatPos] = 0;
         }
 
-        if (Services.Dealer.playerToAct == this)
+        if (Services.Dealer.playerToAct == this && Table.gameState != GameState.Intro)
         {
             if (!playedSound)
             {

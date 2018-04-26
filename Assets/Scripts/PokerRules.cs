@@ -401,19 +401,22 @@ public class PokerRules : MonoBehaviour {
 
     public void IndicateCardPlacement(int cardPlace)
     {
-        if (cardsPulled.Count < Services.Dealer.PlayerAtTableCount() * 2)
+        if (Table.gameState != GameState.Intro)
         {
-            GameObject oldIndicator = Services.Dealer.players[Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardPlace)].playerCardIndicator;
-            oldIndicator.SetActive(false);
+            if (cardsPulled.Count < Services.Dealer.PlayerAtTableCount() * 2)
+            {
+                GameObject oldIndicator = Services.Dealer.players[Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardPlace)].playerCardIndicator;
+                oldIndicator.SetActive(false);
 
-            GameObject newIndicator = Services.Dealer.players[Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardPlace + 1)].playerCardIndicator;
-            newIndicator.SetActive(true);
-        }
-        else
-        {
-            GameObject oldIndicator = Services.Dealer.players[Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardPlace)].playerCardIndicator;
-            oldIndicator.SetActive(false);
+                GameObject newIndicator = Services.Dealer.players[Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardPlace + 1)].playerCardIndicator;
+                newIndicator.SetActive(true);
+            }
+            else
+            {
+                GameObject oldIndicator = Services.Dealer.players[Services.Dealer.SeatsAwayFromDealerAmongstLivePlayers(cardPlace)].playerCardIndicator;
+                oldIndicator.SetActive(false);
 
+            }
         }
     }
 

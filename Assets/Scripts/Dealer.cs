@@ -133,6 +133,9 @@ public class Dealer : MonoBehaviour
 
     private TaskManager tm;
     public int timeBetweenIdle;
+
+    public GameObject[] playersToBring;
+    public GameObject[] chipsToBring;
     
 
     void Awake()
@@ -150,8 +153,7 @@ public class Dealer : MonoBehaviour
 		Services.PlayerBehaviour = new PlayerBehaviour();
 		Services.DialogueDataManager.ParseConvoDialogueFile((Services.SoundManager.convoDialogueFile));
         Services.DialogueDataManager.ParseOneLinerDialogueFile((Services.SoundManager.oneLinerDialogueFiler));
-        Services.TextManager = GameObject.Find("TableGraphics").GetComponent<TextManager>();
-       
+        Services.TextManager = GameObject.Find("TableGraphics").GetComponent<TextManager>();   
     }
 
     void OnAudioConfigurationChanged(bool deviceWasChanged)
@@ -172,16 +174,20 @@ public class Dealer : MonoBehaviour
         tipCount = 0;
         playerDestinations = Table.instance.playerDestinations;
         InitializePlayers(startingChipCount);
-        Table.gameState = GameState.NewRound;
+        Table.gameState = GameState.Intro;
         Debug.Log("Gamestate = " + Table.gameState);
         Table.dealerState = DealerState.DealingState;
-        lastGameState = GameState.NewRound;
+        lastGameState = GameState.Intro;
         startingGameState = new PokerGameData(0, players);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            IntroduceCharacters();
+        }
         Services.ChipManager.ChipUpdate();
         newTime = System.DateTime.Now;
         newTimeForIdle = System.DateTime.Now;
@@ -415,6 +421,20 @@ public class Dealer : MonoBehaviour
     {
         timeBetweenIdle = 0;
         oldTimeForIdle = System.DateTime.Now;
+    }
+
+    public void IntroduceCharacters()
+    {
+        foreach (GameObject o in playersToBring)
+        {
+            o.SetActive(true);
+        }
+        foreach (GameObject o in chipsToBring)
+        {
+            o.SetActive(true);
+        }
+        Table.gameState = GameState.NewRound;
+        StartCoroutine(WaitToPostBlinds(.25f));
     }
 
     IEnumerator WaitToResetBool(float time, AudioData clip)
@@ -1076,10 +1096,18 @@ public class Dealer : MonoBehaviour
                 };
             }
         }
-
         Table.instance.DealerPosition = 0;
         Table.instance.SetDealerButtonPos(Table.instance.DealerPosition);
         Table.instance.gameData = new PokerGameData(Table.instance.DealerPosition, players);
+        //foreach (GameObject o in playersToBring)
+        //{
+        //    o.SetActive(false);
+        //}
+        //chipsToBring = GameObject.FindGameObjectsWithTag("Chip");
+        //foreach(GameObject o in chipsToBring)
+        //{
+        //    o.SetActive(false);
+        //}
         StartCoroutine(WaitToPostBlinds(.25f));
     }
 
