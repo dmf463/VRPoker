@@ -238,11 +238,6 @@ public class Dealer : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.J))
         {
-            //List<LineCriteria> critList = new List<LineCriteria>();
-            //critList.Add(LineCriteria.Tip);
-            //PlayerLineCriteria plCriteria = new PlayerLineCriteria(PlayerName.Floyd, critList);
-            //Services.SoundManager.PlayOneLiner(plCriteria);
-
             PokerPlayerRedux randomPlayer = Services.Dealer.players[UnityEngine.Random.Range(0, Services.Dealer.players.Count)];
             Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(randomPlayer.playerName, LineCriteria.Call));
         }
