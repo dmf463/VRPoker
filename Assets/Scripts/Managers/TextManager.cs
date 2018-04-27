@@ -34,7 +34,11 @@ public class TextManager : MonoBehaviour {
 	void Update () {
         tm.Update();
         ActivateMisdealText();
-        RunTutorial();
+        if(inTutorial) RunTutorial();
+        else
+        {
+            whoWon.SetActive(false);
+        }
 	}
 
     public void Init()
@@ -148,6 +152,7 @@ public class TextManager : MonoBehaviour {
             if (!tutorialFinished)
             {
                 tutorialFinished = true;
+                inTutorial = false;
                 dealTwoCardsText.SetActive(false);
                 lookAtEachPlayer.SetActive(false);
                 boardCards.SetActive(false);

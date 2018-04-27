@@ -34,6 +34,15 @@ public class SoundManager : MonoBehaviour
     public AudioClip clockTick;
     public AudioClip clockDing;
 
+    [Header("IntroConversation")]
+    public AudioClip Nathaniel_Intro1;
+    public AudioClip Floyd_Intro;
+    public AudioClip Zombie_Intro;
+    public AudioClip Minnie_Intro;
+    public AudioClip Casey_Intro;
+    public AudioClip Nathaniel_Intro2;
+    public AudioClip Minnie_Intro2;
+
 
     public int roundsFinished;
 

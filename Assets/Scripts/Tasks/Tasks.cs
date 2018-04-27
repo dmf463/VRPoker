@@ -336,6 +336,62 @@ public class ConsolidateChips : Task
         Services.Dealer.consolidatingChips = false;
         SetStatus(TaskStatus.Success);
     }
-
 }
+
+public class PoofObjectIntoExistence : GOTask
+{
+    GameObject GameObject;
+    public PoofObjectIntoExistence(GameObject _gameObject) : base(_gameObject)
+    {
+        GameObject = _gameObject;
+    }
+
+    protected override void Init()
+    {
+        GameObject.SetActive(true);
+        SetStatus(TaskStatus.Success);
+    }
+}
+
+public class SetGameState : Task
+{
+    GameState GameState;
+    public SetGameState(GameState _gameState)
+    {
+        GameState = _gameState;
+    }
+
+    protected override void Init()
+    {
+        Table.gameState = GameState;
+        SetStatus(TaskStatus.Success);
+    }
+}
+
+public class PlayPlayerLine : Task
+{
+    PokerPlayerRedux Player;
+    AudioClip Clip;
+
+    public PlayPlayerLine(PokerPlayerRedux _player, AudioClip _clip)
+    {
+        Player = _player;
+        Clip = _clip;
+    }
+
+    protected override void Init()
+    {
+        Services.SoundManager.GetSourceAndPlay(Player.playerAudioSource, Clip);
+        SetStatus(TaskStatus.Success);
+    }
+}
+
+public class TurnOnTutorial : Task
+{
+    protected override void Init()
+    {
+        Services.TextManager.inTutorial = true;
+    }
+}
+
 

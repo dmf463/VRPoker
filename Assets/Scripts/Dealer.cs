@@ -136,6 +136,7 @@ public class Dealer : MonoBehaviour
 
     public GameObject[] playersToBring;
     public GameObject[] chipsToBring;
+    public bool startingWithIntro;
     
 
     void Awake()
@@ -174,10 +175,16 @@ public class Dealer : MonoBehaviour
         tipCount = 0;
         playerDestinations = Table.instance.playerDestinations;
         InitializePlayers(startingChipCount);
-        Table.gameState = GameState.Intro;
-        Debug.Log("Gamestate = " + Table.gameState);
-        Table.dealerState = DealerState.DealingState;
-        lastGameState = GameState.Intro;
+        if (startingWithIntro)
+        {
+            Table.gameState = GameState.Intro;
+            lastGameState = GameState.Intro;
+        }
+        else
+        {
+            Table.gameState = GameState.NewRound;
+            lastGameState = GameState.NewRound;
+        }
         startingGameState = new PokerGameData(0, players);
     }
 
@@ -1099,16 +1106,71 @@ public class Dealer : MonoBehaviour
         Table.instance.DealerPosition = 0;
         Table.instance.SetDealerButtonPos(Table.instance.DealerPosition);
         Table.instance.gameData = new PokerGameData(Table.instance.DealerPosition, players);
-        //foreach (GameObject o in playersToBring)
-        //{
-        //    o.SetActive(false);
-        //}
-        //chipsToBring = GameObject.FindGameObjectsWithTag("Chip");
-        //foreach(GameObject o in chipsToBring)
-        //{
-        //    o.SetActive(false);
-        //}
-        StartCoroutine(WaitToPostBlinds(.25f));
+        if (startingWithIntro)
+        {
+            foreach (GameObject o in playersToBring)
+            {
+                o.SetActive(false);
+            }
+            chipsToBring = GameObject.FindGameObjectsWithTag("Chip");
+            foreach (GameObject o in chipsToBring)
+            {
+                o.SetActive(false);
+            }
+            OpeningCutScene();
+        }
+        else
+        {
+            StartCoroutine(WaitToPostBlinds(.25f));
+        }
+    }
+
+    public void OpeningCutScene()
+    {
+        Wait startTimePoof = new Wait(2);
+        Wait waitForPoof = new Wait(2);
+        SetGameState setGameState = new SetGameState(GameState.NewRound);
+        PoofObjectIntoExistence poofCasey = new PoofObjectIntoExistence(playersToBring[0]);
+        PoofObjectIntoExistence poofZombie = new PoofObjectIntoExistence(playersToBring[1]);
+        PoofObjectIntoExistence poofMinnie = new PoofObjectIntoExistence(playersToBring[2]);
+        PoofObjectIntoExistence poofNathaniel = new PoofObjectIntoExistence(playersToBring[3]);
+        PoofObjectIntoExistence poofFloyd = new PoofObjectIntoExistence(playersToBring[4]);
+
+        PlayPlayerLine nathanielSpeaks = new PlayPlayerLine(players[3], Services.SoundManager.Nathaniel_Intro1);
+        PlayPlayerLine floydSpeaks = new PlayPlayerLine(players[4], Services.SoundManager.Floyd_Intro);
+        PlayPlayerLine zombieSpeaks = new PlayPlayerLine(players[1], Services.SoundManager.Zombie_Intro);
+        PlayPlayerLine minnieSpeaks = new PlayPlayerLine(players[2], Services.SoundManager.Minnie_Intro);
+        PlayPlayerLine caseySpeaks = new PlayPlayerLine(players[0], Services.SoundManager.Casey_Intro);
+        PlayPlayerLine nathanielSpeaksAgain = new PlayPlayerLine(players[3], Services.SoundManager.Nathaniel_Intro2);
+        PlayPlayerLine minnieSpeaksAgain = new PlayPlayerLine(players[2], Services.SoundManager.Minnie_Intro2);
+
+        startTimePoof.
+            Then(poofCasey).
+            Then(new Wait(2)).
+            Then(poofZombie).
+            Then(new Wait(2)).
+            Then(poofMinnie).
+            Then(new Wait(2)).
+            Then(poofNathaniel).
+            Then(new Wait(2)).
+            Then(poofFloyd).
+            Then(nathanielSpeaks).
+            Then(new Wait(Services.SoundManager.Nathaniel_Intro1.length)).
+            Then(floydSpeaks).
+            Then(new Wait(Services.SoundManager.Floyd_Intro.length)).
+            Then(zombieSpeaks).
+            Then(new Wait(Services.SoundManager.Zombie_Intro.length)).
+            Then(minnieSpeaks).
+            Then(new Wait(Services.SoundManager.Minnie_Intro.length)).
+            Then(caseySpeaks).
+            Then(new Wait(Services.SoundManager.Casey_Intro.length)).
+            Then(nathanielSpeaksAgain).
+            Then(new Wait(Services.SoundManager.Nathaniel_Intro2.length)).
+            Then(minnieSpeaksAgain).
+            Then(new Wait(Services.SoundManager.Minnie_Intro2.length)).
+            Then(setGameState).
+            Then(new TurnOnTutorial());
+        tm.Do(startTimePoof);
     }
 
     public IEnumerator WaitToPostBlinds(float time)

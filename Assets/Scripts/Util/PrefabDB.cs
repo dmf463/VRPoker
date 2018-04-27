@@ -41,5 +41,9 @@ public class PrefabDB : ScriptableObject {
     private GameObject genericAudioSource;
     public GameObject GenericAudioSource { get { return genericAudioSource; } }
 
+    [SerializeField]
+    private GameObject puffOfSmoke;
+    public GameObject PuffOfSmoke { get { return puffOfSmoke; } }
+
 
 }
