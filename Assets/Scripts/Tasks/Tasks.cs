@@ -341,6 +341,10 @@ public class ConsolidateChips : Task
 public class PoofObjectIntoExistence : GOTask
 {
     GameObject GameObject;
+    //JuicePos
+    //JuiceRot
+    //JuicePrefab
+    //juice offset?
     public PoofObjectIntoExistence(GameObject _gameObject) : base(_gameObject)
     {
         GameObject = _gameObject;
@@ -349,6 +353,8 @@ public class PoofObjectIntoExistence : GOTask
     protected override void Init()
     {
         GameObject.SetActive(true);
+        //set juice transform + offset
+        //instantiate juice at transrom. 
         SetStatus(TaskStatus.Success);
     }
 }
@@ -391,6 +397,7 @@ public class TurnOnTutorial : Task
     protected override void Init()
     {
         Services.TextManager.inTutorial = true;
+        SetStatus(TaskStatus.Success);
     }
 }
 
