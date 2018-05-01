@@ -289,7 +289,7 @@ public class DialogueDataManager
             {
                 Services.SoundManager.playersInConvo.Add(name);
             }
-
+            Services.AnimationScript.CharacterConvoAnimation(true);
             Services.SoundManager.conversationIsPlaying = true;
             return possibleConversations[correctConversation]; //return the convo, the earliest that has not yet been played
         }

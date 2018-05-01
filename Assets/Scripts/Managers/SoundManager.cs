@@ -91,6 +91,7 @@ public class SoundManager : MonoBehaviour
                 yield return null;
             }
         }
+        Services.AnimationScript.CharacterConvoAnimation(false);
         playersInConvo.Clear();
         conversationIsPlaying = false;
         convo.hasBeenPlayed = true; //once all lines have been played, set the bool on the conversation so that we don't choose it again
