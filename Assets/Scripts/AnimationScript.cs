@@ -20,16 +20,15 @@ public class AnimationScript : MonoBehaviour {
         FloydAnim.SetBool("Idle", true); 
 
     }
-	
-	// Update is called once per frame
-	void Update () {
 
-        //if (Input.GetKeyDown(KeyCode.M))
-        //{
-        //    FloydAnim.SetTrigger("Check");
-        //}
-		
-	}
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            MinnieAnim.SetBool("Idle", false);
+            MinnieAnim.SetBool("TalkingLeft", true);
+        }
+    }
 
     public void ActionAnimation(PlayerName name, string animationName)
     {
