@@ -142,7 +142,6 @@ public class Dealer : MonoBehaviour
     void Awake()
     {
         //this is where we intialize all our services stuff
-        AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
         tm = new TaskManager();
         Services.ChipManager = new ChipManager();
         Services.ChipManager.ChipInit();
@@ -156,14 +155,6 @@ public class Dealer : MonoBehaviour
         Services.DialogueDataManager.ParseOneLinerDialogueFile((Services.SoundManager.oneLinerDialogueFiler));
         Services.TextManager = GameObject.Find("TableGraphics").GetComponent<TextManager>();
         Services.AnimationScript = GameObject.Find("AnimationController").GetComponent<AnimationScript>();
-    }
-
-    void OnAudioConfigurationChanged(bool deviceWasChanged)
-    {
-        Debug.Log("Device was changed");
-        //AudioConfiguration config = AudioSettings.GetConfiguration();
-        //config.dspBufferSize = 64;
-        //AudioSettings.Reset(config);
     }
 
     // Use this for initialization
@@ -982,7 +973,7 @@ public class Dealer : MonoBehaviour
                     previousPlayerToAct = playerToAct;
                     playerToAct = nextPlayer;
                     Debug.Log("nextPlayer to act is player " + playerToAct);
-                    if(OutsideVR) playerToAct.EvaluateHand();
+                    //if(OutsideVR) playerToAct.EvaluateHand();
                     break;
                 }
             }
