@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Valve.VR.InteractionSystem;
 
 public class ChipManager {
 
@@ -27,6 +28,11 @@ public class ChipManager {
         {
             foreach (GameObject chip in chipsToDestroy)
             {
+                if(chip.GetComponentInParent<Hand>() != null)
+                {
+                    Hand parent = chip.GetComponentInParent<Hand>();
+                    parent.DetachObject(chip);
+                }
                 GameObject.Destroy(chip);
             }
         }
