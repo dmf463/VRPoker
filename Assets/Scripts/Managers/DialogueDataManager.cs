@@ -285,7 +285,11 @@ public class DialogueDataManager
                 }
             }
             if (correctConversation == -1) return null;
-           
+            foreach(PlayerName name in conversants)
+            {
+                Services.SoundManager.playersInConvo.Add(name);
+            }
+
             Services.SoundManager.conversationIsPlaying = true;
             return possibleConversations[correctConversation]; //return the convo, the earliest that has not yet been played
         }
@@ -452,6 +456,7 @@ public class PlayerLine //class for each player line
 {
 	public string mainText; //the text the character is speaking
 	public string playerName; //the name of the charater speaking
+
     public AudioSource audioSource;
     public AudioClip audioFile; //the name of the associated audiofile
 

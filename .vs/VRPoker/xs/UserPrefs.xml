@@ -1,20 +1,20 @@
 ﻿<Properties StartupConfiguration="{F4284AB1-F546-7C9C-03A4-24AC5B8CF51B}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/JuiceSandbox.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Managers/SoundManager.cs">
     <Files>
       <File FileName="Assets/Scripts/Dealer.cs" Line="163" Column="44" />
       <File FileName="Assets/Scripts/CardDeckScript.cs" Line="216" Column="1" />
-      <File FileName="Assets/Scripts/PokerPlayerRedux.cs" Line="440" Column="29" />
-      <File FileName="Assets/Scripts/Card.cs" Line="18" Column="83" />
+      <File FileName="Assets/Scripts/PokerPlayerRedux.cs" Line="475" Column="51" />
+      <File FileName="Assets/Scripts/Card.cs" Line="27" Column="22" />
       <File FileName="Assets/Scripts/Tasks/Tasks.cs" Line="244" Column="20" />
-      <File FileName="Assets/Scripts/PlayerBehaviour.cs" Line="402" Column="25" />
       <File FileName="Assets/Scripts/LogChips.cs" Line="38" Column="43" />
       <File FileName="Assets/Scripts/PlayerHit.cs" Line="19" Column="79" />
       <File FileName="Assets/Scripts/Chip.cs" Line="516" Column="30" />
       <File FileName="Assets/Scripts/Util/Easing.cs" Line="68" Column="6" />
-      <File FileName="Assets/Scripts/JuiceSandbox.cs" Line="51" Column="3" />
+      <File FileName="Assets/Scripts/JuiceSandbox.cs" Line="55" Column="5" />
       <File FileName="Assets/Scripts/Managers/SoundManager.cs" Line="31" Column="28" />
       <File FileName="Assets/Scripts/Table.cs" Line="109" Column="12" />
       <File FileName="Assets/Scripts/PokerRules.cs" Line="666" Column="80" />
+      <File FileName="Assets/Scripts/Managers/DialogueDataManager.cs" Line="191" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />

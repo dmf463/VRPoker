@@ -25,6 +25,10 @@ public class SoundManager : MonoBehaviour
     [Header("Conversations")]
     public bool conversationIsPlaying;
 
+    /// 
+    public List<PlayerName> playersInConvo = new List<PlayerName>(); //DAVID THIS IS WHERE THE PLAYERS TALKING ARE
+    /// 
+   
     [Header("Sound Effects")]
 	public AudioClip[] chips;
     public AudioClip[] cards;
@@ -78,7 +82,6 @@ public class SoundManager : MonoBehaviour
 
         for (int i = 0; i < convo.playerLines.Count; i++) //for each line in our conversation
         {
-
             AudioClip audioLine = convo.playerLines[i].audioFile; //get the audio to play
             AudioSource playerSpeaking = convo.playerLines[i].audioSource; // get the source to play at
             GetSourceAndPlay(playerSpeaking, audioLine); //pass these and play
@@ -88,6 +91,7 @@ public class SoundManager : MonoBehaviour
                 yield return null;
             }
         }
+        playersInConvo.Clear();
         conversationIsPlaying = false;
         convo.hasBeenPlayed = true; //once all lines have been played, set the bool on the conversation so that we don't choose it again
 
