@@ -363,7 +363,7 @@ public class Card : InteractionSuperClass {
             if (cardsDropped >= 5)
             {
                 Debug.Log("misdeal here");
-                Table.gameState = GameState.Misdeal;
+                Services.Dealer.TriggerMisdeal();
             }
         }
 
@@ -462,7 +462,7 @@ public class Card : InteractionSuperClass {
             if (CardIsFaceUp() && !Services.Dealer.isCheating)
             {
                 Debug.Log("misdeal here");
-                Table.gameState = GameState.Misdeal;
+                Services.Dealer.TriggerMisdeal();
             }
         }
         base.HandAttachedUpdate(attachedHand);
@@ -542,7 +542,7 @@ public class Card : InteractionSuperClass {
         if (!CardIsInList(this) && cardOnTable)
         {
             Debug.Log("misdeal here");
-            Table.gameState = GameState.Misdeal;
+            Services.Dealer.TriggerMisdeal();
             StartCoroutine(SlowDownTorque());
         }
         else if(!CardIsInList(this)) StartCoroutine(SlowDownTorque()); 

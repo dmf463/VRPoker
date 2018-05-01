@@ -30,7 +30,7 @@ public class PlayerHit : MonoBehaviour
                 else
                 {
                     AudioClip hitSound = player.cardHitAudio;
-                    Table.gameState = GameState.Misdeal;
+                    Services.Dealer.TriggerMisdeal();
                 }
             }
         }

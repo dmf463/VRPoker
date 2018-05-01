@@ -311,7 +311,7 @@ public class Table {
             Debug.Log("boad.count = " + board.Count);
             foreach (Card card in board) Debug.Log("board contains " + card.cardType.rank + " of " + card.cardType.suit);
             Debug.Log("misdeal here");
-            gameState = GameState.Misdeal;
+            Services.Dealer.TriggerMisdeal();
         }
         EvaluatedHand.Add(board[0].cardType);
         EvaluatedHand.Add(board[1].cardType);
@@ -319,7 +319,7 @@ public class Table {
         if (EvaluatedHand.Count != 5)
         {
             Debug.Log("misdeal here with evaluated count of " + EvaluatedHand.Count);
-            gameState = GameState.Misdeal;
+            Services.Dealer.TriggerMisdeal();
             EvaluatedHand = null;
         }
         else EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
@@ -336,7 +336,7 @@ public class Table {
         if (board.Count != 4)
         {
             Debug.Log("misdeal here");
-            gameState = GameState.Misdeal;
+            Services.Dealer.TriggerMisdeal();
         }
         EvaluatedHand.Add(board[0].cardType);
         EvaluatedHand.Add(board[1].cardType);
@@ -345,7 +345,7 @@ public class Table {
         if (EvaluatedHand.Count != 6)
         {
             Debug.Log("misdeal here");
-            gameState = GameState.Misdeal;
+            Services.Dealer.TriggerMisdeal();
             EvaluatedHand = null;
         }
         else EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));
@@ -362,7 +362,7 @@ public class Table {
         if (board.Count != 5)
         {
             Debug.Log("misdeal here");
-            gameState = GameState.Misdeal;
+            Services.Dealer.TriggerMisdeal();
         }
         EvaluatedHand.Add(board[0].cardType);
         EvaluatedHand.Add(board[1].cardType);
@@ -372,7 +372,7 @@ public class Table {
         if (EvaluatedHand.Count != 7)
         {
             Debug.Log("misdeal here");
-            gameState = GameState.Misdeal;
+            Services.Dealer.TriggerMisdeal();
             EvaluatedHand = null;
         }
         else EvaluatedHand.Sort((cardLow, cardHigh) => cardLow.rank.CompareTo(cardHigh.rank));

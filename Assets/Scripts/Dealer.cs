@@ -134,7 +134,7 @@ public class Dealer : MonoBehaviour
     private TaskManager tm;
     public int timeBetweenIdle;
 
-    public GameObject[] playersToBring;
+    public GameObject[] objectsToHide;
     public GameObject[] chipsToBring;
     public bool startingWithIntro;
     
@@ -203,7 +203,7 @@ public class Dealer : MonoBehaviour
         if (deckIsDead)
         {
             Debug.Log("misdeal here");
-            Table.gameState = GameState.Misdeal;
+            Services.Dealer.TriggerMisdeal();
         }
         tipIndicator.GetComponent<TextMeshPro>().text = tipCount.ToString();
         multiplerObj.GetComponent<TextMeshPro>().text = tipMultiplier.ToString();
@@ -424,7 +424,7 @@ public class Dealer : MonoBehaviour
 
     public void IntroduceCharacters()
     {
-        foreach (GameObject o in playersToBring)
+        foreach (GameObject o in objectsToHide)
         {
             o.SetActive(true);
         }
@@ -434,6 +434,14 @@ public class Dealer : MonoBehaviour
         }
         Table.gameState = GameState.NewRound;
         StartCoroutine(WaitToPostBlinds(.25f));
+    }
+
+    public void TriggerMisdeal()
+    {
+        if (Table.gameState != GameState.Intro)
+        {
+            Table.gameState = GameState.Misdeal;
+        }
     }
 
     IEnumerator WaitToResetBool(float time, AudioData clip)
@@ -579,7 +587,7 @@ public class Dealer : MonoBehaviour
             if (misdeal)
             {
                 Debug.Log("misdeal");
-                Table.gameState = GameState.Misdeal;
+                Services.Dealer.TriggerMisdeal();
             }
             else if (cardCountForPreFlop == Services.PokerRules.cardsPulled.Count)
             {
@@ -589,7 +597,7 @@ public class Dealer : MonoBehaviour
             else if (Services.PokerRules.cardsPulled.Count > players.Count * 2/* && !Services.Dealer.OutsideVR*/)
             {
                 Debug.Log("misdeal here");
-                Table.gameState = GameState.Misdeal;
+                Services.Dealer.TriggerMisdeal();
             }
             else
             {
@@ -1100,7 +1108,7 @@ public class Dealer : MonoBehaviour
         Table.instance.gameData = new PokerGameData(Table.instance.DealerPosition, players);
         if (startingWithIntro)
         {
-            foreach (GameObject o in playersToBring)
+            foreach (GameObject o in objectsToHide)
             {
                 o.SetActive(false);
             }
@@ -1109,7 +1117,6 @@ public class Dealer : MonoBehaviour
             {
                 o.SetActive(false);
             }
-            OpeningCutScene();
         }
         else
         {
@@ -1122,11 +1129,12 @@ public class Dealer : MonoBehaviour
         Wait startTimePoof = new Wait(2);
         Wait waitForPoof = new Wait(2);
         SetGameState setGameState = new SetGameState(GameState.NewRound);
-        PoofObjectIntoExistence poofCasey = new PoofObjectIntoExistence(playersToBring[0]);
-        PoofObjectIntoExistence poofZombie = new PoofObjectIntoExistence(playersToBring[1]);
-        PoofObjectIntoExistence poofMinnie = new PoofObjectIntoExistence(playersToBring[2]);
-        PoofObjectIntoExistence poofNathaniel = new PoofObjectIntoExistence(playersToBring[3]);
-        PoofObjectIntoExistence poofFloyd = new PoofObjectIntoExistence(playersToBring[4]);
+        PoofObjectIntoExistence poofCasey = new PoofObjectIntoExistence(objectsToHide[0]);
+        PoofObjectIntoExistence poofZombie = new PoofObjectIntoExistence(objectsToHide[1]);
+        PoofObjectIntoExistence poofMinnie = new PoofObjectIntoExistence(objectsToHide[2]);
+        PoofObjectIntoExistence poofNathaniel = new PoofObjectIntoExistence(objectsToHide[3]);
+        PoofObjectIntoExistence poofFloyd = new PoofObjectIntoExistence(objectsToHide[4]);
+        PoofObjectIntoExistence poofCards = new PoofObjectIntoExistence(objectsToHide[5]);
 
         PlayPlayerLine nathanielSpeaks = new PlayPlayerLine(players[3], Services.SoundManager.Nathaniel_Intro1);
         PlayPlayerLine floydSpeaks = new PlayPlayerLine(players[4], Services.SoundManager.Floyd_Intro);
@@ -1135,6 +1143,11 @@ public class Dealer : MonoBehaviour
         PlayPlayerLine caseySpeaks = new PlayPlayerLine(players[0], Services.SoundManager.Casey_Intro);
         PlayPlayerLine nathanielSpeaksAgain = new PlayPlayerLine(players[3], Services.SoundManager.Nathaniel_Intro2);
         PlayPlayerLine minnieSpeaksAgain = new PlayPlayerLine(players[2], Services.SoundManager.Minnie_Intro2);
+
+        PostBlinds player1Bets = new PostBlinds(players[SeatsAwayFromDealerAmongstLivePlayers(1)], SmallBlind, false);
+        PostBlinds player2Bets = new PostBlinds(players[SeatsAwayFromDealerAmongstLivePlayers(2)], BigBlind, false);
+        float randomTime = UnityEngine.Random.Range(.05f, .5f);
+        Wait waitForNextPlayer = new Wait(randomTime);
 
         startTimePoof.
             Then(poofCasey).
@@ -1161,8 +1174,15 @@ public class Dealer : MonoBehaviour
             Then(minnieSpeaksAgain).
             Then(new Wait(Services.SoundManager.Minnie_Intro2.length)).
             Then(setGameState).
-            Then(new TurnOnTutorial());
+            Then(poofCards).
+            Then(new TurnOnChipsFromTutorial()).
+            Then(new TurnOnTutorial()).
+            Then(player1Bets).
+            Then(waitForNextPlayer).
+            Then(player2Bets);
+
         tm.Do(startTimePoof);
+        LastBet = BigBlind; 
     }
 
     public IEnumerator WaitToPostBlinds(float time)

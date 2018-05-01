@@ -401,4 +401,17 @@ public class TurnOnTutorial : Task
     }
 }
 
+public class TurnOnChipsFromTutorial : Task
+{
+    protected override void Init()
+    {
+        foreach(GameObject o in Services.Dealer.chipsToBring)
+        {
+            o.SetActive(true);
+        }
+        SetStatus(TaskStatus.Success);
+    }
+}
+
+
 

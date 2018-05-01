@@ -376,7 +376,7 @@ public class Chip : InteractionSuperClass {
             //YOU CAN ACCESS THE OWNER, BY USING THE "OWNER" VARIABLE ON THIS SCRIPT
             Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(owner.playerName, LineCriteria.ChipsMoved));
             Debug.Log("misdeal here");
-            Table.gameState = GameState.Misdeal;
+            Services.Dealer.TriggerMisdeal();
         }
         base.OnAttachedToHand(attachedHand);
     }

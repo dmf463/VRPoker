@@ -170,7 +170,7 @@ public class PokerRules : MonoBehaviour {
                     if (cardsPulled.Count - 1 > flopCards)
                     {
                         Debug.Log("misdeal here");
-                        Table.gameState = GameState.Misdeal;
+                        Services.Dealer.TriggerMisdeal();
                     }
                 }
                 else if (Table.gameState == GameState.Flop)
@@ -178,7 +178,7 @@ public class PokerRules : MonoBehaviour {
                     if (cardsPulled.Count - 1 > turnCard)
                     {
                         Debug.Log("misdeal here");
-                        Table.gameState = GameState.Misdeal;
+                        Services.Dealer.TriggerMisdeal();
                     }
                 }
                 else if (Table.gameState == GameState.Turn || Table.gameState == GameState.River)
@@ -186,7 +186,7 @@ public class PokerRules : MonoBehaviour {
                     if (cardsPulled.Count - 1 > riverCard)
                     {
                         Debug.Log("misdeal here");
-                        Table.gameState = GameState.Misdeal;
+                        Services.Dealer.TriggerMisdeal();
                     }
                 }
             }
@@ -204,7 +204,7 @@ public class PokerRules : MonoBehaviour {
         if (cardsPulled.Count - 1 > flopCards)
         {
             Debug.Log("MISDEAL ON THE FLOP");
-            Table.gameState = GameState.Misdeal;
+            Services.Dealer.TriggerMisdeal();
         }
         else if (Table.instance.board.Count + playerCards + 1 == flopCards)
         {
@@ -246,7 +246,7 @@ public class PokerRules : MonoBehaviour {
         if (cardsPulled.Count - 1 > turnCard)
         {
             Debug.Log("MISDEAL ON THE TURN");
-            Table.gameState = GameState.Misdeal;
+            Services.Dealer.TriggerMisdeal();
         }
         else if (Table.instance.board.Count + playerCards + 2 == turnCard)
         {
@@ -288,7 +288,7 @@ public class PokerRules : MonoBehaviour {
         if (cardsPulled.Count - 1 > riverCard)
         {
             Debug.Log("MISDEAL ON THE RIVER");
-            Table.gameState = GameState.Misdeal;
+            Services.Dealer.TriggerMisdeal();
         }
         else if (Table.instance.board.Count + playerCards + 3 == riverCard)
         {

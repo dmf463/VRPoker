@@ -252,7 +252,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                 if (sortedCards == null)
                 {
                     Debug.Log("misdeal here");
-                    Table.gameState = GameState.Misdeal;
+                    Services.Dealer.TriggerMisdeal();
                 }
                 else
                 {
@@ -270,7 +270,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                 if (sortedCards == null)
                 {
                     Debug.Log("misdeal here");
-                    Table.gameState = GameState.Misdeal;
+                    Services.Dealer.TriggerMisdeal();
                 }
                 else
                 {
@@ -288,7 +288,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                 if (sortedCards == null)
                 {
                     Debug.Log("misdeal here");
-                    Table.gameState = GameState.Misdeal;
+                    Services.Dealer.TriggerMisdeal();
                 }
                 else
                 {
