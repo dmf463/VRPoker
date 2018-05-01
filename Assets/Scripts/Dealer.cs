@@ -1399,6 +1399,7 @@ public class Dealer : MonoBehaviour
                 }
             }
         }
+        PokerPlayerRedux losingPlayer = null;
         for (int i = 0; i < players.Count; i++)
         {
             if(players[i].chipCount == 0 && players[i].PlayerState == PlayerState.Loser)
@@ -1406,6 +1407,8 @@ public class Dealer : MonoBehaviour
                 //DAN PUT THE "BUY ME BACK IN LINE HERE"
                 Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(players[i].playerName, LineCriteria.BuyInAsk));
                 playerHasBeenEliminated = true;
+                losingPlayer = players[i];
+                Services.AnimationScript.ConvoAnimation(losingPlayer.playerName, "BuyBackIn", true);
                 StartCoroutine(WaitToSave(10f));
             }
         }
@@ -1413,6 +1416,7 @@ public class Dealer : MonoBehaviour
         {
             yield return null;
         }
+        if (losingPlayer != null) Services.AnimationScript.ConvoAnimation(losingPlayer.playerName, "BuyBackIn", false);
         Table.gameState = GameState.PostHand;
         yield break;
     }
