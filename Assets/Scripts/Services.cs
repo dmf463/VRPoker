@@ -14,4 +14,5 @@ public static class Services {
     public static PlayerBehaviour PlayerBehaviour { get; set; }
     public static TextManager TextManager { get; set; }
     public static ChipManager ChipManager { get; set; }
+    public static AnimationScript AnimationScript { get; set; }
 }

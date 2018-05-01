@@ -429,6 +429,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public void Fold()
     {
+        Services.AnimationScript.ActionAnimation(playerName, "Fold");
         Debug.Log("ENTERED FOLD FUNCTION");
         lastAction = PlayerAction.Fold;
         SayFold();
@@ -486,10 +487,12 @@ public class PokerPlayerRedux : MonoBehaviour{
                 //Debug.Log("betToCall = " + betToCall);
                 if (betToCall == 0)
                 {
+                    Services.AnimationScript.ActionAnimation(playerName, "Check");
                     SayCheck();
                 }
                 else
                 {
+                    Services.AnimationScript.ActionAnimation(playerName, "Call");
                     SayCall();
                 }
                 Bet(betToCall, false);
@@ -504,6 +507,7 @@ public class PokerPlayerRedux : MonoBehaviour{
 
     public void Raise()
     {
+        Services.AnimationScript.ActionAnimation(playerName, "Raise");
         lastAction = PlayerAction.Raise;
         Services.Dealer.raisesInRound++;
         int aggressors = 0;

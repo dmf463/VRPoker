@@ -154,7 +154,8 @@ public class Dealer : MonoBehaviour
 		Services.PlayerBehaviour = new PlayerBehaviour();
 		Services.DialogueDataManager.ParseConvoDialogueFile((Services.SoundManager.convoDialogueFile));
         Services.DialogueDataManager.ParseOneLinerDialogueFile((Services.SoundManager.oneLinerDialogueFiler));
-        Services.TextManager = GameObject.Find("TableGraphics").GetComponent<TextManager>();   
+        Services.TextManager = GameObject.Find("TableGraphics").GetComponent<TextManager>();
+        Services.AnimationScript = GameObject.Find("AnimationController").GetComponent<AnimationScript>();
     }
 
     void OnAudioConfigurationChanged(bool deviceWasChanged)

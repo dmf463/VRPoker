@@ -564,16 +564,18 @@ public class PlayerBehaviour {
                     new HasAGreathand(),
                     new Raise()
                 ),
-                //FOLD
-                new Selector<PokerPlayerRedux>(
-                    new Sequence<PokerPlayerRedux>(
-                        new BetIsZero(),
-                        new Call()
-                        ),
-                    new Sequence<PokerPlayerRedux>(
-                        new Not<PokerPlayerRedux>(new BetIsZero()),
-                        new Fold()
-                    )
+               //FOLD
+               new Sequence<PokerPlayerRedux>(
+                   new Selector<PokerPlayerRedux>(
+                       new Sequence<PokerPlayerRedux>(
+                           new BetIsZero(),
+                           new Call()
+                       ),
+                   new Sequence<PokerPlayerRedux>(
+                       new Not<PokerPlayerRedux>(new BetIsZero()),
+                       new Fold()
+                       )
+                   )
                 ),
                 new Fold()
                 ));
@@ -667,16 +669,18 @@ public class PlayerBehaviour {
                     new HasAGreathand(),
                     new Raise()
                 ),
-                //FOLD
-                new Selector<PokerPlayerRedux>(
-                    new Sequence<PokerPlayerRedux>(
-                        new BetIsZero(),
-                        new Call()
-                        ),
-                    new Sequence<PokerPlayerRedux>(
-                        new Not<PokerPlayerRedux>(new BetIsZero()),
-                        new Fold()
-                    )
+               //FOLD
+               new Sequence<PokerPlayerRedux>(
+                   new Selector<PokerPlayerRedux>(
+                       new Sequence<PokerPlayerRedux>(
+                           new BetIsZero(),
+                           new Call()
+                       ),
+                   new Sequence<PokerPlayerRedux>(
+                       new Not<PokerPlayerRedux>(new BetIsZero()),
+                       new Fold()
+                       )
+                   )
                 ),
                 new Fold()
                 ));
@@ -799,14 +803,16 @@ public class PlayerBehaviour {
                    new Raise()
                ),
                //FOLD
-               new Selector<PokerPlayerRedux>(
-                   new Sequence<PokerPlayerRedux>(
-                       new BetIsZero(),
-                       new Call()
+               new Sequence<PokerPlayerRedux>(
+                   new Selector<PokerPlayerRedux>(
+                       new Sequence<PokerPlayerRedux>(
+                           new BetIsZero(),
+                           new Call()
                        ),
                    new Sequence<PokerPlayerRedux>(
                        new Not<PokerPlayerRedux>(new BetIsZero()),
                        new Fold()
+                       )
                    )
                ),
                new Fold()
@@ -949,14 +955,16 @@ public class PlayerBehaviour {
                    new Raise()
                ),
                //FOLD
-               new Selector<PokerPlayerRedux>(
-                   new Sequence<PokerPlayerRedux>(
-                       new BetIsZero(),
-                       new Call()
+               new Sequence<PokerPlayerRedux>(
+                   new Selector<PokerPlayerRedux>(
+                       new Sequence<PokerPlayerRedux>(
+                           new BetIsZero(),
+                           new Call()
                        ),
                    new Sequence<PokerPlayerRedux>(
                        new Not<PokerPlayerRedux>(new BetIsZero()),
                        new Fold()
+                       )
                    )
                ),
                new Fold()
@@ -1110,14 +1118,16 @@ public class PlayerBehaviour {
                    new Raise()
                ),
                //FOLD
-               new Selector<PokerPlayerRedux>(
-                   new Sequence<PokerPlayerRedux>(
-                       new BetIsZero(),
-                       new Call()
+               new Sequence<PokerPlayerRedux>(
+                   new Selector<PokerPlayerRedux>(
+                       new Sequence<PokerPlayerRedux>(
+                           new BetIsZero(),
+                           new Call()
                        ),
                    new Sequence<PokerPlayerRedux>(
                        new Not<PokerPlayerRedux>(new BetIsZero()),
                        new Fold()
+                       )
                    )
                ),
                new Fold()
