@@ -24,16 +24,14 @@ public class PlayerGazeTrigger : MonoBehaviour
     bool callingPulse = false;
     int pingPongCount = 0;
     float emission = 0;
-    float glowSpeed = 10;
+    float glowSpeed = 5;
     float maxGlow = 2;
-    Color startColor;
+    public Color startColor;
 
     // Use this for initialization
     void Start()
     {
-        pokerPlayer = GetComponentInParent<PokerPlayerRedux>();
-        startColor = progressImage.color;
-        
+        pokerPlayer = GetComponentInParent<PokerPlayerRedux>();      
         //Debug.Log("PokerPlayer = " + pokerPlayer);
     }
 
@@ -83,6 +81,7 @@ public class PlayerGazeTrigger : MonoBehaviour
                         if (!pokerPlayer.playerLookedAt)
                         {
                             pokerPlayer.playerLookedAt = true;
+                            ResetGazeColor();
                             StartPulse();
                         }
                     }
@@ -91,6 +90,7 @@ public class PlayerGazeTrigger : MonoBehaviour
                         if (!pokerPlayer.playerLookedAt)
                         {
                             pokerPlayer.playerLookedAt = true;
+                            ResetGazeColor();
                             StartPulse();
                         }
                     }
@@ -104,6 +104,7 @@ public class PlayerGazeTrigger : MonoBehaviour
         startTime = Time.time;
         pingPongCount = 0;
         emission = 0;
+        ResetGazeColor();
     }
 
     public void PulseGlow()
@@ -124,11 +125,14 @@ public class PlayerGazeTrigger : MonoBehaviour
             else if (currentEmission > previousEmission && pingPongCount >= 1)
             {
                 callingPulse = false;
-                progressImage.color = startColor;
                 if(!Services.Dealer.OutsideVR) onEyeGazeComplete.Invoke();
-                progressImage.color = startColor;
             }
         }
+    }
+
+    public void ResetGazeColor()
+    {
+        progressImage.color = startColor; ;
     }
 
     float PingPong(float time, float minLength, float maxLength)

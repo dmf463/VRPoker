@@ -34,7 +34,10 @@ public class ChipManager {
     }
     public void PushGroupOfChips()
     {
-        //chipPositionWhenPushing = CreateChipPositionsForPushing(chipGroup[0].transform.position, 0.06f, 0.075f, 5, 25);
+        Vector3 stickPos = GameObject.FindGameObjectWithTag("StickHead").transform.position;
+        float xOffset = -0.2f;
+        Vector3 stickPosForPushing = new Vector3(stickPos.x + xOffset, stickPos.y, stickPos.z);
+        chipPositionWhenPushing = CreateChipPositionsForPushing(stickPosForPushing, 0.06f, 0.07f, 5, 25);
         Vector3 offset = new Vector3(0.1f, 0, 0);
         if (chipGroup.Count != 0)
         {
@@ -43,11 +46,10 @@ public class ChipManager {
                 Services.Dealer.ResetIdleTime();
                 Rigidbody rb = chipGroup[i].gameObject.GetComponent<Rigidbody>();
                 int chipSpotIndex = chipGroup[i].spotIndex;
-                float scalar = 1.1f;
+                float scalar = 0.1f;
                 Vector3 startPos = chipGroup[i].chipPushStartPos + offset;
-                Vector3 stickPos = GameObject.FindGameObjectWithTag("StickHead").transform.position;
                 Vector3 linearDest = (stickPos - startPos) * scalar;
-                Vector3 dest = GameObject.FindGameObjectWithTag("StickHead").transform.position;
+                Vector3 dest = chipPositionWhenPushing[chipGroup[i].spotIndex];
                 if (rb != null)
                 {
                     Debug.Log("should be moving chips");
@@ -57,9 +59,22 @@ public class ChipManager {
         }
     }
 
+    public void ToggleChipCollision(GameObject chip, bool collisionOn)
+    {
+        GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
+        foreach(GameObject otherChip in allChips)
+        {
+            Physics.IgnoreCollision(chip.GetComponent<Collider>(), otherChip.GetComponent<Collider>(), collisionOn);
+        }
+    }
+
     public List<int> SetChipStacks(int chipAmount)
     {
-
+        GameObject[] allChips = GameObject.FindGameObjectsWithTag("Chip");
+        foreach (GameObject chip in allChips)
+        {
+            ToggleChipCollision(chip, true);
+        }
         List<int> startingStack = new List<int>();
 
         List<GameObject> playerPositions = new List<GameObject>
@@ -244,6 +259,11 @@ public class ChipManager {
         }
         Vector3 trueOffset = firstStackPos - lastStackPos;
         chipContainer.transform.position += trueOffset / 2;
+        GameObject[] allnewChips = GameObject.FindGameObjectsWithTag("Chip");
+        foreach (GameObject chip in allnewChips)
+        {
+            ToggleChipCollision(chip, false);
+        }
     }
 
     public void Bet(int betAmount, bool isTipping, int SeatPos, int chipCount, List<GameObject> parentChips)
@@ -692,7 +712,7 @@ public class ChipManager {
         }
     }
 
-    public List<Vector3> CreateChipPositionsForPushing(Vector3 startPosition, float xIncremenet, float zIncrement, int maxRowSize, int maxColumnSize)
+    public List<Vector3> CreateChipPositionsForPushing(Vector3 startPosition, float xIncrement, float zIncrement, int maxRowSize, int maxColumnSize)
     {
         List<Vector3> listOfPositions = new List<Vector3>();
         float xOffset;
@@ -701,13 +721,13 @@ public class ChipManager {
         {
             if (i % 2 == 0)
             {
-                xOffset = (((i % maxRowSize) / 2) + 0.5f) * -xIncremenet;
+                xOffset = (((i % maxRowSize) / 2) + 0.5f) * -zIncrement;
             }
-            else xOffset = (((i % maxRowSize) / 2) + 0.5f) * xIncremenet;
+            else xOffset = (((i % maxRowSize) / 2) + 0.5f) * zIncrement;
 
             zOffset = (i / maxRowSize) * zIncrement;
 
-            listOfPositions.Add(new Vector3(startPosition.x + xOffset, 0, startPosition.z + zOffset));
+            listOfPositions.Add(new Vector3(startPosition.x + zOffset, 0, startPosition.z + xOffset));
         }
 
         return listOfPositions;

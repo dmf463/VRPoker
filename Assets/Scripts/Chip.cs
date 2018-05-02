@@ -168,20 +168,20 @@ public class Chip : InteractionSuperClass {
                     Services.ChipManager.ConsolidateStack(Services.ChipManager.chipGroup);
                 }
             }
-            else
-            {
-                if (pushingChip && (stickHead.transform.position.y - transform.position.y) > HEIGHT_THRESHOLD)
-                {
-                    maxGlow = 2;
-                    Services.ChipManager.chipGroup.Clear();
-                    chipPushStartPos = Vector3.zero;
-                    timesToSplit = 0;
-                    pushingChip = false;
-                    Services.Dealer.handIsOccupied = false;
-                    spotIndex = 0;
-                    Services.ChipManager.chipsBeingPushed = 0;
-                }
-            }
+            //else
+            //{
+            //    if (pushingChip && (stickHead.transform.position.y - transform.position.y) > HEIGHT_THRESHOLD)
+            //    {
+            //        maxGlow = 2;
+            //        Services.ChipManager.chipGroup.Clear();
+            //        chipPushStartPos = Vector3.zero;
+            //        timesToSplit = 0;
+            //        pushingChip = false;
+            //        Services.Dealer.handIsOccupied = false;
+            //        spotIndex = 0;
+            //        Services.ChipManager.chipsBeingPushed = 0;
+            //    }
+            //}
         }
         else if (Table.gameState == GameState.PostHand)
         {

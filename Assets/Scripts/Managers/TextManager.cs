@@ -12,6 +12,7 @@ public class TextManager : MonoBehaviour {
     public GameObject lookAtEachPlayer;
     public GameObject boardCards;
     public GameObject whoWon;
+    public GameObject titleText;
     bool playedSound = false;
     public bool inTutorial = false;
     bool tutorialFinished = false;

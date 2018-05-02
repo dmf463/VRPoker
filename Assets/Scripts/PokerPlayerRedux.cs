@@ -610,6 +610,7 @@ public class PokerPlayerRedux : MonoBehaviour{
         //Debug.Log("calling set next player from player");
         Services.Dealer.SetNextPlayer();
         playerLookedAt = false;
+        GetComponentInChildren<PlayerGazeTrigger>().ResetGazeColor();
         yield break;
     }
 
