@@ -309,7 +309,10 @@ public class Chip : InteractionSuperClass {
         //then we want to attach the chip to the hand
         if (gameObject.GetComponent<Rigidbody>() != null)
         {
-            if (hand.GetStandardInteractionButtonDown() == true && gameObject.GetComponent<Rigidbody>().isKinematic == false && !pushingChip) //on Vive controller, this is the trigger
+            if (hand.GetStandardInteractionButtonDown() == true && 
+                gameObject.GetComponent<Rigidbody>().isKinematic == false && 
+                !pushingChip &&
+                !Services.ChipManager.chipsToDestroy.Contains(gameObject)) //on Vive controller, this is the trigger
             {
                 hand.AttachObject(gameObject);
                 hand.HoverLock(interactableObject);
