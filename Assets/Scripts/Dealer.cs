@@ -20,10 +20,6 @@ public class Dealer : MonoBehaviour
     private DateTime newTime;
     private int minutes;
 
-    private DateTime oldTimeForIdle;
-    private DateTime newTimeForIdle;
-    private int seconds;
-
     public Light lighting;
 
     public int chipsMoved;
@@ -132,7 +128,7 @@ public class Dealer : MonoBehaviour
 	public bool misdealAudioPlayed =false;
 
     private TaskManager tm;
-    public int timeBetweenIdle;
+    public float timeBetweenIdle;
 
     public GameObject[] objectsToHide;
     public GameObject[] chipsToBring;
@@ -161,7 +157,8 @@ public class Dealer : MonoBehaviour
     void Start()
     {
         oldTime = System.DateTime.Now;
-        oldTimeForIdle = System.DateTime.Now;
+        //oldTimeForIdle = System.DateTime.Now;
+        timeBetweenIdle = 0;
         minutes = 0;
         tipMultiplier = 1;
         tipCount = 0;
@@ -190,10 +187,10 @@ public class Dealer : MonoBehaviour
         Services.ChipManager.ChipUpdate();
         newTime = System.DateTime.Now;
         minutes = newTime.Minute - oldTime.Minute;
-
-        newTimeForIdle = System.DateTime.Now;
-        seconds = Mathf.Abs(newTimeForIdle.Second - oldTimeForIdle.Second);
-        timeBetweenIdle = seconds;
+        if(Table.gameState != GameState.Intro)
+        {
+            timeBetweenIdle += Time.deltaTime;
+        }
 
         if(timeBetweenIdle >= 15 && !OutsideVR && Table.gameState != GameState.Intro)
         {
@@ -421,7 +418,6 @@ public class Dealer : MonoBehaviour
     public void ResetIdleTime()
     {
         timeBetweenIdle = 0;
-        oldTimeForIdle = System.DateTime.Now;
     }
 
     public void IntroduceCharacters()
