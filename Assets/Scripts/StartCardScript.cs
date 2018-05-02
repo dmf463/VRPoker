@@ -5,6 +5,8 @@ using Valve.VR.InteractionSystem;
 
 public class StartCardScript : InteractionSuperClass {
 
+    public GameObject titleText;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -15,6 +17,7 @@ public class StartCardScript : InteractionSuperClass {
 
         if (!Services.Dealer.startingWithIntro)
         {
+            titleText.SetActive(false);
             Destroy(gameObject);
         }
 		
@@ -33,6 +36,7 @@ public class StartCardScript : InteractionSuperClass {
     public override void OnAttachedToHand(Hand attachedHand)
     {
         attachedHand.DetachObject(gameObject);
+        titleText.SetActive(false);
         Destroy(gameObject);
         Services.Dealer.OpeningCutScene();
         base.OnAttachedToHand(attachedHand);
