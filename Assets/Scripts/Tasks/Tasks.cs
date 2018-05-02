@@ -341,23 +341,20 @@ public class ConsolidateChips : Task
 public class PoofObjectIntoExistence : GOTask
 {
     GameObject GameObject;
-    //JuicePos
-    //JuiceRot
-    //JuicePrefab
+    //GameObject JuicePrefab;
     //juice offset?
     public PoofObjectIntoExistence(GameObject _gameObject) : base(_gameObject)
     {
         GameObject = _gameObject;
+       // JuicePrefab = _juicePrefab;
     }
 
     protected override void Init()
     {
-
-        //
-        //Put Poof particle effect here!!
-        //
+        
         GameObject.SetActive(true);
-        //set juice transform + offset
+
+
         //instantiate juice at transrom. 
         SetStatus(TaskStatus.Success);
     }
