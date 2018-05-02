@@ -352,6 +352,10 @@ public class PoofObjectIntoExistence : GOTask
 
     protected override void Init()
     {
+
+        //
+        //Put Poof particle effect here!!
+        //
         GameObject.SetActive(true);
         //set juice transform + offset
         //instantiate juice at transrom. 
