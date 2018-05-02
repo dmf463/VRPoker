@@ -12,6 +12,11 @@ public class StartCardScript : InteractionSuperClass {
 	
 	// Update is called once per frame
 	void Update () {
+
+        if (!Services.Dealer.startingWithIntro)
+        {
+            Destroy(gameObject);
+        }
 		
 	}
 

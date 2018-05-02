@@ -94,18 +94,23 @@ public class AnimationScript : MonoBehaviour {
             case PlayerName.None:
                 break;
             case PlayerName.Casey:
+                CaseyAnim.ResetTrigger(animationName);
                 CaseyAnim.SetTrigger(animationName);
                 break;
             case PlayerName.Zombie:
+                ZombieAnim.ResetTrigger(animationName);
                 ZombieAnim.SetTrigger(animationName);
                 break;
             case PlayerName.Minnie:
+                MinnieAnim.ResetTrigger(animationName);
                 MinnieAnim.SetTrigger(animationName);
                 break;
             case PlayerName.Nathaniel:
+                NathanielAnim.ResetTrigger(animationName);
                 NathanielAnim.SetTrigger(animationName);
                 break;
             case PlayerName.Floyd:
+                FloydAnim.ResetTrigger(animationName);
                 FloydAnim.SetTrigger(animationName);
                 break;
             default:
