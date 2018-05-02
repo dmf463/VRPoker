@@ -195,7 +195,7 @@ public class Dealer : MonoBehaviour
         seconds = Mathf.Abs(newTimeForIdle.Second - oldTimeForIdle.Second);
         timeBetweenIdle = seconds;
 
-        if(timeBetweenIdle >= 15 && !OutsideVR)
+        if(timeBetweenIdle >= 15 && !OutsideVR && Table.gameState != GameState.Intro)
         {
             ResetIdleTime();
             PokerPlayerRedux randomPlayer = Services.Dealer.players[UnityEngine.Random.Range(0, Services.Dealer.players.Count)];

@@ -236,7 +236,7 @@ public class PokerPlayerRedux : MonoBehaviour{
         if (PlayerState == PlayerState.Playing)
         {
             Services.Dealer.ResetIdleTime();
-            GetComponentInChildren<PlayerGazeTrigger>().StartPulse();
+            //GetComponentInChildren<PlayerGazeTrigger>().StartPulse();
             if (Table.gameState == GameState.PreFlop)
             {
                 turnComplete = false;
