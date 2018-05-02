@@ -454,6 +454,7 @@ public class Card : InteractionSuperClass {
         {
             Services.Dealer.lighting.gameObject.SetActive(false);
             Services.Dealer.isCheating = true;
+            Services.Dealer.ResetIdleTime();
             cheatCard = true;
         }
         cardPosHeld = transform.position;

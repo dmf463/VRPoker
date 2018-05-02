@@ -45,6 +45,7 @@ public class ChipManager {
         {
             for (int i = 0; i < chipGroup.Count; i++)
             {
+                Services.Dealer.ResetIdleTime();
                 Rigidbody rb = chipGroup[i].gameObject.GetComponent<Rigidbody>();
                 int chipSpotIndex = chipGroup[i].spotIndex;
                 float scalar = 1.1f;

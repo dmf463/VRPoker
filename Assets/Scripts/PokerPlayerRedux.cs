@@ -235,6 +235,7 @@ public class PokerPlayerRedux : MonoBehaviour{
     {
         if (PlayerState == PlayerState.Playing)
         {
+            Services.Dealer.ResetIdleTime();
             if (Table.gameState == GameState.PreFlop)
             {
                 turnComplete = false;

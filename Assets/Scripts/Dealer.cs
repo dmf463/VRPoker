@@ -189,10 +189,12 @@ public class Dealer : MonoBehaviour
         }
         Services.ChipManager.ChipUpdate();
         newTime = System.DateTime.Now;
-        newTimeForIdle = System.DateTime.Now;
         minutes = newTime.Minute - oldTime.Minute;
+
+        newTimeForIdle = System.DateTime.Now;
         seconds = Mathf.Abs(newTimeForIdle.Second - oldTimeForIdle.Second);
         timeBetweenIdle = seconds;
+
         if(timeBetweenIdle >= 15 && !OutsideVR)
         {
             ResetIdleTime();
@@ -458,7 +460,7 @@ public class Dealer : MonoBehaviour
 
     public void CheckGameState()
     {
-        if(hand1.GetStandardInteractionButtonDown() || hand2.GetStandardInteractionButtonDown())
+        if(hand1.GetStandardInteractionButton() || hand2.GetStandardInteractionButton())
         {
             ResetIdleTime();
         }
