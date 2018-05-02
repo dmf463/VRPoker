@@ -201,7 +201,6 @@ public class Dealer : MonoBehaviour
         tm.Update();
         if (deckIsDead)
         {
-            Debug.Log("misdeal here");
             Services.Dealer.TriggerMisdeal();
         }
         tipIndicator.GetComponent<TextMeshPro>().text = tipCount.ToString();
@@ -436,6 +435,7 @@ public class Dealer : MonoBehaviour
 
     public void TriggerMisdeal()
     {
+        Debug.Log("misdeal");
         if (Table.gameState != GameState.Intro)
         {
             Table.gameState = GameState.Misdeal;
@@ -792,7 +792,7 @@ public class Dealer : MonoBehaviour
                 {
                     foreach (GameObject card in cardsOnTable)
                     {
-                        card.GetComponent<Card>().rotSpeed = UnityEngine.Random.Range(500, 1500);
+                        card.GetComponent<Card>().rotSpeed = UnityEngine.Random.Range(500, 1000);
                         card.GetComponent<Card>().cardMoveSpeed = UnityEngine.Random.Range(0.25f, 1.25f);
                         Destroy(card.GetComponent<ConstantForce>());
                         card.GetComponent<Rigidbody>().useGravity = false;
@@ -826,8 +826,6 @@ public class Dealer : MonoBehaviour
                     Vector3 rotPos = GameObject.Find("Table").transform.position;
                     foreach (GameObject card in cardsOnTable)
                     {
-                        //card.GetComponent<Card>().InitializeRotation(rotPos, true);
-                        //card.transform.position = card.GetComponent<Card>().ManualRotation(card.GetComponent<Card>().cardMoveSpeed, rotPos);
                         card.transform.RotateAround(rotPos, Vector3.up, cardMoveSpeed * card.GetComponent<Card>().rotSpeed * Time.deltaTime);
                         Vector3 randomRot = new Vector3(UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360));
                         card.transform.Rotate(randomRot * cardMoveSpeed * 2 * Time.deltaTime);
@@ -849,15 +847,16 @@ public class Dealer : MonoBehaviour
                     
                     if (holdRotate)
                     {
-                        handDistance = Mathf.Pow(handDistance, 1.5f);
+                        handDistance = Mathf.Pow(handDistance, 1.2f);
                     }
                     else handDistance = 1;
                     if (handDistance >= 1.5f) handDistance = 1.5f;
+                    else if (handDistance <= .5f) handDistance = .5f;
                     Vector3 rotPos = GameObject.Find("Table").transform.position;
                     foreach (GameObject card in cardsOnTable)
                     {
                         card.GetComponent<Card>().radius = card.GetComponent<Card>().constRadius + handDistance;
-                        card.transform.position = card.GetComponent<Card>().ManualRotation(card.GetComponent<Card>().rotSpeed / 200 * handDistance, rotPos);
+                        card.transform.position = card.GetComponent<Card>().ManualRotation(card.GetComponent<Card>().rotSpeed / 400 * handDistance, rotPos);
                         //card.transform.RotateAround(rotPos, Vector3.up, cardMoveSpeed * 40 * Time.deltaTime * handDistance);
                         Vector3 randomRot = new Vector3(UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360), UnityEngine.Random.Range(100, 360));
                         card.transform.Rotate(randomRot * handDistance * Time.deltaTime);

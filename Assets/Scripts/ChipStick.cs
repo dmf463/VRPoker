@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR.InteractionSystem;
 
-public class ChipStick : InteractionSuperClass {
+public class ChipStick : InteractionSuperClass
+{
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    // Use this for initialization
+    void Start()
+    {
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
 
     public override void HandAttachedUpdate(Hand attachedHand)
     {
@@ -33,6 +36,9 @@ public class ChipStick : InteractionSuperClass {
 
     public override void OnDetachedFromHand(Hand hand)
     {
+        Services.ChipManager.chipGroup.Clear();
+        Services.Dealer.handIsOccupied = false;
+        Services.ChipManager.chipsBeingPushed = 0;
         base.OnDetachedFromHand(hand);
     }
 }
