@@ -57,24 +57,6 @@ public class HandRaycast : MonoBehaviour {
                 }
             }
         }
-        //if (Physics.Raycast(ray, out rayHit, rayDistance))
-        //{
-        //    if (rayHit.transform.gameObject.tag == "PlayerChips")
-        //    {
-        //        Debug.Log("hitting playerChips");
-        //        FadeInChipCount(rayHit.transform.gameObject.GetComponent<TextMeshPro>());
-        //    }
-        //    else
-        //    {
-        //        foreach (TextMeshPro t in Services.TextManager.playerChipCounts)
-        //        {
-        //            if (t.color.a == 1)
-        //            {
-        //                FadeOutChipCount(t);
-        //            }
-        //        }
-        //    }
-        //}
     }
     public void FadeInChipCount(TextMeshPro t)
     {

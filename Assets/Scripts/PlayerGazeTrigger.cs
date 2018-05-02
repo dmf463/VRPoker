@@ -15,7 +15,7 @@ public class PlayerGazeTrigger : MonoBehaviour
     public LayerMask mask;
     public UnityEvent onEyeGazeComplete;
     PokerPlayerRedux pokerPlayer;
-    public Image progressImage;
+    public SpriteRenderer progressImage;
     bool eyeActivated = false;
     float startTime;
     Ray cameraRay;
@@ -32,7 +32,7 @@ public class PlayerGazeTrigger : MonoBehaviour
     void Start()
     {
         pokerPlayer = GetComponentInParent<PokerPlayerRedux>();
-        startColor = new Vector4(252, 255, 208, 255);
+        startColor = progressImage.color;
         
         //Debug.Log("PokerPlayer = " + pokerPlayer);
     }
@@ -43,28 +43,28 @@ public class PlayerGazeTrigger : MonoBehaviour
         PulseGlow();
         if (!Services.Dealer.OutsideVR)
         {
-            //update our UI image
-            if (pokerPlayer != Services.Dealer.playerToAct)
-            {
-                progressImage.fillAmount = 0;
-                eyeActivated = false;
-                progressImage.GetComponent<CardIndicatorLerp>().enabled = false;
+            ////update our UI image
+            //if (pokerPlayer != Services.Dealer.playerToAct)
+            //{
+            //    //progressImage.fillAmount = 0;
+            //    eyeActivated = false;
+            //    progressImage.GetComponent<CardIndicatorLerp>().enabled = false;
 
-            }
-            else
-            {
-                if (!eyeActivated)
-                {
-                    startTime = Time.time;
-                    progressImage.GetComponent<Image>().color = startColor;
-                    eyeActivated = true;
-                    if (Table.gameState == GameState.PreFlop) timeSpanForEye = 1.5f;
-                    else timeSpanForEye = .5f;
-                    timeRemaining = timeSpanForEye;
-                    progressImage.GetComponent<CardIndicatorLerp>().enabled = true;
-                    progressImage.fillAmount = 1;
-                }
-            }
+            //}
+            //else
+            //{
+            //    if (!eyeActivated)
+            //    {
+            //        startTime = Time.time;
+            //        progressImage.GetComponent<Image>().color = startColor;
+            //        eyeActivated = true;
+            //        if (Table.gameState == GameState.PreFlop) timeSpanForEye = 1.5f;
+            //        else timeSpanForEye = .5f;
+            //        timeRemaining = timeSpanForEye;
+            //        progressImage.GetComponent<CardIndicatorLerp>().enabled = true;
+            //        //progressImage.fillAmount = 1;
+            //    }
+            //}
         }
     }
 
@@ -116,7 +116,7 @@ public class PlayerGazeTrigger : MonoBehaviour
             float currentEmission = emission;
             Color finalColor = (baseColor * Mathf.LinearToGammaSpace(emission));
             finalColor.a = 255;
-            progressImage.GetComponent<Image>().color = finalColor;
+            progressImage.color = finalColor;
             if (currentEmission < previousEmission)
             {
                 pingPongCount++;
@@ -124,9 +124,9 @@ public class PlayerGazeTrigger : MonoBehaviour
             else if (currentEmission > previousEmission && pingPongCount >= 1)
             {
                 callingPulse = false;
-                progressImage.GetComponent<Image>().color = startColor;
-                onEyeGazeComplete.Invoke();
-                progressImage.fillAmount = 0;
+                progressImage.color = startColor;
+                if(!Services.Dealer.OutsideVR) onEyeGazeComplete.Invoke();
+                progressImage.color = startColor;
             }
         }
     }
