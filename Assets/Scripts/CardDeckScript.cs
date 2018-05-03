@@ -88,12 +88,9 @@ public class CardDeckScript : InteractionSuperClass {
             diamondMeshes,
             clubMeshes
         };
-        if (newCardDeckScale.y == 0)
-        {
-            newCardDeckScale = transform.localScale;
-            currentCardDeckScale = newCardDeckScale;
-        } 
-        oneCardScale = new Vector3 (newCardDeckScale.x / 52, newCardDeckScale.y, newCardDeckScale.z);
+        newCardDeckScale = transform.localScale;
+        currentCardDeckScale = newCardDeckScale;
+        oneCardScale = new Vector3(newCardDeckScale.x / 52, newCardDeckScale.y, newCardDeckScale.z);
         PopulateCardDeck();
         deckIsEmpty = false;
     }
