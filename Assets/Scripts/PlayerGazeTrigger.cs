@@ -39,31 +39,6 @@ public class PlayerGazeTrigger : MonoBehaviour
     void Update()
     {
         PulseGlow();
-        if (!Services.Dealer.OutsideVR)
-        {
-            ////update our UI image
-            //if (pokerPlayer != Services.Dealer.playerToAct)
-            //{
-            //    //progressImage.fillAmount = 0;
-            //    eyeActivated = false;
-            //    progressImage.GetComponent<CardIndicatorLerp>().enabled = false;
-
-            //}
-            //else
-            //{
-            //    if (!eyeActivated)
-            //    {
-            //        startTime = Time.time;
-            //        progressImage.GetComponent<Image>().color = startColor;
-            //        eyeActivated = true;
-            //        if (Table.gameState == GameState.PreFlop) timeSpanForEye = 1.5f;
-            //        else timeSpanForEye = .5f;
-            //        timeRemaining = timeSpanForEye;
-            //        progressImage.GetComponent<CardIndicatorLerp>().enabled = true;
-            //        //progressImage.fillAmount = 1;
-            //    }
-            //}
-        }
     }
 
     public void HittingTarget()
@@ -116,7 +91,7 @@ public class PlayerGazeTrigger : MonoBehaviour
             emission = PingPong(glowSpeed * (startTime - Time.time), 0, maxGlow);
             float currentEmission = emission;
             Color finalColor = (baseColor * Mathf.LinearToGammaSpace(emission));
-            finalColor.a = 255;
+            //finalColor.a = 255;
             progressImage.color = finalColor;
             if (currentEmission < previousEmission)
             {

@@ -30,15 +30,18 @@ public class StartCardScript : InteractionSuperClass {
 
     public override void HandHoverUpdate(Hand hand)
     {
-        base.HandHoverUpdate(hand);
+        if (hand.GetStandardInteractionButtonDown())
+        {
+            hand.DetachObject(gameObject);
+            titleText.SetActive(false);
+            Destroy(gameObject);
+            Services.Dealer.OpeningCutScene();
+        }
+        //base.HandHoverUpdate(hand);
     }
 
     public override void OnAttachedToHand(Hand attachedHand)
     {
-        attachedHand.DetachObject(gameObject);
-        titleText.SetActive(false);
-        Destroy(gameObject);
-        Services.Dealer.OpeningCutScene();
         base.OnAttachedToHand(attachedHand);
     }
 
