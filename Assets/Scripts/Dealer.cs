@@ -1153,23 +1153,23 @@ public class Dealer : MonoBehaviour
 
         startTimePoof.
             Then(poofCaseySmoke).
-                     Then(new Wait(0.5f)).
+                     Then(new Wait(0.1f)).
             Then(poofCasey).
                      Then(new Wait(2)).
             Then(poofZombieSmoke).
-                     Then(new Wait(0.5f)).
+                     Then(new Wait(0.1f)).
             Then(poofZombie).
                      Then(new Wait(2)).
             Then(poofMinnieSmoke).
-                     Then(new Wait(0.5f)).
+                     Then(new Wait(0.1f)).
             Then(poofMinnie).
                      Then(new Wait(2)).
             Then(poofNathanielSmoke).
-                     Then(new Wait(0.5f)).
+                     Then(new Wait(0.1f)).
             Then(poofNathaniel).
                      Then(new Wait(2)).
             Then(poofFloydSmoke).
-                     Then(new Wait(0.5f)).
+                     Then(new Wait(0.1f)).
             Then(poofFloyd).
             Then(nathanielSpeaks).
                      Then(new Wait(Services.SoundManager.Nathaniel_Intro1.length)).
