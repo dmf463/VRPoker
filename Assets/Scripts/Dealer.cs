@@ -217,7 +217,7 @@ public class Dealer : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Table.instance.DebugHandsAndChips();
-            cleaningCards = true;
+            killingCards = true;
         }
         if (Input.GetKeyDown(KeyCode.X))
         {

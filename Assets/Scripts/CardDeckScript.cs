@@ -88,8 +88,11 @@ public class CardDeckScript : InteractionSuperClass {
             diamondMeshes,
             clubMeshes
         };
-        newCardDeckScale = transform.localScale;
-        currentCardDeckScale = newCardDeckScale;
+        if (newCardDeckScale.x == 0)
+        {
+            newCardDeckScale = transform.localScale;
+            currentCardDeckScale = newCardDeckScale;
+        }
         oneCardScale = new Vector3(newCardDeckScale.x / 52, newCardDeckScale.y, newCardDeckScale.z);
         PopulateCardDeck();
         deckIsEmpty = false;
@@ -107,6 +110,18 @@ public class CardDeckScript : InteractionSuperClass {
             Services.PokerRules.cardsPulled.Add(card.cardType);
             card.cardThrownNum = Services.PokerRules.cardsPulled.Count;
             StartCoroutine(card.CheckIfCardThrownAtWrongTime(card.checkTime, card.cardThrownNum));
+            if (cardsInDeck.Count == 0)
+            {
+                Destroy(cardDeck);
+                Services.Dealer.deckIsDead = true;
+                Debug.Log("Destroyed Deck");
+                if (Table.gameState != GameState.PostHand)
+                {
+                    Debug.Log("misdeal here");
+                    Services.Dealer.TriggerMisdeal();
+                }
+                //Table.dealerState = DealerState.ShufflingState;
+            }
         }
         if (Input.GetKey(KeyCode.RightArrow) && cheatTimePassed > cheatKeyDelay)
         {
@@ -140,16 +155,6 @@ public class CardDeckScript : InteractionSuperClass {
     {
         cheatTimePassed += Time.deltaTime;
         if (cheatTimePassed > cheatKeyDelay * 2) tiltSpeed = 0;
-        //if (cardPreview.activeSelf && !deckIsEmpty)
-        //{
-        //    cheating = true;
-        //    List<CardType> orderedCards = new List<CardType>(cardsInDeck.
-        //                                                     OrderByDescending(bestCard => bestCard.rank).
-        //                                                     ThenBy(bestCard => bestCard.suit));
-        //    cardPreview.GetComponent<MeshFilter>().mesh = cardMeshes[(int)orderedCards[cardNum].suit][(int)orderedCards[cardNum].rank - 2];
-        //    cheatCard = new CardType(orderedCards[cardNum].rank, orderedCards[cardNum].suit);
-        //    Debug.Log("cheatCard = " + cheatCard.rank + " of " + cheatCard.suit);
-        //}
     }
 
     //so if we're in shuffling state
