@@ -37,6 +37,9 @@ public class SoundManager : MonoBehaviour
     public AudioClip fallingTip;
     public AudioClip clockTick;
     public AudioClip clockDing;
+    public AudioClip deckThrown;
+    public AudioClip cardsReturn;
+    public AudioClip cardsBurning;
 
     [Header("IntroConversation")]
     public AudioClip Nathaniel_Intro1;
