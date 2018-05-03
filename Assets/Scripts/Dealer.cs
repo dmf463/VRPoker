@@ -890,7 +890,7 @@ public class Dealer : MonoBehaviour
                             {
                                 Destroy(card);
                                 card.GetComponent<Card>().is_flying = false;
-                                newCardDeck = Instantiate(Services.PrefabDB.CardDeck, cardDeck.transform.position, Quaternion.identity) as GameObject;
+                                newCardDeck = Instantiate(Services.PrefabDB.CardDeck, cardDeck.transform.position, cardDeck.transform.rotation) as GameObject;
                                 newCardDeck.GetComponent<CardDeckScript>().BuildDeckFromOneCard(newCardDeck);
                                 madeNewDeck = true;
                             }

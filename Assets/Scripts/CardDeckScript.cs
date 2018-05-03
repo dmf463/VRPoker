@@ -65,7 +65,6 @@ public class CardDeckScript : InteractionSuperClass {
     private bool readyForAnotherCard = false;
 
     public bool cheating;
-    public GameObject cardPreview;
     private int cardNum;
     private float tiltSpeed = 0;
     private const float TILT_INCREMENT = 0.01f;
@@ -124,12 +123,6 @@ public class CardDeckScript : InteractionSuperClass {
             if (cardNum == 0) cardNum = cardsInDeck.Count;
             cardNum--;
         }
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            cardPreview.SetActive(true);
-            cardNum = 0;
-        }
-        else if (Input.GetKeyDown(KeyCode.DownArrow)) cardPreview.SetActive(false);
         #endregion
 
         //so if we have a deck hand, want to make sure we're always checking 
@@ -150,16 +143,16 @@ public class CardDeckScript : InteractionSuperClass {
     {
         cheatTimePassed += Time.deltaTime;
         if (cheatTimePassed > cheatKeyDelay * 2) tiltSpeed = 0;
-        if (cardPreview.activeSelf && !deckIsEmpty)
-        {
-            cheating = true;
-            List<CardType> orderedCards = new List<CardType>(cardsInDeck.
-                                                             OrderByDescending(bestCard => bestCard.rank).
-                                                             ThenBy(bestCard => bestCard.suit));
-            cardPreview.GetComponent<MeshFilter>().mesh = cardMeshes[(int)orderedCards[cardNum].suit][(int)orderedCards[cardNum].rank - 2];
-            cheatCard = new CardType(orderedCards[cardNum].rank, orderedCards[cardNum].suit);
-            Debug.Log("cheatCard = " + cheatCard.rank + " of " + cheatCard.suit);
-        }
+        //if (cardPreview.activeSelf && !deckIsEmpty)
+        //{
+        //    cheating = true;
+        //    List<CardType> orderedCards = new List<CardType>(cardsInDeck.
+        //                                                     OrderByDescending(bestCard => bestCard.rank).
+        //                                                     ThenBy(bestCard => bestCard.suit));
+        //    cardPreview.GetComponent<MeshFilter>().mesh = cardMeshes[(int)orderedCards[cardNum].suit][(int)orderedCards[cardNum].rank - 2];
+        //    cheatCard = new CardType(orderedCards[cardNum].rank, orderedCards[cardNum].suit);
+        //    Debug.Log("cheatCard = " + cheatCard.rank + " of " + cheatCard.suit);
+        //}
     }
 
     //so if we're in shuffling state
@@ -221,7 +214,6 @@ public class CardDeckScript : InteractionSuperClass {
         {
             handIsHoldingCard = true;
             handTouchingDeck = false;
-            cardPreview.SetActive(false);
             Card card = CreateCard(GrabACard(), interactableObject.transform.position, Quaternion.identity);
             card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
             hand.otherHand.AttachObject(card.gameObject);
@@ -275,7 +267,8 @@ public class CardDeckScript : InteractionSuperClass {
     public override void OnAttachedToHand(Hand attachedHand)
     {
         handTouchingDeck = false;
-        if(attachedHand.currentAttachedObject.tag == "CardDeck")
+        transform.rotation = attachedHand.GetAttachmentTransform("Deck").transform.rotation;
+        if (attachedHand.currentAttachedObject.tag == "CardDeck")
         {
             deckHand = attachedHand;
             throwingHand = attachedHand.otherHand;
@@ -310,7 +303,6 @@ public class CardDeckScript : InteractionSuperClass {
         //
         //should seriously rethink this because of the way it feels between dropping the deck and throwing the deck
         //
-        cardPreview.SetActive(false);
         if (hand.GetTrackedObjectVelocity().magnitude > velocityThreshold) deckIsBeingThrown = true;
         if (deckIsBeingThrown == true)
         {
@@ -520,7 +512,6 @@ public class CardDeckScript : InteractionSuperClass {
     //when we swipe down, we set grabbingLowCard to true
     public override void OnTiltDown()
     {
-        cardPreview.SetActive(false);
         cheating = false;
         base.OnTiltDown();
     }
