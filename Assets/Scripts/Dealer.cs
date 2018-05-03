@@ -1126,12 +1126,17 @@ public class Dealer : MonoBehaviour
         Wait startTimePoof = new Wait(2);
         Wait waitForPoof = new Wait(2);
         SetGameState setGameState = new SetGameState(GameState.NewRound);
-        PoofObjectIntoExistence poofCasey = new PoofObjectIntoExistence(objectsToHide[0]);
-        PoofObjectIntoExistence poofZombie = new PoofObjectIntoExistence(objectsToHide[1]);
-        PoofObjectIntoExistence poofMinnie = new PoofObjectIntoExistence(objectsToHide[2]);
-        PoofObjectIntoExistence poofNathaniel = new PoofObjectIntoExistence(objectsToHide[3]);
-        PoofObjectIntoExistence poofFloyd = new PoofObjectIntoExistence(objectsToHide[4]);
-        PoofObjectIntoExistence poofCards = new PoofObjectIntoExistence(objectsToHide[5]);
+        PoofObjectIntoExistence poofCaseySmoke = new PoofObjectIntoExistence(objectsToHide[0]);
+        PoofObjectIntoExistence poofCasey = new PoofObjectIntoExistence(objectsToHide[1]);
+        PoofObjectIntoExistence poofZombieSmoke = new PoofObjectIntoExistence(objectsToHide[2]);
+        PoofObjectIntoExistence poofZombie = new PoofObjectIntoExistence(objectsToHide[3]);
+        PoofObjectIntoExistence poofMinnieSmoke = new PoofObjectIntoExistence(objectsToHide[4]);
+        PoofObjectIntoExistence poofMinnie = new PoofObjectIntoExistence(objectsToHide[5]);
+        PoofObjectIntoExistence poofNathanielSmoke = new PoofObjectIntoExistence(objectsToHide[6]);
+        PoofObjectIntoExistence poofNathaniel = new PoofObjectIntoExistence(objectsToHide[7]);
+        PoofObjectIntoExistence poofFloydSmoke = new PoofObjectIntoExistence(objectsToHide[8]);
+        PoofObjectIntoExistence poofFloyd = new PoofObjectIntoExistence(objectsToHide[9]);
+        PoofObjectIntoExistence poofCards = new PoofObjectIntoExistence(objectsToHide[10]);
 
         PlayPlayerLine nathanielSpeaks = new PlayPlayerLine(players[3], Services.SoundManager.Nathaniel_Intro1);
         PlayPlayerLine floydSpeaks = new PlayPlayerLine(players[4], Services.SoundManager.Floyd_Intro);
@@ -1147,29 +1152,39 @@ public class Dealer : MonoBehaviour
         Wait waitForNextPlayer = new Wait(randomTime);
 
         startTimePoof.
+            Then(poofCaseySmoke).
+                     Then(new Wait(0.1f)).
             Then(poofCasey).
-            Then(new Wait(2)).
+                     Then(new Wait(2)).
+            Then(poofZombieSmoke).
+                     Then(new Wait(0.1f)).
             Then(poofZombie).
-            Then(new Wait(2)).
+                     Then(new Wait(2)).
+            Then(poofMinnieSmoke).
+                     Then(new Wait(0.1f)).
             Then(poofMinnie).
-            Then(new Wait(2)).
+                     Then(new Wait(2)).
+            Then(poofNathanielSmoke).
+                     Then(new Wait(0.1f)).
             Then(poofNathaniel).
-            Then(new Wait(2)).
+                     Then(new Wait(2)).
+            Then(poofFloydSmoke).
+                     Then(new Wait(0.1f)).
             Then(poofFloyd).
             Then(nathanielSpeaks).
-            Then(new Wait(Services.SoundManager.Nathaniel_Intro1.length)).
+                     Then(new Wait(Services.SoundManager.Nathaniel_Intro1.length)).
             Then(floydSpeaks).
-            Then(new Wait(Services.SoundManager.Floyd_Intro.length)).
+                     Then(new Wait(Services.SoundManager.Floyd_Intro.length)).
             Then(zombieSpeaks).
-            Then(new Wait(Services.SoundManager.Zombie_Intro.length)).
+                     Then(new Wait(Services.SoundManager.Zombie_Intro.length)).
             Then(minnieSpeaks).
-            Then(new Wait(Services.SoundManager.Minnie_Intro.length)).
+                     Then(new Wait(Services.SoundManager.Minnie_Intro.length)).
             Then(caseySpeaks).
-            Then(new Wait(Services.SoundManager.Casey_Intro.length)).
+                     Then(new Wait(Services.SoundManager.Casey_Intro.length)).
             Then(nathanielSpeaksAgain).
-            Then(new Wait(Services.SoundManager.Nathaniel_Intro2.length)).
+                     Then(new Wait(Services.SoundManager.Nathaniel_Intro2.length)).
             Then(minnieSpeaksAgain).
-            Then(new Wait(Services.SoundManager.Minnie_Intro2.length)).
+                     Then(new Wait(Services.SoundManager.Minnie_Intro2.length)).
             Then(setGameState).
             Then(poofCards).
             Then(new TurnOnChipsFromTutorial()).
