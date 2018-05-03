@@ -94,7 +94,7 @@ public class CardDeckScript : InteractionSuperClass {
             newCardDeckScale = transform.localScale;
             currentCardDeckScale = newCardDeckScale;
         } 
-        oneCardScale = new Vector3 (newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
+        oneCardScale = new Vector3 (newCardDeckScale.x / 52, newCardDeckScale.y, newCardDeckScale.z);
         PopulateCardDeck();
         deckIsEmpty = false;
     }
@@ -106,6 +106,7 @@ public class CardDeckScript : InteractionSuperClass {
         if (Input.GetKeyDown(KeyCode.Z))
         {
             Card card = CreateCard(GrabACard(), GameObject.Find("ShufflingArea").transform.position, Quaternion.identity);
+            MakeDeckSmaller();
             card.gameObject.name = (card.cardType.rank + " of " + card.cardType.suit);
             Services.PokerRules.cardsPulled.Add(card.cardType);
             card.cardThrownNum = Services.PokerRules.cardsPulled.Count;
@@ -432,7 +433,7 @@ public class CardDeckScript : InteractionSuperClass {
     public void BuildDeckFromOneCard(GameObject newCardDeck)
     {
         newCardDeckScale = newCardDeck.transform.localScale;
-        oneCardScale = new Vector3(newCardDeckScale.x, newCardDeckScale.y / 52, newCardDeckScale.z);
+        oneCardScale = new Vector3(newCardDeckScale.x / 52, newCardDeckScale.y, newCardDeckScale.z);
         newCardDeck.transform.localScale = oneCardScale;
         currentCardDeckScale = newCardDeck.transform.localScale;
     }
@@ -442,14 +443,14 @@ public class CardDeckScript : InteractionSuperClass {
     //but it can be buggy because we're messing with floats
     public void MakeDeckSmaller()
     {
-        currentCardDeckScale.y = currentCardDeckScale.y - oneCardScale.y;
+        currentCardDeckScale.x = currentCardDeckScale.x - oneCardScale.x;
         transform.localScale = currentCardDeckScale;
     }
 
     //it's just kind of unreliable
     public void MakeDeckLarger()
     {
-        currentCardDeckScale.y = currentCardDeckScale.y + oneCardScale.y;
+        currentCardDeckScale.x = currentCardDeckScale.x + oneCardScale.x;
         transform.localScale = currentCardDeckScale;
     }
 
