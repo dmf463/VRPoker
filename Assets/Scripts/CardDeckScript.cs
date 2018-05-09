@@ -490,7 +490,6 @@ public class CardDeckScript : InteractionSuperClass {
         }
         Destroy(cardDeck);
         Services.Dealer.deckIsDead = true;
-        Debug.Log("misdeal here");
         Services.Dealer.TriggerMisdeal();
         //Table.dealerState = DealerState.ShufflingState;
     }
