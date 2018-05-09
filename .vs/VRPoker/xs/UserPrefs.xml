@@ -1,5 +1,5 @@
 ﻿<Properties StartupConfiguration="{F4284AB1-F546-7C9C-03A4-24AC5B8CF51B}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Managers/SoundManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Particles/Particle Ribbon by Moonflower Carnivore/readme_Simple_Particle_Ribbon.txt">
     <Files>
       <File FileName="Assets/Scripts/Dealer.cs" Line="163" Column="27" />
       <File FileName="Assets/Scripts/CardDeckScript.cs" Line="216" Column="1" />
@@ -15,6 +15,7 @@
       <File FileName="Assets/Scripts/Table.cs" Line="109" Column="12" />
       <File FileName="Assets/Scripts/PokerRules.cs" Line="666" Column="80" />
       <File FileName="Assets/Scripts/Managers/DialogueDataManager.cs" Line="191" Column="1" />
+      <File FileName="Assets/Particles/Particle Ribbon by Moonflower Carnivore/readme_Simple_Particle_Ribbon.txt" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
