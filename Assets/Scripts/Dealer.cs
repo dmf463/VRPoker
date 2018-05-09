@@ -19,6 +19,7 @@ public class Dealer : MonoBehaviour
     private DateTime oldTime;
     private DateTime newTime;
     private int minutes;
+    public int handsCompleted;
 
     public Light lighting;
 
@@ -217,7 +218,7 @@ public class Dealer : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Table.instance.DebugHandsAndChips();
-            killingCards = true;
+            cleaningCards = true;
         }
         if (Input.GetKeyDown(KeyCode.X))
         {
@@ -1306,6 +1307,7 @@ public class Dealer : MonoBehaviour
 
     public IEnumerator WaitForWinnersToGetPaid()
     {
+        handsCompleted += 1;
         Debug.Assert(numberOfWinners > 0);
         List<PokerPlayerRedux> winningPlayers = new List<PokerPlayerRedux>();
         int potAmount = Table.instance.potChips;

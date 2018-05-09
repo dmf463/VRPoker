@@ -84,7 +84,7 @@ public class TextManager : MonoBehaviour {
     {
         if (inTutorial)
         {
-            sr.color = Color.black;
+            //sr.color = Color.black;
             if (Table.gameState == GameState.Misdeal)
             {
                 dealTwoCardsText.SetActive(false);
@@ -95,55 +95,55 @@ public class TextManager : MonoBehaviour {
             }
             else if (Table.gameState == GameState.NewRound)
             {
-                sr.color = Color.black;
+                //sr.color = Color.black;
                 dealTwoCardsText.SetActive(true);
             }
             else if (Table.gameState == GameState.PreFlop && Services.SoundManager.roundsFinished == 0)
             {
-                sr.color = Color.black;
+                //sr.color = Color.black;
                 dealTwoCardsText.SetActive(false);
                 lookAtEachPlayer.SetActive(true);
             }
             else if (Table.gameState == GameState.PreFlop && Services.SoundManager.roundsFinished == 1)
             {
-                sr.color = Color.black;
+                //sr.color = Color.black;
                 lookAtEachPlayer.SetActive(false);
                 boardCards.SetActive(true);
 
             }
             else if (Table.gameState == GameState.Flop && Services.SoundManager.roundsFinished == 1)
             {
-                sr.color = Color.black;
+                //sr.color = Color.black;
                 boardCards.SetActive(false);
                 lookAtEachPlayer.SetActive(true);
             }
             else if (Table.gameState == GameState.Flop && Services.SoundManager.roundsFinished == 2)
             {
-                sr.color = Color.black;
+                //sr.color = Color.black;
                 lookAtEachPlayer.SetActive(false);
                 boardCards.SetActive(true);
             }
             else if (Table.gameState == GameState.Turn && Services.SoundManager.roundsFinished == 2)
             {
-                sr.color = Color.black;
+                //sr.color = Color.black;
                 boardCards.SetActive(false);
                 lookAtEachPlayer.SetActive(true);
             }
             else if (Table.gameState == GameState.Turn && Services.SoundManager.roundsFinished == 3)
             {
-                sr.color = Color.black;
+                //sr.color = Color.black;
                 lookAtEachPlayer.SetActive(false);
                 boardCards.SetActive(true);
             }
             else if (Table.gameState == GameState.River && Services.SoundManager.roundsFinished == 3)
             {
-                sr.color = Color.black;
+                //sr.color = Color.black;
                 boardCards.SetActive(false);
                 lookAtEachPlayer.SetActive(true);
             }
             else if (Table.gameState == GameState.ShowDown)
             {
-                sr.color = Color.black;
+                //sr.color = Color.black;
                 lookAtEachPlayer.SetActive(false);
                 whoWon.SetActive(true);
             }
