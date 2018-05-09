@@ -168,6 +168,7 @@ public class Card : InteractionSuperClass {
     void Update() {
 
         tm.Update();
+        if (Input.GetKeyDown(KeyCode.J)) ChangeMusicSpeed(true);
         myRenderer.material.SetColor("_EmissionColor", Color.black);
         if (Table.gameState == GameState.Misdeal) StopCheating();
         if (foldedCards)
@@ -409,6 +410,7 @@ public class Card : InteractionSuperClass {
 
     public void StopCheating()
     {
+        ChangeMusicSpeed(false);
         Services.Dealer.lighting.gameObject.SetActive(true);
         Services.Dealer.isCheating = false;
     }
@@ -448,14 +450,30 @@ public class Card : InteractionSuperClass {
         base.OnAttachedToHand(attachedHand);
     }
 
+    public void ChangeMusicSpeed(bool isCheating)
+    {
+        AudioSource[] audioSources = FindObjectsOfType<AudioSource>();
+        foreach(AudioSource a in audioSources)
+        {
+            if (isCheating) a.pitch = 0.5f;
+            else a.pitch = 1;
+        }
+    }
+
+    public void StartCheatMode()
+    {
+        ChangeMusicSpeed(true);
+        Services.Dealer.lighting.gameObject.SetActive(false);
+        Services.Dealer.isCheating = true;
+        Services.Dealer.ResetIdleTime();
+        cheatCard = true;
+    }
+
     public override void HandAttachedUpdate(Hand attachedHand)
     {
         if (LookingAtCard() && !cardWasManuallyFlipped)
         {
-            Services.Dealer.lighting.gameObject.SetActive(false);
-            Services.Dealer.isCheating = true;
-            Services.Dealer.ResetIdleTime();
-            cheatCard = true;
+            StartCheatMode();
         }
         cardPosHeld = transform.position;
         if (Table.gameState == GameState.NewRound)
