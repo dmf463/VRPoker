@@ -436,7 +436,6 @@ public class Dealer : MonoBehaviour
 
     public void TriggerMisdeal()
     {
-        Debug.Log("misdeal");
         if (Table.gameState != GameState.Intro)
         {
             Table.gameState = GameState.Misdeal;
