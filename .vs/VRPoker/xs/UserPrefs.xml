@@ -1,7 +1,7 @@
 ﻿<Properties StartupConfiguration="{F4284AB1-F546-7C9C-03A4-24AC5B8CF51B}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Particles/Particle Ribbon by Moonflower Carnivore/readme_Simple_Particle_Ribbon.txt">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Managers/SoundManager.cs">
     <Files>
-      <File FileName="Assets/Scripts/Dealer.cs" Line="163" Column="27" />
+      <File FileName="Assets/Scripts/Dealer.cs" Line="163" Column="21" />
       <File FileName="Assets/Scripts/CardDeckScript.cs" Line="216" Column="1" />
       <File FileName="Assets/Scripts/PokerPlayerRedux.cs" Line="475" Column="27" />
       <File FileName="Assets/Scripts/Card.cs" Line="27" Column="22" />
@@ -10,7 +10,7 @@
       <File FileName="Assets/Scripts/PlayerHit.cs" Line="19" Column="79" />
       <File FileName="Assets/Scripts/Chip.cs" Line="516" Column="10" />
       <File FileName="Assets/Scripts/Util/Easing.cs" Line="68" Column="6" />
-      <File FileName="Assets/Scripts/JuiceSandbox.cs" Line="55" Column="5" />
+      <File FileName="Assets/Scripts/JuiceSandbox.cs" Line="55" Column="1" />
       <File FileName="Assets/Scripts/Managers/SoundManager.cs" Line="40" Column="15" />
       <File FileName="Assets/Scripts/Table.cs" Line="109" Column="12" />
       <File FileName="Assets/Scripts/PokerRules.cs" Line="666" Column="80" />

@@ -27,8 +27,20 @@ public class SoundManager : MonoBehaviour
 
     /// 
     public List<PlayerName> playersInConvo = new List<PlayerName>(); //DAVID THIS IS WHERE THE PLAYERS TALKING ARE
-    /// 
-   
+																	 /// 
+
+	[Header("Music")]
+	public AudioClip jazzyIntro;
+	public AudioClip drumsAndBassLoop;
+	public AudioClip[] mainThemeLoop;
+	public AudioClip playerLosingTheme;
+	public AudioClip playerOutOneShot;
+
+	[Header("Music Audio Sources")]
+	public AudioSource musicSource1;
+	public AudioSource musicSource2;
+
+
     [Header("Sound Effects")]
 	public AudioClip[] chips;
     public AudioClip[] cards;
@@ -53,7 +65,8 @@ public class SoundManager : MonoBehaviour
 
     public int roundsFinished;
 
-	
+
+
     public void PlayOneLiner(PlayerLineCriteria criteria)
     {
         
@@ -123,7 +136,7 @@ public class SoundManager : MonoBehaviour
         Destroy(specialAudioSource, clip.length);
         //Debug.Log("Clip played: " + clip.name);
     }
-
+    
 	public void GetSourceAndPlay(AudioSource source, AudioClip clip)
 	{
         PokerPlayerRedux player = source.gameObject.GetComponentInParent<PokerPlayerRedux>();
@@ -145,6 +158,16 @@ public class SoundManager : MonoBehaviour
         yield return new WaitForSeconds(time);
         player.playerIsInConversation = false;
     }
+
+
+	public void PlayIntroMusic()
+	{
+		musicSource1.clip = jazzyIntro;
+		musicSource1.Play();
+
+	}
+
+
 }
 
 public class AudioData 
