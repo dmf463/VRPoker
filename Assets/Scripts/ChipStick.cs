@@ -5,17 +5,33 @@ using Valve.VR.InteractionSystem;
 
 public class ChipStick : InteractionSuperClass
 {
+    Vector3 startPos;
+    Quaternion startRot;
 
     // Use this for initialization
     void Start()
     {
-
+        startPos = transform.position;
+        startRot = transform.rotation;
     }
 
     // Update is called once per frame
     void Update()
     {
+        
+    }
 
+    void OnCollisionEnter(Collision other)
+    {
+        if(other.gameObject.tag == "Floor")
+        {
+            float yOffset = 0.01f;
+            Vector3 spawnPoint = GameObject.Find("StickSpawn").gameObject.transform.position;
+            transform.position = new Vector3(startPos.x, startPos.y, startPos.z);
+            transform.rotation = new Quaternion(startRot.x, startRot.y, startRot.z, startRot.w);
+            GetComponent<Rigidbody>().velocity = Vector3.zero;
+            
+        }
     }
 
     public override void HandAttachedUpdate(Hand attachedHand)
