@@ -78,6 +78,7 @@ public class CardDeckScript : InteractionSuperClass {
 
     //MAKING CHANGES
     //lalalalalala, setting stuff, lalalalalalalala
+    
     void Start()
     {
         cardDeck = this.gameObject;
@@ -88,14 +89,7 @@ public class CardDeckScript : InteractionSuperClass {
             diamondMeshes,
             clubMeshes
         };
-        //if (newCardDeckScale.x == 0)
-        //{
-        GameObject deckReference = Services.PrefabDB.CardDeck;
-        transform.localScale = new Vector3(deckReference.transform.localScale.x, deckReference.transform.localScale.y, deckReference.transform.localScale.z);
-        newCardDeckScale = transform.localScale;
-        currentCardDeckScale = newCardDeckScale;
-        //}
-        oneCardScale = new Vector3(newCardDeckScale.x / 52, newCardDeckScale.y, newCardDeckScale.z);
+        ResetDeckScale();
         PopulateCardDeck();
         deckIsEmpty = false;
     }
@@ -151,6 +145,15 @@ public class CardDeckScript : InteractionSuperClass {
             }
         }
         ReadyToCheat();
+    }
+
+    public void ResetDeckScale()
+    {
+        GameObject deckReference = Services.PrefabDB.CardDeck;
+        transform.localScale = new Vector3(deckReference.transform.localScale.x, deckReference.transform.localScale.y, deckReference.transform.localScale.z);
+        newCardDeckScale = transform.localScale;
+        currentCardDeckScale = newCardDeckScale;
+        oneCardScale = new Vector3(newCardDeckScale.x / 52, newCardDeckScale.y, newCardDeckScale.z);
     }
 
     void ReadyToCheat()

@@ -25,12 +25,9 @@ public class ChipStick : InteractionSuperClass
     {
         if(other.gameObject.tag == "Floor")
         {
-            float yOffset = 0.01f;
-            Vector3 spawnPoint = GameObject.Find("StickSpawn").gameObject.transform.position;
             transform.position = new Vector3(startPos.x, startPos.y, startPos.z);
             transform.rotation = new Quaternion(startRot.x, startRot.y, startRot.z, startRot.w);
-            GetComponent<Rigidbody>().velocity = Vector3.zero;
-            
+            GetComponent<Rigidbody>().velocity = Vector3.zero;  
         }
     }
 

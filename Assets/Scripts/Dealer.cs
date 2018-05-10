@@ -134,6 +134,7 @@ public class Dealer : MonoBehaviour
     public GameObject[] objectsToHide;
     public GameObject[] chipsToBring;
     public bool startingWithIntro;
+    AudioSource[] audioSources;
     
 
     void Awake()
@@ -157,6 +158,7 @@ public class Dealer : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        AudioSource[] audioSources = FindObjectsOfType<AudioSource>();
         oldTime = System.DateTime.Now;
         //oldTimeForIdle = System.DateTime.Now;
         timeBetweenIdle = 0;
@@ -908,6 +910,7 @@ public class Dealer : MonoBehaviour
                         flyingClicked = false;
                         first_time = true;
                         Table.instance.RestartRound();
+                        newCardDeck.GetComponent<CardDeckScript>().ResetDeckScale();
                         Services.Dealer.killingCards = false;
                         madeNewDeck = false;
                         thrownChips.Clear();
@@ -926,7 +929,16 @@ public class Dealer : MonoBehaviour
         holdRotate = false;
         yield break;
     }
-    
+
+    public void ChangeMusicSpeed(bool cheating)
+    {
+        foreach (AudioSource a in audioSources)
+        {
+            if (cheating) a.pitch = 0.5f;
+            else a.pitch = 1;
+        }
+    }
+
     public void CheckAllInPlayers()
     {
         int allInPlayerCount = 0;

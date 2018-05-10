@@ -167,26 +167,28 @@ public class Card : InteractionSuperClass {
     // Update is called once per frame
     void Update() {
 
-        tm.Update();
-        if (Input.GetKeyDown(KeyCode.J)) ChangeMusicSpeed(true);
-        myRenderer.material.SetColor("_EmissionColor", Color.black);
-        if (Table.gameState == GameState.Misdeal) StopCheating();
-        if (foldedCards)
+        if (Table.gameState != GameState.Misdeal)
         {
-            transform.position = RotateWithPerlinNoise(rotationSpeed);
-            if(!callingPulse && Table.gameState < GameState.ShowDown) StartPulse();
-            maxGlow = 1;
-            glowSpeed = .5f;
-        }
-        PulseGlow();
-        CardForDealingMode();
-        BringCardBack();
-        FloatInPlace(floatSpeed, floatDistance);
-        if (Vector3.Distance(transform.position, GameObject.Find("ShufflingArea").transform.position) > 20)
-        {
-            Vector3 pos = GameObject.Find("ShufflingArea").transform.position;
-            transform.position = new Vector3(pos.x, pos.y, pos.z);
-            rb.velocity = Vector3.zero;
+            tm.Update();
+            myRenderer.material.SetColor("_EmissionColor", Color.black);
+            if (Table.gameState == GameState.Misdeal) StopCheating();
+            if (foldedCards)
+            {
+                transform.position = RotateWithPerlinNoise(rotationSpeed);
+                if (!callingPulse && Table.gameState < GameState.ShowDown) StartPulse();
+                maxGlow = 1;
+                glowSpeed = .5f;
+            }
+            PulseGlow();
+            CardForDealingMode();
+            BringCardBack();
+            FloatInPlace(floatSpeed, floatDistance);
+            if (Vector3.Distance(transform.position, GameObject.Find("ShufflingArea").transform.position) > 20)
+            {
+                Vector3 pos = GameObject.Find("ShufflingArea").transform.position;
+                transform.position = new Vector3(pos.x, pos.y, pos.z);
+                rb.velocity = Vector3.zero;
+            }
         }
 
     }
@@ -410,7 +412,7 @@ public class Card : InteractionSuperClass {
 
     public void StopCheating()
     {
-        ChangeMusicSpeed(false);
+        Services.Dealer.ChangeMusicSpeed(false);
         Services.Dealer.lighting.gameObject.SetActive(true);
         Services.Dealer.isCheating = false;
     }
@@ -450,19 +452,9 @@ public class Card : InteractionSuperClass {
         base.OnAttachedToHand(attachedHand);
     }
 
-    public void ChangeMusicSpeed(bool isCheating)
-    {
-        AudioSource[] audioSources = FindObjectsOfType<AudioSource>();
-        foreach(AudioSource a in audioSources)
-        {
-            if (isCheating) a.pitch = 0.5f;
-            else a.pitch = 1;
-        }
-    }
-
     public void StartCheatMode()
     {
-        ChangeMusicSpeed(true);
+        Services.Dealer.ChangeMusicSpeed(true);
         Services.Dealer.lighting.gameObject.SetActive(false);
         Services.Dealer.isCheating = true;
         Services.Dealer.ResetIdleTime();
@@ -560,7 +552,7 @@ public class Card : InteractionSuperClass {
         yield return new WaitForSeconds(time);
         if (!CardIsInList(this) && cardOnTable)
         {
-            Debug.Log("misdeal here");
+            //Debug.Log("misdeal here");
             Services.Dealer.TriggerMisdeal();
             StartCoroutine(SlowDownTorque());
         }

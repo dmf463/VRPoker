@@ -128,6 +128,7 @@ public class Table {
         Services.Dealer.PlayerSeatsAwayFromDealerAmongstLivePlayers(2).currentBet = Services.Dealer.BigBlind;
         Services.Dealer.LastBet = Services.Dealer.BigBlind;
         if (Services.Dealer.handsCompleted >= 2) Services.TextManager.inTutorial = false;
+        
     }
 
     public void RestartRound()

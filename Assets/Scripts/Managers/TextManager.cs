@@ -96,6 +96,7 @@ public class TextManager : MonoBehaviour {
             else if (Table.gameState == GameState.NewRound)
             {
                 //sr.color = Color.black;
+                whoWon.SetActive(false);
                 dealTwoCardsText.SetActive(true);
             }
             else if (Table.gameState == GameState.PreFlop && Services.SoundManager.roundsFinished == 0)
