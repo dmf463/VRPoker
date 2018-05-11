@@ -1338,7 +1338,7 @@ public class Dealer : MonoBehaviour
         for (int i = 0; i < players.Count; i++)
         {
             PokerPlayerRedux playerToCheck = players[SeatsAwayFromDealer(i + 1)];
-            if(playerToCheck.PlayerState == PlayerState.Winner)
+            if (playerToCheck.PlayerState == PlayerState.Winner)
             {
                 winningPlayers.Add(playerToCheck);
                 playerToCheck.playerLookedAt = false;
@@ -1387,18 +1387,18 @@ public class Dealer : MonoBehaviour
         }
         Debug.Log("number of Winners is " + numberOfWinners);
         //added this in because of voiceActing, and not wanting two clips playing at the same time
-        if(winningPlayers.Count == 2)
+        if (winningPlayers.Count == 2)
         {
             Debug.Log("DONT SAY A FUCKING WORD");
         }
         else
         {
             float randomNum = UnityEngine.Random.Range(0, 100);
-            if(randomNum < 50)
+            if (randomNum < 50)
             {
                 for (int i = 0; i < players.Count; i++)
                 {
-                    if(players[i].PlayerState == PlayerState.Winner)
+                    if (players[i].PlayerState == PlayerState.Winner)
                     {
                         StartCoroutine(WaitForWinner(2, players[i]));
                     }
@@ -1423,12 +1423,12 @@ public class Dealer : MonoBehaviour
         tipMultiplier += 1f;
         for (int i = 0; i < players.Count; i++)
         {
-            if(players[i].PlayerState == PlayerState.Winner)
+            if (players[i].PlayerState == PlayerState.Winner)
             {
                 players[i].lossCount = 0;
                 players[i].Tip();
             }
-            else if(players[i].PlayerState == PlayerState.Loser)
+            else if (players[i].PlayerState == PlayerState.Loser)
             {
                 players[i].lossCount++;
                 for (int winners = 0; winners < winningPlayers.Count; winners++)
@@ -1440,26 +1440,29 @@ public class Dealer : MonoBehaviour
         PokerPlayerRedux losingPlayer = null;
         for (int i = 0; i < players.Count; i++)
         {
-            if(players[i].chipCount <= 0 && players[i].PlayerState == PlayerState.Loser)
+            if (players[i].chipCount <= 0 && players[i].PlayerState == PlayerState.Loser)
             {
-				Services.SoundManager.InterruptChaos();
+                //Services.SoundManager.InterruptChaos();
                 //DAN PUT THE "BUY ME BACK IN LINE HERE"
                 Debug.Log("LOSER LINES FOR LOSERS");
-                if (losingPlayer == null)
-                {
-                    Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(players[i].playerName, LineCriteria.BuyInAsk));
-                    playerHasBeenEliminated = true;
-                    losingPlayer = players[i];
-                }
-                Services.AnimationScript.ConvoAnimation(losingPlayer.playerName, "BuyBackIn", true);
-                StartCoroutine(WaitToSave(10f));
+                //Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(players[i].playerName, LineCriteria.BuyInAsk));
+                playerHasBeenEliminated = true;
+                losingPlayer = players[i];
+                losingPlayer.gameObject.SetActive(false);
+                //Services.AnimationScript.ConvoAnimation(losingPlayer.playerName, "Idle", false);
+                //Services.AnimationScript.ConvoAnimation(losingPlayer.playerName, "BuyBackIn", true);
+                //StartCoroutine(WaitToSave(10f));
             }
         }
-        while (playerHasBeenEliminated)
-        {
-            yield return null;
-        }
-        if (losingPlayer != null) Services.AnimationScript.ConvoAnimation(losingPlayer.playerName, "BuyBackIn", false);
+        //while (playerHasBeenEliminated)
+        //{
+        //    yield return null;
+        //}
+        //if (losingPlayer != null)
+        //{
+        //    Services.AnimationScript.ConvoAnimation(losingPlayer.playerName, "Idle", true);
+        //    Services.AnimationScript.ConvoAnimation(losingPlayer.playerName, "BuyBackIn", false);
+        //}
         Table.gameState = GameState.PostHand;
         yield break;
     }
