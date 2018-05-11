@@ -165,32 +165,28 @@ public class Card : InteractionSuperClass {
 
     }
     // Update is called once per frame
-    void Update() {
-
-        if (Table.gameState != GameState.Misdeal)
+    void Update()
+    {
+        tm.Update();
+        myRenderer.material.SetColor("_EmissionColor", Color.black);
+        if (Table.gameState == GameState.Misdeal) StopCheating();
+        if (foldedCards)
         {
-            tm.Update();
-            myRenderer.material.SetColor("_EmissionColor", Color.black);
-            if (Table.gameState == GameState.Misdeal) StopCheating();
-            if (foldedCards)
-            {
-                transform.position = RotateWithPerlinNoise(rotationSpeed);
-                if (!callingPulse && Table.gameState < GameState.ShowDown) StartPulse();
-                maxGlow = 1;
-                glowSpeed = .5f;
-            }
-            PulseGlow();
-            CardForDealingMode();
-            BringCardBack();
-            FloatInPlace(floatSpeed, floatDistance);
-            if (Vector3.Distance(transform.position, GameObject.Find("ShufflingArea").transform.position) > 20)
-            {
-                Vector3 pos = GameObject.Find("ShufflingArea").transform.position;
-                transform.position = new Vector3(pos.x, pos.y, pos.z);
-                rb.velocity = Vector3.zero;
-            }
+            transform.position = RotateWithPerlinNoise(rotationSpeed);
+            if (!callingPulse && Table.gameState < GameState.ShowDown) StartPulse();
+            maxGlow = 1;
+            glowSpeed = .5f;
         }
-
+        PulseGlow();
+        CardForDealingMode();
+        BringCardBack();
+        FloatInPlace(floatSpeed, floatDistance);
+        if (Vector3.Distance(transform.position, GameObject.Find("ShufflingArea").transform.position) > 20)
+        {
+            Vector3 pos = GameObject.Find("ShufflingArea").transform.position;
+            transform.position = new Vector3(pos.x, pos.y, pos.z);
+            rb.velocity = Vector3.zero;
+        }
     }
 
     public Vector3 RotateWithPerlinNoise(float speed)
@@ -283,11 +279,11 @@ public class Card : InteractionSuperClass {
             }
             //if we're holding a card, and the deck still has cards in it
             //we want to be constantly checking whether or not a player has swiped the track pad
-            if (rb.isKinematic == true && deckIsEmpty == false)
-            {
-                CheckSwipeDirection(throwingHand);
-                CheckTouchDown();
-            }
+            //if (rb.isKinematic == true && deckIsEmpty == false)
+            //{
+            //    CheckSwipeDirection(throwingHand);
+            //    CheckTouchDown();
+            //}
         }
     }
 

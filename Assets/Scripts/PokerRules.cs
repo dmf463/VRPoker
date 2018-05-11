@@ -509,7 +509,7 @@ public class PokerRules : MonoBehaviour {
         Table.instance.burn.Clear();
         for (int i = 0; i < cardsPulled.Count; i++)
         {
-            PositionBoardAndBurnCards(i, 1, true);
+            PositionBoardAndBurnCards(i, 5, true);
         }
         SetCardIndicator();
     }
