@@ -57,5 +57,6 @@ public class ChipStick : InteractionSuperClass
         Services.Dealer.handIsOccupied = false;
         Services.ChipManager.chipsBeingPushed = 0;
         base.OnDetachedFromHand(hand);
+        //
     }
 }
