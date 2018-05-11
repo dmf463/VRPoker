@@ -381,17 +381,17 @@ public class ConsolidateChips : Task
 public class SetObjectActive : GOTask
 {
     GameObject GameObject;
-    //GameObject JuicePrefab;
-    //juice offset?
-    public SetObjectActive(GameObject _gameObject) : base(_gameObject)
+    bool SFX;
+
+    public SetObjectActive(GameObject _gameObject, bool _sfx) : base(_gameObject)
     {
         GameObject = _gameObject;
-       // JuicePrefab = _juicePrefab;
+        SFX = _sfx;
     }
 
     protected override void Init()
     {
-        
+        if (SFX) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.poofNoise, 1);
         GameObject.SetActive(true);
 
 

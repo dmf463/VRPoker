@@ -1150,17 +1150,17 @@ public class Dealer : MonoBehaviour
         Wait startTimePoof = new Wait(2);
         Wait waitForPoof = new Wait(2);
         SetGameState setGameState = new SetGameState(GameState.NewRound);
-        SetObjectActive poofCaseySmoke = new SetObjectActive(objectsToHide[0]);
-        SetObjectActive poofCasey = new SetObjectActive(objectsToHide[1]);
-        SetObjectActive poofZombieSmoke = new SetObjectActive(objectsToHide[2]);
-        SetObjectActive poofZombie = new SetObjectActive(objectsToHide[3]);
-        SetObjectActive poofMinnieSmoke = new SetObjectActive(objectsToHide[4]);
-        SetObjectActive poofMinnie = new SetObjectActive(objectsToHide[5]);
-        SetObjectActive poofNathanielSmoke = new SetObjectActive(objectsToHide[6]);
-        SetObjectActive poofNathaniel = new SetObjectActive(objectsToHide[7]);
-        SetObjectActive poofFloydSmoke = new SetObjectActive(objectsToHide[8]);
-        SetObjectActive poofFloyd = new SetObjectActive(objectsToHide[9]);
-        SetObjectActive poofCards = new SetObjectActive(objectsToHide[10]);
+        SetObjectActive poofCaseySmoke = new SetObjectActive(objectsToHide[0], true);
+        SetObjectActive poofCasey = new SetObjectActive(objectsToHide[1], false);
+        SetObjectActive poofZombieSmoke = new SetObjectActive(objectsToHide[2], true);
+        SetObjectActive poofZombie = new SetObjectActive(objectsToHide[3], false);
+        SetObjectActive poofMinnieSmoke = new SetObjectActive(objectsToHide[4], true);
+        SetObjectActive poofMinnie = new SetObjectActive(objectsToHide[5], false);
+        SetObjectActive poofNathanielSmoke = new SetObjectActive(objectsToHide[6], true);
+        SetObjectActive poofNathaniel = new SetObjectActive(objectsToHide[7], false);
+        SetObjectActive poofFloydSmoke = new SetObjectActive(objectsToHide[8], true);
+        SetObjectActive poofFloyd = new SetObjectActive(objectsToHide[9], false);
+        SetObjectActive poofCards = new SetObjectActive(objectsToHide[10], false);
 
         PlayPlayerLine nathanielSpeaks = new PlayPlayerLine(players[3], Services.SoundManager.Nathaniel_Intro1);
         PlayPlayerLine floydSpeaks = new PlayPlayerLine(players[4], Services.SoundManager.Floyd_Intro);
@@ -1338,7 +1338,7 @@ public class Dealer : MonoBehaviour
         for (int i = 0; i < players.Count; i++)
         {
             PokerPlayerRedux playerToCheck = players[SeatsAwayFromDealer(i + 1)];
-            if(playerToCheck.PlayerState == PlayerState.Winner)
+            if (playerToCheck.PlayerState == PlayerState.Winner)
             {
                 winningPlayers.Add(playerToCheck);
                 playerToCheck.playerLookedAt = false;
@@ -1387,18 +1387,18 @@ public class Dealer : MonoBehaviour
         }
         Debug.Log("number of Winners is " + numberOfWinners);
         //added this in because of voiceActing, and not wanting two clips playing at the same time
-        if(winningPlayers.Count == 2)
+        if (winningPlayers.Count == 2)
         {
             Debug.Log("DONT SAY A FUCKING WORD");
         }
         else
         {
             float randomNum = UnityEngine.Random.Range(0, 100);
-            if(randomNum < 50)
+            if (randomNum < 50)
             {
                 for (int i = 0; i < players.Count; i++)
                 {
-                    if(players[i].PlayerState == PlayerState.Winner)
+                    if (players[i].PlayerState == PlayerState.Winner)
                     {
                         StartCoroutine(WaitForWinner(2, players[i]));
                     }
@@ -1423,12 +1423,12 @@ public class Dealer : MonoBehaviour
         tipMultiplier += 1f;
         for (int i = 0; i < players.Count; i++)
         {
-            if(players[i].PlayerState == PlayerState.Winner)
+            if (players[i].PlayerState == PlayerState.Winner)
             {
                 players[i].lossCount = 0;
                 players[i].Tip();
             }
-            else if(players[i].PlayerState == PlayerState.Loser)
+            else if (players[i].PlayerState == PlayerState.Loser)
             {
                 players[i].lossCount++;
                 for (int winners = 0; winners < winningPlayers.Count; winners++)
@@ -1440,26 +1440,44 @@ public class Dealer : MonoBehaviour
         PokerPlayerRedux losingPlayer = null;
         for (int i = 0; i < players.Count; i++)
         {
-            if(players[i].chipCount == 0 && players[i].PlayerState == PlayerState.Loser)
+            if (players[i].chipCount <= 0 && players[i].PlayerState == PlayerState.Loser)
             {
-				Services.SoundManager.InterruptChaos();
+                //Services.SoundManager.InterruptChaos();
                 //DAN PUT THE "BUY ME BACK IN LINE HERE"
-                Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(players[i].playerName, LineCriteria.BuyInAsk));
+                Debug.Log("LOSER LINES FOR LOSERS");
+                //Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(players[i].playerName, LineCriteria.BuyInAsk));
                 playerHasBeenEliminated = true;
                 losingPlayer = players[i];
-                Services.AnimationScript.ConvoAnimation(losingPlayer.playerName, "BuyBackIn", true);
-                StartCoroutine(WaitToSave(10f));
+                //losingPlayer.gameObject.SetActive(false);
+                DragMeToHell(losingPlayer, losingPlayer.gameObject);
+                //Services.AnimationScript.ConvoAnimation(losingPlayer.playerName, "Idle", false);
+                //Services.AnimationScript.ConvoAnimation(losingPlayer.playerName, "BuyBackIn", true);
+                //StartCoroutine(WaitToSave(10f));
             }
         }
-        while (playerHasBeenEliminated)
-        {
-            yield return null;
-        }
-        if (losingPlayer != null) Services.AnimationScript.ConvoAnimation(losingPlayer.playerName, "BuyBackIn", false);
+        //while (playerHasBeenEliminated)
+        //{
+        //    yield return null;
+        //}
+        //if (losingPlayer != null)
+        //{
+        //    Services.AnimationScript.ConvoAnimation(losingPlayer.playerName, "Idle", true);
+        //    Services.AnimationScript.ConvoAnimation(losingPlayer.playerName, "BuyBackIn", false);
+        //}
         Table.gameState = GameState.PostHand;
         yield break;
     }
 
+    public void DragMeToHell(PokerPlayerRedux player, GameObject playerObj)
+    {
+        player.scaryTentacles.SetActive(true);
+        Vector3 finalDestination = new Vector3(playerObj.transform.position.x, playerObj.transform.position.y - 10, playerObj.transform.position.z);
+        Wait waitToDrag = new Wait(2f);
+        LerpPos dragPlayer = new LerpPos(playerObj, playerObj.transform.position, finalDestination, 1f);
+
+        waitToDrag.Then(dragPlayer);
+        tm.Do(waitToDrag);
+    }
 
     public int PlayersInPot()
     {
@@ -1512,6 +1530,10 @@ public class Dealer : MonoBehaviour
                 ///
                 ///
                 //
+                if (OutsideVR)
+                {
+                    Table.instance.AddChipTo(playerDestinations[player.SeatPos], winnerChipStack);
+                }
                 if (player.chipCount >= winnerChipStack && player.HasBeenPaid == false)
                 {
                     winnersPaid++;

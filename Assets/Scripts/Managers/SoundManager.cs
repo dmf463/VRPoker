@@ -51,6 +51,7 @@ public class SoundManager : MonoBehaviour
     public AudioClip deckThrown;
     public AudioClip cardsReturn;
     public AudioClip cardsBurning;
+    public AudioClip poofNoise;
 
     [Header("IntroConversation")]
     public AudioClip Nathaniel_Intro1;
