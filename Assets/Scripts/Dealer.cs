@@ -1150,17 +1150,17 @@ public class Dealer : MonoBehaviour
         Wait startTimePoof = new Wait(2);
         Wait waitForPoof = new Wait(2);
         SetGameState setGameState = new SetGameState(GameState.NewRound);
-        PoofObjectIntoExistence poofCaseySmoke = new PoofObjectIntoExistence(objectsToHide[0]);
-        PoofObjectIntoExistence poofCasey = new PoofObjectIntoExistence(objectsToHide[1]);
-        PoofObjectIntoExistence poofZombieSmoke = new PoofObjectIntoExistence(objectsToHide[2]);
-        PoofObjectIntoExistence poofZombie = new PoofObjectIntoExistence(objectsToHide[3]);
-        PoofObjectIntoExistence poofMinnieSmoke = new PoofObjectIntoExistence(objectsToHide[4]);
-        PoofObjectIntoExistence poofMinnie = new PoofObjectIntoExistence(objectsToHide[5]);
-        PoofObjectIntoExistence poofNathanielSmoke = new PoofObjectIntoExistence(objectsToHide[6]);
-        PoofObjectIntoExistence poofNathaniel = new PoofObjectIntoExistence(objectsToHide[7]);
-        PoofObjectIntoExistence poofFloydSmoke = new PoofObjectIntoExistence(objectsToHide[8]);
-        PoofObjectIntoExistence poofFloyd = new PoofObjectIntoExistence(objectsToHide[9]);
-        PoofObjectIntoExistence poofCards = new PoofObjectIntoExistence(objectsToHide[10]);
+        SetObjectActive poofCaseySmoke = new SetObjectActive(objectsToHide[0]);
+        SetObjectActive poofCasey = new SetObjectActive(objectsToHide[1]);
+        SetObjectActive poofZombieSmoke = new SetObjectActive(objectsToHide[2]);
+        SetObjectActive poofZombie = new SetObjectActive(objectsToHide[3]);
+        SetObjectActive poofMinnieSmoke = new SetObjectActive(objectsToHide[4]);
+        SetObjectActive poofMinnie = new SetObjectActive(objectsToHide[5]);
+        SetObjectActive poofNathanielSmoke = new SetObjectActive(objectsToHide[6]);
+        SetObjectActive poofNathaniel = new SetObjectActive(objectsToHide[7]);
+        SetObjectActive poofFloydSmoke = new SetObjectActive(objectsToHide[8]);
+        SetObjectActive poofFloyd = new SetObjectActive(objectsToHide[9]);
+        SetObjectActive poofCards = new SetObjectActive(objectsToHide[10]);
 
         PlayPlayerLine nathanielSpeaks = new PlayPlayerLine(players[3], Services.SoundManager.Nathaniel_Intro1);
         PlayPlayerLine floydSpeaks = new PlayPlayerLine(players[4], Services.SoundManager.Floyd_Intro);
@@ -1177,24 +1177,25 @@ public class Dealer : MonoBehaviour
 
         startTimePoof.
             Then(poofCaseySmoke).
-                     Then(new Wait(0.1f)).
+                     Then(new Wait(0.5f)).
             Then(poofCasey).
-                     Then(new Wait(2)).
+                     Then(new Wait(1)).
             Then(poofZombieSmoke).
-                     Then(new Wait(0.1f)).
+                     Then(new Wait(0.5f)).
             Then(poofZombie).
-                     Then(new Wait(2)).
+                     Then(new Wait(1)).
             Then(poofMinnieSmoke).
-                     Then(new Wait(0.1f)).
+                     Then(new Wait(0.5f)).
             Then(poofMinnie).
-                     Then(new Wait(2)).
+                     Then(new Wait(1)).
             Then(poofNathanielSmoke).
-                     Then(new Wait(0.1f)).
+                     Then(new Wait(0.5f)).
             Then(poofNathaniel).
-                     Then(new Wait(2)).
+                     Then(new Wait(1)).
             Then(poofFloydSmoke).
-                     Then(new Wait(0.1f)).
+                     Then(new Wait(0.5f)).
             Then(poofFloyd).
+                     Then(new Wait(0.5f)).
             Then(nathanielSpeaks).
                      Then(new Wait(Services.SoundManager.Nathaniel_Intro1.length)).
             Then(floydSpeaks).

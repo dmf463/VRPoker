@@ -378,12 +378,12 @@ public class ConsolidateChips : Task
     }
 }
 
-public class PoofObjectIntoExistence : GOTask
+public class SetObjectActive : GOTask
 {
     GameObject GameObject;
     //GameObject JuicePrefab;
     //juice offset?
-    public PoofObjectIntoExistence(GameObject _gameObject) : base(_gameObject)
+    public SetObjectActive(GameObject _gameObject) : base(_gameObject)
     {
         GameObject = _gameObject;
        // JuicePrefab = _juicePrefab;
