@@ -27,7 +27,11 @@ public class ChipStick : InteractionSuperClass
         {
             transform.position = new Vector3(startPos.x, startPos.y, startPos.z);
             transform.rotation = new Quaternion(startRot.x, startRot.y, startRot.z, startRot.w);
+
             GetComponent<Rigidbody>().velocity = Vector3.zero;  
+
+            GetComponent<Rigidbody>().velocity = Vector3.zero; 
+
         }
     }
 
@@ -53,5 +57,6 @@ public class ChipStick : InteractionSuperClass
         Services.Dealer.handIsOccupied = false;
         Services.ChipManager.chipsBeingPushed = 0;
         base.OnDetachedFromHand(hand);
+        //
     }
 }
