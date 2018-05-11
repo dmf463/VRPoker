@@ -1448,7 +1448,8 @@ public class Dealer : MonoBehaviour
                 //Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(players[i].playerName, LineCriteria.BuyInAsk));
                 playerHasBeenEliminated = true;
                 losingPlayer = players[i];
-                losingPlayer.gameObject.SetActive(false);
+                //losingPlayer.gameObject.SetActive(false);
+                DragMeToHell(losingPlayer, losingPlayer.gameObject);
                 //Services.AnimationScript.ConvoAnimation(losingPlayer.playerName, "Idle", false);
                 //Services.AnimationScript.ConvoAnimation(losingPlayer.playerName, "BuyBackIn", true);
                 //StartCoroutine(WaitToSave(10f));
@@ -1467,6 +1468,16 @@ public class Dealer : MonoBehaviour
         yield break;
     }
 
+    public void DragMeToHell(PokerPlayerRedux player, GameObject playerObj)
+    {
+        player.scaryTentacles.SetActive(true);
+        Vector3 finalDestination = new Vector3(playerObj.transform.position.x, playerObj.transform.position.y - 10, playerObj.transform.position.z);
+        Wait waitToDrag = new Wait(2f);
+        LerpPos dragPlayer = new LerpPos(playerObj, playerObj.transform.position, finalDestination, 1f);
+
+        waitToDrag.Then(dragPlayer);
+        tm.Do(waitToDrag);
+    }
 
     public int PlayersInPot()
     {

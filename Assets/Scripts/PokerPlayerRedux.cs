@@ -14,6 +14,7 @@ public enum LineCriteria {None, AllIn, Bet, BuyIn, BuyInAsk, Call, CardHit, Chec
 
 public class PokerPlayerRedux : MonoBehaviour{
 
+    public GameObject scaryTentacles;
     public GameObject poofEffect;
     public GameObject turnIndicator;
     public PlayerName playerName;
