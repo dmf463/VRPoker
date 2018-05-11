@@ -24,6 +24,46 @@ public class ActionTask : Task {
 
 }
 
+public class OnGoingTask : Task
+{
+	private static readonly System.DateTime UnixEpoch = new System.DateTime(1970, 1, 1);
+	private readonly double _duration; //how long does this wait for
+	public Action _action { get; private set; }
+
+	private double _startTime; //when did we start waiting
+
+	private static double GetTimestamp()
+    {
+        return (System.DateTime.UtcNow - UnixEpoch).TotalMilliseconds;
+    }
+
+	public OnGoingTask(Action action, double duration)
+    {
+        this._duration = duration;
+		this._action = action;
+    }
+
+    protected override void Init()
+    {
+		_action();
+        _startTime = GetTimestamp();
+    }
+
+    internal override void Update()
+    {
+        var now = GetTimestamp(); //use var for a) less typing, b) if it changes from float, to int, to double, etc.
+        var durationElapsed = (now - _startTime) > _duration;
+
+		_action();
+
+        if (durationElapsed)
+        {
+            SetStatus(TaskStatus.Success);
+        }
+    }
+
+}
+
 public class WaitTask : Task
 {
     // Get the timestamp in floating point milliseconds from the Unix epoch   

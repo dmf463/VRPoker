@@ -1437,6 +1437,7 @@ public class Dealer : MonoBehaviour
         {
             if(players[i].chipCount == 0 && players[i].PlayerState == PlayerState.Loser)
             {
+				Services.SoundManager.InterruptChaos();
                 //DAN PUT THE "BUY ME BACK IN LINE HERE"
                 Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(players[i].playerName, LineCriteria.BuyInAsk));
                 playerHasBeenEliminated = true;

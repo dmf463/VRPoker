@@ -28,19 +28,18 @@ public class SoundManager : MonoBehaviour
     /// 
     public List<PlayerName> playersInConvo = new List<PlayerName>(); //DAVID THIS IS WHERE THE PLAYERS TALKING ARE
 																	 /// 
-
-	[Header("Music")]
-	public AudioClip jazzyIntro;
-	public AudioClip drumsAndBassLoop;
-	public AudioClip[] mainThemeLoop;
-	public AudioClip playerLosingTheme;
-	public AudioClip playerOutOneShot;
-
+    
+   
 	[Header("Music Audio Sources")]
-	public AudioSource musicSource1;
-	public AudioSource musicSource2;
-
-
+	public AudioSource jazzyIntroSource;
+	public AudioSource drumsAndBassSource;
+	public AudioSource saxSource;
+	public AudioSource trumpetSource;
+	public AudioSource tromboneSource;
+	public AudioSource vibesSource;
+	public AudioSource chaosSource;
+	public AudioSource dramaSource;
+   
     [Header("Sound Effects")]
 	public AudioClip[] chips;
     public AudioClip[] cards;
@@ -64,7 +63,8 @@ public class SoundManager : MonoBehaviour
 
 
     public int roundsFinished;
-
+	public ShuffleBag<AudioSource> shuffle_main_themes;
+	public TaskManager music_player;
 
 
     public void PlayOneLiner(PlayerLineCriteria criteria)
@@ -158,15 +158,133 @@ public class SoundManager : MonoBehaviour
         yield return new WaitForSeconds(time);
         player.playerIsInConversation = false;
     }
+    
 
-
-	public void PlayIntroMusic()
+	/*public float PlayIntroMusic()
 	{
-		musicSource1.clip = jazzyIntro;
-		musicSource1.Play();
+		jazzyIntroSource.Play();
+		return jazzyIntroSource.clip.length;
 
 	}
 
+	public float PlayDrumAndBass() {
+		drumsAndBassSource.Play();
+		return drumsAndBassSource.clip.length;
+	}
+
+	public float PlayOther() {
+		var new_source = shuffle_main_themes.Next();
+		new_source.Play();
+		return new_source.clip.length;
+	}*/
+
+	public void NewSongs() {
+		var reg_source = drumsAndBassSource;
+		var reg_source_length = reg_source.clip.length;
+
+		var weird_source = shuffle_main_themes.Next();
+		var weird_source_length = weird_source.clip.length;
+
+
+		ActionTask play_next = new ActionTask(() =>{ reg_source.Play(); });
+
+		play_next
+			.Then(new Wait(reg_source_length))
+			.Then(new ActionTask(() => { weird_source.Play(); }))
+			.Then(new Wait(weird_source_length))
+			.Then(new ActionTask(NewSongs));
+
+		music_player.Do(play_next);
+
+	}
+
+	void Start() {
+		music_player = new TaskManager();
+		AudioSource[] audio_sources = { saxSource, trumpetSource, tromboneSource, vibesSource };
+		shuffle_main_themes = new ShuffleBag<AudioSource>();
+
+		foreach (var source in audio_sources)
+			shuffle_main_themes.Add(source);
+
+		ActionTask play_intro = new ActionTask(() => { jazzyIntroSource.Play();   Debug.Log("Playing"); });
+
+		play_intro
+			.Then(new Wait(jazzyIntroSource.clip.length))
+			.Then(new ActionTask(NewSongs));
+
+		music_player.Do(play_intro);
+	}
+
+	void Update()
+	{
+		music_player.Update();
+	}
+
+	public void InterruptChaos() {
+		chaosSource.volume = 0.0f;
+		chaosSource.Play();
+        var start_time = Time.time;
+        var fade_length = 2.0f;
+
+		OnGoingTask fader = new OnGoingTask(() =>
+        {
+			var new_volume = 1.0f - ((Time.time - start_time) / fade_length);
+            jazzyIntroSource.volume = new_volume;
+			drumsAndBassSource.volume = new_volume;
+			saxSource.volume = new_volume;
+			trumpetSource.volume = new_volume;
+			tromboneSource.volume = new_volume;
+			vibesSource.volume = new_volume;
+            chaosSource.volume = (Time.time - start_time) / fade_length;
+		}, fade_length);      
+
+		music_player.Do(fader);
+	}
+
+	public void PlayDrama()
+	{
+		var fade_length = 2.0f;
+		var start_time = Time.time;
+		var fade_in_start_time = Time.time + dramaSource.clip.length;
+		var wait_until_drama_start = 1.0f;
+
+		OnGoingTask fader = new OnGoingTask(() =>
+		{
+			chaosSource.volume = 1.0f - ((Time.time - start_time) / fade_length);
+			if (!dramaSource.isPlaying)
+			{
+				if (Time.time - start_time >= wait_until_drama_start)
+				{
+					dramaSource.volume = 1.0f;
+					dramaSource.Play();
+				}
+			}
+
+		}, fade_length);
+
+		fader
+			.Then(new Wait(dramaSource.clip.length - fade_length))
+			.Then(new OnGoingTask(() =>
+			{
+				jazzyIntroSource.Stop();
+				drumsAndBassSource.Stop();
+				saxSource.Stop();
+				trumpetSource.Stop();
+				tromboneSource.Stop();
+				vibesSource.Stop();
+
+				var new_volume = ((Time.time - fade_in_start_time) / fade_length);
+
+				jazzyIntroSource.volume = new_volume;
+				drumsAndBassSource.volume = new_volume;
+				saxSource.volume = new_volume;
+				trumpetSource.volume = new_volume;
+				tromboneSource.volume = new_volume;
+				vibesSource.volume = new_volume;
+			}, fade_length));
+
+		music_player.Do(fader);
+	}
 
 }
 
