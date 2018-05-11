@@ -63,7 +63,7 @@ public class ShuffleBag<T> : ICollection<T>, IList<T>
     #region ICollection[T] implementation
     public void Add (T item)
     {
-        Debug.Log (item);
+        //Debug.Log (item);
         data.Add (item);
         cursor = data.Count - 1;
     }

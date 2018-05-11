@@ -197,9 +197,12 @@ public class Dealer : MonoBehaviour
 
         if(timeBetweenIdle >= 15 && !OutsideVR && Table.gameState != GameState.Intro)
         {
-            ResetIdleTime();
             PokerPlayerRedux randomPlayer = Services.Dealer.players[UnityEngine.Random.Range(0, Services.Dealer.players.Count)];
-            Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(randomPlayer.playerName, LineCriteria.IdleTime));
+            if (!randomPlayer.playerAudioSource.isPlaying)
+            {
+                ResetIdleTime();
+                Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(randomPlayer.playerName, LineCriteria.IdleTime));
+            }
         }
         tm.Update();
         if (deckIsDead)
@@ -932,6 +935,7 @@ public class Dealer : MonoBehaviour
 
     public void ChangeMusicSpeed(bool cheating)
     {
+        audioSources.Clear();
         if (audioSources.Count == 0)
         {
             AudioSource[] a = FindObjectsOfType<AudioSource>();
