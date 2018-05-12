@@ -134,7 +134,8 @@ public class Dealer : MonoBehaviour
     public GameObject[] objectsToHide;
     public GameObject[] chipsToBring;
     public bool startingWithIntro;
-    List<AudioSource> audioSources = new List<AudioSource>();
+    [HideInInspector]
+    public List<AudioSource> audioSources = new List<AudioSource>();
     
 
     void Awake()
@@ -935,7 +936,6 @@ public class Dealer : MonoBehaviour
 
     public void ChangeMusicSpeed(bool cheating)
     {
-        audioSources.Clear();
         if (audioSources.Count == 0)
         {
             AudioSource[] a = FindObjectsOfType<AudioSource>();
