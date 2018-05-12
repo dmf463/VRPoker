@@ -134,10 +134,6 @@ public class SoundManager : MonoBehaviour
         source.volume = volume;
 		source.pitch = pitch;
         source.Play();
-        if (Services.Dealer.audioSources.Contains(source))
-        {
-            Services.Dealer.audioSources.Remove(source);
-        }
         Destroy(specialAudioSource, clip.length);
         //Debug.Log("Clip played: " + clip.name);
     }
