@@ -21,15 +21,6 @@ public class AnimationScript : MonoBehaviour {
 
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            MinnieAnim.SetBool("Idle", false);
-            MinnieAnim.SetBool("TalkingLeft", true);
-        }
-    }
-
     public void CharacterConvoAnimation(bool playing)
     {
         List<PokerPlayerRedux> playersTalking = new List<PokerPlayerRedux>();
@@ -94,23 +85,23 @@ public class AnimationScript : MonoBehaviour {
             case PlayerName.None:
                 break;
             case PlayerName.Casey:
-                CaseyAnim.ResetTrigger(animationName);
+                //CaseyAnim.ResetTrigger(animationName);
                 CaseyAnim.SetTrigger(animationName);
                 break;
             case PlayerName.Zombie:
-                ZombieAnim.ResetTrigger(animationName);
+                //ZombieAnim.ResetTrigger(animationName);
                 ZombieAnim.SetTrigger(animationName);
                 break;
             case PlayerName.Minnie:
-                MinnieAnim.ResetTrigger(animationName);
+                //MinnieAnim.ResetTrigger(animationName);
                 MinnieAnim.SetTrigger(animationName);
                 break;
             case PlayerName.Nathaniel:
-                NathanielAnim.ResetTrigger(animationName);
+               // NathanielAnim.ResetTrigger(animationName);
                 NathanielAnim.SetTrigger(animationName);
                 break;
             case PlayerName.Floyd:
-                FloydAnim.ResetTrigger(animationName);
+                //FloydAnim.ResetTrigger(animationName);
                 FloydAnim.SetTrigger(animationName);
                 break;
             default:

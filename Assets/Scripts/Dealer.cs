@@ -136,6 +136,7 @@ public class Dealer : MonoBehaviour
     public bool startingWithIntro;
     [HideInInspector]
     public List<AudioSource> audioSources = new List<AudioSource>();
+
     
 
     void Awake()
@@ -936,15 +937,8 @@ public class Dealer : MonoBehaviour
 
     public void ChangeMusicSpeed(bool cheating)
     {
-        if (audioSources.Count == 0)
-        {
-            AudioSource[] a = FindObjectsOfType<AudioSource>();
-            foreach (AudioSource _a in a)
-            {
-                audioSources.Add(_a);
-            }
-        }
-        foreach (AudioSource a in audioSources)
+        AudioSource[] audio = FindObjectsOfType<AudioSource>();
+        foreach (AudioSource a in audio)
         {
             if (cheating) a.pitch = 0.5f;
             else a.pitch = 1;
@@ -1030,19 +1024,27 @@ public class Dealer : MonoBehaviour
                 {
                     List<Vector3> positions = new List<Vector3>();
                     List<Vector3> endPosition = new List<Vector3>();
+                    int chips_in_pot_count = 0;
+
                     for (int i = chipsInPot.Count - 1; i >= 0; i--)
                     {
-                        //BUG HERE
-                        positions.Add(chipsInPot[i].transform.position);
-                        endPosition.Add(Services.ChipManager.chipPositionInPot[i]);
+                        if (chipsInPot[i] != null)
+                        {
+                            chips_in_pot_count++;
+                            positions.Add(chipsInPot[i].transform.position);
+                            endPosition.Add(Services.ChipManager.chipPositionInPot[i]);
+                        }
                     }
-                    LerpBetChips lerpChips = new LerpBetChips(chipsInPot, positions, endPosition, .5f);
-                    if (!everyoneFolded)
+                    if (chips_in_pot_count != 0)
                     {
-                        ConsolidateChips consolidate = new ConsolidateChips(chipsInPot);
-                        lerpChips.Then(consolidate);
+                        LerpBetChips lerpChips = new LerpBetChips(chipsInPot, positions, endPosition, .5f);
+                        if (!everyoneFolded)
+                        {
+                            ConsolidateChips consolidate = new ConsolidateChips(chipsInPot);
+                            lerpChips.Then(consolidate);
+                        }
+                        tm.Do(lerpChips);
                     }
-                    tm.Do(lerpChips);
                 }
                 playerToAct.playerSpotlight.SetActive(false);
                 playerToAct = null;
@@ -1426,7 +1428,17 @@ public class Dealer : MonoBehaviour
             if (players[i].PlayerState == PlayerState.Winner)
             {
                 players[i].lossCount = 0;
-                players[i].Tip();
+                if(winningPlayers.Count >= 2)
+                {
+                    PokerPlayerRedux chipLeader = null;
+                    for (int _players = 0; i < winningPlayers.Count; _players++)
+                    {
+                        if(chipLeader == null || winningPlayers[_players].chipCount > chipLeader.chipCount)
+                        winningPlayers[_players] = chipLeader;
+                    }
+                    chipLeader.Tip();
+                }
+                else players[i].Tip();
             }
             else if (players[i].PlayerState == PlayerState.Loser)
             {
@@ -1530,7 +1542,7 @@ public class Dealer : MonoBehaviour
                 ///
                 ///
                 //
-                if (OutsideVR)
+                if (OutsideVR || numberOfWinners >=2)
                 {
                     Table.instance.AddChipTo(playerDestinations[player.SeatPos], winnerChipStack);
                 }

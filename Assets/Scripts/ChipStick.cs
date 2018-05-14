@@ -23,16 +23,18 @@ public class ChipStick : InteractionSuperClass
 
     void OnCollisionEnter(Collision other)
     {
-        if(other.gameObject.tag == "Floor")
+        if(other.gameObject.tag == "Floor" || other.gameObject.tag == "Roof")
         {
-            transform.position = new Vector3(startPos.x, startPos.y, startPos.z);
-            transform.rotation = new Quaternion(startRot.x, startRot.y, startRot.z, startRot.w);
-
-            GetComponent<Rigidbody>().velocity = Vector3.zero;  
-
-            GetComponent<Rigidbody>().velocity = Vector3.zero; 
-
+            ReturnStick();
         }
+    }
+
+    public void ReturnStick()
+    {
+        transform.position = new Vector3(startPos.x, startPos.y, startPos.z);
+        transform.rotation = new Quaternion(startRot.x, startRot.y, startRot.z, startRot.w);
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
 
     public override void HandAttachedUpdate(Hand attachedHand)

@@ -367,21 +367,24 @@ public class Chip : InteractionSuperClass {
     //you can then ADD to that chipStack
     public override void OnAttachedToHand(Hand attachedHand)
     {
-        transform.rotation = attachedHand.GetAttachmentTransform("CardFaceDown").transform.rotation;
-        if(chipStack == null)
+        if (attachedHand != null)
         {
-            chipStack = new ChipStack(this);
-            inAStack = true;
+            transform.rotation = attachedHand.GetAttachmentTransform("CardFaceDown").transform.rotation;
+            if (chipStack == null)
+            {
+                chipStack = new ChipStack(this);
+                inAStack = true;
+            }
+            if (!chipForBet)
+            {
+                //DAN PUT THE GRABBING CHIPS LINE HERE.
+                //YOU CAN ACCESS THE OWNER, BY USING THE "OWNER" VARIABLE ON THIS SCRIPT
+                Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(owner.playerName, LineCriteria.ChipsMoved));
+                Debug.Log("misdeal here");
+                Services.Dealer.TriggerMisdeal();
+            }
+            base.OnAttachedToHand(attachedHand);
         }
-        if (!chipForBet)
-        {
-            //DAN PUT THE GRABBING CHIPS LINE HERE.
-            //YOU CAN ACCESS THE OWNER, BY USING THE "OWNER" VARIABLE ON THIS SCRIPT
-            Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(owner.playerName, LineCriteria.ChipsMoved));
-            Debug.Log("misdeal here");
-            Services.Dealer.TriggerMisdeal();
-        }
-        base.OnAttachedToHand(attachedHand);
     }
 
     IEnumerator CheckVelocityForChipThrowing(float time, Hand hand)
