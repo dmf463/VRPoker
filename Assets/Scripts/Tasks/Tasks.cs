@@ -391,7 +391,7 @@ public class SetObjectActive : GOTask
 
     protected override void Init()
     {
-        if (SFX) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.poofNoise, 1);
+		if (SFX) Services.SoundManager.GenerateSourceAndPlay(Services.SoundManager.poofNoise, 1);
         GameObject.SetActive(true);
 
 

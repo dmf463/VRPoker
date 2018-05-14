@@ -75,6 +75,7 @@ public class DialogueDataManager
     #region TextFileParsers
     public void ParseConvoDialogueFile(TextAsset dialogueFile) //parser for dialogue text file
 	{
+		Debug.Log("PARSING CONVO txt FILE");
         convoDict = new Dictionary<List<PlayerName>, List<Conversation>> (new ListComparer<PlayerName>()); //our dictionary of dialogue
 		string fileFullString = dialogueFile.text; //the raw text of the file
 		string[] fileRows; //array of rows of our spreadsheet
@@ -82,7 +83,7 @@ public class DialogueDataManager
 		string fileRow; //holder for a file row
 		string[] rowSeparator = new string[] { "\r\n", "\r", "\n"};  //array of row separators, all are on line end
 		char[] entrySeparator = new char[] { '\t' }; //array of entry separators, specifically tab-separated
-
+		//Debug.Log(fileFullString);
         List<PlayerName> conversantList = new List<PlayerName>(); //list to hold the players who are in the conversation
         List<PlayerLine> playerLinesList = new List<PlayerLine>(); //list to hold the player lines for this conversation
         int requiredRound = 0;
@@ -93,12 +94,14 @@ public class DialogueDataManager
         for (int i = 0; i < fileRows.Length; i++)  //for each row in our array
         {
             fileRow = fileRows[i]; //set filerow to equal that row
-            rowEntries = fileRow.Split(entrySeparator); //set entries by splitting the row using our entry separator
+			rowEntries = fileRow.Split(entrySeparator); //set entries by splitting the row using our entry separator
             string ident = rowEntries[0];
             if (ident != null && ident != "")
             {
+				//Debug.Log(ident);
                 if (ident == "Convo") //if we are starting a conversation
                 {
+					//Debug.Log("ident = Convo");
                     int.TryParse(rowEntries[1], out requiredRound);
 
                     for (int j = 2; j < rowEntries.Length; j++) //from the third column onward
@@ -112,6 +115,7 @@ public class DialogueDataManager
                 }
                 else if (ident == "End") //if we have reached the end of a conversation
                 {
+					//Debug.Log("ident = End");
                     List<PlayerLine> tempPlayerLines = new List<PlayerLine>(playerLinesList);
                     Conversation conversation = new Conversation(tempPlayerLines, requiredRound, false); //create a conversation to contain the player lines and required round
                     List<PlayerName> tempConversants = new List<PlayerName>(conversantList);
@@ -122,9 +126,11 @@ public class DialogueDataManager
                 }
                 else if (ident == "Line") //if it's a player line
                 {
+					//Debug.Log("ident = Line");
                     string playerNameText = rowEntries[1]; //gets the string for the player name
                     string lineText = rowEntries[2]; //gets the text to be spoken, this isn't currently used in the game but will be needed for subtitles
                     string audioFileText = rowEntries[3]; //the string for the audiofile name
+					Debug.Log("ADDED: " + playerNameText + ", " + audioFileText);
 
                     AudioClip audioFile = Resources.Load("Audio/Voice/Current/" + audioFileText) as AudioClip; //gets the audiofile from resources using the string name 
                     AudioSource audioSource = GetAudioSourceFromString(playerNameText); //get the correct audio source based on the players name
@@ -272,12 +278,13 @@ public class DialogueDataManager
     public Conversation GetConversationWithNames(List<PlayerName> namesKey) //using the names of our chosen conversants
     {
         if (convoDict.ContainsKey(namesKey)) // if our dialogue dictionary contains them as a key
-        {
+		{
             List<Conversation> possibleConversations = convoDict[namesKey]; //list of conversations that match the key
             int correctConversation = -1;  //the conversation we'll want to play, set at first to the last in the list
 
             for (int i = 0; i < possibleConversations.Count; i++) //for each conversation in the list
             {
+				Debug.Log("Attempting to play conversation with minimum required round: " + possibleConversations[i].minRequiredRound);
                 if (!possibleConversations[i].hasBeenPlayed && //if the conversation hasn't yet played
                    possibleConversations[i].minRequiredRound <= (6 - Services.Dealer.activePlayers.Count)) //and if the conversation comes earlier than our currently chosen conversation
                 {
