@@ -554,9 +554,18 @@ public class PlayerBehaviour {
                 //CALL
                 new Sequence<PokerPlayerRedux>(
                     new HasEnoughMoney(),
-                    new HasAGoodHand(),
-                    new Not<PokerPlayerRedux>(new BetIsZero()),
-                    new Call()
+                    new Selector<PokerPlayerRedux>(
+                        new Sequence<PokerPlayerRedux>(
+                            new HasAGoodHand(),
+                            new Not<PokerPlayerRedux>(new BetIsZero()),
+                            new Call()
+                            ),
+                        new Sequence<PokerPlayerRedux>(
+                            new HasAGreathand(),
+                            new Not<PokerPlayerRedux>(new BetIsZero()),
+                            new Call()
+                            )
+                     )
                 ),
                 //RAISE
                 new Sequence<PokerPlayerRedux>(
@@ -659,9 +668,18 @@ public class PlayerBehaviour {
                 //CALL
                 new Sequence<PokerPlayerRedux>(
                     new HasEnoughMoney(),
-                    new HasAGoodHand(),
-                    new Not<PokerPlayerRedux>(new BetIsZero()),
-                    new Call()
+                    new Selector<PokerPlayerRedux>(
+                        new Sequence<PokerPlayerRedux>(
+                            new HasAGoodHand(),
+                            new Not<PokerPlayerRedux>(new BetIsZero()),
+                            new Call()
+                            ),
+                        new Sequence<PokerPlayerRedux>(
+                            new HasAGreathand(),
+                            new Not<PokerPlayerRedux>(new BetIsZero()),
+                            new Call()
+                            )
+                     )
                 ),
                 //RAISE
                 new Sequence<PokerPlayerRedux>(
@@ -789,13 +807,22 @@ public class PlayerBehaviour {
                        )
                    )
                ),
-               //CALL
-               new Sequence<PokerPlayerRedux>(
-                   new HasEnoughMoney(),
-                   new HasAGoodHand(),
-                   new Not<PokerPlayerRedux>(new BetIsZero()),
-                   new Call()
-               ),
+                //CALL
+                new Sequence<PokerPlayerRedux>(
+                    new HasEnoughMoney(),
+                    new Selector<PokerPlayerRedux>(
+                        new Sequence<PokerPlayerRedux>(
+                            new HasAGoodHand(),
+                            new Not<PokerPlayerRedux>(new BetIsZero()),
+                            new Call()
+                            ),
+                        new Sequence<PokerPlayerRedux>(
+                            new HasAGreathand(),
+                            new Not<PokerPlayerRedux>(new BetIsZero()),
+                            new Call()
+                            )
+                     )
+                ),
                //RAISE
                new Sequence<PokerPlayerRedux>(
                    new HasEnoughMoney(),
@@ -941,13 +968,22 @@ public class PlayerBehaviour {
                        )
                    )
                ),
-               //CALL
-               new Sequence<PokerPlayerRedux>(
-                   new HasEnoughMoney(),
-                   new HasAGoodHand(),
-                   new Not<PokerPlayerRedux>(new BetIsZero()),
-                   new Call()
-               ),
+                //CALL
+                new Sequence<PokerPlayerRedux>(
+                    new HasEnoughMoney(),
+                    new Selector<PokerPlayerRedux>(
+                        new Sequence<PokerPlayerRedux>(
+                            new HasAGoodHand(),
+                            new Not<PokerPlayerRedux>(new BetIsZero()),
+                            new Call()
+                            ),
+                        new Sequence<PokerPlayerRedux>(
+                            new HasAGreathand(),
+                            new Not<PokerPlayerRedux>(new BetIsZero()),
+                            new Call()
+                            )
+                     )
+                ),
                //RAISE
                new Sequence<PokerPlayerRedux>(
                    new HasEnoughMoney(),
@@ -1104,13 +1140,22 @@ public class PlayerBehaviour {
                        )
                    )
                ),
-               //CALL
-               new Sequence<PokerPlayerRedux>(
-                   new HasEnoughMoney(),
-                   new HasAGoodHand(),
-                   new Not<PokerPlayerRedux>(new BetIsZero()),
-                   new Call()
-               ),
+                //CALL
+                new Sequence<PokerPlayerRedux>(
+                    new HasEnoughMoney(),
+                    new Selector<PokerPlayerRedux>(
+                        new Sequence<PokerPlayerRedux>(
+                            new HasAGoodHand(),
+                            new Not<PokerPlayerRedux>(new BetIsZero()),
+                            new Call()
+                            ),
+                        new Sequence<PokerPlayerRedux>(
+                            new HasAGreathand(),
+                            new Not<PokerPlayerRedux>(new BetIsZero()),
+                            new Call()
+                            )
+                     )
+                ),
                //RAISE
                new Sequence<PokerPlayerRedux>(
                    new HasEnoughMoney(),

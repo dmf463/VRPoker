@@ -408,9 +408,12 @@ public class Card : InteractionSuperClass {
 
     public void StopCheating()
     {
-        Services.Dealer.ChangeMusicSpeed(false);
-        Services.Dealer.lighting.gameObject.SetActive(true);
-        Services.Dealer.isCheating = false;
+        if (Services.Dealer.isCheating)
+        {
+            Services.Dealer.ChangeMusicSpeed(false);
+            Services.Dealer.lighting.gameObject.SetActive(true);
+            Services.Dealer.isCheating = false;
+        }
     }
 
     public override void OnTriggerEnterX(Collider other)
