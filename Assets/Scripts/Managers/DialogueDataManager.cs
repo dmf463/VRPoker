@@ -130,7 +130,7 @@ public class DialogueDataManager
                     string playerNameText = rowEntries[1]; //gets the string for the player name
                     string lineText = rowEntries[2]; //gets the text to be spoken, this isn't currently used in the game but will be needed for subtitles
                     string audioFileText = rowEntries[3]; //the string for the audiofile name
-					Debug.Log("ADDED: " + playerNameText + ", " + audioFileText);
+					//Debug.Log("ADDED: " + playerNameText + ", " + audioFileText);
 
                     AudioClip audioFile = Resources.Load("Audio/Voice/Current/" + audioFileText) as AudioClip; //gets the audiofile from resources using the string name 
                     AudioSource audioSource = GetAudioSourceFromString(playerNameText); //get the correct audio source based on the players name

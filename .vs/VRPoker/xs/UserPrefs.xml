@@ -1,5 +1,5 @@
 ﻿<Properties StartupConfiguration="{F4284AB1-F546-7C9C-03A4-24AC5B8CF51B}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Dialogue/TESTING 2.txt">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Managers/DialogueDataManager.cs">
     <Files>
       <File FileName="Assets/Scripts/Dealer.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/Managers/SoundManager.cs" Line="1" Column="1" />
@@ -8,8 +8,6 @@
       <File FileName="Assets/Scripts/Managers/DialogueDataManager.cs" Line="132" Column="1" />
       <File FileName="Assets/Dialogue/Final Convo List.txt" Line="240" Column="2" />
       <File FileName="Assets/Dialogue/Temp Dialogue - no minnie.txt" Line="28" Column="7" />
-      <File FileName="Assets/Dialogue/TESTING 1.txt" Line="533" Column="1" />
-      <File FileName="Assets/Dialogue/TESTING 2.txt" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
