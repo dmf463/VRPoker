@@ -247,7 +247,23 @@ public class Dealer : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.J))
+		if(Input.GetKeyDown(KeyCode.T))
+		{
+			foreach(KeyValuePair<List<PlayerName>, List<Conversation>> a in Services.DialogueDataManager.convoDict)
+			{
+				for (int i = 0; i < a.Key.Count; i++)
+				{
+					Debug.Log(a.Key[i].ToString());
+				}
+				for (int i = 0; i < a.Value.Count; i++)
+				{
+					Debug.Log(a.Value[i].hasBeenPlayed);
+				}
+
+			}
+		}
+
+		if (Input.GetKeyDown(KeyCode.J))
         {
             PokerPlayerRedux randomPlayer = Services.Dealer.players[UnityEngine.Random.Range(0, Services.Dealer.players.Count)];
             Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(randomPlayer.playerName, LineCriteria.Call));

@@ -82,21 +82,26 @@ public class SoundManager : MonoBehaviour
 
     public void PlayConversation()
     {
-        Debug.Log("calling for conversation");
+        //Debug.Log("CALLING FOR CONVERSATION!!!!!!!!!!!!");
         if (!conversationIsPlaying)
         {
+			Debug.Log("CALLING FOR CONVERSATION!!!!!!!!!!!!");
             conversationIsPlaying = true;
             Conversation convoAudio = Services.DialogueDataManager.ReadyConversation(); //find us an appropriate conversation from our dictionary
             if (convoAudio != null)
             {
                 StartCoroutine(PlayConversationLines(convoAudio)); //plays through the lines in our chosen conversation
-            }
+			}
+			else
+			{
+				conversationIsPlaying = false;
+			}
         }
     }
 
     IEnumerator PlayConversationLines(Conversation convo) //coroutine for playing conversation audio lines
     {
-
+		//Debug.Log("Playing Conversation");
         for (int i = 0; i < convo.playerLines.Count; i++) //for each line in our conversation
         {
             AudioClip audioLine = convo.playerLines[i].audioFile; //get the audio to play
@@ -112,7 +117,7 @@ public class SoundManager : MonoBehaviour
         playersInConvo.Clear();
         conversationIsPlaying = false;
         convo.hasBeenPlayed = true; //once all lines have been played, set the bool on the conversation so that we don't choose it again
-
+        
     }
   
     public void GenerateSourceAndPlay(AudioClip clip, float volume, float pitch = 1)

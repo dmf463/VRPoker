@@ -8,7 +8,7 @@ public class DialogueDataManager
 {
     private Dictionary<PlayerLineCriteria, List<PlayerLine>> oneLineDict;
 
-    private Dictionary<List<PlayerName>, List<Conversation>> convoDict;
+    public Dictionary<List<PlayerName>, List<Conversation>> convoDict;
     //dictionary keys are lists of poker players still in the game, values are lists of conversations for those combinations
     public List<PlayerName> conversationKeys = new List<PlayerName>();
     private List<PlayerName> conversants = new List<PlayerName>();
@@ -109,6 +109,7 @@ public class DialogueDataManager
                         if (rowEntries[j] != "")    //if the row entry isn't blank
                         {
                             PlayerName conversant = GetConversantNameFromString(rowEntries[j]); // use the entry to get the name of one of our conversants
+							//Debug.Log(conversant);
                             conversantList.Add(conversant); //add this name to our list of conversants required for this conversation
                         }
                     }
@@ -284,8 +285,8 @@ public class DialogueDataManager
 
             for (int i = 0; i < possibleConversations.Count; i++) //for each conversation in the list
             {
-				Debug.Log("Attempting to play conversation with minimum required round: " + possibleConversations[i].minRequiredRound);
-                if (!possibleConversations[i].hasBeenPlayed && //if the conversation hasn't yet played
+				//Debug.Log("Attempting to play conversation with minimum required round: " + possibleConversations[i].minRequiredRound);
+				if (!possibleConversations[i].hasBeenPlayed && //if the conversation hasn't yet played
                    possibleConversations[i].minRequiredRound <= (6 - Services.Dealer.activePlayers.Count)) //and if the conversation comes earlier than our currently chosen conversation
                 {
                     correctConversation = i; //update the correct conversation to be this new, earlier convo
