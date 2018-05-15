@@ -1214,6 +1214,7 @@ public class Dealer : MonoBehaviour
                      Then(new Wait(0.5f)).
             Then(poofFloyd).
                      Then(new Wait(0.5f)).
+            Then(new InitializeAnimations()).
             Then(nathanielSpeaks).
                      Then(new Wait(Services.SoundManager.Nathaniel_Intro1.length)).
             Then(floydSpeaks).
