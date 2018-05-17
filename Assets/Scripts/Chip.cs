@@ -379,6 +379,7 @@ public class Chip : InteractionSuperClass {
             {
                 //DAN PUT THE GRABBING CHIPS LINE HERE.
                 //YOU CAN ACCESS THE OWNER, BY USING THE "OWNER" VARIABLE ON THIS SCRIPT
+                //GOT A BUG HERE DAN
                 Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(owner.playerName, LineCriteria.ChipsMoved));
                 Debug.Log("misdeal here");
                 Services.Dealer.TriggerMisdeal();
