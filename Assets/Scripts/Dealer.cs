@@ -6,6 +6,7 @@ using System;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 //this entire script is essentially what the dealer does
 //the three most important scripts are Dealer, Table, and PokerPlayerRedux
@@ -185,10 +186,6 @@ public class Dealer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            IntroduceCharacters();
-        }
         Services.ChipManager.ChipUpdate();
         newTime = System.DateTime.Now;
         minutes = newTime.Minute - oldTime.Minute;
@@ -235,45 +232,23 @@ public class Dealer : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            if (!Services.SoundManager.conversationIsPlaying)
-            {
-                for (int i = 0; i < 100; i++)
-                {
-                    Services.SoundManager.PlayConversation();
-                    Debug.Log(gameObject + " started a conversation.");
-                }
-            }
-        }
-
-		if(Input.GetKeyDown(KeyCode.T))
-		{
-			foreach(KeyValuePair<List<PlayerName>, List<Conversation>> a in Services.DialogueDataManager.convoDict)
-			{
-				for (int i = 0; i < a.Key.Count; i++)
-				{
-					Debug.Log(a.Key[i].ToString());
-				}
-				for (int i = 0; i < a.Value.Count; i++)
-				{
-					Debug.Log(a.Value[i].hasBeenPlayed);
-				}
-
-			}
-		}
-
 		if (Input.GetKeyDown(KeyCode.J))
         {
             PokerPlayerRedux randomPlayer = Services.Dealer.players[UnityEngine.Random.Range(0, Services.Dealer.players.Count)];
             Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(randomPlayer.playerName, LineCriteria.Call));
         }
-       
-        if (Input.GetKeyDown(KeyCode.D))
+
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            AudioClip audioFile = Resources.Load("Audio/Voice/TutorialVO/tutorial0.wav") as AudioClip; //gets the audiofile from resources using the string name 
-                Debug.Log(audioFile);  
+            Table.instance.NullTable();
+            SceneManager.LoadScene("PokerRoom");
         }
+
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            Table.instance.NullTable();
+            SceneManager.LoadScene("PokerRoom_NoIntro");
+        }     
 
         if (playersReady)
         {
@@ -1214,6 +1189,7 @@ public class Dealer : MonoBehaviour
                      Then(new Wait(0.5f)).
             Then(poofFloyd).
                      Then(new Wait(0.5f)).
+            Then(new InitializeAnimations()).
             Then(nathanielSpeaks).
                      Then(new Wait(Services.SoundManager.Nathaniel_Intro1.length)).
             Then(floydSpeaks).

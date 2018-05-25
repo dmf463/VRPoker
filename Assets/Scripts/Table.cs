@@ -93,6 +93,11 @@ public class Table {
         }
     }
 
+    public void NullTable()
+    {
+        _instance = null;
+    }
+
     public void ClearAllLists()
     {
         foreach (List<Card> playerCards in playerCards)

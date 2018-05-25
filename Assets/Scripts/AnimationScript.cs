@@ -13,12 +13,16 @@ public class AnimationScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
+        AnimationInit();
+    }
+
+    public void AnimationInit()
+    {
         CaseyAnim.SetBool("Idle", true);
         ZombieAnim.SetBool("Idle", true);
         MinnieAnim.SetBool("Idle", true);
         NathanielAnim.SetBool("Idle", true);
-        FloydAnim.SetBool("Idle", true); 
-
+        FloydAnim.SetBool("Idle", true);
     }
 
     public void CharacterConvoAnimation(bool playing)

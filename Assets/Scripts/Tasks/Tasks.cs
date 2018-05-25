@@ -454,5 +454,14 @@ public class TurnOnChipsFromTutorial : Task
     }
 }
 
+public class InitializeAnimations : Task
+{
+    protected override void Init()
+    {
+        Services.AnimationScript.AnimationInit();
+        SetStatus(TaskStatus.Success);
+    }
+}
+
 
 
