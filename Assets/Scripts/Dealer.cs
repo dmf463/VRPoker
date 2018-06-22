@@ -1138,6 +1138,11 @@ public class Dealer : MonoBehaviour
         }
     }
 
+    public void ClosingCutscene()
+    {
+
+    }
+
     public void OpeningCutScene()
     {
         Wait startTimePoof = new Wait(2);
@@ -1446,28 +1451,12 @@ public class Dealer : MonoBehaviour
         {
             if (players[i].chipCount <= 0 && players[i].PlayerState == PlayerState.Loser)
             {
-                //Services.SoundManager.InterruptChaos();
-                //DAN PUT THE "BUY ME BACK IN LINE HERE"
                 Debug.Log("LOSER LINES FOR LOSERS");
-                //Services.SoundManager.PlayOneLiner(DialogueDataManager.CreatePlayerLineCriteria(players[i].playerName, LineCriteria.BuyInAsk));
                 playerHasBeenEliminated = true;
                 losingPlayer = players[i];
-                //losingPlayer.gameObject.SetActive(false);
                 DragMeToHell(losingPlayer, losingPlayer.gameObject);
-                //Services.AnimationScript.ConvoAnimation(losingPlayer.playerName, "Idle", false);
-                //Services.AnimationScript.ConvoAnimation(losingPlayer.playerName, "BuyBackIn", true);
-                //StartCoroutine(WaitToSave(10f));
             }
         }
-        //while (playerHasBeenEliminated)
-        //{
-        //    yield return null;
-        //}
-        //if (losingPlayer != null)
-        //{
-        //    Services.AnimationScript.ConvoAnimation(losingPlayer.playerName, "Idle", true);
-        //    Services.AnimationScript.ConvoAnimation(losingPlayer.playerName, "BuyBackIn", false);
-        //}
         Table.gameState = GameState.PostHand;
         yield break;
     }
