@@ -15,4 +15,5 @@ public static class Services {
     public static TextManager TextManager { get; set; }
     public static ChipManager ChipManager { get; set; }
     public static AnimationScript AnimationScript { get; set; }
+    public static EndGameDialogue EndGameDialogue { get; set; }
 }

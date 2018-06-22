@@ -463,5 +463,14 @@ public class InitializeAnimations : Task
     }
 }
 
+public class RollCredits : Task
+{
+    protected override void Init()
+    {
+        base.Init();
+        SetStatus(TaskStatus.Success);
+    }
+}
+
 
 

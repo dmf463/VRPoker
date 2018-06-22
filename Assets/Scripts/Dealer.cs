@@ -156,6 +156,8 @@ public class Dealer : MonoBehaviour
         Services.DialogueDataManager.ParseOneLinerDialogueFile((Services.SoundManager.oneLinerDialogueFiler));
         Services.TextManager = GameObject.Find("TableGraphics").GetComponent<TextManager>();
         Services.AnimationScript = GameObject.Find("AnimationController").GetComponent<AnimationScript>();
+        Services.EndGameDialogue = new EndGameDialogue();
+        Services.EndGameDialogue.Init();
     }
 
     // Use this for initialization
@@ -204,6 +206,7 @@ public class Dealer : MonoBehaviour
             }
         }
         tm.Update();
+        Services.EndGameDialogue.tm.Update();
         if (deckIsDead)
         {
             Services.Dealer.TriggerMisdeal();
@@ -1136,6 +1139,11 @@ public class Dealer : MonoBehaviour
         {
             StartCoroutine(WaitToPostBlinds(.25f));
         }
+        Services.EndGameDialogue.Casey = players[0];
+        Services.EndGameDialogue.Zombie = players[1];
+        Services.EndGameDialogue.Minnie = players[2];
+        Services.EndGameDialogue.Nathaniel = players[3];
+        Services.EndGameDialogue.Floyd = players[4];
     }
 
     public void ClosingCutscene()
