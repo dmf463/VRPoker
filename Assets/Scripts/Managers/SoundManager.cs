@@ -62,6 +62,66 @@ public class SoundManager : MonoBehaviour
     public AudioClip Nathaniel_Intro2;
     public AudioClip Minnie_Intro2;
 
+    [Header("Floyd & Minnie, Win/Lose Lines")]
+    public AudioClip Floyd_Minnie_Floyd_Win;
+    public AudioClip Floyd_Minnie_Floyd_Lose;
+    public AudioClip Floyd_Minnie_Minnie_Win;
+    public AudioClip Floyd_Minnue_Minnie_Lose;
+
+    [Header("Floyd & Casey, Win/Lose Lines")]
+    public AudioClip Floyd_Casey_Floyd_Win;
+    public AudioClip Floyd_Casey_Floyd_Lose;
+    public AudioClip Floyd_Casey_Casey_Win;
+    public AudioClip Floyd_Casey_Casey_Lose;
+
+    [Header("Floyd & Nathaniel, Win/Lose Lines")]
+    public AudioClip Floyd_Nathaniel_Floyd_Win;
+    public AudioClip Floyd_Nathaniel_Floyd_Lose;
+    public AudioClip Floyd_Nathaniel_Nathaniel_Win;
+    public AudioClip Floyd_Nathaniel_Nathaniel_Lose;
+
+    [Header("Floyd & Zombie, Win/Lose Lines")]
+    public AudioClip Floyd_Zombie_Floyd_Win;
+    public AudioClip Floyd_Zombie_Floyd_Lose;
+    public AudioClip Floyd_Zombie_Zombie_Win;
+    public AudioClip Floyd_Zombie_Zombie_Lose;
+
+    [Header("Minnie & Casey, Win/Lose Lines")]
+    public AudioClip Minnie_Casey_Minnie_Win;
+    public AudioClip Minnie_Casey_Minnie_Lose;
+    public AudioClip Minnie_Casey_Casey_Win;
+    public AudioClip Minnie_Casey_Casey_Lose;
+
+    [Header("Minnie & Nathaniel, Win/Lose Lines")]
+    public AudioClip Minnie_Nathaniel_Minnie_Win;
+    public AudioClip Minnie_Nathaniel_Minnie_Lose;
+    public AudioClip Minnie_Nathaniel_Nathaniel_Win;
+    public AudioClip Minnie_Nathaniel_Nathaniel_Lose;
+
+    [Header("Minnie & Zombie, Win/Lose Lines")]
+    public AudioClip Minnie_Zombie_Minnie_Win;
+    public AudioClip Minnie_Zombie_Minnie_Lose;
+    public AudioClip Minnie_Zombie_Zombie_Win;
+    public AudioClip Minnie_Zombie_Zombie_Lose;
+
+    [Header("Casey & Nathaniel, Win/Lose Lines")]
+    public AudioClip Casey_Nathaniel_Nathaniel_Win;
+    public AudioClip Casey_Nathaniel_Nathaniel_Lose;
+    public AudioClip Casey_Nathaniel_Casey_Win;
+    public AudioClip Casey_Nathaniel_Casey_Lose;
+
+    [Header("Zombie & Nathaniel, Win/Lose Lines")]
+    public AudioClip Zombie_Nathaniel_Zombie_Win;
+    public AudioClip Zombie_Nathaniel_Zombie_Lose;
+    public AudioClip Zombie_Nathaniel_Nathaniel_Win;
+    public AudioClip Zombie_Nathaniel_Nathaniel_Lose;
+
+    [Header("Casey & Zombie, Win/Lose Lines")]
+    public AudioClip Casey_Zombie_Casey_Win;
+    public AudioClip Casey_Zombie_Casey_Lose;
+    public AudioClip Casey_Zombie_Zombie_Win;
+    public AudioClip Casey_Zombie_Zombie_Lose;
+
 
     public int roundsFinished;
 	public ShuffleBag<AudioSource> shuffle_main_themes;
