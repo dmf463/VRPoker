@@ -476,6 +476,7 @@ public class RollCredits : TimedGOTask
 
     protected override void OnTick(float t)
     {
+        Services.Dealer.credits.SetActive(true);
         gameObject.transform.position = Vector3.Lerp(Start, End, t);
     }
 }

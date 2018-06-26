@@ -15,6 +15,8 @@ using UnityEngine.SceneManagement;
 //PokerPlayerRedux handles all the functions and info that a poker player would need to play
 public class Dealer : MonoBehaviour
 {
+
+    public GameObject credits;
     List<List<PokerPlayerRedux>> PlayerRank = new List<List<PokerPlayerRedux>>();
 
     private DateTime oldTime;
@@ -135,8 +137,10 @@ public class Dealer : MonoBehaviour
     public GameObject[] objectsToHide;
     public GameObject[] chipsToBring;
     public bool startingWithIntro;
+    public bool gameOver;
     [HideInInspector]
     public List<AudioSource> audioSources = new List<AudioSource>();
+    public List<PokerPlayerRedux> finalWinner_finalLoser;
 
     
 
@@ -196,7 +200,7 @@ public class Dealer : MonoBehaviour
             timeBetweenIdle += Time.deltaTime;
         }
 
-        if(timeBetweenIdle >= 15 && !OutsideVR && Table.gameState != GameState.Intro)
+        if(timeBetweenIdle >= 15 && !OutsideVR && Table.gameState != GameState.Intro && Table.gameState != GameState.Outro)
         {
             PokerPlayerRedux randomPlayer = Services.Dealer.players[UnityEngine.Random.Range(0, Services.Dealer.players.Count)];
             if (!randomPlayer.playerAudioSource.isPlaying)
@@ -224,8 +228,20 @@ public class Dealer : MonoBehaviour
         #region Players evaluate their hands based on the gamestate
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Table.instance.DebugHandsAndChips();
-            cleaningCards = true;
+            //Table.instance.DebugHandsAndChips();
+            //cleaningCards = true;
+            Table.gameState = GameState.Outro;
+            PokerPlayerRedux winner = players[UnityEngine.Random.Range(0, 4)];
+            winner.PlayerState = PlayerState.Winner;
+            PokerPlayerRedux loser = players[UnityEngine.Random.Range(0, 4)];
+            if (loser.PlayerState == PlayerState.Winner)
+            {
+                loser = players[UnityEngine.Random.Range(0, 4)];
+                loser.PlayerState = PlayerState.Loser;
+            }
+            else loser.PlayerState = PlayerState.Loser;
+            Debug.Log("Winner = " + winner.playerName + " and loser is = " + loser.playerName);
+            Services.EndGameDialogue.ClosingCutScene(winner, loser);
         }
         if (Input.GetKeyDown(KeyCode.X))
         {
@@ -266,6 +282,14 @@ public class Dealer : MonoBehaviour
             roundStarted = false;
             playersReady = false;
             Services.PokerRules.TurnOffAllIndicators();
+        }
+        if(Table.gameState == GameState.Outro)
+        {
+            chipsToBring = GameObject.FindGameObjectsWithTag("Chip");
+            foreach (GameObject o in chipsToBring)
+            {
+                o.SetActive(false);
+            }
         }
         //starts the round for pre-flop
         if (Table.gameState == GameState.PreFlop)
@@ -1146,11 +1170,6 @@ public class Dealer : MonoBehaviour
         Services.EndGameDialogue.Floyd = players[4];
     }
 
-    public void ClosingCutscene()
-    {
-
-    }
-
     public void OpeningCutScene()
     {
         Wait startTimePoof = new Wait(2);
@@ -1459,13 +1478,30 @@ public class Dealer : MonoBehaviour
         {
             if (players[i].chipCount <= 0 && players[i].PlayerState == PlayerState.Loser)
             {
-                Debug.Log("LOSER LINES FOR LOSERS");
-                playerHasBeenEliminated = true;
-                losingPlayer = players[i];
-                DragMeToHell(losingPlayer, losingPlayer.gameObject);
+                if (GetActivePlayerCount() == 2)
+                {
+                    gameOver = true;
+                    foreach(PokerPlayerRedux winner in players)
+                    {
+                        if (winner.PlayerState == PlayerState.Winner) finalWinner_finalLoser.Add(winner);
+                    }
+                    foreach (PokerPlayerRedux loser in players)
+                    {
+                        if (loser.PlayerState == PlayerState.Loser) finalWinner_finalLoser.Add(loser);
+                    }
+                    Services.EndGameDialogue.ClosingCutScene(finalWinner_finalLoser[0], finalWinner_finalLoser[1]);
+                }
+                else
+                {
+                    Debug.Log("LOSER LINES FOR LOSERS");
+                    playerHasBeenEliminated = true;
+                    losingPlayer = players[i];
+                    DragMeToHell(losingPlayer, losingPlayer.gameObject);
+                }
             }
         }
-        Table.gameState = GameState.PostHand;
+        if (!gameOver) Table.gameState = GameState.PostHand;
+        else Table.gameState = GameState.Outro;
         yield break;
     }
 

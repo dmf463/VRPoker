@@ -23,8 +23,51 @@ public class EndGameDialogue {
     public void Init()
     {
         tm = new TaskManager();
+        creditsObj = Services.Dealer.credits;
         creditsStartPos = creditsObj.transform.position;
+        creditsObj.SetActive(false);
         creditsEndPos = new Vector3(creditsStartPos.x, creditsStartPos.y + CREDITS_OFFSET, creditsStartPos.z);
+    }
+
+    public void ClosingCutScene(PokerPlayerRedux winner, PokerPlayerRedux loser)
+    {
+        if(winner.playerName == PlayerName.Floyd)
+        {
+            if (loser.playerName == PlayerName.Minnie) Floyd_Wins_Against_Minnie();
+            else if (loser.playerName == PlayerName.Casey) Floyd_Wins_Against_Casey();
+            else if (loser.playerName == PlayerName.Nathaniel) Floyd_Wins_Against_Nathaniel();
+            else if (loser.playerName == PlayerName.Zombie) Floyd_Wins_Against_Zombie();
+            else Debug.Log("Error: No Loser Found");
+        }
+        else if(winner.playerName == PlayerName.Minnie)
+        {
+            if (loser.playerName == PlayerName.Casey) Minnie_Wins_Against_Casey();
+            else if (loser.playerName == PlayerName.Nathaniel) Minnie_Wins_Against_Nathaniel();
+            else if (loser.playerName == PlayerName.Zombie) Minnie_Wins_Against_Zombie();
+            else if (loser.playerName == PlayerName.Floyd) Floyd_Loses_Against_Minnie();
+            else Debug.Log("Error: No Loser Found");
+        }
+        else if(winner.playerName == PlayerName.Casey)
+        {
+            if (loser.playerName == PlayerName.Floyd) Floyd_Loses_Against_Casey();
+            else if (loser.playerName == PlayerName.Minnie) Minnie_Loses_Against_Casey();
+            else if (loser.playerName == PlayerName.Nathaniel) Casey_Wins_Against_Nathaniel();
+            else if (loser.playerName == PlayerName.Zombie) Casey_Wins_Against_Zombie();
+        }
+        else if(winner.playerName == PlayerName.Nathaniel)
+        {
+            if (loser.playerName == PlayerName.Casey) Casey_Loses_Against_Nathaniel();
+            else if (loser.playerName == PlayerName.Zombie) Zombie_Loses_Against_Nathaniel();
+            else if (loser.playerName == PlayerName.Minnie) Minnie_Loses_Against_Nathaniel();
+            else if (loser.playerName == PlayerName.Floyd) Floyd_Loses_Against_Nathaniel();
+        }
+        else if(winner.playerName == PlayerName.Zombie)
+        {
+            if (loser.playerName == PlayerName.Casey) Casey_Loses_Against_Zombie();
+            else if (loser.playerName == PlayerName.Minnie) Minnie_Loses_Against_Zombie();
+            else if (loser.playerName == PlayerName.Nathaniel) Zombie_Wins_Against_Nathaniel();
+            else if (loser.playerName == PlayerName.Floyd) Floyd_Loses_Against_Zombie();
+        }
     }
 
     public void Floyd_Wins_Against_Minnie()
@@ -35,7 +78,9 @@ public class EndGameDialogue {
         RollCredits Credits = new RollCredits(creditsObj, creditsStartPos, creditsEndPos, CREDITS_DURATION);
 
         Floyd_Line.Then
+            (new Wait(Services.SoundManager.Floyd_Minnie_Floyd_Win.length)).Then
             (Minnie_Line).Then
+            (new Wait(Services.SoundManager.Floyd_Minnue_Minnie_Lose.length)).Then
             (Credits);
 
         tm.Do(Floyd_Line);  
@@ -49,7 +94,9 @@ public class EndGameDialogue {
         RollCredits Credits = new RollCredits(creditsObj, creditsStartPos, creditsEndPos, CREDITS_DURATION);
 
         Minnie_Line.Then
+            (new Wait(Services.SoundManager.Floyd_Minnie_Minnie_Win.length)).Then
             (Floyd_Line).Then
+            (new Wait(Services.SoundManager.Floyd_Minnie_Floyd_Lose.length)).Then
             (Credits);
 
         tm.Do(Minnie_Line);
@@ -63,7 +110,9 @@ public class EndGameDialogue {
         RollCredits Credits = new RollCredits(creditsObj, creditsStartPos, creditsEndPos, CREDITS_DURATION);
 
         Floyd_Line.Then
+            (new Wait(Services.SoundManager.Floyd_Casey_Floyd_Win.length)).Then
             (Casey_Line).Then
+            (new Wait(Services.SoundManager.Floyd_Casey_Casey_Lose.length)).Then
             (Credits);
 
         tm.Do(Floyd_Line);
@@ -77,7 +126,9 @@ public class EndGameDialogue {
         RollCredits Credits = new RollCredits(creditsObj, creditsStartPos, creditsEndPos, CREDITS_DURATION);
 
         Casey_Line.Then
+            (new Wait(Services.SoundManager.Floyd_Casey_Casey_Win.length)).Then
             (Floyd_Line).Then
+            (new Wait(Services.SoundManager.Floyd_Casey_Floyd_Lose.length)).Then
             (Credits);
 
         tm.Do(Casey_Line);
@@ -91,7 +142,9 @@ public class EndGameDialogue {
         RollCredits Credits = new RollCredits(creditsObj, creditsStartPos, creditsEndPos, CREDITS_DURATION);
 
         Floyd_Line.Then
+            (new Wait(Services.SoundManager.Floyd_Nathaniel_Floyd_Win.length)).Then
             (Nathaniel_Line).Then
+            (new Wait(Services.SoundManager.Floyd_Nathaniel_Nathaniel_Lose.length)).Then
             (Credits);
         tm.Do(Floyd_Line);
     }
@@ -104,7 +157,9 @@ public class EndGameDialogue {
         RollCredits Credits = new RollCredits(creditsObj, creditsStartPos, creditsEndPos, CREDITS_DURATION);
 
         Nathaniel_Line.Then
+            (new Wait(Services.SoundManager.Floyd_Nathaniel_Nathaniel_Win.length)).Then
             (Floyd_Line).Then
+            (new Wait(Services.SoundManager.Floyd_Nathaniel_Floyd_Lose.length)).Then
             (Credits);
 
         tm.Do(Nathaniel_Line);
@@ -118,7 +173,9 @@ public class EndGameDialogue {
         RollCredits Credits = new RollCredits(creditsObj, creditsStartPos, creditsEndPos, CREDITS_DURATION);
 
         Floyd_Line.Then
+            (new Wait(Services.SoundManager.Floyd_Zombie_Floyd_Win.length)).Then
             (Zombie_Line).Then
+            (new Wait(Services.SoundManager.Floyd_Zombie_Zombie_Lose.length)).Then
             (Credits);
 
         tm.Do(Floyd_Line);
@@ -132,7 +189,9 @@ public class EndGameDialogue {
         RollCredits Credits = new RollCredits(creditsObj, creditsStartPos, creditsEndPos, CREDITS_DURATION);
 
         Zombie_Line.Then
+            (new Wait(Services.SoundManager.Floyd_Zombie_Zombie_Win.length)).Then
             (Floyd_Line).Then
+            (new Wait(Services.SoundManager.Floyd_Zombie_Floyd_Lose.length)).Then
             (Credits);
 
         tm.Do(Zombie_Line);
@@ -146,7 +205,9 @@ public class EndGameDialogue {
         RollCredits Credits = new RollCredits(creditsObj, creditsStartPos, creditsEndPos, CREDITS_DURATION);
 
         Minnie_Line.Then
+            (new Wait(Services.SoundManager.Minnie_Casey_Minnie_Win.length)).Then
             (Casey_Line).Then
+            (new Wait(Services.SoundManager.Minnie_Casey_Casey_Lose.length)).Then
             (Credits);
 
         tm.Do(Minnie_Line);
@@ -160,7 +221,9 @@ public class EndGameDialogue {
         RollCredits Credits = new RollCredits(creditsObj, creditsStartPos, creditsEndPos, CREDITS_DURATION);
 
         Casey_Line.Then
+            (new Wait(Services.SoundManager.Minnie_Casey_Casey_Win.length)).Then
             (Minnie_Line).Then
+            (new Wait(Services.SoundManager.Minnie_Casey_Minnie_Lose.length)).Then
             (Credits);
 
         tm.Do(Casey_Line);
@@ -174,7 +237,9 @@ public class EndGameDialogue {
         RollCredits Credits = new RollCredits(creditsObj, creditsStartPos, creditsEndPos, CREDITS_DURATION);
 
         Minnie_Line.Then
+            (new Wait(Services.SoundManager.Minnie_Nathaniel_Minnie_Win.length)).Then
             (Nathaniel_Line).Then
+            (new Wait(Services.SoundManager.Minnie_Nathaniel_Nathaniel_Lose.length)).Then
             (Credits);
 
         tm.Do(Minnie_Line);
@@ -188,7 +253,9 @@ public class EndGameDialogue {
         RollCredits Credits = new RollCredits(creditsObj, creditsStartPos, creditsEndPos, CREDITS_DURATION);
 
         Nathaniel_Line.Then
+            (new Wait(Services.SoundManager.Minnie_Nathaniel_Nathaniel_Win.length)).Then
             (Minnnie_Line).Then
+            (new Wait(Services.SoundManager.Minnie_Nathaniel_Minnie_Lose.length)).Then
             (Credits);
 
         tm.Do(Nathaniel_Line);
@@ -202,7 +269,9 @@ public class EndGameDialogue {
         RollCredits Credits = new RollCredits(creditsObj, creditsStartPos, creditsEndPos, CREDITS_DURATION);
 
         Minnie_Line.Then
+            (new Wait(Services.SoundManager.Minnie_Zombie_Minnie_Win.length)).Then
             (Zombie_Line).Then
+            (new Wait(Services.SoundManager.Minnie_Zombie_Zombie_Lose.length)).Then
             (Credits);
 
         tm.Do(Minnie_Line);
@@ -216,7 +285,9 @@ public class EndGameDialogue {
         RollCredits Credits = new RollCredits(creditsObj, creditsStartPos, creditsEndPos, CREDITS_DURATION);
 
         Zombie_Line.Then
+            (new Wait(Services.SoundManager.Minnie_Zombie_Zombie_Win.length)).Then
             (Minnie_Line).Then
+            (new Wait(Services.SoundManager.Minnie_Zombie_Minnie_Lose.length)).Then
             (Credits);
 
         tm.Do(Zombie_Line);
@@ -230,7 +301,9 @@ public class EndGameDialogue {
         RollCredits Credits = new RollCredits(creditsObj, creditsStartPos, creditsEndPos, CREDITS_DURATION);
 
         Casey_Line.Then
+            (new Wait(Services.SoundManager.Casey_Nathaniel_Casey_Win.length)).Then
             (Nathaniel_Line).Then
+            (new Wait(Services.SoundManager.Casey_Nathaniel_Nathaniel_Lose.length)).Then
             (Credits);
 
         tm.Do(Casey_Line);
@@ -244,7 +317,9 @@ public class EndGameDialogue {
         RollCredits Credits = new RollCredits(creditsObj, creditsStartPos, creditsEndPos, CREDITS_DURATION);
 
         Nathaniel_Line.Then
+            (new Wait(Services.SoundManager.Casey_Nathaniel_Nathaniel_Win.length)).Then
             (Casey_Line).Then
+            (new Wait(Services.SoundManager.Casey_Nathaniel_Casey_Lose.length)).Then
             (Credits);
 
         tm.Do(Nathaniel_Line);
@@ -258,7 +333,9 @@ public class EndGameDialogue {
         RollCredits Credits = new RollCredits(creditsObj, creditsStartPos, creditsEndPos, CREDITS_DURATION);
 
         Casey_Line.Then
+            (new Wait(Services.SoundManager.Casey_Zombie_Casey_Win.length)).Then
             (Zombie_Line).Then
+            (new Wait(Services.SoundManager.Casey_Zombie_Zombie_Lose.length)).Then
             (Credits);
 
         tm.Do(Casey_Line);
@@ -272,7 +349,9 @@ public class EndGameDialogue {
         RollCredits Credits = new RollCredits(creditsObj, creditsStartPos, creditsEndPos, CREDITS_DURATION);
 
         Zombie_Line.Then
+            (new Wait(Services.SoundManager.Casey_Zombie_Zombie_Win.length)).Then
             (Casey_Line).Then
+            (new Wait(Services.SoundManager.Casey_Zombie_Casey_Lose.length)).Then
             (Credits);
 
         tm.Do(Zombie_Line);
@@ -286,7 +365,9 @@ public class EndGameDialogue {
         RollCredits Credits = new RollCredits(creditsObj, creditsStartPos, creditsEndPos, CREDITS_DURATION);
 
         Zombie_Line.Then
+            (new Wait(Services.SoundManager.Zombie_Nathaniel_Zombie_Win.length)).Then
             (Nathaniel_Line).Then
+            (new Wait(Services.SoundManager.Zombie_Nathaniel_Nathaniel_Lose.length)).Then
             (Credits);
 
         tm.Do(Zombie_Line);
@@ -300,7 +381,9 @@ public class EndGameDialogue {
         RollCredits Credits = new RollCredits(creditsObj, creditsStartPos, creditsEndPos, CREDITS_DURATION);
 
         Nathaniel_Line.Then
+            (new Wait(Services.SoundManager.Zombie_Nathaniel_Nathaniel_Win.length)).Then
             (Zombie_Line).Then
+            (new Wait(Services.SoundManager.Zombie_Nathaniel_Zombie_Lose.length)).Then
             (Credits);
 
         tm.Do(Nathaniel_Line);
