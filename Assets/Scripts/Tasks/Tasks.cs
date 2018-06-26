@@ -463,12 +463,20 @@ public class InitializeAnimations : Task
     }
 }
 
-public class RollCredits : Task
+public class RollCredits : TimedGOTask
 {
-    protected override void Init()
+    public Vector3 Start { get; private set; }
+    public Vector3 End { get; private set; }
+
+    public RollCredits(GameObject gameObject, Vector3 start, Vector3 end, float duration) : base(gameObject, duration)
     {
-        base.Init();
-        SetStatus(TaskStatus.Success);
+        Start = start;
+        End = end;
+    }
+
+    protected override void OnTick(float t)
+    {
+        gameObject.transform.position = Vector3.Lerp(Start, End, t);
     }
 }
 
