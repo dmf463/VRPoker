@@ -1510,7 +1510,7 @@ public class Dealer : MonoBehaviour
         player.scaryTentacles.SetActive(true);
         Vector3 finalDestination = new Vector3(playerObj.transform.position.x, playerObj.transform.position.y - 10, playerObj.transform.position.z);
         Wait waitToDrag = new Wait(2f);
-        LerpPos dragPlayer = new LerpPos(playerObj, playerObj.transform.position, finalDestination, 1f);
+        LerpPos dragPlayer = new LerpPos(playerObj, playerObj.transform.position, finalDestination, 3f);
 
         waitToDrag.Then(dragPlayer);
         tm.Do(waitToDrag);

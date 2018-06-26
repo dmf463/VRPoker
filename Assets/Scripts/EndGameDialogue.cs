@@ -18,7 +18,7 @@ public class EndGameDialogue {
 
     const float WAIT_BEFORE_START = 1f;
     const float CREDITS_OFFSET = 30f;
-    const float CREDITS_DURATION = 30f;
+    const float CREDITS_DURATION = 10f;
 
     public void Init()
     {

@@ -479,6 +479,12 @@ public class RollCredits : TimedGOTask
         Services.Dealer.credits.SetActive(true);
         gameObject.transform.position = Vector3.Lerp(Start, End, t);
     }
+
+    protected override void OnSuccess()
+    {
+        Table.instance.NullTable();
+        UnityEngine.SceneManagement.SceneManager.LoadScene("PokerRoom");
+    }
 }
 
 
