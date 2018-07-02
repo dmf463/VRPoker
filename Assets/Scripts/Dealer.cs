@@ -228,20 +228,20 @@ public class Dealer : MonoBehaviour
         #region Players evaluate their hands based on the gamestate
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            //Table.instance.DebugHandsAndChips();
-            //cleaningCards = true;
-            Table.gameState = GameState.Outro;
-            PokerPlayerRedux winner = players[UnityEngine.Random.Range(0, 4)];
-            winner.PlayerState = PlayerState.Winner;
-            PokerPlayerRedux loser = players[UnityEngine.Random.Range(0, 4)];
-            if (loser.PlayerState == PlayerState.Winner)
-            {
-                loser = players[UnityEngine.Random.Range(0, 4)];
-                loser.PlayerState = PlayerState.Loser;
-            }
-            else loser.PlayerState = PlayerState.Loser;
-            Debug.Log("Winner = " + winner.playerName + " and loser is = " + loser.playerName);
-            Services.EndGameDialogue.ClosingCutScene(winner, loser);
+            Table.instance.DebugHandsAndChips();
+            cleaningCards = true;
+            //Table.gameState = GameState.Outro;
+            //PokerPlayerRedux winner = players[UnityEngine.Random.Range(0, 4)];
+            //winner.PlayerState = PlayerState.Winner;
+            //PokerPlayerRedux loser = players[UnityEngine.Random.Range(0, 4)];
+            //if (loser.PlayerState == PlayerState.Winner)
+            //{
+            //    loser = players[UnityEngine.Random.Range(0, 4)];
+            //    loser.PlayerState = PlayerState.Loser;
+            //}
+            //else loser.PlayerState = PlayerState.Loser;
+            //Debug.Log("Winner = " + winner.playerName + " and loser is = " + loser.playerName);
+            //Services.EndGameDialogue.ClosingCutScene(winner, loser);
         }
         if (Input.GetKeyDown(KeyCode.X))
         {
@@ -1358,7 +1358,7 @@ public class Dealer : MonoBehaviour
     public IEnumerator WaitForWinnersToGetPaid()
     {
         handsCompleted += 1;
-        Debug.Assert(numberOfWinners > 0);
+        //Debug.Assert(numberOfWinners > 0);
         List<PokerPlayerRedux> winningPlayers = new List<PokerPlayerRedux>();
         int potAmount = Table.instance.potChips;
         for (int i = 0; i < players.Count; i++)
@@ -1374,7 +1374,10 @@ public class Dealer : MonoBehaviour
         for (int i = 0; i < winningPlayers.Count; i++)
         {
             if (numberOfWinners - i == 0) Debug.Log("numberOfWinners = " + numberOfWinners + " and i = " + i);
-            potAmountToGiveWinner = potRemaining / (numberOfWinners - i);
+            if ((numberOfWinners - i) != 0)
+            {
+                potAmountToGiveWinner = potRemaining / (numberOfWinners - i);
+            }
             int remainder = potAmountToGiveWinner % ChipConfig.RED_CHIP_VALUE;
             if (remainder > 0)
             {
@@ -1489,6 +1492,7 @@ public class Dealer : MonoBehaviour
                     {
                         if (loser.PlayerState == PlayerState.Loser) finalWinner_finalLoser.Add(loser);
                     }
+                    Services.SoundManager.StopConversation(finalWinner_finalLoser[1]);
                     Services.EndGameDialogue.ClosingCutScene(finalWinner_finalLoser[0], finalWinner_finalLoser[1]);
                 }
                 else
@@ -1496,6 +1500,7 @@ public class Dealer : MonoBehaviour
                     Debug.Log("LOSER LINES FOR LOSERS");
                     playerHasBeenEliminated = true;
                     losingPlayer = players[i];
+                    Services.SoundManager.StopConversation(losingPlayer);
                     DragMeToHell(losingPlayer, losingPlayer.gameObject);
                 }
             }

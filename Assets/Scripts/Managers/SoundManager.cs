@@ -7,6 +7,7 @@ public class SoundManager : MonoBehaviour
 {
 	public TextAsset convoDialogueFile; //the text file we draw our dialogue from
     public TextAsset oneLinerDialogueFiler;
+    bool stoppingConvo = false;
 
     [Header("Poker Players")]
 	public PokerPlayerRedux casey;// rosa
@@ -159,23 +160,50 @@ public class SoundManager : MonoBehaviour
 
     IEnumerator PlayConversationLines(Conversation convo) //coroutine for playing conversation audio lines
     {
-		//Debug.Log("Playing Conversation");
+        //Debug.Log("Playing Conversation");
         for (int i = 0; i < convo.playerLines.Count; i++) //for each line in our conversation
         {
-            AudioClip audioLine = convo.playerLines[i].audioFile; //get the audio to play
-            AudioSource playerSpeaking = convo.playerLines[i].audioSource; // get the source to play at
-            GetSourceAndPlay(playerSpeaking, audioLine); //pass these and play
-
-            while (playerSpeaking.isPlaying) //don't move to the next line while our current source is still playing
+            if (!stoppingConvo)
             {
-                yield return null;
+                AudioClip audioLine = convo.playerLines[i].audioFile; //get the audio to play
+                AudioSource playerSpeaking = convo.playerLines[i].audioSource; // get the source to play at
+                GetSourceAndPlay(playerSpeaking, audioLine); //pass these and play
+
+                while (playerSpeaking.isPlaying && !stoppingConvo) //don't move to the next line while our current source is still playing
+                {
+                    yield return null;
+                }
             }
         }
+        stoppingConvo = false;
         Services.AnimationScript.CharacterConvoAnimation(false);
         playersInConvo.Clear();
         conversationIsPlaying = false;
         convo.hasBeenPlayed = true; //once all lines have been played, set the bool on the conversation so that we don't choose it again
-        
+
+    }
+
+    public void StopConversation(PokerPlayerRedux loser)
+    {
+        for (int i = 0; i < playersInConvo.Count; i++)
+        {
+            if(playersInConvo[i] == loser.playerName)
+            {
+                for (int j = 0; j < Services.Dealer.players.Count; j++)
+                {
+                    foreach (PlayerName name in playersInConvo)
+                    {
+                        if (name == Services.Dealer.players[j].playerName)
+                        {
+                            Services.Dealer.players[j].playerIsInConversation = false;
+                            conversationIsPlaying = false;
+                            stoppingConvo = true;
+                            Services.Dealer.players[j].playerAudioSource.Stop();
+                        }
+                    }
+                }
+            }
+        }
     }
   
     public void GenerateSourceAndPlay(AudioClip clip, float volume, float pitch = 1)
@@ -204,11 +232,14 @@ public class SoundManager : MonoBehaviour
 	public void GetSourceAndPlay(AudioSource source, AudioClip clip)
 	{
         PokerPlayerRedux player = source.gameObject.GetComponentInParent<PokerPlayerRedux>();
-        player.playerIsInConversation = true;
-       // Debug.Log(player + " is in conversation: " + player.playerIsInConversation);
-		source.clip = clip;
-		source.Play();
-        StartCoroutine(PlayerStopsTalking(clip.length, player));
+        if (player.PlayerState != PlayerState.Eliminated)
+        {
+            player.playerIsInConversation = true;
+            // Debug.Log(player + " is in conversation: " + player.playerIsInConversation);
+            source.clip = clip;
+            source.Play();
+            StartCoroutine(PlayerStopsTalking(clip.length, player));
+        }
 	}
 
     public void GetNonPlayerSourceAndPlay(AudioSource source, AudioClip clip)

@@ -376,7 +376,8 @@ public class PokerPlayerRedux : MonoBehaviour{
     //we should go back to the generic one and make percentage variables that we can adjust in individual players
     public void FoldCallRaiseDecision(float returnRate, PokerPlayerRedux player)
     {
-        if (MakeThemAllIn == true)
+        int randomNum = Random.Range(0, 4);
+        if (randomNum == SeatPos || playerIsInConversation)
         {
             amountToRaise = chipCount;
             Raise();
@@ -466,6 +467,7 @@ public class PokerPlayerRedux : MonoBehaviour{
                     Services.Dealer.playersReady = true;
                     Services.Dealer.playersHaveBeenEvaluated = true;
                     //Services.Dealer.WaitForWinnersToGetPaid();
+                    Table.gameState = GameState.ShowDown;
                     Services.Dealer.StartCoroutine(Services.Dealer.WaitForWinnersToGetPaid());
                 }
             }
